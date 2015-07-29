@@ -2,10 +2,10 @@
 
 Commandment is an Open Source Apple MDM server with support for managing iOS and OS X devices implemented in Python. The source code is available under an [MIT license](LICENSE.txt).
 
-## Features
+## Architecture
 
 * Entirely Python implementation
-* Ground-up design using an SQL backend for persistence
+* Ground-up design based on Flask using an SQL backend for persistence
 * Native Certificate Authority built-in to support generating and signing of unique individual device identity, development webserver, and other certificates
 * Native APNs Push code with intention to support efficient multi-device mass notification
 
