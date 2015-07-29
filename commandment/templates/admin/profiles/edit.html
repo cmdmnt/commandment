@@ -1,0 +1,74 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+
+<h1>
+	Admin - Edit Profile
+</h1>
+
+<form id="editprofile" method="POST">
+
+<table border=1>
+
+<tr>
+	<td>Profile Identifier</td>
+	<td>{{ identifier }}</td>
+</tr>
+
+<tr>
+	<td>Profile UUID (will get new upon modification)</td>
+	<td>{{ uuid }}</td>
+</tr>
+
+</table>
+
+<h2>Restrictions Payload</h2>
+
+<table border=1>
+
+<tr>
+	<th style="width:20em"><label for="allowiTunes">Allow iTunes</label>. When <em>not</em> checked, the iTunes Music Store is disabled and its icon is removed from the Home screen. Users cannot preview, purchase, or download content.</th>
+	<td><input type="checkbox" id="allowiTunes" name="allowiTunes" {% if allowiTunes %}checked{% endif %} value="checked"></td>
+</tr>
+
+<tr>
+	<td colspan="2" style="text-align:right;">
+	<button type="submit" form="editprofile" value="Submit">Edit Profile</button>
+	</td>
+</tr>
+
+</table>
+
+</form>
+
+<h2>Group Applicability</h2>
+
+<form id="groupmod" action="../groupmod/{{ id }}" method="POST">
+
+<table border=1>
+
+<tr>
+	<th style="width:10em"><label for="group_membership"></label> Select the groups that this profile should apply to.</th>
+	<td>
+		<select id="group_membership" name="group_membership" multiple>
+
+{% for group, profile_id in groups %}
+
+			<option {% if profile_id %}selected{% endif %} value="{{ group.id }}">{{ group.group_name }}</option>
+
+{% endfor %}
+
+		</select>
+	</td>
+</tr>
+
+<tr>
+	<td colspan="2" style="text-align:right;">
+		<button type="submit" form="groupmod" value="Submit">Update Group Profile Applicability</button>
+	</td>
+</tr>
+
+</table>
+
+</form>
+
+{% endblock %}

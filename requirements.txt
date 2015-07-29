@@ -1,0 +1,4 @@
+M2Crypto
+pyOpenSSL
+Flask
+SQLAlchemy

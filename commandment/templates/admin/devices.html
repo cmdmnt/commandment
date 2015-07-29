@@ -1,0 +1,38 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+
+<h1>Admin - Devices</h1>
+
+<table border="1">
+
+<tr>
+	<th>Device Name</th>
+	<th>Type</th>
+	<th>Model</th>
+	<th>Serial No.</th>
+	<th>Storage Used %</th>
+	<th>OS Version</th>
+	<th></th>
+</tr>
+
+{% for device in devices %}
+
+<tr>
+	<td>{{ device.info_json['DeviceName'] }}</td>
+	<td>{{ device.info_json['ModelName'] }}</td>
+	<td>{{ device.info_json['ProductName'] }}</td>
+	<td style="font-family:monospace;">{{ device.info_json['SerialNumber'] }}</td>
+	<td>{{ ((device.info_json.get('AvailableDeviceCapacity',0) / device.info_json.get('DeviceCapacity',1)) * 100)|int }}%</td>
+	<td>{{ device.info_json['OSVersion']}}
+	<td style="white-space:nowrap;">
+		<a href="/admin/device/{{ device.id }}">[ View Device ]</a>
+		<a href="/send_mdm/{{ device.id }}">[ Send Push Notif. ]</a>
+	</td>
+</tr>
+
+
+{% endfor %}
+
+</table>
+
+{% endblock %}

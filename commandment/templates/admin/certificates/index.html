@@ -1,0 +1,63 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+
+<h1>Admin - Certificates</h1>
+
+<p>
+<a href="/admin/certificates/new">[ Generate New ]</a>
+</p>
+
+<table border="1">
+
+<tr>
+	<th>Config cert. title</th>
+	<th>Cert. subject</th>
+	<th colspan="1">
+</tr>
+
+{% for cert in certs %}
+
+<tr>
+	<td title="{{ cert.description }}">{{ cert.title }}
+	{% if cert.required %}
+		<span style="color:red">(Required)</span>
+	{% endif %}
+	</td>
+	<td >{{ cert.subject }}</td>
+	<td style="white-space:nowrap;">
+		<a href="/admin/certificates/add/{{ cert.name }}">[ Add ]</a>
+		<!-- <a href="/admin/certificates/download/{{ cert.id }}">[ Download ]</a> -->
+		<a href="/admin/certificates/delete/{{ cert.id }}">[ Delete ]</a>
+	</td>
+</tr>
+
+
+{% endfor %}
+
+{% for cert in missing %}
+
+<tr>
+	<td title="{{ cert.description }}">{{ cert.title }}
+	{% if cert.required %}
+		<span style="color:red">(Required)</span>
+	{% endif %}
+	</td>
+	<td style="color:red"><em>(Certificate Missing)</em></td>
+	<td>
+		<a href="/admin/certificates/add/{{ cert.name }}">[ Add ]</a>
+	</td>
+</tr>
+
+
+{% endfor %}
+
+
+</table>
+
+<!--
+<p>
+	<a href="/admin/certificates/client">Client (Issued) Certificates</a>
+</p>
+-->
+
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+
+<h1>Admin - Device</h1>
+
+<table border="1">
+
+<tr>
+	<th>Device Name</th>
+	<td>{{ device.info_json['DeviceName'] }}</td>
+</tr>
+<tr>
+	<th>Type</th>
+	<td>{{ device.info_json['ModelName'] }}</td>
+</tr>
+<tr>
+	<th>Model</th>
+	<td>{{ device.info_json['ProductName'] }}</td>
+</tr>
+<tr>
+	<th>Serial No.</th>
+	<td style="font-family:monospace;">{{ device.info_json['SerialNumber'] }}</td>
+</tr>
+<tr>
+	<th>Storage Used %</th>
+	<td>{{ ((device.info_json['AvailableDeviceCapacity'] / device.info_json['DeviceCapacity']) * 100)|int }}%</td>
+</tr>
+<tr>
+	<th>OS Version</th>
+	<td>{{ device.info_json['OSVersion']}}
+</tr>
+
+</table>
+
+<h2>Group Membership</h2>
+
+<form id="groupmod" action="{{ device.id }}/groupmod" method="POST">
+
+<table border=1>
+
+<tr>
+	<th style="width:10em"><label for="group_membership"></label> Select the groups that this device should be a member of.</th>
+	<td>
+		<select id="group_membership" name="group_membership" multiple>
+
+{% for group, dev_id in groups %}
+
+			<option {% if dev_id %}selected{% endif %} value="{{ group.id }}">{{ group.group_name }}</option>
+
+{% endfor %}
+
+		</select>
+	</td>
+</tr>
+
+<tr>
+	<td colspan="2" style="text-align:right;">
+	<button type="submit" form="groupmod" value="Submit">Update Device Group Membership</button>
+	</td>
+</tr>
+
+</table>
+
+</form>
+
+<p><a href="/devices">[ Devices ]</a></p>
+
+{% endblock %}

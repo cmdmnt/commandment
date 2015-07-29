@@ -1,0 +1,40 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+
+<h1>Admin - Groups</h1>
+
+<table border="1">
+
+<tr>
+	<th>Name</th>
+	<th>Description</th>
+	<th colspan="1">
+</tr>
+
+<form id="addgroup" method="POST">
+
+<tr>
+	<td><input name="group_name" type="text"></td>
+	<td><input name="description" type="text"></td>
+	<td><button type="submit" form="addgroup" value="add">Add Group</button></td>
+</tr>
+
+</form>
+
+{% for group in groups %}
+
+<tr>
+	<td>{{ group.group_name }}</td>
+	<td>{{ group.description }}</td>
+	<td style="white-space:nowrap;">
+		<!-- <a href="/admin/groups/edit/{{ group.id }}">[ Edit ]</a> -->
+		<a href="/admin/groups/remove/{{ group.id }}">[ Delete ]</a>
+	</td>
+</tr>
+
+{% endfor %}
+
+
+</table>
+
+{% endblock %}

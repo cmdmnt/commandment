@@ -1,0 +1,34 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+
+<h1>
+	Admin - New Profile
+</h1>
+
+<form id="addprofile" method="POST">
+
+<h2>Restrictions Payload</h2>
+
+<table border=1>
+
+<tr>
+	<th style="width:20em"><label for="allowiTunes">Allow iTunes</label>. When <em>not</em> checked, the iTunes Music Store is disabled and its icon is removed from the Home screen. Users cannot preview, purchase, or download content.</th>
+	<td><input type="checkbox" id="allowiTunes" name="allowiTunes" checked value="checked"></td>
+</tr>
+
+<tr>
+	<td colspan="2" style="text-align:right;">
+	<button type="submit" form="addprofile" value="Submit">Add Profile</button>
+	</td>
+</tr>
+
+</table>
+
+</form>
+
+<p>
+	Once the profile has been created go to its edit page to assign a group
+	which, in turn, will assign the profile to member devices.
+</p>
+
+{% endblock %}

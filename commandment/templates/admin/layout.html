@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+	{% block head %}
+	<!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+	<title>{% block title %}{% endblock %} - MDM Admin</title>
+	{% endblock %}
+</head>
+<body>
+	<div>
+		<a href="/admin/devices">Devices</a> |
+		<a href="/admin/groups">Groups</a> |
+		<a href="/admin/profiles">Profiles</a> |
+		<a href="/admin/certificates">Certificates</a> |
+		<a href="/admin/config/edit">Config</a>
+	</div>
+	<div id="content">{% block content %}{% endblock %}</div>
+	<div id="footer">{% block footer %}{% endblock %}</div>
+</body>
+</html>
