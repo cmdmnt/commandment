@@ -143,7 +143,7 @@ You should now be able to enroll a device!
 
 ### 5. Enroll a device
 
-**WARNING:** It goes without saying MDM systems are powerful. They can lock, wipe, or otherwise disable a device. It's recommended to test using a device that is not important in case of accidental or inadvertant data loss or lock-out (which would require a reset).
+_**WARNING:** It goes without saying MDM systems are powerful. They can lock, wipe, or otherwise disable a device. It's recommended to test using a device that is not important in case of accidental or inadvertant data loss or lock-out (which would require a reset)._
 
 On a device to be enrolled go to the landing page of the MDM system. This is the root URL we accessed above. In our example this is https://newtestmdm.example.com:5443/. Click the link to enroll. This will dynamically generate an MDM enrollment profile that should trust the web server certificate, includes the device's newly generated identity certificate (signed by the built-in CA), the MDM payload, and enroll the device.
 
@@ -151,7 +151,7 @@ If the device was successfully enrolled then you should be able to visit the dev
 
 Congrats! If it enrolled and you see device details (name, serial number, etc.) then it's working! Now something a little more useful..
 
-_**Note of warning:** Apple recommends MDM developers use a SCEP system to enroll certificates with an MDM vendor. To simplify setup we do not do this and instead generate a device identity certificate directly embedded in the enrollment profile. For iOS this is likely fine as the enrollment profile isn't by default downloaded anywhere. But on OS X the enrollment profile is downloaded to disk (default browser action) which means the device's identity certificate is stored on the filesystem trivially accessible (usually just in the Downloads folder). Given access to the enrollment profile one can trivially spoof the device to the MDM system. This means you may want to enroll OS X devices using a script or other technique than just having users simply enroll to make sure the original enrollment profile is deleted after enrollment. The private key is not stored in the MDM server after the enrollment profile is generated._
+_**Warning:** Apple recommends MDM developers use a SCEP system to enroll certificates with an MDM vendor. To simplify setup we do not do this and instead generate a device identity certificate directly embedded in the enrollment profile. For iOS this is likely fine as the enrollment profile isn't by default downloaded anywhere. But on OS X the enrollment profile is downloaded to disk (default browser action) which means the device's identity certificate is stored on the filesystem trivially accessible (usually just in the Downloads folder). Given access to the enrollment profile one can trivially spoof the device to the MDM system. This means you may want to enroll OS X devices using a script or other technique than just having users simply enroll to make sure the original enrollment profile is deleted after enrollment. The device identity private key is not stored in the MDM server after the enrollment profile is generated but it is embedded in the enrollment profile._
 
 ### 6. Create a device group and apply a (the) example profile to it
 
