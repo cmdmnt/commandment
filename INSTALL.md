@@ -27,7 +27,7 @@ If you have a DNS record already setup and don't want to use the default `mymdm.
 
 While not recommended it's possible to use a `/etc/hosts` entry to test the system including enrollment and MDM operation of a single system on the same host as the server. Useful for quick and dirty virtual machine testing.
 
-**Note:** while IP address certificates appear to work for MDM on iOS not much luck was had with OS X doing this. Besides this it is [not recommended](http://tools.ietf.org/html/rfc6125#section-1.7.2) to use IP addresses in the Common Name field for certificates. Also the CA/B has [deprecated](https://cabforum.org/internal-names/) *internal* IP addresses in certificate subjects from public Certificate Authorities. In other words: best not to go this route.
+_**Note:** while IP address certificates appear to work for MDM on iOS not much luck was had with OS X doing this. Besides this it is [not recommended](http://tools.ietf.org/html/rfc6125#section-1.7.2) to use IP addresses in the Common Name field for certificates. Also the CA/B has [deprecated](https://cabforum.org/internal-names/) *internal* IP addresses in certificate subjects from public Certificate Authorities. In other words: best not to go this route._
 
 ## Installing the requirements
 
@@ -98,6 +98,14 @@ pip install -r requirements.txt
 
 Assuming all of the above steps completed without problems you should be good to go now. Next steps are to run the server and begin in-webapp configuration.
 
+For OS X 10.9 users: M2Crypto can't find the OpenSSL header files on the system. To get around this download the latest tarball of [M2Crypto from PyPi](https://pypi.python.org/pypi/M2Crypto), unpack it, change to it's directory, and while still in the virtualenv run:
+
+```bash
+python setup.py install build_ext --openssl=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr
+```
+
+Then re-run the `pip -r` command from above to get the rest of the dependencies which should install fine.
+
 ## Server installation and setup
 
 ### 1. Start runserver.py and visit web site
@@ -143,7 +151,7 @@ If the device was successfully enrolled then you should be able to visit the dev
 
 Congrats! If it enrolled and you see device details (name, serial number, etc.) then it's working! Now something a little more useful..
 
-***Note of warning:** Apple recommends MDM developers use a SCEP system to enroll certificates with an MDM vendor. To simplify setup we do not do this and instead generate a device identity certificate directly embedded in the enrollment profile. For iOS this is likely fine as the enrollment profile isn't by default downloaded anywhere. But on OS X the enrollment profile is downloaded to disk (default browser action) which means the device's identity certificate is stored on the filesystem trivially accessible (usually just in the Downloads folder). Given access to the enrollment profile one can trivially spoof the device to the MDM system. This means you may want to enroll OS X devices using a script or other technique than just having users simply enroll to make sure the original enrollment profile is deleted after enrollment. The private key is not stored in the MDM server after the enrollment profile is generated.*
+_**Note of warning:** Apple recommends MDM developers use a SCEP system to enroll certificates with an MDM vendor. To simplify setup we do not do this and instead generate a device identity certificate directly embedded in the enrollment profile. For iOS this is likely fine as the enrollment profile isn't by default downloaded anywhere. But on OS X the enrollment profile is downloaded to disk (default browser action) which means the device's identity certificate is stored on the filesystem trivially accessible (usually just in the Downloads folder). Given access to the enrollment profile one can trivially spoof the device to the MDM system. This means you may want to enroll OS X devices using a script or other technique than just having users simply enroll to make sure the original enrollment profile is deleted after enrollment. The private key is not stored in the MDM server after the enrollment profile is generated._
 
 ### 6. Create a device group and apply a (the) example profile to it
 
