@@ -3,3 +3,5 @@ DATABASE_ECHO = True
 DEBUG = True
 
 DEV_WEB_CERT_CN = 'mymdm.example.com'
+
+APP_UPLOAD_ROOT = 'apps'

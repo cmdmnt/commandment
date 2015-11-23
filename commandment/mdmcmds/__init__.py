@@ -5,7 +5,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 from uuid import uuid4
 from ..database import db_session
-from ..models import QueuedCommand, Profile as DBProfile
+from ..models import QueuedCommand, Profile as DBProfile, MDMConfig
 from ..profiles import Profile
 import json
 import plistlib # needed for Data() wrapper
@@ -199,3 +199,21 @@ class InstallProfile(QueuedMDMCommand):
             print 'Successfully installed profile id:', self.input_data['id']
         else:
             pprint.pprint(result)
+
+class AppInstall(QueuedMDMCommand):
+    request_type = 'InstallApplication'
+    def generate_command_dict(self):
+        config = db_session.query(MDMConfig).one()
+        # yuck, since we don't actually save the base URL in our MDMConfig we'll
+        # have to compute it from the MDM URL by stripping off the trailing "/mdm"
+        base_url = config.mdm_url[:-4]
+
+        cmd_dict = {}
+        cmd_dict['ManifestURL'] = '%s/app/%d/manifest' % (base_url, self.input_data['app_id'])
+        cmd_dict['NotManaged'] = True
+
+        return cmd_dict
+
+    def process_response_dict(self, result):
+        print 'InstallProfile.process_response_dict() called'
+        pprint.pprint(result)

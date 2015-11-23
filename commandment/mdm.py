@@ -4,10 +4,12 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 from flask import Blueprint, render_template, make_response, request, abort
+from flask import current_app, send_file
 from .pki.ca import get_ca, PushCertificate
 from .pki.m2certs import Certificate, RSAPrivateKey
 from .database import db_session, NoResultFound
 from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
+from .models import App
 from .profiles import Profile
 from .profiles.cert import PEMCertificatePayload, PKCS12CertificatePayload
 from .profiles.mdm import MDMPayload
@@ -16,6 +18,7 @@ from os import urandom
 from M2Crypto import SMIME, BIO, X509
 import plistlib
 from .push import send_mdm_apns_notifications
+import os
 
 PROFILE_CONTENT_TYPE = 'application/x-apple-aspen-config'
 
@@ -432,3 +435,48 @@ def mdm():
 
     print 'No further queued commands for this device'
     return ''
+
+@mdm_app.route("/app/<int:app_id>/manifest")
+def app_manifest(app_id):
+    app_q = db_session.query(App).filter(App.id == app_id)
+    app = app_q.one()
+
+    config = db_session.query(MDMConfig).one()
+    # yuck, since we don't actually save the base URL in our MDMConfig we'll
+    # have to compute it from the MDM URL by stripping off the trailing "/mdm"
+    base_url = config.mdm_url[:-4]
+
+    asset = {
+        'kind': 'software-package',
+        'md5-size': app.md5_chunk_size,
+        'md5s': app.md5_chunk_hashes.split(':'),
+        'url': '%s/app/%d/download/%s' % (base_url, app_id, app.filename),
+        }
+
+    metadata = {'kind': 'software', 'title': app.filename, 'sizeInBytes': app.filesize}
+
+    pkgs_ids = app.pkg_ids_json
+    pkgs_bundles = [{'bundle-identifier': i[0], 'bundle-version': i[1]} for i in pkgs_ids]
+
+    # if subtitle:
+    #     metadata['subtitle'] = subtitle
+
+    metadata.update(pkgs_bundles[0])
+
+    if len(pkgs_bundles) > 1:
+        metadata['items'] = pkgs_bundles
+
+    download = {'assets': [asset, ], 'metadata': metadata}
+
+    manifest = {'items': [download]}
+
+    resp = make_response(plistlib.writePlistToString(manifest))
+    resp.headers['Content-Type'] = 'application/xml'
+    return resp
+
+@mdm_app.route("/app/<int:app_id>/download/<filename>")
+def app_download(app_id, filename):
+    app_q = db_session.query(App).filter(App.id == app_id)
+    app = app_q.one()
+
+    return send_file(os.path.join(current_app.config['APP_UPLOAD_ROOT'], app.path_format()))

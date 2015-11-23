@@ -63,6 +63,37 @@
 
 </form>
 
+<h2>Install App</h2>
+
+<form id="appinst" action="{{ device.id }}/appinst" method="POST">
+
+<table border=1>
+
+<tr>
+	<th style="width:10em"><label for="application"></label>Select filename of app to send install MDM command to.</th>
+	<td>
+		<select id="application" name="application">
+
+{% for app_id, app_filename in apps %}
+
+			<option value="{{ app_id }}">{{ app_filename }}</option>
+
+{% endfor %}
+
+		</select>
+	</td>
+</tr>
+
+<tr>
+	<td colspan="2" style="text-align:right;">
+	<button type="submit" form="appinst" value="Submit">App Install</button>
+	</td>
+</tr>
+
+</table>
+
+</form>
+
 <p><a href="/admin/devices">[ Devices ]</a></p>
 
 {% endblock %}

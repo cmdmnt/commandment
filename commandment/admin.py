@@ -3,18 +3,23 @@ Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
-from flask import Blueprint, render_template, Response, request, redirect
+from flask import Blueprint, render_template, Response, request, redirect, current_app, abort
 from .pki.ca import get_ca, PushCertificate
 from .pki.m2certs import X509Error, Certificate, RSAPrivateKey, CertificateRequest
 from .database import db_session, and_, or_
 from .pki.m2certs import Certificate
 from .models import CERT_TYPES, profile_group_assoc, device_group_assoc, Device
 from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig
+from .models import App
 from .profiles.restrictions import RestrictionsPayload
 from .profiles import Profile
-from .mdmcmds import InstallProfile, RemoveProfile
+from .mdmcmds import InstallProfile, RemoveProfile, AppInstall
 from mdm import send_mdm
 import uuid
+import os
+from .utils.app_manifest import pkg_signed, get_pkg_bundle_ids, get_chunked_md5, MD5_CHUNK_SIZE
+import tempfile
+from shutil import copyfile
 
 class FixedLocationResponse(Response):
     # override Werkzeug default behaviour of "fixing up" once-non-compliant
@@ -311,7 +316,9 @@ def admin_device(device_id):
     # get all MDMGroups left joining against our assoc. table to see if this device is in any of those groups
     group_q = db_session.query(MDMGroup, device_group_assoc.c.device_id).outerjoin(device_group_assoc, and_(device_group_assoc.c.mdm_group_id == MDMGroup.id, device_group_assoc.c.device_id == device.id))
 
-    return render_template('admin/device.html', device=device, groups=group_q)
+    apps = db_session.query(App.id, App.filename)
+
+    return render_template('admin/device.html', device=device, groups=group_q, apps=apps)
 
 def install_group_profiles_to_device(group, device):
     q = db_session.query(DBProfile.id).join(profile_group_assoc).filter(profile_group_assoc.c.mdm_group_id == group.id)
@@ -380,6 +387,106 @@ def admin_device_groupmod(device_id):
         send_mdm(device.id)
 
     return redirect('/admin/device/%d' % int(device.id), Response=FixedLocationResponse)
+
+@admin_app.route('/device/<int:device_id>/appinst', methods=['POST'])
+def admin_device_appinst(device_id):
+    # get device info
+    device = db_session.query(Device).filter(Device.id == device_id).one()
+
+    # get app id
+    app_id = int(request.form['application'])
+
+    # note singular tuple for subject here
+    new_appinst = AppInstall.new_queued_command(device, {'app_id': app_id})
+    db_session.add(new_appinst)
+    db_session.commit()
+    send_mdm(device.id)
+
+    return redirect('/admin/device/%d' % device_id, Response=FixedLocationResponse)
+
+@admin_app.route('/apps', methods=['GET'])
+def admin_app_list():
+    apps = db_session.query(App)
+    return render_template('admin/apps.html', apps=apps)
+
+@admin_app.route('/app/add', methods=['POST'])
+def admin_app_add():
+
+    new_file = request.files['app']
+
+    if not new_file.filename.endswith('.pkg'):
+        abort(400, 'Failed: filename does not end with ".pkg". Upload must be an Apple Developer-signed Apple "flat" package installer.')
+
+    # first, save the file to a temporary location. ideally we'd like to read
+    # the temporary file it's already contained in but Werkzeug only seems to
+    # give us access to the file handle of that (.stream attribute) and not a
+    # filename that we need. this implies we'll need to copy the file twice
+    # (once out of the temporary stream to this temp file, then once into the
+    # uploaded location).
+    temp_file_handle, temp_file_path = tempfile.mkstemp()
+
+    new_file.save(temp_file_path)
+
+    if not pkg_signed(temp_file_path):
+        os.close(temp_file_handle)
+        os.unlink(temp_file_path)
+        abort(400, 'Failed: uploaded package not signed. Upload must be an Apple Developer-signed Apple "flat" package installer.')
+
+    # get MD5 and MD5 chunks
+    md5, md5s = get_chunked_md5(temp_file_path, chunksize=MD5_CHUNK_SIZE)
+
+    # get bundle and package IDs
+    pkg_ids, bundle_ids = get_pkg_bundle_ids(temp_file_path)
+
+    filesize = os.path.getsize(temp_file_path)
+
+    new_app = App()
+    new_app.filename = new_file.filename
+    new_app.filesize = filesize
+
+    new_app.md5_hash = md5
+    new_app.md5_chunk_size = MD5_CHUNK_SIZE
+    new_app.md5_chunk_hashes = ':'.join(md5s)
+
+    new_app.pkg_ids_json = pkg_ids
+    new_app.bundle_ids_json = bundle_ids
+
+    db_session.add(new_app)
+    db_session.commit()
+
+    apps_dir = os.path.join(current_app.root_path, current_app.config['APP_UPLOAD_ROOT'])
+
+    if not os.path.isdir(apps_dir):
+        os.mkdir(apps_dir)
+
+    new_file_path = os.path.join(apps_dir, new_app.path_format())
+
+    copyfile(temp_file_path, new_file_path)
+    # new_file.save(new_file_path)
+
+    # remove the temp file
+    os.close(temp_file_handle)
+    os.unlink(temp_file_path)
+
+    return redirect('/admin/apps', Response=FixedLocationResponse)
+
+@admin_app.route('/app/delete/<int:app_id>', methods=['GET'])
+def admin_app_delete(app_id):
+    app_q = db_session.query(App).filter(App.id == app_id)
+    app = app_q.one()
+
+    apps_dir = os.path.join(current_app.root_path, current_app.config['APP_UPLOAD_ROOT'])
+
+    try:
+        os.unlink(os.path.join(apps_dir, app.path_format()))
+    except OSError:
+        # just continue on -- best effort for deletion
+        pass
+
+    db_session.delete(app)
+    db_session.commit()
+
+    return redirect('/admin/apps', Response=FixedLocationResponse)
 
 @admin_app.route('/config/add', methods=['GET', 'POST'])
 def admin_config_add():

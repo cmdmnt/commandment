@@ -174,3 +174,25 @@ class MDMConfig(Base):
 
     push_cert_id = Column(ForeignKey('certificate.id'), nullable=False)
     push_cert = relationship('Certificate', foreign_keys=[push_cert_id]) # , backref='push_cert_mdm_config'
+
+class App(Base):
+    __tablename__ = 'app'
+
+    id = Column(Integer, primary_key=True)
+
+    filename = Column(String, nullable=False, unique=True)
+    filesize = Column(Integer, nullable=False)
+
+    md5_hash = Column(String(32), nullable=False) # MD5 hash of the entire file
+
+    # MDM clients support a chunked method of retrival of the download file
+    # presumably to best support OTA download of large updates. These fields
+    # are in support of that mechanism
+    md5_chunk_size = Column(Integer, nullable=False)
+    md5_chunk_hashes = Column(Text, nullable=True) # colon (:) separated list of MD5 chunk hashes
+
+    bundle_ids_json = Column(JSONEncodedDict, nullable=True)
+    pkg_ids_json = Column(JSONEncodedDict, nullable=True)
+
+    def path_format(self):
+        return '%010d.dat' % self.id

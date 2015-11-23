@@ -1,0 +1,48 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+
+<h1>Admin - Apps</h1>
+
+<table border="1">
+
+<tr>
+	<th>App ID</th>
+	<th>Filename</th>
+	<th></th>
+</tr>
+
+{% for app in apps %}
+
+<tr>
+	<td>{{ app.id }}</td>
+	<td>{{ app.filename }}</td>
+	<td style="white-space:nowrap;">
+		<a href="/admin/app/delete/{{ app.id }}">[ Delete App ]</a>
+	</td>
+</tr>
+
+
+{% endfor %}
+
+</table>
+
+<hr>
+
+<p>Warning: Large apps and packages will take a long time to upload, hash, and process. Please be patient!</p>
+
+<form action="/admin/app/add" id="addapp" method="POST" enctype="multipart/form-data">
+<table>
+
+<tr>
+	<td><input name="app" type="file"></td>
+</tr>
+
+<tr>
+	<td><button type="submit" form="addapp" value="add">Add App</button></td>
+</tr>
+
+</table>
+</form>
+
+
+{% endblock %}

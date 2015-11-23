@@ -1,2 +1,3 @@
 *.pyc
 mdm.db
+commandment/apps
