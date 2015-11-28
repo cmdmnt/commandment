@@ -90,7 +90,7 @@ class QueuedCommand(Base):
     uuid = Column(String(36), index=True, unique=True, nullable=False)
     input_data = Column(JSONEncodedDict, nullable=True) # JSON add'l data as input to command builder
     queued_status = Column(String(1), index=True, nullable=False, default='Q') # 'Q' = Queued, 'S' = Sent
-    result = Column(String, nullable=True)
+    result = Column(String, nullable=True) # Status key of MDM command result submission
 
     # queued_stamp
     # sent_stamp
@@ -108,12 +108,18 @@ class QueuedCommand(Base):
     def set_invalid(self):
         self.queued_status = 'X'
 
+    def set_responded(self):
+        self.queued_status = 'R'
+
     @classmethod
     def find_by_uuid(cls, uuid):
         return cls.query.filter(cls.uuid == uuid).one()
 
     @classmethod
-    def get_next_device_command(cls, device):
+    def get_next_device_command(cls, device, notnow_seen=False):
+        # TODO: test for NotNow case as docs say if we get this it's unlikely
+        # we'll be able to send more NowNow-able commands
+
         # TODO: order_by queued_stamp
         return cls.query.filter(cls.device == device, cls.queued_status == 'Q').first()
 

@@ -10,6 +10,8 @@ from ..profiles import Profile
 import json
 import plistlib # needed for Data() wrapper
 
+# Status = Acknowledged, Error, CommandFormatError, Idle, NotNow
+
 class QueuedMDMCommand(object):
     def __init__(self, uuid=None, input_data={}, device=None):
         self.uuid = uuid if uuid else str(uuid4()).upper()

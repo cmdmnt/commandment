@@ -190,41 +190,52 @@ def send_mdm(dev_id):
 
     return 'Sent %d Push Notifications' % ctr
 
-def device_cert_check(f):
+def device_cert_check(no_device_okay=False):
     '''Performs a set of checks on a request to make sure it came from a
     legimately enrolled device in this MDM system'''
-    @wraps(f)
-    def decorator(*args, **kwargs):
-        # check if valid certificate and if request data matches signature
-        # TODO: implement alternate methods of getting supplied client cert
-        # (e.g. request.headers['X-Ssl-Client-Cert'].replace('\n ', '\n') for 
-        # nginx)
-        device_supplied_cert = verify_mdm_signature(request.headers['Mdm-Signature'], request.data)
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            # check if valid certificate and if request data matches signature
+            # TODO: implement alternate methods of getting supplied client cert
+            # (e.g. request.headers['X-Ssl-Client-Cert'].replace('\n ', '\n') for 
+            # nginx)
+            device_supplied_cert = verify_mdm_signature(request.headers['Mdm-Signature'], request.data)
 
-        try:
-            # reload cert as passed in as both a sanity check and to reformat
-            # in case the PEM as passed in (from the web server) is different
-            # then how OpenSSL/M2Crypto would have formatted it
-            reloaded_cert = Certificate.load(str(device_supplied_cert))
-            g.device_cert = db_session.query(DBCertificate).filter(DBCertificate.pem_certificate == str(reloaded_cert.get_pem())).one()
-        except NoResultFound:
-            current_app.logger.info('supplied device certificate not found; returning invalid')
-            abort(400, 'certificate invalid')
+            try:
+                # reload cert as passed in as both a sanity check and to reformat
+                # in case the PEM as passed in (from the web server) is different
+                # then how OpenSSL/M2Crypto would have formatted it
+                reloaded_cert = Certificate.load(str(device_supplied_cert))
+                g.device_cert = db_session.query(DBCertificate).filter(DBCertificate.pem_certificate == str(reloaded_cert.get_pem())).one()
+            except NoResultFound:
+                current_app.logger.info('supplied device certificate not found; returning invalid')
+                abort(400, 'certificate invalid')
 
-        # get a list of the devices that correspond to this certificate
-        cert_devices = g.device_cert.devices
+            # get a list of the devices that correspond to this certificate
+            cert_devices = g.device_cert.devices
 
-        if len(cert_devices) > 1:
-            dev_id_list = ', '.join([i.id for i in cert_devices])
-            current_app.logger.info('certificate has more than one device assigned (%s); returning invalid' % dev_id_list)
-            abort(500, 'certificate configuration invalid')
-        elif len(cert_devices) < 1:
-            current_app.logger.info('certificate has more no associated device; returning invalid')
-            abort(400, 'certificate invalid')
+            if len(cert_devices) > 1:
+                dev_id_list = ', '.join([i.id for i in cert_devices])
+                current_app.logger.info('certificate has more than one device assigned (%s); returning invalid' % dev_id_list)
+                abort(500, 'certificate configuration invalid')
+            elif len(cert_devices) < 1 and no_device_okay is not True:
+                current_app.logger.info('certificate has no associated device; returning invalid')
+                abort(400, 'certificate invalid')
 
-        g.device = g.device_cert.devices[0]
+            # NOTE: we've seen on odd circumstance where the provided device UDID
+            # does not match the currently enrolled certificate (and thus device
+            # UDID). this appears to be some weird certificate caching problem
+            # on the client side there the client tries to auth with it's
+            # previously enrolled cert when one removes/re-enrolls a device
+            # quickly
+            if len(cert_devices) == 1:
+                g.device = g.device_cert.devices[0]
+            else:
+                g.device = None
 
-        return f(*args, **kwargs)
+            return f(*args, **kwargs)
+        return wrapper
     return decorator
 
 def parse_plist_input_data(f):
@@ -241,7 +252,7 @@ def parse_plist_input_data(f):
     return decorator
 
 @mdm_app.route("/checkin", methods=['PUT'])
-@device_cert_check
+@device_cert_check(no_device_okay=True)
 @parse_plist_input_data
 def checkin():
     resp = g.plist_data
@@ -358,41 +369,36 @@ def checkin():
     abort(500, 'Invalid message type')
 
 @mdm_app.route("/mdm", methods=['PUT'])
-@device_cert_check
+@device_cert_check()
 @parse_plist_input_data
 def mdm():
-    # From iPhone:
-    #   Content-Type: application/x-apple-aspen-mdm
-    result = g.plist_data
+    if g.device.udid != g.plist_data['UDID']:
+        # see note in device_cert_check() about old device cert sometimes
+        # being provided
+        current_app.logger.info('provided UDID does not match device UDID')
+        abort(400, 'invalid input data')
 
-    try:
-        device = db_session.query(Device).filter(Device.udid == result['UDID']).one()
-    except NoResultFound:
-        print 'Device not found'
-        print result['UDID']
-        abort(400, 'Device not found')
+    if 'Status' not in g.plist_data:
+        current_app.logger.info('invalid MDM request (no Status provided) from device id %d' % g.device.id)
+        abort(400, 'invalid input data')
+    else:
+        status = g.plist_data['Status']
 
-    if device.certificate != g.device_cert:
-        print device.certificate.id
-        print g.device_cert.id
-        # NOTE: odd bug with a profile removal/re-add where it tries to auth with the old cert?!
-        print 'Certificate does not match device!'
-        abort(400, 'Certificate does not match device!')
+    current_app.logger.info('device id=%d udid=%s processing status=%s', g.device.id, g.device.udid, status)
 
+    if status != 'Idle':
 
-    if 'Status' not in result:
-        print 'Invalid MDM request (missing Status)'
-        abort(400, 'Invalid MDM request (missing Status)')
-
-    if result['Status'] != 'Idle':
-        print 'Processing Status:', result['Status']
-
-        if 'CommandUUID' not in result:
-            print 'Invalid MDM request (missing CommandUUID)'
-            abort(400, 'Invalid MDM request (missing CommandUUID)')
+        if 'CommandUUID' not in g.plist_data:
+            current_app.logger.info('missing CommandUUID for non-Idle status')
+            abort(400, 'invalid input data')
 
         try:
-            command = QueuedCommand.find_by_uuid(result['CommandUUID'])
+            command = QueuedCommand.find_by_uuid(g.plist_data['CommandUUID'])
+
+            # update the status of this command and commit
+            command.result = status
+            command.set_responded()
+            db_session.commit()
 
             # find the MDM class that this QueuedCommand was generated from
             cmd_class = find_mdm_command_class(command.command_class)
@@ -400,26 +406,26 @@ def mdm():
             if not cmd_class:
                 command.set_invalid()
                 db_session.commit()
-                print 'No matching QueuedMDMCommand: %s' % command.command_class
+                current_app.logger.info('no matching QueuedMDMCommand class for %s', command.command_class)
+            else:
+                # instantiate it
+                mdm_command = cmd_class.from_queued_command(g.device, command)
 
-            # instantiate it
-            mdm_command = cmd_class.from_queued_command(device, command)
-
-            mdm_command.process_response_dict(result)
+                # the individual commands will need to be aware of and handle
+                # any Acknowledged/Error/CommandFormatError/Idle/NotNow
+                # differences. except for the NotNow status any and all
+                # handling is up the specific command class
+                mdm_command.process_response_dict(g.plist_data)
 
         except NoResultFound:
-            print 'No '
+            current_app.logger.info('no record of command uuid=%s', g.plist_data['CommandUUID'])
 
+    while True:
+        command = QueuedCommand.get_next_device_command(g.device, notnow_seen=(status == 'NotNow'))
 
-    # Status = Acknowledged, Error, CommandFormatError, Idle, NotNow
+        if not command:
+            break
 
-    # TODO: test for NotNow case as docs say if we get this it's unlikely
-    # we'll be able to send more NowNow-able commands
-
-    # find an outstanding queued command for this device
-    command = QueuedCommand.get_next_device_command(device)
-
-    if command:
         # mark this command as being in process right away to (try) to avoid
         # any race conditions with mutliple MDM commands from the same device
         # at a time
@@ -432,14 +438,16 @@ def mdm():
         if not cmd_class:
             command.set_invalid()
             db_session.commit()
-            print 'No matching QueuedMDMCommand: %s' % command.command_class
-            return ''
+            current_app.logger.info('no matching QueuedMDMCommand class for %s', command.command_class)
+            continue
 
         # instantiate it
-        mdm_command = cmd_class.from_queued_command(device, command)
+        mdm_command = cmd_class.from_queued_command(g.device, command)
 
-        # get command dictionary representation
+        # get command dictionary representation (e.g. the full command to send)
         output_dict = mdm_command.generate_dict()
+
+        current_app.logger.info('sending %s MDM command class=%s to device=%d', mdm_command.request_type, command.command_class, g.device.id)
 
         # convert to plist and send
         resp = make_response(plistlib.writePlistToString(output_dict))
@@ -451,7 +459,8 @@ def mdm():
 
         return resp
 
-    print 'No further queued commands for this device'
+    current_app.logger.info('no further MDM commands for device=%d', g.device.id)
+    # return empty response as we have no further work
     return ''
 
 @mdm_app.route("/app/<int:app_id>/manifest")
