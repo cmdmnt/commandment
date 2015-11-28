@@ -463,6 +463,19 @@ def mdm():
     # return empty response as we have no further work
     return ''
 
+@mdm_app.route('/send_dev_info/<int:dev_id>')
+def send_dev_info(dev_id):
+    device = db_session.query(Device).filter(Device.id == dev_id).one()
+
+    new_qc = UpdateInventoryDevInfoCommand.new_queued_command(device)
+    db_session.add(new_qc)
+
+    db_session.commit()
+
+    send_mdm(device.id)
+
+    return 'OK'
+
 @mdm_app.route("/app/<int:app_id>/manifest")
 def app_manifest(app_id):
     app_q = db_session.query(App).filter(App.id == app_id)
