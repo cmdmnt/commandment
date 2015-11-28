@@ -4,7 +4,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 from flask import Blueprint, render_template, make_response, request, abort
-from flask import current_app, send_file
+from flask import current_app, send_file, g
 from .pki.ca import get_ca, PushCertificate
 from .pki.m2certs import Certificate, RSAPrivateKey
 from .database import db_session, NoResultFound
@@ -19,6 +19,7 @@ from M2Crypto import SMIME, BIO, X509
 import plistlib
 from .push import send_mdm_apns_notifications
 import os
+from functools import wraps
 
 PROFILE_CONTENT_TYPE = 'application/x-apple-aspen-config'
 
@@ -189,25 +190,61 @@ def send_mdm(dev_id):
 
     return 'Sent %d Push Notifications' % ctr
 
+def device_cert_check(f):
+    '''Performs a set of checks on a request to make sure it came from a
+    legimately enrolled device in this MDM system'''
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        # check if valid certificate and if request data matches signature
+        # TODO: implement alternate methods of getting supplied client cert
+        # (e.g. request.headers['X-Ssl-Client-Cert'].replace('\n ', '\n') for 
+        # nginx)
+        device_supplied_cert = verify_mdm_signature(request.headers['Mdm-Signature'], request.data)
+
+        try:
+            # reload cert as passed in as both a sanity check and to reformat
+            # in case the PEM as passed in (from the web server) is different
+            # then how OpenSSL/M2Crypto would have formatted it
+            reloaded_cert = Certificate.load(str(device_supplied_cert))
+            g.device_cert = db_session.query(DBCertificate).filter(DBCertificate.pem_certificate == str(reloaded_cert.get_pem())).one()
+        except NoResultFound:
+            current_app.logger.info('supplied device certificate not found; returning invalid')
+            abort(400, 'certificate invalid')
+
+        # get a list of the devices that correspond to this certificate
+        cert_devices = g.device_cert.devices
+
+        if len(cert_devices) > 1:
+            dev_id_list = ', '.join([i.id for i in cert_devices])
+            current_app.logger.info('certificate has more than one device assigned (%s); returning invalid' % dev_id_list)
+            abort(500, 'certificate configuration invalid')
+        elif len(cert_devices) < 1:
+            current_app.logger.info('certificate has more no associated device; returning invalid')
+            abort(400, 'certificate invalid')
+
+        g.device = g.device_cert.devices[0]
+
+        return f(*args, **kwargs)
+    return decorator
+
+def parse_plist_input_data(f):
+    '''Parses plist data as HTTP input from request'''
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        try:
+            g.plist_data = plistlib.readPlistFromString(request.data)
+        except:
+            current_app.logger.info('could not parse property list input data')
+            abort(400, 'invalid input data')
+
+        return f(*args, **kwargs)
+    return decorator
+
 @mdm_app.route("/checkin", methods=['PUT'])
+@device_cert_check
+@parse_plist_input_data
 def checkin():
-    dev_cert_pem = verify_mdm_signature(request.headers['Mdm-Signature'], request.data)
-
-    # as e.g. passed in from a webserver (nginx in this example)
-    # dev_cert_pem = request.headers['X-Ssl-Client-Cert'].replace('\n ', '\n')
-
-    try:
-        # reload cert as passed in as both a sanity check and to reformat
-        # incase the PEM as passed in (from the web server) is different that
-        # how OpenSSL/M2Crypto would have formatted it
-        reloaded_cert = Certificate.load(str(dev_cert_pem))
-        db_dev_cert = db_session.query(DBCertificate).filter(DBCertificate.pem_certificate == str(reloaded_cert.get_pem())).one()
-    except NoResultFound:
-        print 'Device certificate not found!'
-        print reloaded_cert.get_pem()
-        abort(400, 'Device certificate not found')
-
-    resp = plistlib.readPlistFromString(request.data)
+    resp = g.plist_data
     print_resp = resp.copy()
 
     if 'UnlockToken' in print_resp:
@@ -218,7 +255,7 @@ def checkin():
         # TODO: check to make sure device == UDID == cert, etc.
         try:
             device = db_session.query(Device).filter(Device.udid == resp['UDID']).one()
-            if not db_dev_cert == device.certificate:
+            if not g.device_cert == device.certificate:
                 raise Exception('device provided identity cert does not match issued cert!')
         except NoResultFound:
             # no device found, let's make a new one!
@@ -230,7 +267,7 @@ def checkin():
             device.topic = resp['Topic']
 
         # TODO: we're essentially trusting the device to give the correct security infomration here
-        device.certificate = db_dev_cert
+        device.certificate = g.device_cert
 
         db_session.add(device)
         db_session.commit()
@@ -248,7 +285,7 @@ def checkin():
         print 'TokenUpdate'
         print print_resp
 
-        # device.certificate = db_dev_cert
+        # device.certificate = g.device_cert
 
         if 'PushMagic' in resp:
             device.push_magic = resp['PushMagic']
@@ -321,31 +358,12 @@ def checkin():
     abort(500, 'Invalid message type')
 
 @mdm_app.route("/mdm", methods=['PUT'])
+@device_cert_check
+@parse_plist_input_data
 def mdm():
-    dev_cert = verify_mdm_signature(request.headers['Mdm-Signature'], request.data)
-
-    # as passed in from webserver (nginx in our case)
-    # dev_cert = request.headers['X-Ssl-Client-Cert'].replace('\n ', '\n')
-
-    try:
-        # reload cert as passed in as both a sanity check and to reformat
-        # incase the PEM as passed in (from the web server) is different that
-        # how OpenSSL/M2Crypto would have formatted it
-        reloaded_cert = Certificate.load(str(dev_cert))
-        db_dev_cert = db_session.query(DBCertificate).filter(DBCertificate.pem_certificate == str(reloaded_cert.get_pem())).one()
-    except NoResultFound:
-        print 'Certificate not found!'
-        print dev_cert
-        abort(400, 'Certificate not found')
-
     # From iPhone:
     #   Content-Type: application/x-apple-aspen-mdm
-    # print request.headers
-    try:
-        result = plistlib.readPlistFromString(request.data)
-    except:
-        print 'Could not read plist from response!'
-        abort(400, 'Could not parse returned plist!')
+    result = g.plist_data
 
     try:
         device = db_session.query(Device).filter(Device.udid == result['UDID']).one()
@@ -354,9 +372,9 @@ def mdm():
         print result['UDID']
         abort(400, 'Device not found')
 
-    if device.certificate != db_dev_cert:
+    if device.certificate != g.device_cert:
         print device.certificate.id
-        print db_dev_cert.id
+        print g.device_cert.id
         # NOTE: odd bug with a profile removal/re-add where it tries to auth with the old cert?!
         print 'Certificate does not match device!'
         abort(400, 'Certificate does not match device!')
