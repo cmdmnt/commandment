@@ -128,9 +128,8 @@ def base64_to_pem(crypto_type, b64_text, width=76):
 
 def verify_mdm_signature(mdm_sig, req_data):
     '''Verify the client's supplied MDM signature and return the client certificate included in the signature.'''
-    pkcs7_pem_sig = base64_to_pem('PKCS7', mdm_sig)
 
-    p7_bio = BIO.MemoryBuffer(str(pkcs7_pem_sig))
+    p7_bio = BIO.MemoryBuffer(str(mdm_sig))
     p7 = SMIME.load_pkcs7_bio(p7_bio)
 
     p7_signers = p7.get0_signers(X509.X509_Stack())
@@ -200,7 +199,8 @@ def device_cert_check(no_device_okay=False):
             # TODO: implement alternate methods of getting supplied client cert
             # (e.g. request.headers['X-Ssl-Client-Cert'].replace('\n ', '\n') for 
             # nginx)
-            device_supplied_cert = verify_mdm_signature(request.headers['Mdm-Signature'], request.data)
+            pkcs7_pem_sig = base64_to_pem('PKCS7', request.headers['Mdm-Signature'])
+            device_supplied_cert = verify_mdm_signature(pkcs7_pem_sig, request.data)
 
             try:
                 # reload cert as passed in as both a sanity check and to reformat
