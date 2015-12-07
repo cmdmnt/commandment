@@ -458,15 +458,12 @@ def app_manifest(app_id):
     app = app_q.one()
 
     config = db_session.query(MDMConfig).one()
-    # yuck, since we don't actually save the base URL in our MDMConfig we'll
-    # have to compute it from the MDM URL by stripping off the trailing "/mdm"
-    base_url = config.mdm_url[:-4]
 
     asset = {
         'kind': 'software-package',
         'md5-size': app.md5_chunk_size,
         'md5s': app.md5_chunk_hashes.split(':'),
-        'url': '%s/app/%d/download/%s' % (base_url, app_id, app.filename),
+        'url': '%s/app/%d/download/%s' % (config.base_url(), app_id, app.filename),
         }
 
     metadata = {'kind': 'software', 'title': app.filename, 'sizeInBytes': app.filesize}

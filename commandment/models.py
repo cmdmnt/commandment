@@ -181,6 +181,14 @@ class MDMConfig(Base):
     push_cert_id = Column(ForeignKey('certificate.id'), nullable=False)
     push_cert = relationship('Certificate', foreign_keys=[push_cert_id]) # , backref='push_cert_mdm_config'
 
+    def base_url(self):
+        # yuck, since we don't actually save the base URL in our MDMConfig we'll
+        # have to compute it from the MDM URL by stripping off the trailing "/mdm"
+        if self.mdm_url[-4:] == '/mdm':
+            return self.mdm_url[:-4]
+        else:
+            return ''
+
 class App(Base):
     __tablename__ = 'app'
 
