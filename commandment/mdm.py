@@ -242,8 +242,8 @@ def checkin():
         # TODO: check to make sure device == UDID == cert, etc.
         try:
             device = db_session.query(Device).filter(Device.udid == resp['UDID']).one()
-            if not g.device_cert == device.certificate:
-                raise Exception('device provided identity cert does not match issued cert!')
+            if g.device_cert != device.certificate:
+                raise Exception('device provided identity cert does not match issued cert! (possibly a re-enrollment?)')
         except NoResultFound:
             # no device found, let's make a new one!
             device = Device()
