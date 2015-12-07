@@ -68,7 +68,7 @@ class Device(Base):
 
     udid = Column(String, unique=True, index=True, nullable=False)
     push_magic = Column(String, nullable=True)
-    token = Column(String, nullable=True)
+    token = Column(String, nullable=True) # stored as b64-encoded raw data
     unlock_token = Column(String(), nullable=True)
     topic = Column(String, nullable=True)
 

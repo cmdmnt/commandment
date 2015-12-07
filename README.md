@@ -7,7 +7,6 @@ Commandment is an Open Source Apple MDM server with support for managing iOS and
 * Entirely Python implementation
 * Ground-up design based on Flask using an SQL backend for persistence
 * Native Certificate Authority built-in to support generating and signing of unique individual device identity, development webserver, and other certificates
-* Native APNs Push code with intention to support efficient multi-device mass notification
 
 ## Requirements
 
@@ -37,7 +36,6 @@ Much of this is planned to be addressed or implemented, but noting it here so fo
 * OS X MDM supports per-user management. While stub code exists to authenticate users we don't support any actual per-user MDM management yet (but intend to).
 * No UI to perform MDM Vendor Signing or any Apple certificate integration.
 * No profile signing (yet). Most noticeable for the initial enrollment profile. MDM-managed profiles may not need signing.
-* While Push notification is intended to scale eventually right now it's done at web server request time. Perhaps transition this to a separate Push notification daemon.
 * Push notifications are currently set to immediately expire for testing (no retries on failure). Need to perform testing and possibly implement MDM push timeout/re-send logic.
 * Error handling and failures and fallbacks needs work all over the place.
 * While support for client-supplied certificate validation is straigt-forward to add it will only work with a web server that supports it. Our architecture is such that administrator web end-points *and* MDM commands flow through the same webserver instance. This means if we had a webserver that requested client certificates then the admin pages would (annoyingly) ask the administrator for a client certificate. We're currently using MDM HTTP request signing transmitted via HTTP headers which unfortauntely increase each MDM request size by ~ 2 KB

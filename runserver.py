@@ -7,9 +7,12 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 import os
 import tempfile
 import atexit
+import werkzeug.serving
 from commandment.app import create_app
 from commandment.database import config_engine, init_db
 from commandment.pki.ca import get_or_generate_web_certificate
+from commandment.runner import start_runner, stop_runner
+from commandment.push import push_init
 
 if __name__ == '__main__':
     app = create_app()
@@ -34,7 +37,8 @@ if __name__ == '__main__':
     # have a new enough version to make use of the SSLContext directly.
     # Luckily for us Werkzeug provides it's own emulation of an SSLContext if
     # we supply the cert and pk filenames in a tuple to it's ssl_context
-    # parameter.
+    # parameter. Note this is also done in push.py as the apns library uses
+    # similar context objects.
 
     cert_handle, cert_file = tempfile.mkstemp()
     pkey_handle, pkey_file = tempfile.mkstemp()
@@ -45,7 +49,19 @@ if __name__ == '__main__':
     os.close(cert_handle)
     os.close(pkey_handle)
 
+    # Werkzeug, in debug mode, will launch the app using the debug file-system
+    # watching auto-reloader. For threads this means that there would be two
+    # sets of threads launched. Here we try to guard against that by only
+    # starting our runner threads when either the reloader (debug) is off, or
+    # only in the reloader sub-process and not the reloader parent process to
+    # avoid extraneous threads being created.
+    if not app.config.get('DEBUG') or werkzeug.serving.is_running_from_reloader():
+        start_runner()
+        atexit.register(stop_runner)
+        push_init()
+
     app.run(
         host='0.0.0.0',
         port=app.config.get('PORT', 5443),
-        ssl_context=(cert_file, pkey_file))
+        ssl_context=(cert_file, pkey_file),
+        threaded=True)

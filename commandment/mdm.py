@@ -17,7 +17,7 @@ from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
 from os import urandom
 from M2Crypto import SMIME, BIO, X509
 import plistlib
-from .push import send_mdm_apns_notifications
+from .push import push_to_device
 import os
 from functools import wraps
 
@@ -161,33 +161,9 @@ def verify_mdm_signature(mdm_sig, req_data):
 
 @mdm_app.route('/send_mdm/<int:dev_id>')
 def send_mdm(dev_id):
-    # find device
-    q = db_session.query(Device).filter(Device.id == dev_id)
-
-    device_push_details = []
-    ctr = 0
-    for device in q:
-        device_push_details.append((device.token.decode('base64'), device.push_magic))
-        ctr += 1
-
-    if not device_push_details:
-        return 'No devices!'
-
-    # find APNS certificate
-    # better would be to compare our topic subject to the certificate UID
-    # object to see if they're a match, this would allow multiple APNS certs
-    # as well.
-    q = db_session.query(DBCertificate, DBPrivateKey).join(DBCertificate, DBPrivateKey.certificates).filter(DBCertificate.cert_type == 'mdm.pushcert')
-    db_cert, db_pk = q.one()
-
-    # this is probably not necessary, we could just pass the raw PEM files on
-    # over to the OpenSSL context
-    cert = Certificate.load(str(db_cert.pem_certificate))
-    pk = RSAPrivateKey.load(str(db_pk.pem_key))
-
-    send_mdm_apns_notifications(pk, cert, device_push_details)
-
-    return 'Sent %d Push Notifications' % ctr
+    device = db_session.query(Device).filter(Device.id == dev_id).one()
+    push_to_device(device)
+    return 'Sent Push Notification'
 
 def device_cert_check(no_device_okay=False):
     '''Performs a set of checks on a request to make sure it came from a
@@ -320,7 +296,7 @@ def checkin():
 
         db_session.commit()
 
-        send_mdm(device.id)
+        push_to_device(device)
 
         return 'OK'
     elif resp['MessageType'] == 'UserAuthenticate':
@@ -472,7 +448,7 @@ def send_dev_info(dev_id):
 
     db_session.commit()
 
-    send_mdm(device.id)
+    push_to_device(device)
 
     return 'OK'
 

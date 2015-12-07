@@ -14,7 +14,7 @@ from .models import App
 from .profiles.restrictions import RestrictionsPayload
 from .profiles import Profile
 from .mdmcmds import InstallProfile, RemoveProfile, AppInstall
-from mdm import send_mdm
+from .push import push_to_device
 import uuid
 import os
 from .utils.app_manifest import pkg_signed, get_pkg_bundle_ids, get_chunked_md5, MD5_CHUNK_SIZE
@@ -384,7 +384,7 @@ def admin_device_groupmod(device_id):
 
     if group_removals or group_additions:
         db_session.commit()
-        send_mdm(device.id)
+        push_to_device(device)
 
     return redirect('/admin/device/%d' % int(device.id), Response=FixedLocationResponse)
 
@@ -400,7 +400,7 @@ def admin_device_appinst(device_id):
     new_appinst = AppInstall.new_queued_command(device, {'app_id': app_id})
     db_session.add(new_appinst)
     db_session.commit()
-    send_mdm(device.id)
+    push_to_device(device)
 
     return redirect('/admin/device/%d' % device_id, Response=FixedLocationResponse)
 

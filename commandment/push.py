@@ -3,126 +3,78 @@ Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
-from OpenSSL import SSL
-from OpenSSL.crypto import load_certificate, load_privatekey, FILETYPE_PEM
-import sys, os, select, socket
+from apns import APNs, Payload, Frame
+import os
+import tempfile
+import atexit
+from .database import db_session, NoResultFound
+from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
+from .pki.ca import get_ca, PushCertificate
+from .pki.m2certs import Certificate, RSAPrivateKey
+import random
 
-import json
-import struct
+apns_cxns = {}
 
-class NotificationPayload(object):
-    def __init__(self, aps_dict):
-        self.payload = {'aps': aps_dict}
+def push_init():
+    q = db_session.query(DBCertificate, DBPrivateKey).join(DBCertificate, DBPrivateKey.certificates).filter(DBCertificate.cert_type == 'mdm.pushcert')
 
-    def as_json(self):
-        return json.dumps(self.payload, separators=(',', ':')) # most compact JSON
+    for db_cert, db_pk in q:
+        cert = PushCertificate.load(str(db_cert.pem_certificate))
+        cert_topic = cert.get_topic()
 
-class MDMNotificationPayload(NotificationPayload):
+        if cert_topic in apns_cxns:
+            continue
+
+        cert_handle, cert_file = tempfile.mkstemp()
+        pkey_handle, pkey_file = tempfile.mkstemp()
+        atexit.register(os.remove, pkey_file)
+        atexit.register(os.remove, cert_file)
+        os.write(cert_handle, db_cert.pem_certificate)
+        os.write(pkey_handle, db_pk.pem_key)
+        os.close(cert_handle)
+        os.close(pkey_handle)
+
+        apns = APNs(cert_file=cert_file, key_file=pkey_file, enhanced=True)
+        apns_cxns[cert_topic] = apns
+
+class MDMPayload(Payload):
+    """A class representing an MDM APNs message payload"""
     def __init__(self, push_magic):
-        self.payload = {'mdm': push_magic}
+        self.mdm = push_magic
 
-class Notification(object):
-    def __init__(self):
-        self.frame_items = []
+    def dict(self):
+        return {'mdm': self.mdm}
 
-    def append_frame_item(self, item):
-        for i in self.frame_items:
-            if i.item_id == item.item_id:
-                raise Exception('already have frame item of type %d' % item.item_id)
+def push_to_device(device_or_devices):
+    # get an iterable list of devices even if one wasn't specified
+    try:
+        iter(device_or_devices)
+    except TypeError:
+        devices = (device_or_devices, )
+    else:
+        devices = device_or_devices
 
-        self.frame_items.append(item)
+    # keyed access to topics for which we'll have an APNs connection for each
+    topic_frames = {}
 
-    def as_binary(self):
-        frame_items = ''
-        for i in self.frame_items:
-            frame_items += i.as_binary()
+    for device in devices:
 
-        return struct.pack('!BI', 2, len(frame_items)) + frame_items
+        if device.topic in apns_cxns:
+            if device.topic not in topic_frames:
+                # create our keyed topic reference if it doesn't exist
+                topic_frames[device.topic] = Frame()
 
-class FrameItem(object):
-    def __init__(self, value):
-        self.value = value
+            # decode from as-stored base64 into hex encoding for apns library
+            token_hex = device.token.decode('base64').encode('hex')
 
-    def as_binary(self):
-        pack_fmt = '!BH' + self.item_struct
-        return struct.pack(pack_fmt, self.item_id, self.item_length, self.value)
+            mdm_payload = MDMPayload(device.push_magic)
 
-class VariableLengthFrameItem(FrameItem):
-    def as_binary(self):
-        pack_fmt = '!BH%ss' % len(self.value)
-        return struct.pack(pack_fmt, self.item_id, len(self.value), self.value)
+            # add a frame for this topic
+            topic_frames[device.topic].add_item(token_hex, mdm_payload, random.getrandbits(32), 0, 10)
+        else:
+            # TODO: configure and use real logging
+            print 'Cannot send APNs to device: no APNs connection found (by device topic)'
 
-class DeviceTokenFrame(FrameItem):
-    item_id = 1
-    item_length = 32
-    item_struct = '32s'
-
-class PayloadFrame(VariableLengthFrameItem):
-    item_id = 2
-
-    def __init__(self, notif_payload):
-        self.notif_payload = notif_payload
-
-    def as_binary(self):
-        # generate value string on every call
-        self.value = self.notif_payload.as_json()
-        return super(PayloadFrame, self).as_binary()
-
-class StrNotificationIdentifierFrame(FrameItem):
-    item_id = 3
-    item_length = 4
-    item_struct = '4s'
-
-class IntNotificationIdentifierFrame(StrNotificationIdentifierFrame):
-    item_struct = 'I'
-
-class ExpirationDateFrame(FrameItem):
-    item_id = 4
-    item_length = 4
-    item_struct = 'I'
-
-class PriorityFrame(FrameItem):
-    item_id = 5
-    item_length = 1
-    item_struct = 'B'
-
-def send_mdm_apns_notifications(apns_pkey, apns_cert, device_push_details):
-    '''Deliver MDM APNS notifications to Apple APNS gateway
-
-    Supports mutliple devices for efficient bulk notification. The parameter
-    `device_push_details` should be a list of tuples that contain the
-    (binary) Push Token and textual MDM Push Magic for each device desiring
-    an MDM push notification.'''
-
-    ssl_ctx = SSL.Context(SSL.SSLv23_METHOD)
-
-    # re-wrap certificate & key into OpenSSL context from M2Crypto-abstractions
-    cert = load_certificate(FILETYPE_PEM, apns_cert.get_pem().strip())
-    ssl_ctx.use_certificate(cert)
-
-    pkey = load_privatekey(FILETYPE_PEM, apns_pkey.get_pem().strip())
-    ssl_ctx.use_privatekey(pkey)
-
-    # development: gateway.sandbox.push.apple.com port 2195
-    # production: gateway.push.apple.com port 2195
-
-    sock = SSL.Connection(ssl_ctx, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
-    sock.connect(('gateway.push.apple.com', 2195))
-
-    for token, push_magic in device_push_details:
-        notif = Notification()
-
-        notif.append_frame_item(DeviceTokenFrame(token))
-        notif.append_frame_item(PayloadFrame(MDMNotificationPayload(push_magic)))
-        # notif.append_frame_item(StrNotificationIdentifierFrame('abcd'))
-        notif.append_frame_item(ExpirationDateFrame(0)) # expires immediately
-        # notif.append_frame_item(PriorityFrame(5)) # 10 = higher priority, but strictly defined for specific uses
-
-        sock.send(notif.as_binary())
-
-        # TODO: read status from socket?
-        # TODO: perhaps read status from the feedback APNS service?
-
-    sock.shutdown()
-    sock.close()
-
+    # loop through our by-topic APNs Frames and send away
+    for topic in topic_frames.keys():
+        apns_cxns[topic].gateway_server.send_notification_multiple(topic_frames[topic])
