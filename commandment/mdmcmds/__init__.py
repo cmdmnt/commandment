@@ -128,10 +128,13 @@ class UpdateInventoryDevInfoCommand(QueuedMDMCommand):
 
     def process_response_dict(self, result):
         self.device.info_json = result['QueryResponses']
+        self.device.serial_number = result['QueryResponses'].get('SerialNumber')
         if 'Locales' in result:
             # Locales key seems quite verbose on OS X, just strip it for now
             del result['Locales']
         db_session.commit()
+
+        # TODO: search for existing serial number and possibly merge records?
 
 '''
 List of MDM Request Types (commands):

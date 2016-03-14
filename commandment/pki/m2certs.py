@@ -144,6 +144,9 @@ class Certificate(object):
     def get_pem(self):
         return self.cert.as_pem()
 
+    def get_der(self):
+        return self.cert.as_der()
+
     def make_valid(self, days_valid=365):
         t = long(time.time())
         now = ASN1.ASN1_UTCTIME()

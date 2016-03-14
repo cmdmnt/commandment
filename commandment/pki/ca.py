@@ -85,7 +85,7 @@ class CA(object):
 
         db_session.commit()
 
-        return Identity(dev_key, dev_crt)
+        return (Identity(dev_key, dev_crt), db_dev_crt)
 
 class PushCertificate(Certificate):
     def get_topic(self):
