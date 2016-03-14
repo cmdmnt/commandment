@@ -7,7 +7,7 @@ from flask import Blueprint, render_template, make_response, request, abort
 from flask import current_app, send_file, g
 from .pki.ca import get_ca, PushCertificate
 from .pki.m2certs import Certificate, RSAPrivateKey
-from .database import db_session, NoResultFound
+from .database import db_session, NoResultFound, or_
 from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
 from .models import App
 from .profiles import Profile
@@ -20,6 +20,7 @@ import plistlib
 from .push import push_to_device
 import os
 from functools import wraps
+import base64
 
 PROFILE_CONTENT_TYPE = 'application/x-apple-aspen-config'
 
@@ -28,6 +29,11 @@ mdm_app = Blueprint('mdm_app', __name__)
 @mdm_app.route('/')
 def index():
     return render_template('enroll.html')
+
+@mdm_app.route('/ca.crt')
+def cacrt():
+    mdm_ca = get_ca()
+    return mdm_ca.get_cacert().get_pem()
 
 @mdm_app.route('/webcerts')
 def webcerts():
@@ -45,8 +51,70 @@ def webcerts():
     resp.headers['Content-Type'] = PROFILE_CONTENT_TYPE
     return resp
 
-@mdm_app.route('/enroll')
+def base64_to_pem(crypto_type, b64_text, width=76):
+    lines = ''
+    for pos in xrange(0, len(b64_text), width):
+        lines += b64_text[pos:pos + width] + '\n'
+
+    return '-----BEGIN %s-----\n%s-----END %s-----' % (crypto_type, lines, crypto_type)
+
+@mdm_app.route('/enroll', methods=['GET', 'POST'])
 def enroll():
+    if request.method == 'POST' and \
+            request.headers.get('Content-type', '').lower() == \
+                'application/pkcs7-signature':
+        # DEP request
+
+        # base64 encode the DER data, and wrap in a PEM-ish format for SMIME.load_pkcs7_bio()
+        req_data = base64_to_pem('PKCS7', base64.b64encode(request.data))
+
+        p7_bio = BIO.MemoryBuffer(str(req_data))
+        p7 = SMIME.load_pkcs7_bio(p7_bio)
+
+        p7_signers = p7.get0_signers(X509.X509_Stack())
+
+        signer = SMIME.SMIME()
+        signer.set_x509_store(X509.X509_Store())
+        signer.set_x509_stack(p7_signers)
+
+        # TODO/XXX: not verifying ANY certificates!
+        #
+        # spec says we should verify against the "Apple Root CA" and that this
+        # CMS message contains all intermediates to do that verification.
+        # M2Crypto has no way to get at all the intermediate certificates to
+        # do this manually we'd need to extract all of the certificates and
+        # verify the chain aginst it. Note as of 2016-03-14 on a brand new
+        # iPad Apple was including an expired certificate in this chain. Note
+        # also that at least one of the intermediate certificates had a
+        # certificate purpose apparently not appropraite for CMS/SMIME
+        # verification. For now just verify with no CA and skip any
+        # verification.
+        plist_text = signer.verify(p7, None, flags=SMIME.PKCS7_NOVERIFY)
+
+        plist = plistlib.readPlistFromString(plist_text)
+
+        try:
+            device = db_session.query(Device).filter(or_(Device.serial_number == plist['SERIAL'], Device.udid == plist['UDID'])).one()
+            # assign in case absent (UDID present only - not likely due to spec)
+            device.serial_number = plist['SERIAL']
+            # assign in case different (e.g. changing serial UDIDs i.e. VM testing)
+            device.udid = plist['UDID']
+        except NoResultFound:
+            # should never get here, we could take benefit of the doubt and
+            # allow the enrollment anyway, though..?
+            current_app.logger.warn('DEP enrollment attempt but no serial number nor UDID found!')
+
+            device = Device()
+            device.serial_number = plist['SERIAL']
+            device.udid = plist['UDID']
+            # TODO: do we care about PRODUCT, VERSION, or LANGUAGE here?
+
+            db_session.add(device)
+            db_session.commit()
+        # TODO: except too many results (e.g. perhaps both a UDID and a SERIAL found?)
+    else:
+        device = None
+
     mdm_ca = get_ca()
 
     config = db_session.query(MDMConfig).first()
@@ -84,7 +152,12 @@ def enroll():
     # Apple recommends the latter method but not everyone will have a SCEP
     # infrastructure and due to complexities we're using this methodology at
     # the moment
-    new_dev_ident = mdm_ca.gen_new_device_identity()
+    new_dev_ident, db_dev_cert = mdm_ca.gen_new_device_identity()
+
+    if device:
+        # pre-assign for DEP enrollment
+        # TODO: delete previously assigned certificate before assignment?
+        device.certificate = db_dev_cert
 
     # random password for PKCS12 payload
     p12pw = urandom(20).encode('hex')
@@ -118,13 +191,6 @@ def enroll():
     resp = make_response(profile.generate_plist())
     resp.headers['Content-Type'] = PROFILE_CONTENT_TYPE
     return resp
-
-def base64_to_pem(crypto_type, b64_text, width=76):
-    lines = ''
-    for pos in xrange(0, len(b64_text), width):
-        lines += b64_text[pos:pos + width] + '\n'
-
-    return '-----BEGIN %s-----\n%s-----END %s-----' % (crypto_type, lines, crypto_type)
 
 def verify_mdm_signature(mdm_sig, req_data):
     '''Verify the client's supplied MDM signature and return the client certificate included in the signature.'''
@@ -242,7 +308,7 @@ def checkin():
         # TODO: check to make sure device == UDID == cert, etc.
         try:
             device = db_session.query(Device).filter(Device.udid == resp['UDID']).one()
-            if g.device_cert != device.certificate:
+            if device.certificate and g.device_cert != device.certificate:
                 raise Exception('device provided identity cert does not match issued cert! (possibly a re-enrollment?)')
         except NoResultFound:
             # no device found, let's make a new one!

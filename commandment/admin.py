@@ -3,14 +3,14 @@ Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
-from flask import Blueprint, render_template, Response, request, redirect, current_app, abort
+from flask import Blueprint, render_template, Response, request, redirect, current_app, abort, make_response
 from .pki.ca import get_ca, PushCertificate
 from .pki.m2certs import X509Error, Certificate, RSAPrivateKey, CertificateRequest
 from .database import db_session, and_, or_
 from .pki.m2certs import Certificate
 from .models import CERT_TYPES, profile_group_assoc, device_group_assoc, Device
 from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig
-from .models import App
+from .models import App, DEPConfig, DEPProfile
 from .profiles.restrictions import RestrictionsPayload
 from .profiles import Profile
 from .mdmcmds import InstallProfile, RemoveProfile, AppInstall
@@ -20,6 +20,11 @@ import os
 from .utils.app_manifest import pkg_signed, get_pkg_bundle_ids, get_chunked_md5, MD5_CHUNK_SIZE
 import tempfile
 from shutil import copyfile
+from email.parser import Parser
+from M2Crypto import SMIME, BIO
+import json
+from .utils.dep import DEP
+from .utils.dep_utils import initial_fetch, mdm_profile, assign_devices
 
 class FixedLocationResponse(Response):
     # override Werkzeug default behaviour of "fixing up" once-non-compliant
@@ -569,3 +574,169 @@ def admin_config():
             i.subject_text = cert.get_subject_as_text()
         print type(config.description)
         return render_template('admin/config/edit.html', config=config, ca_certs=ca_certs)
+
+@admin_app.route('/dep/')
+@admin_app.route('/dep/index')
+def dep_index():
+    dep_configs = db_session.query(DEPConfig)
+    dep_profiles = db_session.query(DEPProfile)
+    return render_template('admin/dep/index.html', dep_configs=dep_configs, dep_profiles=dep_profiles)
+
+@admin_app.route('/dep/add')
+def dep_add():
+
+    new_dep = DEPConfig()
+
+    ca_cert = DBCertificate.find_one_by_cert_type('mdm.cacert')
+
+    new_dep.certificate = ca_cert
+
+    db_session.add(new_dep)
+    db_session.commit()
+
+    return redirect('/admin/dep/index', Response=FixedLocationResponse)
+
+@admin_app.route('/dep/manage/<int:dep_id>')
+def dep_manage(dep_id):
+    dep = db_session.query(DEPConfig).filter(DEPConfig.id == dep_id).one()
+    return render_template('admin/dep/manage.html', dep_config=dep)
+
+@admin_app.route('/dep/cert/<int:dep_id>/DEP_MDM.crt')
+def dep_cert(dep_id):
+    dep = db_session.query(DEPConfig).filter(DEPConfig.id == dep_id).one()
+    # TODO: better to use a join rather than two queries
+    response = make_response(dep.certificate.pem_certificate)
+    # TODO: technically we really ought to use a proper MIME type but since
+    # some browsers do fancy stuff when downloading properly typed certs for
+    # now just use an octet-stream
+    response.headers['Content-Type'] = 'application/octet-stream'
+    response.headers['Content-Disposition'] = 'attachment; filename=DEP_MDM.crt'
+    return response
+
+@admin_app.route('/dep/tokenupload/<int:dep_id>', methods=['POST'])
+def dep_tokenupload(dep_id):
+    # get DEP config
+    dep = db_session.query(DEPConfig).filter(DEPConfig.id == dep_id).one()
+
+    filedata = request.files['server_token_file'].stream.read()
+
+    try:
+        smime = filedata
+
+        # load the encrypted file
+        p7, data = SMIME.smime_load_pkcs7_bio(BIO.MemoryBuffer(str(smime)))
+
+        # query DB to get cert & key from DB
+        q = db_session.query(DBCertificate, DBPrivateKey).join(DBCertificate, DBPrivateKey.certificates).filter(DBCertificate.id == dep.certificate.id)
+        cert, pk = q.one()
+
+        # construct SMIME object using cert & key
+        decryptor = SMIME.SMIME()
+        decryptor.load_key_bio(BIO.MemoryBuffer(str(pk.pem_key)), BIO.MemoryBuffer(str(cert.pem_certificate)))
+
+        # decrypt!
+        out = decryptor.decrypt(p7)
+
+        eml = Parser().parsestr(out).get_payload()
+
+        if eml.startswith('-----BEGIN MESSAGE-----\n') and eml.endswith('\n-----END MESSAGE-----\n'):
+            myjson = eml[24:-23]
+    except SMIME.SMIME_Error:
+        # submitted file was not an SMIME encrypted file
+        # try to just load the file in the hopes the json parser can read it
+        myjson = filedata
+
+    try:
+        json_loaded = json.loads(myjson)
+
+        dep.server_token = json_loaded
+        db_session.commit()
+    except ValueError:
+        abort(400, 'Invalid server token supplied')
+
+    return redirect('/admin/dep/index', Response=FixedLocationResponse)
+
+@admin_app.route('/dep/profile/add', methods=['GET', 'POST'])
+def dep_profile_add():
+    if request.method == 'POST':
+        form_bools = ('allow_pairing', 'is_supervised', 'is_multi_user', 'is_mandatory', 'is_mdm_removable')
+        form_strs = ('profile_name', 'support_phone_number', 'support_email_address', 'department', 'org_magic')
+
+        profile = {}
+
+        # go through submitted bools and convert to actual bools in the dict
+        for form_bool in form_bools:
+            if request.form.has_key(form_bool):
+                profile[form_bool] = request.form.get(form_bool, type=bool)
+
+        # go through submitted strs and convert to actual bools in the dict
+        for form_str in form_strs:
+            if request.form.has_key(form_str) and request.form.get(form_str):
+                profile[form_str] = request.form.get(form_str)
+
+        if not 'profile_name' in profile:
+            raise Exception('DEP profile must have profile_name')
+
+        # gather our skip_setup_items from the form
+        if request.form.has_key('skip_setup_items'):
+            profile['skip_setup_items'] = request.form.getlist('skip_setup_items')
+
+        # TODO: await_device_configured
+
+        dep = db_session.query(DEPConfig).filter(DEPConfig.id == request.form.get('dep_config_id', type=int)).one()
+        mdm = db_session.query(MDMConfig).filter(MDMConfig.id == request.form.get('mdm_config_id', type=int)).one()
+
+        profile['url'] = mdm.base_url() + '/enroll'
+
+        # find and include all mdm.webcrt's
+        anchor_certs = []
+        q = db_session.query(DBCertificate).filter(DBCertificate.cert_type == 'mdm.webcrt')
+        for dbcert in q:
+            cert = Certificate.load(str(dbcert.pem_certificate))
+            anchor_certs.append(cert.get_der().encode('base64'))
+
+        if anchor_certs:
+            profile['anchor_certs'] = anchor_certs
+
+        new_dep_profile = DEPProfile()
+
+        new_dep_profile.mdm_config = mdm
+        new_dep_profile.dep_config = dep
+
+        new_dep_profile.profile_data = profile
+
+        # TODO: supervising_host_certs
+        # TODO: initial list of devices?
+
+        db_session.add(new_dep_profile)
+        db_session.commit()
+
+        return redirect('/admin/dep/index', Response=FixedLocationResponse)
+
+    else:
+        mdms = db_session.query(MDMConfig)
+        deps = db_session.query(DEPConfig)
+        return render_template('admin/dep/add_profile.html', dep_configs=deps, mdm_configs=mdms, initial_magic=uuid.uuid4())
+
+@admin_app.route('/dep/profile/manage/<int:profile_id>', methods=['GET', 'POST'])
+def dep_profile_manage(profile_id):
+    dep_profile = db_session.query(DEPProfile).filter(DEPProfile.id == profile_id).one()
+    if request.method != 'POST':
+        return render_template('admin/dep/manage_profile.html', dep_profile=dep_profile)
+    else:
+        submitted_dev_ids = [int(i) for i in request.form.getlist('devices')]
+        if len(submitted_dev_ids):
+            devices = db_session.query(Device).filter(and_(Device.dep_config == dep_profile.dep_config, or_(*[Device.id == i for i in submitted_dev_ids])))
+            assign_devices(dep_profile, devices)
+        return 'tbd'
+
+@admin_app.route('/dep/test1/<int:dep_id>')
+def dep_test1(dep_id):
+    # get DEP config
+    mdm = db_session.query(MDMConfig).one()
+    dep = db_session.query(DEPConfig).filter(DEPConfig.id == dep_id).one()
+
+    initial_fetch(dep)
+
+    return 'initial_fetch complete'
+    # return '<pre>%s</pre>' % str(mdm_profile(mdm))

@@ -1,0 +1,196 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+
+<h1>Admin - Add DEP profile</h1>
+
+<form id="token_form" action="/admin/dep/profile/add" method="POST">
+
+<table border="1">
+
+<tr>
+
+	<td  style="width:20em;">
+		<label for="dep_config">DEP Configuration</label>
+	</td>
+	<td>
+		<select id="dep_config" name="dep_config_id">
+		{% for dep_config in dep_configs %}
+			<option value="{{ dep_config.id }}">{{ dep_config.id }}</option>
+		{% endfor %}
+		</select>
+	</td>
+
+</tr>
+<tr>
+
+	<td>
+		<label for="mdm_config">MDM Configuration</label>
+	</td>
+	<td>
+		<select id="mdm_config" name="mdm_config_id">
+		{% for mdm_config in mdm_configs %}
+		<option value="{{ mdm_config.id }}">{{ mdm_config.mdm_name }}</option>
+		{% endfor %}
+		</select>
+	</td>
+
+</tr>
+<tr>
+
+	<td>
+		<label for="profile_name">Name</label>
+	</td>
+	<td>
+		<input id="profile_name" name="profile_name" type="text" size="60">
+	</td>
+
+</tr>
+<tr>
+
+	<td>
+		<label for="allow_pairing">Allow pairing</label>
+	</td>
+	<td>
+		<input type="checkbox" id="allow_pairing" name="allow_pairing" value="1">
+	</td>
+
+</tr>
+<tr>
+
+	<td>
+		<label for="is_supervised">Is Supervised</label>. If checked, the device must be supervised.
+	</td>
+	<td>
+		<input type="checkbox" id="is_supervised" name="is_supervised" value="1">
+	</td>
+
+</tr>
+<tr>
+
+	<td>
+		<label for="is_multi_user">Is Multi-User</label>. If checked, tells
+		the device to configure for Shared iPad. Devices that do not meet the
+		Shared iPad minimum requirements will not honor this setting.
+	</td>
+	<td>
+		<input type="checkbox" id="is_multi_user" name="is_multi_user" value="1">
+	</td>
+
+</tr>
+<tr>
+
+	<td>
+		<label for="is_mandatory">Is Mandatory</label>. If checked, the user
+		may not skip applying the profile returned by the MDM server.
+	</td>
+	<td>
+		<input type="checkbox" id="is_mandatory" name="is_mandatory" value="1">
+	</td>
+
+</tr>
+<tr>
+
+	<td>
+		<label for="is_mdm_removable">Is MDM Removable</label>.
+
+		If not checked, the MDM payload delivered by the configuration URL cannot be
+		removed by the user using the UI on the device—that is, the MDM
+		payload is locked onto the device. Can be unchecked only
+		if "Is Supervised" is checked.
+	</td>
+	<td>
+		<input type="checkbox" checked id="is_mdm_removable" name="is_mdm_removable" value="1">
+	</td>
+
+</tr>
+<tr>
+
+	<td>
+		<label for="support_phone_number">Support Phone Number for the organization</label>
+	</td>
+	<td>
+		<input id="support_phone_number" name="support_phone_number" type="text" size="40">
+	</td>
+
+</tr>
+<tr>
+
+	<td>
+		<label for="support_email_address">Support Email Address for the organization</label>
+	</td>
+	<td>
+		<input id="support_email_address" name="support_email_address" type="text" size="40">
+	</td>
+
+</tr>
+<tr>
+
+	<td>
+		<label for="department">Department</label>
+	</td>
+	<td>
+		<input id="department" name="department" type="text" size="40">
+	</td>
+
+</tr>
+<tr>
+
+	<td>
+		<label for="org_magic">Organization "Magic".</label> We've
+		initially picked a random UUID for this DEP Profile but you can make
+		it any string that is relavant to your organiation, or leave it the
+		default.
+	</td>
+	<td>
+		<input id="org_magic" name="org_magic" type="text" value="{{ initial_magic }}" size="60">
+	</td>
+
+</tr>
+<tr>
+
+	<td>Setup items to skip</td>
+	<td>
+		<input type="checkbox" name="skip_setup_items" value="Passcode">
+			Passcode&mdash;Hides and disables the passcode pane<br>
+		<input type="checkbox" name="skip_setup_items" value="Registration">
+			Registration&mdash;Disables registration screen in OS X<br>
+		<input type="checkbox" name="skip_setup_items" value="Location">
+			Location&mdash;Disables Location Services<br>
+		<input type="checkbox" name="skip_setup_items" value="Restore">
+			Restore&mdash;Disables restoring from backup<br>
+		<input type="checkbox" name="skip_setup_items" value="AppleID">
+			AppleID&mdash;Disables signing in to Apple ID and iCloud<br>
+		<input type="checkbox" name="skip_setup_items" value="TOS">
+			TOS&mdash;Skips Terms and Conditions<br>
+		<input type="checkbox" name="skip_setup_items" value="Biometric">
+			Biometric&mdash;Skips Touch ID setup<br>
+		<input type="checkbox" name="skip_setup_items" value="Payment">
+			Payment&mdash;Skips Apple Pay setup<br>
+		<input type="checkbox" name="skip_setup_items" value="Zoom">
+			Zoom&mdash;Skips zoom setup<br>
+		<input type="checkbox" name="skip_setup_items" value="Android">
+			Android&mdash;If the Restore pane is not skipped, removes Move from Android option from it<br>
+		<input type="checkbox" name="skip_setup_items" value="Siri">
+			Siri&mdash;Disables Siri<br>
+		<input type="checkbox" name="skip_setup_items" value="Diagnostics">
+			Diagnostics&mdash;Disables automatically sending diagnostic information<br>
+		<input type="checkbox" name="skip_setup_items" value="Payment">
+			Payment&mdash;Skips Apple Pay setup<br>
+		<input type="checkbox" name="skip_setup_items" value="Passcode">
+			Passcode&mdash;Hides and disables the passcode pane<br>
+		<input type="checkbox" name="skip_setup_items" value="FileVault">
+			FileVault&mdash;Disables FileVault Setup Assistant screen (OS X only)<br>
+	</td>
+
+</tr>
+<tr>
+
+<td colspan="2" style="text-align:right;padding:1em;"><input type="submit" name="submit" value="Add Profile"></td>
+
+</tr>
+
+</table>
+
+</form>
+
+{% endblock %}

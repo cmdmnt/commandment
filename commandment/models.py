@@ -3,7 +3,8 @@ Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text
+import datetime
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from .database import JSONEncodedDict, Base
 from profiles.mdm import MDM_AR__ALL
@@ -66,12 +67,16 @@ class Device(Base):
 
     id = Column(Integer, primary_key=True)
 
-    udid = Column(String, unique=True, index=True, nullable=False)
+    udid = Column(String, index=True, nullable=True)
     push_magic = Column(String, nullable=True)
     token = Column(String, nullable=True) # stored as b64-encoded raw data
     unlock_token = Column(String(), nullable=True)
     topic = Column(String, nullable=True)
 
+    serial_number = Column(String(64), index=True, nullable=True)
+    dep_json = Column(JSONEncodedDict, nullable=True)
+    dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
+    dep_config = relationship('DEPConfig', backref='devices')
     info_json = Column(JSONEncodedDict, nullable=True)
 
     certificate_id = Column(ForeignKey('certificate.id'))
@@ -210,3 +215,47 @@ class App(Base):
 
     def path_format(self):
         return '%010d.dat' % self.id
+
+class DEPConfig(Base):
+    __tablename__ = 'dep_config'
+
+    id = Column(Integer, primary_key=True)
+
+    # certificate for PKI of server token
+    certificate_id = Column(ForeignKey('certificate.id'))
+    certificate = relationship('Certificate', backref='dep_configs')
+
+    server_token = Column(JSONEncodedDict, nullable=True)
+    auth_session_token = Column(String, nullable=True)
+
+    initial_fetch_complete = Column(Boolean, nullable=False, default=False)
+    next_check = Column(DateTime(timezone=False), nullable=True)
+    device_cursor = Column(String)
+    device_cursor_recevied = Column(DateTime(timezone=False), nullable=True) # shouldn't use if more than 7 days old
+
+    url_base = Column(String, nullable=True) # testing server environment if used
+
+    def last_check_delta(self):
+        if self.next_check:
+            return str(self.next_check - datetime.datetime.utcnow())
+        else:
+            return ''
+
+class DEPProfile(Base):
+    __tablename__ = 'dep_profile'
+
+    id = Column(Integer, primary_key=True)
+
+    mdm_config_id = Column(ForeignKey('mdm_config.id'), nullable=False)
+    mdm_config = relationship('MDMConfig', backref='dep_profiles')
+
+    dep_config_id = Column(ForeignKey('dep_config.id'), nullable=False)
+    dep_config = relationship('DEPConfig', backref='dep_profiles')
+
+    # DEP-assigned UUID for this DEP profile
+    uuid = Column(String(36), index=True, nullable=True) # should be unique but it's assigned to us so can't be null
+
+    profile_data = Column(JSONEncodedDict, nullable=False)
+
+    def profile_name(self):
+        return self.profile_data['profile_name']

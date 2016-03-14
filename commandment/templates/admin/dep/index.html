@@ -1,0 +1,79 @@
+{% extends "admin/layout.html" %}
+{% block title %}DEP Management{% endblock %}
+{% block content %}
+
+<h1>Admin - DEP configs</h1>
+
+<div>
+	<a href="/admin/dep/add">[ Add DEP Config ]</a>
+</div>
+
+<br>
+
+<table border="1">
+
+<tr>
+	<th>ID</th>
+	<th>Server Token</th>
+	<th>Initial Sync</th>
+	<th>Next Check Due</th>
+	<th></th>
+</tr>
+
+{% for dep_config in dep_configs %}
+
+<tr>
+	<td>{{ dep_config.id }}</td>
+	<td style="color:{% if dep_config.server_token %}#0b0{% else %}red{% endif %};">
+		{% if not dep_config.server_token %}<strong>Not</strong> {% endif %}Present
+	</td>
+	<td style="color:{% if dep_config.initial_fetch_complete %}#0b0{% else %}red{% endif %};">
+		{% if dep_config.initial_fetch_complete %}Complete{% else %}<strong>NO</strong>{% endif %}
+	</td>
+	<td>{{ dep_config.last_check_delta() }}</td>
+	<td style="white-space:nowrap;">
+		<a href="/admin/dep/manage/{{ dep_config.id }}">[ Manage DEP Config ]</a>
+		<a href="/admin/dep/test1/{{ dep_config.id }}">[ DEP Test1 ]</a>
+	</td>
+</tr>
+
+
+{% endfor %}
+
+</table>
+
+<h1>Admin - DEP profiles</h1>
+
+<div>
+	<a href="/admin/dep/profile/add">[ Add DEP Profile ]</a>
+</div>
+
+<br>
+
+<table border="1">
+
+<tr>
+	<th>ID</th>
+	<th>Name</th>
+	<th>In DEP system</th>
+	<th></th>
+</tr>
+
+{% for dep_profile in dep_profiles %}
+
+<tr>
+	<td>{{ dep_profile.id }}</td>
+	<td>{{ dep_profile.profile_name() }}</td>
+	<td style="color:{% if dep_profile.uuid %}#0b0{% else %}red{% endif %};">
+		{% if dep_profile.uuid %}Yes{% else %}<strong>No</strong>{% endif %}
+	</td>
+	<td style="white-space:nowrap;">
+		<a href="/admin/dep/profile/manage/{{ dep_profile.id }}">[ Manage DEP Profile ]</a>
+	</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}

@@ -8,8 +8,11 @@ import datetime
 from .database import db_session
 from .models import Device
 
+from .utils.dep_utils import dep_configs_needing_updates, update_dep_configs
+from .utils.dep_utils import unsubmitted_dep_profiles, submit_dep_profiles
+
 runner_thread = None
-runner_time = 15 * 60 # 15 min. in seconds
+runner_time = 5 # in seconds
 runner_start = 5 # in seconds
 
 # TODO: currently we start this thread after the database context and
@@ -30,6 +33,15 @@ def stop_runner():
 		runner_thread.cancel()
 
 def runner():
-	print 'runner() called', runner_time, datetime.datetime.now()
+	# TODO: catch everything so we don't interrupt the thread (and it never reschedules)
+	dep_configs = dep_configs_needing_updates()
+	if dep_configs:
+		print 'runner() updating DEP configs', runner_time, datetime.datetime.now()
+		update_dep_configs(dep_configs)
+
+	dep_profiles = unsubmitted_dep_profiles()
+	if dep_profiles:
+		print 'runner() submitting DEP profiles', runner_time, datetime.datetime.now()
+		submit_dep_profiles(dep_profiles)
 
 	start_runner()

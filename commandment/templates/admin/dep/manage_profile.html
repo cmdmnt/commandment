@@ -1,0 +1,46 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+
+<h1>Admin - Modify DEP profile</h1>
+
+<form id="token_form" action="/admin/dep/profile/manage/{{ dep_profile.id }}" method="POST">
+
+<table border="1">
+
+<tr>
+	<td>DEP ID</td>
+	<td>{{ dep_profile.dep_config_id }}</td>
+</tr>
+<tr>
+	<td>Profile ID</td>
+	<td>{{ dep_profile.id }}</td>
+</tr>
+
+<tr>
+	<th><label for="devices">Device assignment</label></th>
+	<td>
+
+		<select id="devices" name="devices" multiple>
+		{% for device in dep_profile.dep_config.devices %}
+			<option
+				value="{{ device.id }}"
+				{% if device.dep_json.get('profile_uuid', '').lower() == dep_profile.uuid.lower(): %}
+				selected
+				{% endif %}
+				>{{ device.serial_number }}</option>
+		{% endfor %}
+		</select>
+
+		
+	</td>
+</tr>
+
+<td colspan="2" style="text-align:right;padding:1em;"><input type="submit" name="submit" value="Assign Devices"></td>
+
+</tr>
+
+</table>
+
+</form>
+
+{% endblock %}
