@@ -212,7 +212,8 @@ class AppInstall(QueuedMDMCommand):
 
         cmd_dict = {}
         cmd_dict['ManifestURL'] = '%s/app/%d/manifest' % (base_url, self.input_data['app_id'])
-        cmd_dict['NotManaged'] = True
+        cmd_dict['Options'] = {'NotManaged': True}
+        cmd_dict['ManagementFlags'] = 0
 
         return cmd_dict
 
