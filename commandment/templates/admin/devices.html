@@ -22,7 +22,7 @@
 	<td>{{ device.info_json['ModelName'] }}</td>
 	<td>{{ device.info_json['ProductName'] }}</td>
 	<td style="font-family:monospace;">{{ device.info_json['SerialNumber'] }}</td>
-	<td>{{ ((device.info_json.get('AvailableDeviceCapacity',0) / device.info_json.get('DeviceCapacity',1)) * 100)|int }}%</td>
+	<td>{{ (100 - ((device.info_json.get('AvailableDeviceCapacity',0) / device.info_json.get('DeviceCapacity',1)) * 100)) |int}}%</td>
 	<td>{{ device.info_json['OSVersion']}}
 	<td style="white-space:nowrap;">
 		<a href="/admin/device/{{ device.id }}">[ View Device ]</a>
