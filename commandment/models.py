@@ -6,6 +6,8 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.mutable import MutableDict
+from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base
 from profiles.mdm import MDM_AR__ALL
 
@@ -74,10 +76,10 @@ class Device(Base):
     topic = Column(String, nullable=True)
 
     serial_number = Column(String(64), index=True, nullable=True)
-    dep_json = Column(JSONEncodedDict, nullable=True)
+    dep_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
     dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
     dep_config = relationship('DEPConfig', backref='devices')
-    info_json = Column(JSONEncodedDict, nullable=True)
+    info_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
 
     certificate_id = Column(ForeignKey('certificate.id'))
     certificate = relationship('Certificate', backref='devices')
@@ -93,7 +95,7 @@ class QueuedCommand(Base):
 
     command_class = Column(String, nullable=False) # string representation of our local command handler
     uuid = Column(String(36), index=True, unique=True, nullable=False)
-    input_data = Column(JSONEncodedDict, nullable=True) # JSON add'l data as input to command builder
+    input_data = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True) # JSON add'l data as input to command builder
     queued_status = Column(String(1), index=True, nullable=False, default='Q') # 'Q' = Queued, 'S' = Sent
     result = Column(String, nullable=True) # Status key of MDM command result submission
 
@@ -170,7 +172,7 @@ class MDMConfig(Base):
     id = Column(Integer, primary_key=True)
 
     prefix = Column(String, nullable=False, unique=True)
-    addl_config = Column(JSONEncodedDict, nullable=True)
+    addl_config = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
     topic = Column(String, nullable=False) # APNs Push Topic
     access_rights = Column(Integer, default=MDM_AR__ALL, nullable=False)
 
@@ -210,8 +212,8 @@ class App(Base):
     md5_chunk_size = Column(Integer, nullable=False)
     md5_chunk_hashes = Column(Text, nullable=True) # colon (:) separated list of MD5 chunk hashes
 
-    bundle_ids_json = Column(JSONEncodedDict, nullable=True)
-    pkg_ids_json = Column(JSONEncodedDict, nullable=True)
+    bundle_ids_json = Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
+    pkg_ids_json = Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
 
     def path_format(self):
         return '%010d.dat' % self.id
@@ -225,7 +227,7 @@ class DEPConfig(Base):
     certificate_id = Column(ForeignKey('certificate.id'))
     certificate = relationship('Certificate', backref='dep_configs')
 
-    server_token = Column(JSONEncodedDict, nullable=True)
+    server_token = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
     auth_session_token = Column(String, nullable=True)
 
     initial_fetch_complete = Column(Boolean, nullable=False, default=False)
@@ -255,7 +257,7 @@ class DEPProfile(Base):
     # DEP-assigned UUID for this DEP profile
     uuid = Column(String(36), index=True, nullable=True) # should be unique but it's assigned to us so can't be null
 
-    profile_data = Column(JSONEncodedDict, nullable=False)
+    profile_data = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=False)
 
     def profile_name(self):
         return self.profile_data['profile_name']
