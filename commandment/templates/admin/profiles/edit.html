@@ -40,6 +40,29 @@
 
 </form>
 
+<h2>Upload</h2>
+
+<form id="upload" action="../upload/{{ id }}" method="POST" enctype="multipart/form-data">
+
+<table border=1>
+
+<tr>
+	<th style="width:10em"><label for="profile"></label>Profile (.mobileconfig)</th>
+	<td>
+		<input type="file" form="upload" name="profile">
+	</td>
+</tr>
+
+<tr>
+	<td colspan="2" style="text-align:right;">
+		<button type="submit" form="upload" value="Submit">Upload Profile</button>
+	</td>
+</tr>
+
+</table>
+
+</form>
+
 <h2>Group Applicability</h2>
 
 <form id="groupmod" action="../groupmod/{{ id }}" method="POST">

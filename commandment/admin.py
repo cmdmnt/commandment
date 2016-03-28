@@ -274,7 +274,7 @@ def admin_profiles_edit1(profile_id):
         # TODO: assuming first payload is ours. bad, bad.
         mypld = myprofile.payloads[0]
 
-        return render_template('admin/profiles/edit.html', identifier=myprofile.get_identifier(), uuid=myprofile.get_uuid(), allowiTunes=mypld.payload['allowiTunes'], id=db_prof.id, groups=group_q)
+        return render_template('admin/profiles/edit.html', identifier=myprofile.get_identifier(), uuid=myprofile.get_uuid(), allowiTunes=mypld.payload.get('allowiTunes'), id=db_prof.id, groups=group_q)
 
 @admin_app.route('/profiles/groupmod/<int:profile_id>', methods=['POST'])
 def admin_profiles_groupmod1(profile_id):
@@ -301,6 +301,21 @@ def admin_profiles_groupmod1(profile_id):
 @admin_app.route('/profiles/remove/<int:profile_id>')
 def admin_profiles_remove1(profile_id):
     q = db_session.query(DBProfile).filter(DBProfile.id == profile_id).delete(synchronize_session=False)
+    db_session.commit()
+    return redirect('/admin/profiles', Response=FixedLocationResponse)
+
+@admin_app.route('/profiles/upload/<int:profile_id>', methods=['POST'])
+def admin_profiles_upload(profile_id):
+    profile = db_session.query(DBProfile).filter(DBProfile.id == profile_id).one()
+
+    upl_profile = request.files['profile'].stream.read()
+
+    parsed_profile = Profile.from_plist(upl_profile)
+
+    profile.uuid = parsed_profile.payload['PayloadUUID']
+    profile.identifier = parsed_profile.payload['PayloadIdentifier']
+    profile.profile_data = upl_profile
+
     db_session.commit()
     return redirect('/admin/profiles', Response=FixedLocationResponse)
 
