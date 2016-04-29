@@ -7,6 +7,13 @@ from oauthlib.oauth1 import Client
 from urllib2 import Request, urlopen, HTTPError
 import json
 
+class DEP400Error(Exception):
+    def __init__(self, body, http_exc, *args):
+        super(Exception, self).__init__(body, http_exc, *args)
+
+        self.body = body
+        self.http_exc = http_exc
+
 class DEP(object):
     def __init__(self,
                  server_token,
@@ -92,9 +99,10 @@ class DEP(object):
         try:
             return self.api_request(api_endpoint, method, input_dict)
         except HTTPError, e:
-            response = e.read().strip("\"\n\r").lower()
+            response = e.read().strip("\"\n\r")
+            response_l = response.lower()
 
-            if e.code == 403 and response == 'forbidden':
+            if e.code == 403 and response_l == 'forbidden':
                 # authentication token is invalid
                 # try to get a new one
                 self.oauth1()
@@ -102,12 +110,15 @@ class DEP(object):
                 # try the request a second time
                 return self.api_request(api_endpoint, method, input_dict)
 
-            if e.code == 401 and response == 'unauthorized':
+            if e.code == 401 and response_l == 'unauthorized':
                 # authentication token has expired
                 # try to get a new one
                 self.oauth1()
 
                 # try the request a second time
                 return self.api_request(api_endpoint, method, input_dict)
+
+            if e.code == 400:
+                raise DEP400Error(response, e)
 
             raise

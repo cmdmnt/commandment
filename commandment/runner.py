@@ -12,8 +12,8 @@ from .utils.dep_utils import dep_configs_needing_updates, update_dep_configs
 from .utils.dep_utils import unsubmitted_dep_profiles, submit_dep_profiles
 
 runner_thread = None
-runner_time = 5 # in seconds
-runner_start = 5 # in seconds
+runner_start = 5 # in seconds, time of first run
+runner_time = 5 # in seconds, time of subsequent runs
 
 # TODO: currently we start this thread after the database context and
 # configuration has already been. We envision a day when this runner runs

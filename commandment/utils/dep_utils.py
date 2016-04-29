@@ -4,16 +4,15 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 import datetime
-from .dep import DEP
+from .dep import DEP, DEP400Error
 from ..database import db_session, or_, and_, NoResultFound
 from ..models import DEPConfig, DEPProfile, Device
 import uuid
 import collections
 
 FETCH_LIMIT = 100
-DEP_CHECK_SECONDS = 15 * 60 # 15m in sec
-# for debugging
-DEP_CHECK_SECONDS = 15
+DEP_CHECK_SECONDS = 5 * 60 # 5m in seconds
+# DEP_CHECK_SECONDS = 15 # debug testing
 DEP_CURSOR_EXPIRE_DAYS = 7
 
 def add_or_modify_device(dep, device_dict):
@@ -59,7 +58,15 @@ def update_dep_configs(dep_configs):
         elif dep_config.device_cursor_recevied and dep_config.device_cursor_recevied <= dep_cursor_retired():
             initial_fetch(dep_config)
 
-        update_fetch(dep_config)
+        else:
+            try:
+                update_fetch(dep_config)
+            except DEP400Error, e:
+                if e.body == 'EXPIRED_CURSOR':
+                    print 'WARNING: expired cursor; attempting initial fetch instead'
+                    initial_fetch(dep_config)
+                else:
+                    raise
 
 def next_dep_update_datetime():
     return datetime.datetime.utcnow() + datetime.timedelta(seconds=DEP_CHECK_SECONDS)
