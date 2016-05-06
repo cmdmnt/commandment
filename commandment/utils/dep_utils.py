@@ -15,6 +15,9 @@ DEP_CHECK_SECONDS = 5 * 60 # 5m in seconds
 # DEP_CHECK_SECONDS = 15 # debug testing
 DEP_CURSOR_EXPIRE_DAYS = 7
 
+class ExpiredCursor(DEP400Error):
+    body = 'EXPIRED_CURSOR'
+
 def add_or_modify_device(dep, device_dict):
     ser_no = device_dict.get('serial_number')
     if not ser_no:
@@ -61,12 +64,9 @@ def update_dep_configs(dep_configs):
         else:
             try:
                 update_fetch(dep_config)
-            except DEP400Error, e:
-                if e.body == 'EXPIRED_CURSOR':
-                    print 'WARNING: expired cursor; attempting initial fetch instead'
-                    initial_fetch(dep_config)
-                else:
-                    raise
+            except ExpiredCursor:
+                print 'WARNING: expired cursor; attempting initial fetch'
+                initial_fetch(dep_config)
 
 def next_dep_update_datetime():
     return datetime.datetime.utcnow() + datetime.timedelta(seconds=DEP_CHECK_SECONDS)

@@ -8,10 +8,26 @@ from urllib2 import Request, urlopen, HTTPError
 import json
 
 class DEP400Error(Exception):
-    def __init__(self, body, http_exc, *args):
-        super(Exception, self).__init__(body, http_exc, *args)
+    def __new__(cls, *args, **kwargs):
+        '''Dynamically use the correct subclass based on the first argument of
+        the exception.
 
-        self.body = body
+        E.g. if the first argument is EXPIRED_CURSOR then instead of the
+        DEP400Error() class use the appropraite ExpiredCursor() class instead
+        which will be defined in it's own subclass. Allows us to have very
+        clean looking exceptions in the code without having to access
+        Exception properties or special-casing Exception raising.'''
+        if cls == DEP400Error:
+            for scls in cls.__subclasses__():
+                if len(args) > 0 and args[0].lower() == getattr(scls, 'body', '').lower():
+                    return scls.__new__(scls, *args, **kwargs)
+
+        return super(DEP400Error, cls).__new__(cls, *args, **kwargs)
+
+    def __init__(self, orig_body, http_exc, *args, **kwargs):
+        super(Exception, self).__init__(orig_body, http_exc, *args, **kwargs)
+
+        self.orig_body = orig_body
         self.http_exc = http_exc
 
 class DEP(object):
