@@ -12,6 +12,10 @@ from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey 
 from .pki.ca import get_ca, PushCertificate
 from .pki.m2certs import Certificate, RSAPrivateKey
 import random
+try:
+    from ssl import SSLError
+except ImportError:
+    from socket import sslerror as SSLError
 
 apns_cxns = {}
 
@@ -77,4 +81,24 @@ def push_to_device(device_or_devices):
 
     # loop through our by-topic APNs Frames and send away
     for topic in topic_frames.keys():
-        apns_cxns[topic].gateway_server.send_notification_multiple(topic_frames[topic])
+        try:
+            apns_cxns[topic].gateway_server.send_notification_multiple(topic_frames[topic])
+        except SSLError as e:
+            msg = e.__str__()
+
+            if 'sslv3 alert' in msg:
+                # OpenSSL error telling us it received an SSL alert. We search
+                # for a substring. See ssl/ssl_stat.c in OpenSSL sources for
+                # lists of string output for SSL alerts. Full messages appear
+                # like so:
+                #
+                # _ssl.c:504: error:14094416:SSL routines:SSL3_READ_BYTES:sslv3 alert certificate unknown
+
+                if 'certificate unknown' in msg:
+                    # Note: It seems an "unknown certificate" alert is thrown
+                    # rather than an "expired" alert for MDM push certs that
+                    # are, in fact, expired. Seems like an implimentation
+                    # quirk that may change in the future.
+                    raise Exception('MDM Push Certificate not accepted; possibly expired')
+
+            raise
