@@ -25,6 +25,7 @@ from M2Crypto import SMIME, BIO
 import json
 from .utils.dep import DEP
 from .utils.dep_utils import initial_fetch, mdm_profile, assign_devices
+import datetime
 
 class FixedLocationResponse(Response):
     # override Werkzeug default behaviour of "fixing up" once-non-compliant
@@ -44,12 +45,16 @@ def admin_certificates():
     # assemble a list of dictionaries to pass to our certificate list template
     installed_certs = []
     cert_output = []
+    utcnow = datetime.datetime.utcnow()
     for cert_row in cert_rows:
         installed_certs.append(cert_row.cert_type)
         row_cert = Certificate.load(str(cert_row.pem_certificate))
+        not_after = row_cert.get_not_after().replace(tzinfo=None)
         dict_row = {
             'id': cert_row.id,
             'name': cert_row.cert_type,
+            'not_after': row_cert.get_not_after(),
+            'expired': not_after <= utcnow,
             'subject': row_cert.get_subject_as_text(),
             'title': CERT_TYPES[cert_row.cert_type]['title'] if CERT_TYPES.get(cert_row.cert_type) else '',
             'description': CERT_TYPES[cert_row.cert_type]['description'] if CERT_TYPES.get(cert_row.cert_type) else '',

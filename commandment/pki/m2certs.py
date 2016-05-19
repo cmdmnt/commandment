@@ -180,6 +180,12 @@ class Certificate(object):
     def get_subject_as_text(self):
         return self.cert.get_subject().as_text()
 
+    def get_not_before(self):
+        return self.cert.get_not_before().get_datetime()
+
+    def get_not_after(self):
+        return self.cert.get_not_after().get_datetime()
+
     @classmethod
     def cacert_from_req(cls, req):
         cacert = cls()

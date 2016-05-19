@@ -12,6 +12,7 @@
 <tr>
 	<th>Config cert. title</th>
 	<th>Cert. subject</th>
+	<th>Expires</th>
 	<th colspan="1">
 </tr>
 
@@ -24,6 +25,7 @@
 	{% endif %}
 	</td>
 	<td >{{ cert.subject }}</td>
+	<td {% if cert.expired %}style="color:red;"{% endif %}>{{ cert.not_after }}</td>
 	<td style="white-space:nowrap;">
 		<a href="/admin/certificates/add/{{ cert.name }}">[ Add ]</a>
 		<!-- <a href="/admin/certificates/download/{{ cert.id }}">[ Download ]</a> -->

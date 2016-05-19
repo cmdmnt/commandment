@@ -44,4 +44,6 @@ def runner():
 		print 'runner() submitting DEP profiles', runner_time, datetime.datetime.now()
 		submit_dep_profiles(dep_profiles)
 
+	# TODO: certificate expiration warnings/emails
+
 	start_runner()
