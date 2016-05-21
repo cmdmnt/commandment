@@ -53,7 +53,7 @@ def admin_certificates():
         dict_row = {
             'id': cert_row.id,
             'name': cert_row.cert_type,
-            'not_after': row_cert.get_not_after(),
+            'not_after': not_after,
             'expired': not_after <= utcnow,
             'subject': row_cert.get_subject_as_text(),
             'title': CERT_TYPES[cert_row.cert_type]['title'] if CERT_TYPES.get(cert_row.cert_type) else '',
