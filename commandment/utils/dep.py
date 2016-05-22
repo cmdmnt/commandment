@@ -46,10 +46,12 @@ class DEP4xxError(Exception):
         self.http_exc = http_exc
 
 class Forbidden(DEP4xxError):
+    # DEP authentication token is invalid
     code = 403
     body = 'FORBIDDEN'
 
 class Unauthorized(DEP4xxError):
+    # DEP authentication token is expired
     code = 401
     body = 'UNAUTHORIZED'
 
