@@ -7,28 +7,51 @@ from oauthlib.oauth1 import Client
 from urllib2 import Request, urlopen, HTTPError
 import json
 
-class DEP400Error(Exception):
+class DEP4xxError(Exception):
     def __new__(cls, *args, **kwargs):
-        '''Dynamically use the correct subclass based on the first argument of
-        the exception.
+        '''Dynamically use the correct subclass based on the code and response
+        of the exception.
 
-        E.g. if the first argument is EXPIRED_CURSOR then instead of the
-        DEP400Error() class use the appropraite ExpiredCursor() class instead
+        E.g. if the second argument is EXPIRED_CURSOR then instead of the
+        DEP4xxError() class use the appropraite ExpiredCursor() class instead
         which will be defined in it's own subclass. Allows us to have very
         clean looking exceptions in the code without having to access
         Exception properties or special-casing Exception raising.'''
-        if cls == DEP400Error:
+        if cls == DEP4xxError:
             for scls in cls.__subclasses__():
-                if len(args) > 0 and args[0].lower() == getattr(scls, 'body', '').lower():
-                    return scls.__new__(scls, *args, **kwargs)
+                if len(args) >= 1:
+                    # compare our subclass code to the supplied code to find
+                    # a matching subclass. default to code 400 if the subclass
+                    # does not specify one.
+                    if getattr(scls, 'code', 400) != args[0]:
+                        continue
 
-        return super(DEP400Error, cls).__new__(cls, *args, **kwargs)
+                if len(args) >= 2:
+                    # compare our subclass body response to the supplied
+                    # response to find a matching subclass. we've seen depsim
+                    # use differently-cased responses so only compare
+                    # lower()'d responses here
+                    if getattr(scls, 'body', '').lower() != args[1].lower():
+                        continue
 
-    def __init__(self, orig_body, http_exc, *args, **kwargs):
-        super(Exception, self).__init__(orig_body, http_exc, *args, **kwargs)
+                return scls.__new__(scls, *args, **kwargs)
 
-        self.orig_body = orig_body
+        return super(DEP4xxError, cls).__new__(cls, *args, **kwargs)
+
+    def __init__(self, code, http_body, http_exc=None, *args, **kwargs):
+        super(Exception, self).__init__(code, http_body, http_exc, *args, **kwargs)
+
+        self.code = code
+        self.http_body = http_body
         self.http_exc = http_exc
+
+class Forbidden(DEP4xxError):
+    code = 403
+    body = 'FORBIDDEN'
+
+class Unauthorized(DEP4xxError):
+    code = 401
+    body = 'UNAUTHORIZED'
 
 class DEP(object):
     def __init__(self,
@@ -93,7 +116,16 @@ class DEP(object):
 
         input_data = json.dumps(input_dict) if input_dict else None
 
-        response = urlopen(request, input_data).read()
+        try:
+            response = urlopen(request, input_data).read()
+        except HTTPError as e:
+            # read and strip the HTTP response body
+            stripped_body = e.read().strip("\"\n\r")
+
+            if e.code in (400, 401, 403):
+                raise DEP4xxError(e.code, stripped_body, e)
+
+            raise
 
         resp_dict = json.loads(response)
 
@@ -114,27 +146,6 @@ class DEP(object):
 
         try:
             return self.api_request(api_endpoint, method, input_dict)
-        except HTTPError, e:
-            response = e.read().strip("\"\n\r")
-            response_l = response.lower()
-
-            if e.code == 403 and response_l == 'forbidden':
-                # authentication token is invalid
-                # try to get a new one
-                self.oauth1()
-
-                # try the request a second time
-                return self.api_request(api_endpoint, method, input_dict)
-
-            if e.code == 401 and response_l == 'unauthorized':
-                # authentication token has expired
-                # try to get a new one
-                self.oauth1()
-
-                # try the request a second time
-                return self.api_request(api_endpoint, method, input_dict)
-
-            if e.code == 400:
-                raise DEP400Error(response, e)
-
-            raise
+        except (Unauthorized, Forbidden):
+            self.oauth1()
+            return self.api_request(api_endpoint, method, input_dict)

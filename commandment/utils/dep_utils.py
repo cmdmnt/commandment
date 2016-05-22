@@ -4,7 +4,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 import datetime
-from .dep import DEP, DEP400Error
+from .dep import DEP, DEP4xxError
 from ..database import db_session, or_, and_, NoResultFound
 from ..models import DEPConfig, DEPProfile, Device
 import uuid
@@ -15,7 +15,7 @@ DEP_CHECK_SECONDS = 5 * 60 # 5m in seconds
 # DEP_CHECK_SECONDS = 15 # debug testing
 DEP_CURSOR_EXPIRE_DAYS = 7
 
-class ExpiredCursor(DEP400Error):
+class ExpiredCursor(DEP4xxError):
     body = 'EXPIRED_CURSOR'
 
 def add_or_modify_device(dep, device_dict):
