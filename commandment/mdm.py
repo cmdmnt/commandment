@@ -23,6 +23,7 @@ from functools import wraps
 import base64
 
 PROFILE_CONTENT_TYPE = 'application/x-apple-aspen-config'
+TRUST_DEV_PROVIDED_CERT = True
 
 mdm_app = Blueprint('mdm_app', __name__)
 
@@ -153,11 +154,6 @@ def enroll():
     # infrastructure and due to complexities we're using this methodology at
     # the moment
     new_dev_ident, db_dev_cert = mdm_ca.gen_new_device_identity()
-
-    if device:
-        # pre-assign for DEP enrollment
-        # TODO: delete previously assigned certificate before assignment?
-        device.certificate = db_dev_cert
 
     # random password for PKCS12 payload
     p12pw = urandom(20).encode('hex')
@@ -309,7 +305,21 @@ def checkin():
         try:
             device = db_session.query(Device).filter(Device.udid == resp['UDID']).one()
             if device.certificate and g.device_cert != device.certificate:
-                raise Exception('device provided identity cert does not match issued cert! (possibly a re-enrollment?)')
+                # TODO: test if current certificate is in use by another device
+                # if not then assume it's probably okay to use, otherwise
+                # throw an error?
+                if TRUST_DEV_PROVIDED_CERT:
+                    # this is /probably/ okay because our @device_cert_check
+                    # decorator makes sure that the cert originated in our DB
+                    # however shenanegans could be going on where two devices
+                    # try to enroll using the same-cert profile, so best to block
+                    # here
+                    print 'WARNING: device provided identity cert does not' \
+                        ' match issued cert! (possibly a re-enrollment?)'
+                    db_session.delete(device.certificate)
+                else:
+                    raise Exception('device provided identity cert does not' \
+                        ' match issued cert! (possibly a re-enrollment?)')
         except NoResultFound:
             # no device found, let's make a new one!
             device = Device()
