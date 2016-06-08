@@ -27,7 +27,7 @@ def scep():
         msg = msg.replace(' ', '+')
         msg = msg.decode('base64')
 
-        pki_msg = PKIMessage.from_pkcs7_der(msg)
+        pki_msg = SCEPMessage.from_pkcs7_der(msg)
 
         print pki_msg.message_type
 

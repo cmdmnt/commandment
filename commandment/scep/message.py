@@ -42,6 +42,7 @@ class SCEPMessageOID(object):
                 # TODO: check to see if already registered with OpenSSL
                 # to avoid problem with this function getting run in
                 # different threads (Flask debug environment)
+                print scls.__name__
                 new_nid = get_lc().OBJ_create(scls.oid, scls.name, scls.name)
                 scls.nid = new_nid
 
@@ -93,17 +94,17 @@ class TransactionId(SCEPMessageOID):
     oid = '2.16.840.1.113733.1.9.7'
     asn1_type = V_ASN1_PRINTABLESTRING
 
-class PKIMessageKeyError(KeyError):
+class SCEPMessageKeyError(KeyError):
     pass
 
-class PKIMessage(object):
+class SCEPMessage(object):
     @classmethod
     def find_by_message_type(cls, message_type):
         for scls in cls.__subclasses__():
             if int(scls.message_type) == int(message_type):
                 return scls
 
-        raise PKIMessageKeyError('matching message type not found')
+        raise SCEPMessageKeyError('matching message type not found')
 
     def get_signed_content(self):
         return self.signedcontent
@@ -227,7 +228,7 @@ class PKIMessage(object):
 
         m2_p7bio = m2_MemoryBuffer_from_ct_ptr(ct_p7bio)
 
-        ncls = PKIMessage.find_by_message_type(message_type[1])()
+        ncls = SCEPMessage.find_by_message_type(message_type[1])()
 
         ncls.signing_cert = signing_cert
         ncls.signedcontent = m2_p7bio.read()
@@ -235,23 +236,23 @@ class PKIMessage(object):
 
         return ncls
 
-class PKCSReq(PKIMessage):
-    message_type = 19
-
-class CertRep(PKIMessage):
+class CertRep(SCEPMessage):
     message_type = 3
 
-class RenewalReq(PKIMessage):
+class RenewalReq(SCEPMessage):
     message_type = 17
 
-class UpdateReq(PKIMessage):
+class UpdateReq(SCEPMessage):
     message_type = 18
 
-class CertPoll(PKIMessage):
+class PKCSReq(SCEPMessage):
+    message_type = 19
+
+class CertPoll(SCEPMessage):
     message_type = 20
 
-class GetCert(PKIMessage):
+class GetCert(SCEPMessage):
     message_type = 21
 
-class GetCRL(PKIMessage):
+class GetCRL(SCEPMessage):
     message_type = 22
