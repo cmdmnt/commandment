@@ -272,6 +272,7 @@ def degenerate_pkcs7_der(m2_x509s):
     ct_p7 = get_lc().PKCS7_new()
 
     assert get_lc().PKCS7_set_type(ct_p7, m2.PKCS7_SIGNED)
+    assert get_lc().PKCS7_content_new(ct_p7, m2.PKCS7_DATA)
 
     ct_x509_sk = get_lc().sk_new_null()
 
