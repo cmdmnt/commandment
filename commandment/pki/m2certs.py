@@ -104,7 +104,7 @@ class CertificateRequest(object):
             self.privkey = privkey
 
         pk = EVP.PKey()
-        pk.assign_rsa(privkey.get_m2_rsa(), capture=0)
+        pk.assign_rsa(self.privkey.get_m2_rsa(), capture=0)
 
         req = X509.Request()
         req.set_pubkey(pk)
