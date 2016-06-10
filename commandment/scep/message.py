@@ -109,6 +109,16 @@ class SCEPMessage(object):
 
         raise SCEPMessageKeyError('matching message type not found')
 
+    def get_decrypted_envelope_data(self, x509, evpkey):
+        m2_p7buf = BIO.MemoryBuffer(self.signedcontent)
+        m2_p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(m2_p7buf._ptr()), 1)
+
+        m2_smime = SMIME.SMIME()
+        # in leiu of SMIME.load_* funcs
+        m2_smime.x509 = x509
+        m2_smime.pkey = evpkey
+        return m2_smime.decrypt(m2_p7)
+
     def get_signed_content(self):
         return self.signedcontent
 
