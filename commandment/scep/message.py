@@ -169,6 +169,10 @@ class SCEPMessage(object):
                 self.transaction_id = value
             if issubclass(obj, PkiStatus):
                 self.pki_status = value
+            if issubclass(obj, SenderNonce):
+                self.sender_nonce = value
+            if issubclass(obj, RecipientNonce):
+                self.recipient_nonce = value
 
     def _get_attrs(self):
         attrs = []
@@ -176,6 +180,10 @@ class SCEPMessage(object):
             attrs.append(TransactionId.ct_asn1_attribute(self.transaction_id))
         if hasattr(self, 'pki_status'):
             attrs.append(PkiStatus.ct_asn1_attribute(self.pki_status))
+        if hasattr(self, 'sender_nonce'):
+            attrs.append(SenderNonce.ct_asn1_attribute(self.pki_status))
+        if hasattr(self, 'recipient_nonce'):
+            attrs.append(RecipientNonce.ct_asn1_attribute(self.pki_status))
         return attrs
 
     @classmethod
