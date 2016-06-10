@@ -42,7 +42,6 @@ class SCEPMessageOID(object):
                 # TODO: check to see if already registered with OpenSSL
                 # to avoid problem with this function getting run in
                 # different threads (Flask debug environment)
-                print scls.__name__
                 new_nid = get_lc().OBJ_create(scls.oid, scls.name, scls.name)
                 scls.nid = new_nid
 
