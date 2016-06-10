@@ -126,6 +126,18 @@ class CertificateRequest(object):
     def get_privkey(self):
         return self.privkey
 
+    def get_der(self):
+        return self.req.as_der()
+
+    @classmethod
+    def load_der(cls, req_data):
+        # TODO: don't need to clear privkey (nor even generate it)
+        newcls = cls()
+        newcls.privkey = None
+        bio = BIO.MemoryBuffer(req_data)
+        newcls.req = X509.load_request_bio(bio, format=X509.FORMAT_DER)
+        return newcls
+
 class Certificate(object):
     def __init__(self, cert=None, serial=1, version=2):
         if cert:
