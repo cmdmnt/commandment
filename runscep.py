@@ -10,6 +10,31 @@ from commandment.scep.message import SCEPMessageOID
 from commandment.scep.app import scep_app
 
 import os
+from cStringIO import StringIO
+
+class WSGIChunkedBodyCopy(object):
+    '''WSGI wrapper that handles chunked encoding of the request body. Copies 
+    de-chunked body to a WSGI environment variable called `body_copy` (so best
+    not to use with large requests lest memory issues crop up.'''
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        wsgi_input = environ.get('wsgi.input')
+        if 'chunked' in environ.get('HTTP_TRANSFER_ENCODING', '') and \
+                environ.get('CONTENT_LENGTH', '') == '' and \
+                wsgi_input:
+
+            body = ''
+            sz = int(wsgi_input.readline(), 16)
+            while sz > 0:
+                body += wsgi_input.read(sz + 2)[:-2]
+                sz = int(wsgi_input.readline(), 16)
+
+            environ['body_copy'] = body
+            environ['wsgi.input'] = StringIO(body)
+
+        return self.app(environ, start_response)
 
 if __name__ == '__main__':
     app = Flask(__name__)
@@ -24,6 +49,8 @@ if __name__ == '__main__':
     SCEPMessageOID.openssl_init()
 
     app.register_blueprint(scep_app)
+
+    app.wsgi_app = WSGIChunkedBodyCopy(app.wsgi_app)
 
     app.run(
         host='0.0.0.0',
