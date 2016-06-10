@@ -289,6 +289,9 @@ def init_libcrypto_prototypes(libcrypto):
     libcrypto.i2d_PKCS7_bio.argtypes = [c_void_p, POINTER(PKCS7)]
     libcrypto.i2d_PKCS7_bio.restype = c_int
 
+    libcrypto.d2i_PKCS7_bio.argtypes = [c_void_p, POINTER(POINTER(PKCS7))]
+    libcrypto.d2i_PKCS7_bio.restype = POINTER(PKCS7)
+
     libcrypto.PKCS7_set_type.argtypes = [POINTER(PKCS7), c_int]
     libcrypto.PKCS7_set_type.restype = c_int
 
@@ -320,6 +323,14 @@ def init_libcrypto_prototypes(libcrypto):
     # int PKCS7_add_certificate(PKCS7 *p7, X509 *x509);
     libcrypto.PKCS7_add_certificate.argtypes = [POINTER(PKCS7), c_void_p]
     libcrypto.PKCS7_add_certificate.restype = c_int
+
+    libcrypto.PKCS7_decrypt.argtypes = [
+        POINTER(PKCS7),
+        c_void_p, # EVP_PKEY *
+        c_void_p, # X509 *
+        c_void_p, # BIO *
+        c_int]
+    libcrypto.PKCS7_decrypt.restype = c_int
 
 def init_libcrypto(lib_path=None):
     if not lib_path:
