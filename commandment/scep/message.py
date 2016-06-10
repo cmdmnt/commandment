@@ -68,6 +68,10 @@ class MessageType(SCEPMessageOID):
     oid = '2.16.840.1.113733.1.9.2'
     asn1_type = V_ASN1_PRINTABLESTRING
 
+PKI_STATUS_SUCCESS = '0'
+PKI_STATUS_FAILURE = '2'
+PKI_STATUS_PENDING = '3'
+
 class PkiStatus(SCEPMessageOID):
     name = 'pkiStatus'
     oid = '2.16.840.1.113733.1.9.3'
