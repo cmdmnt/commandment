@@ -229,6 +229,12 @@ def init_libcrypto_prototypes(libcrypto):
     libcrypto.sk_push.argtypes = [OPENSSL_STACK, c_void_p]
     libcrypto.sk_push.restype = c_int
 
+    libcrypto.X509_CRL_new.argtypes = []
+    libcrypto.X509_CRL_new.restype = POINTER(X509_CRL)
+
+    libcrypto.X509_dup.argtypes = [c_void_p]
+    libcrypto.X509_dup.restype = c_void_p
+
     libcrypto.PKCS7_get_signer_info.argtypes = [POINTER(PKCS7)]
     libcrypto.PKCS7_get_signer_info.restype = OPENSSL_STACK # STACK_OF(PKCS7_SIGNER_INFO) *
 
@@ -279,6 +285,9 @@ def init_libcrypto_prototypes(libcrypto):
 
     libcrypto.PKCS7_new.argtypes = []
     libcrypto.PKCS7_new.restype = POINTER(PKCS7)
+
+    libcrypto.i2d_PKCS7_bio.argtypes = [c_void_p, POINTER(PKCS7)]
+    libcrypto.i2d_PKCS7_bio.restype = c_int
 
     libcrypto.PKCS7_set_type.argtypes = [POINTER(PKCS7), c_int]
     libcrypto.PKCS7_set_type.restype = c_int

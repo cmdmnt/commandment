@@ -256,3 +256,32 @@ class GetCert(SCEPMessage):
 
 class GetCRL(SCEPMessage):
     message_type = 22
+
+def degenerate_pkcs7_der(m2_x509s):
+    ct_p7 = get_lc().PKCS7_new()
+
+    assert get_lc().PKCS7_set_type(ct_p7, m2.PKCS7_SIGNED)
+
+    ct_x509_sk = get_lc().sk_new_null()
+
+    for m2_x509 in m2_x509s:
+        # duplicate the provided X509 certificate (as it will get free'd)
+        # when we free our PKCS7 structure
+        m2_x509_dup = m2.x509_dup(m2_x509._ptr())
+        ct_x509_dup = c_void_p(long(m2_x509_dup))
+
+        get_lc().sk_push(ct_x509_sk, ct_x509_dup)
+
+    ct_p7.contents.d.sign.contents.crl = None
+    ct_p7.contents.d.sign.contents.cert = ct_x509_sk
+
+    m2_p7bio = BIO.MemoryBuffer()
+    ct_p7bio = c_void_p(long(m2_p7bio._ptr()))
+
+    assert get_lc().i2d_PKCS7_bio(ct_p7bio, ct_p7)
+
+    pkcs7_der = m2_p7bio.read()
+
+    get_lc().PKCS7_free(ct_p7)
+
+    return pkcs7_der
