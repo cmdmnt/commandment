@@ -100,6 +100,7 @@ class TransactionId(SCEPMessageOID):
 class SCEPMessageKeyError(KeyError):
     pass
 
+# TODO: audit for memory leaks
 class SCEPMessage(object):
     @classmethod
     def find_by_message_type(cls, message_type):
@@ -109,15 +110,23 @@ class SCEPMessage(object):
 
         raise SCEPMessageKeyError('matching message type not found')
 
-    def get_decrypted_envelope_data(self, x509, evpkey):
-        m2_p7buf = BIO.MemoryBuffer(self.signedcontent)
-        m2_p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(m2_p7buf._ptr()), 1)
+    def encrypt_envelope_data(self, x509):
+        buf = BIO.MemoryBuffer(self.signedcontent)
 
-        m2_smime = SMIME.SMIME()
-        # in leiu of SMIME.load_* funcs
-        m2_smime.x509 = x509
-        m2_smime.pkey = evpkey
-        return m2_smime.decrypt(m2_p7)
+        sk = X509.X509_Stack()
+        sk.push(x509)
+
+        p7 = m2.pkcs7_encrypt(sk._ptr(), buf._ptr(), m2.des_cbc(), m2.PKCS7_BINARY)
+
+        out = BIO.MemoryBuffer()
+        assert m2.pkcs7_write_bio_der(p7, out._ptr())
+
+        self.signedcontent = out.read()
+
+    def get_decrypted_envelope_data(self, x509, evpkey):
+        buf = BIO.MemoryBuffer(self.signedcontent)
+        p7 = m2.pkcs7_read_bio_der(buf._ptr())
+        return m2.pkcs7_decrypt(p7, evpkey._ptr(), x509._ptr(), 0)
 
     def get_signed_content(self):
         return self.signedcontent
@@ -191,9 +200,9 @@ class SCEPMessage(object):
         if hasattr(self, 'pki_status'):
             attrs.append(PkiStatus.ct_asn1_attribute(self.pki_status))
         if hasattr(self, 'sender_nonce'):
-            attrs.append(SenderNonce.ct_asn1_attribute(self.pki_status))
+            attrs.append(SenderNonce.ct_asn1_attribute(self.sender_nonce))
         if hasattr(self, 'recipient_nonce'):
-            attrs.append(RecipientNonce.ct_asn1_attribute(self.pki_status))
+            attrs.append(RecipientNonce.ct_asn1_attribute(self.recipient_nonce))
         return attrs
 
     @classmethod
@@ -212,7 +221,8 @@ class SCEPMessage(object):
             ct_si.contents.issuer_and_serial.contents.issuer,
             ct_si.contents.issuer_and_serial.contents.serial)
 
-        signing_cert = m2_x509_from_ct_ptr(ct_x509)
+        signing_cert_int = m2_x509_from_ct_ptr(ct_x509)
+        signing_cert = X509.X509(m2.x509_dup(signing_cert_int._ptr()))
 
         m2_p7buf = BIO.MemoryBuffer()
         ct_p7buf = c_void_p(long(m2_p7buf._ptr()))
