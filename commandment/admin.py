@@ -679,7 +679,7 @@ def dep_tokenupload(dep_id):
 @admin_app.route('/dep/profile/add', methods=['GET', 'POST'])
 def dep_profile_add():
     if request.method == 'POST':
-        form_bools = ('allow_pairing', 'is_supervised', 'is_multi_user', 'is_mandatory', 'is_mdm_removable')
+        form_bools = ('allow_pairing', 'is_supervised', 'is_multi_user', 'is_mandatory', 'await_device_configured', 'is_mdm_removable')
         form_strs = ('profile_name', 'support_phone_number', 'support_email_address', 'department', 'org_magic')
 
         profile = {}
