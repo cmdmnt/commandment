@@ -8,7 +8,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from .mutablelist import MutableList
-from .database import JSONEncodedDict, Base
+from .database import JSONEncodedDict, Base, or_, and_
 from profiles.mdm import MDM_AR__ALL
 
 CERT_TYPES = {
@@ -94,10 +94,11 @@ class QueuedCommand(Base):
     id = Column(Integer, primary_key=True)
 
     command_class = Column(String, nullable=False) # string representation of our local command handler
+    # request_type = Column(String, index=True, nullable=False) # actual command name
     uuid = Column(String(36), index=True, unique=True, nullable=False)
     input_data = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True) # JSON add'l data as input to command builder
     queued_status = Column(String(1), index=True, nullable=False, default='Q') # 'Q' = Queued, 'S' = Sent
-    result = Column(String, nullable=True) # Status key of MDM command result submission
+    result = Column(String, index=True, nullable=True) # Status key of MDM command result submission
 
     # queued_stamp
     # sent_stamp
@@ -123,12 +124,13 @@ class QueuedCommand(Base):
         return cls.query.filter(cls.uuid == uuid).one()
 
     @classmethod
-    def get_next_device_command(cls, device, notnow_seen=False):
-        # TODO: test for NotNow case as docs say if we get this it's unlikely
-        # we'll be able to send more NowNow-able commands
-
-        # TODO: order_by queued_stamp
-        return cls.query.filter(cls.device == device, cls.queued_status == 'Q').first()
+    def get_next_device_command(cls, device):
+        # d == d AND (q_status == Q OR (q_status == R AND result == 'NotNow'))
+        return cls.query.filter(
+            and_(cls.device == device,
+                or_(cls.queued_status == 'Q',
+                    and_(cls.queued_status == 'R',
+                        cls.result == 'NotNow')))).order_by(cls.id).first()
 
     def __repr__(self):
         return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.queued_status)

@@ -14,6 +14,8 @@ from .profiles import Profile
 from .profiles.cert import PEMCertificatePayload, PKCS12CertificatePayload
 from .profiles.mdm import MDMPayload
 from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
+from .mdmcmds import InstallProfile, AppInstall
+from .mdmcmds.dep import DeviceConfigured, AdminAccountTest
 from os import urandom
 from M2Crypto import SMIME, BIO, X509
 import plistlib
@@ -337,16 +339,16 @@ def checkin():
 
         return 'OK'
     elif resp['MessageType'] == 'TokenUpdate':
+        current_app.logger.info('TokenUpdate received')
+        print print_resp
+
         # TODO: a TokenUpdate can either be for a device or a user (per OS X extensions)
         if 'UserID' in resp:
-            print 'Skipping User Token Update'
+            current_app.logger.warn('per-user TokenUpdate not yet implemented, skipping')
             return 'OK'
 
         # TODO: check to make sure device == UDID == cert, etc.
         device = db_session.query(Device).filter(Device.udid == resp['UDID']).one()
-
-        print 'TokenUpdate'
-        print print_resp
 
         # device.certificate = g.device_cert
 
@@ -366,6 +368,8 @@ def checkin():
 
         # TokenUpdate implies successful MDM profile installation. let's kick off a check-in
 
+        current_app.logger.info('sending initial post-enrollment MDM command(s) to device=%d', g.device.id)
+
         # queue next command in DB for device
         new_qc = UpdateInventoryDevInfoCommand.new_queued_command(device)
         db_session.add(new_qc)
@@ -377,7 +381,8 @@ def checkin():
         return 'OK'
     elif resp['MessageType'] == 'UserAuthenticate':
         print print_resp
-        # abort(410, 'OS X per-user authentication not yet supported')
+        current_app.logger.warn('per-user authentication not yet implemented, skipping')
+        abort(410, 'per-user authentication not yet supported')
         # TODO: we can theoretically do a digest authentication on the actual
         # end-user's password supplied at the login screen. this will depend
         # depend heavily on any given user's backend. Perhaps provide some
@@ -430,18 +435,29 @@ def mdm():
         current_app.logger.info('provided UDID does not match device UDID')
         abort(400, 'invalid input data')
 
+    if 'UserID' in g.plist_data:
+        # Note that with DEP this is an opportune time to queue up an 
+        # application install for the /device/ despite this being a per-user
+        # MDM command. this is becasue DEP appears to only allow apps to be
+        # installed while a user is logged in. note also the undocumented
+        # NotOnConsole key to (possibly) indicate that this is a UI login?
+        current_app.logger.warn('per-user MDM command not yet supported')
+        return ''
+
     if 'Status' not in g.plist_data:
-        current_app.logger.info('invalid MDM request (no Status provided) from device id %d' % g.device.id)
+        current_app.logger.error('invalid MDM request (no Status provided) from device id %d' % g.device.id)
         abort(400, 'invalid input data')
     else:
         status = g.plist_data['Status']
 
     current_app.logger.info('device id=%d udid=%s processing status=%s', g.device.id, g.device.udid, status)
 
+    print g.plist_data
+
     if status != 'Idle':
 
         if 'CommandUUID' not in g.plist_data:
-            current_app.logger.info('missing CommandUUID for non-Idle status')
+            current_app.logger.error('missing CommandUUID for non-Idle status')
             abort(400, 'invalid input data')
 
         try:
@@ -472,8 +488,12 @@ def mdm():
         except NoResultFound:
             current_app.logger.info('no record of command uuid=%s', g.plist_data['CommandUUID'])
 
+    if status == 'NotNow':
+        current_app.logger.warn('NotNow status received, forgoing any further commands')
+        return ''
+
     while True:
-        command = QueuedCommand.get_next_device_command(g.device, notnow_seen=(status == 'NotNow'))
+        command = QueuedCommand.get_next_device_command(g.device)
 
         if not command:
             break

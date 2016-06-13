@@ -4,3 +4,5 @@ Flask
 SQLAlchemy
 apns
 oauthlib
+passlib
+biplist
