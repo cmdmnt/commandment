@@ -148,6 +148,9 @@ class Profile(Base):
     uuid = Column(String(36), index=True, unique=True, nullable=False) # duplicated from within profile_data for searching
     profile_data = Column(Text, nullable=False) # serialized XML (or signed, encrypted) profile data
 
+    def __repr__(self):
+        return '<Profile ID=%r UUID=%r>' % (self.id, self.uuid)
+
 device_group_assoc = Table('device_group', Base.metadata,
     Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
     Column('device_id', Integer, ForeignKey('device.id')),
@@ -167,6 +170,9 @@ class MDMGroup(Base):
 
     devices = relationship('Device', secondary=device_group_assoc, backref='mdm_groups')
     profiles = relationship('Profile', secondary=profile_group_assoc, backref='mdm_groups')
+
+    def __repr__(self):
+        return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
 
 class MDMConfig(Base):
     __tablename__ = 'mdm_config'
