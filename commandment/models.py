@@ -80,12 +80,13 @@ class Device(Base):
     dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
     dep_config = relationship('DEPConfig', backref='devices')
     info_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
+    first_user_message_seen = Column(Boolean, nullable=False, default=False)
 
     certificate_id = Column(ForeignKey('certificate.id'))
     certificate = relationship('Certificate', backref='devices')
 
     def __repr__(self):
-        return '<Device ID=%r UDID=%r>' % (self.id, self.udid)
+        return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
 
 
 class QueuedCommand(Base):
@@ -161,6 +162,15 @@ profile_group_assoc = Table('profile_group', Base.metadata,
     Column('profile_id', Integer, ForeignKey('profile.id')),
 )
 
+app_group_assoc = Table('app_group', Base.metadata,
+    Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
+    Column('app_id', Integer, ForeignKey('app.id')),
+    # install_early is just a colloqualism to mean 'install as early as
+    # possible.' initiallly this is in support for installing apps out of the
+    # gate for DEP
+    Column('install_early', Boolean),
+)
+
 class MDMGroup(Base):
     __tablename__ = 'mdm_group'
 
@@ -170,6 +180,7 @@ class MDMGroup(Base):
 
     devices = relationship('Device', secondary=device_group_assoc, backref='mdm_groups')
     profiles = relationship('Profile', secondary=profile_group_assoc, backref='mdm_groups')
+    apps = relationship('App', secondary=app_group_assoc, backref='mdm_groups')
 
     def __repr__(self):
         return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
@@ -225,6 +236,9 @@ class App(Base):
 
     def path_format(self):
         return '%010d.dat' % self.id
+
+    def __repr__(self):
+        return '<App ID=%r Filename=%r>' % (self.id, self.filename)
 
 class DEPConfig(Base):
     __tablename__ = 'dep_config'

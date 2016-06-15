@@ -7,15 +7,15 @@ from flask import Blueprint, render_template, make_response, request, abort
 from flask import current_app, send_file, g
 from .pki.ca import get_ca, PushCertificate
 from .pki.m2certs import Certificate, RSAPrivateKey
-from .database import db_session, NoResultFound, or_
+from .database import db_session, NoResultFound, or_, and_
 from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
-from .models import App
+from .models import App, MDMGroup, app_group_assoc
 from .profiles import Profile
 from .profiles.cert import PEMCertificatePayload, PKCS12CertificatePayload
 from .profiles.mdm import MDMPayload
 from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
 from .mdmcmds import InstallProfile, AppInstall
-from .mdmcmds.dep import DeviceConfigured, AdminAccountTest
+from .mdmcmds.dep import DeviceConfigured
 from os import urandom
 from M2Crypto import SMIME, BIO, X509
 import plistlib
@@ -291,6 +291,23 @@ def parse_plist_input_data(f):
         return f(*args, **kwargs)
     return decorator
 
+def device_first_post_enroll(device, awaiting=False):
+    print 'enroll:', 'UpdateInventoryDevInfoCommand'
+    db_session.add(UpdateInventoryDevInfoCommand.new_queued_command(device))
+
+    # install all group profiles
+    for group in device.mdm_groups:
+        for profile in group.profiles:
+            db_session.add(InstallProfile.new_queued_command(device, {'id': profile.id}))
+
+    if awaiting:
+        # in DEP Await state, send DeviceConfigured to proceed with setup
+        db_session.add(DeviceConfigured.new_queued_command(device))
+
+    db_session.commit()
+
+    push_to_device(device)
+
 @mdm_app.route("/checkin", methods=['PUT'])
 @device_cert_check(no_device_okay=True)
 @parse_plist_input_data
@@ -325,16 +342,22 @@ def checkin():
         except NoResultFound:
             # no device found, let's make a new one!
             device = Device()
+            db_session.add(device)
 
             device.udid = resp['UDID']
 
         if 'Topic' in resp:
             device.topic = resp['Topic']
 
+        # remove the previous device token (in the case of a re-enrollment) to
+        # tell the difference between a periodic TokenUpdate and the first
+        # post-enrollment TokenUpdate
+        device.token = None
+        device.first_user_message_seen = False
+
         # TODO: we're essentially trusting the device to give the correct security infomration here
         device.certificate = g.device_cert
 
-        db_session.add(device)
         db_session.commit()
 
         return 'OK'
@@ -358,25 +381,24 @@ def checkin():
         if 'Topic' in resp:
             device.topic = resp['Topic']
 
+        first_token_update = False if device.token else True
+
         if 'Token' in resp:
             device.token = resp['Token'].data.encode('base64')
+        else:
+            current_app.logger.error('TokenUpdate message missing Token')
+            abort(400, 'invalid data supplied')
 
         if 'UnlockToken' in resp:
             device.unlock_token = resp['UnlockToken'].data.encode('base64')
 
         db_session.commit()
 
-        # TokenUpdate implies successful MDM profile installation. let's kick off a check-in
-
-        current_app.logger.info('sending initial post-enrollment MDM command(s) to device=%d', g.device.id)
-
-        # queue next command in DB for device
-        new_qc = UpdateInventoryDevInfoCommand.new_queued_command(device)
-        db_session.add(new_qc)
-
-        db_session.commit()
-
-        push_to_device(device)
+        if first_token_update:
+            # the first TokenUpdate implies successful MDM profile install.
+            # kick off our first-device commands, noting any DEP Await state
+            current_app.logger.info('sending initial post-enrollment MDM command(s) to device=%d', g.device.id)
+            device_first_post_enroll(g.device, awaiting=resp.get('AwaitingConfiguration', False))
 
         return 'OK'
     elif resp['MessageType'] == 'UserAuthenticate':
@@ -425,6 +447,22 @@ def checkin():
     print 'Invalid message type'
     abort(500, 'Invalid message type')
 
+def device_first_user_message(device):
+    '''Queue the MDM commands appropriate for a first-user-message seen
+    event. Currently used to inititate DEP app installations.'''
+
+    device.first_user_message_seen = True
+
+    for group in device.mdm_groups:
+        app_q = db_session.query(App).join(app_group_assoc, and_(app_group_assoc.c.mdm_group_id == group.id, app_group_assoc.c.app_id == App.id)).filter(app_group_assoc.c.install_early == True)
+
+        for app in app_q:
+            db_session.add(AppInstall.new_queued_command(device, {'id': app.id}))
+
+    db_session.commit()
+
+    push_to_device(device)
+
 @mdm_app.route("/mdm", methods=['PUT'])
 @device_cert_check()
 @parse_plist_input_data
@@ -441,6 +479,7 @@ def mdm():
         # MDM command. this is becasue DEP appears to only allow apps to be
         # installed while a user is logged in. note also the undocumented
         # NotOnConsole key to (possibly) indicate that this is a UI login?
+        device_first_user_message(g.device)
         current_app.logger.warn('per-user MDM command not yet supported')
         return ''
 
