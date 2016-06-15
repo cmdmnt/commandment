@@ -34,6 +34,10 @@ class FixedLocationResponse(Response):
 
 admin_app = Blueprint('admin_app', __name__)
 
+@admin_app.route('/')
+def index():
+    return redirect('/admin/config/edit', Response=FixedLocationResponse)
+
 @admin_app.route('/certificates')
 def admin_certificates():
     # merely to generate new CA if not exist
