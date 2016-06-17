@@ -829,7 +829,7 @@ def dep_profile_manage(profile_id):
         if len(submitted_dev_ids):
             devices = db_session.query(Device).filter(and_(Device.dep_config == dep_profile.dep_config, or_(*[Device.id == i for i in submitted_dev_ids])))
             assign_devices(dep_profile, devices)
-        return 'tbd'
+        return redirect('/admin/dep/index', Response=FixedLocationResponse)
 
 @admin_app.route('/dep/test1/<int:dep_id>')
 def dep_test1(dep_id):
