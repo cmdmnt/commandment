@@ -122,11 +122,11 @@ def enroll():
 
     config = db_session.query(MDMConfig).first()
 
-    if not config.prefix:
-        abort(500, 'MDM configuration has no profile prefix')
-
     if not config:
         abort(500, 'No MDM configuration present; cannot generate enrollment profile')
+
+    if not config.prefix or not config.prefix.strip():
+        abort(500, 'MDM configuration has no profile prefix')
 
     profile = Profile(config.prefix + '.enroll', PayloadDisplayName=config.mdm_name)
 
