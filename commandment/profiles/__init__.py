@@ -8,43 +8,74 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 import plistlib
 from uuid import uuid4
 
+class PayloadInvalid(Exception):
+    # base class for invalid Payloads
+    pass
+
+class PayloadKeyRequired(PayloadInvalid):
+    # missing required Payload keys
+    pass
+
+class PayloadValueError(PayloadInvalid):
+    # Payload keys are not correct value or format
+    pass
+
 class Payload(object):
     '''Apple Configuration Profile Payload base class'''
     def __init__(self, payload_type, identifier, uuid=None, version=1, **kwargs):
-        if not identifier:
-            raise ValueError('payload identifier is required')
-
-        if identifier.startswith('.'):
-            raise ValueError('payload identifier cannot start with a period')
-
-        if not payload_type:
-            raise ValueError('payload type is required')
-
-        version = int(version)
-
-        if version < 1:
-            raise ValueError('payload version must be >= 1')
-
         # required keys (in all payload & profile types)
-        self.payload = {
+        new_payload_dict = {
             'PayloadType': payload_type,
             'PayloadIdentifier': identifier,
             'PayloadUUID': uuid if uuid else str(uuid4()).upper(),
             'PayloadVersion': version,
         }
 
-        # remove any required fields from the optional supplied keys
-        for kwkey in self.payload.keys():
-            if kwkey in kwargs:
-                del kwargs[kwkey]
-
         # apply any additional argument keys to our payload
-        self.payload.update(kwargs)
+        new_payload_dict.update(kwargs)
+
+        self.set_payload(new_payload_dict)
 
     def generate_dict(self):
         '''Assemble a dictionary of this Payload data'''
         # avoid modifying our actual payload by using a shallow copy
         return self.payload.copy()
+
+    def set_payload(self, payload_dict):
+        '''Set the internal payload dictionary and check that this payload
+        is valid by having all required keys and reasonable values.'''
+        if 'PayloadIdentifier' not in payload_dict:
+            raise PayloadKeyRequired('payload identifier is required')
+
+        if not payload_dict['PayloadIdentifier']:
+            raise PayloadValueError('payload identifier must not be empty')
+
+        if payload_dict['PayloadIdentifier'].startswith('.'):
+            raise PayloadValueError('payload identifier cannot start with a period')
+
+        if 'PayloadType' not in payload_dict:
+            raise PayloadKeyRequired('payload type is required')
+
+        if not payload_dict['PayloadType']:
+            raise PayloadValueError('payload type must not be empty')
+
+        if 'PayloadVersion' not in payload_dict:
+            raise PayloadKeyRequired('payload version is required')
+
+        version = int(payload_dict['PayloadVersion'])
+
+        if version < 1:
+            raise PayloadValueError('payload version must be >= 1')
+
+        payload_dict['PayloadVersion'] = version
+
+        if 'PayloadUUID' not in payload_dict:
+            raise PayloadKeyRequired('payload uuid is required')
+
+        if not payload_dict['PayloadUUID']:
+            raise PayloadValueError('payload uuid must not be empty')
+
+        self.payload = payload_dict
 
     @classmethod
     def from_dict(cls, payload_dict):
@@ -59,7 +90,7 @@ class Payload(object):
         else:
             pld = Payload.__new__(Payload)
 
-        pld.payload = payload_dict
+        pld.set_payload(payload_dict)
         return pld
 
     def get_uuid(self):
