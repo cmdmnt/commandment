@@ -20,7 +20,9 @@ class Payload(object):
         if not payload_type:
             raise ValueError('payload type is required')
 
-        if int(version) < 1:
+        version = int(version)
+
+        if version < 1:
             raise ValueError('payload version must be >= 1')
 
         # required keys (in all payload & profile types)
@@ -28,7 +30,7 @@ class Payload(object):
             'PayloadType': payload_type,
             'PayloadIdentifier': identifier,
             'PayloadUUID': uuid if uuid else str(uuid4()).upper(),
-            'PayloadVersion': int(version),
+            'PayloadVersion': version,
         }
 
         # remove any required fields from the optional supplied keys
