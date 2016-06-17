@@ -624,7 +624,10 @@ def admin_config_add():
 
         new_config.mdm_name = request.form['name']
         new_config.description = request.form['description'] if request.form['description'] else None
-        new_config.prefix = request.form['prefix'].rstrip('.')
+        new_config.prefix = request.form['prefix'].strip('.')
+
+        if not new_config.prefix:
+            abort(400, 'No profile prefix provided')
 
         # TODO: validate this input (but DB constraints should catch it, too)
         new_config.ca_cert_id = int(request.form['ca_cert'])
