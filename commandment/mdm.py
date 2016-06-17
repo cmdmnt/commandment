@@ -7,13 +7,15 @@ from flask import Blueprint, render_template, make_response, request, abort
 from flask import current_app, send_file, g
 from .pki.ca import get_ca, PushCertificate
 from .pki.m2certs import Certificate, RSAPrivateKey
-from .database import db_session, NoResultFound, or_
+from .database import db_session, NoResultFound, or_, and_
 from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
-from .models import App
+from .models import App, MDMGroup, app_group_assoc
 from .profiles import Profile
 from .profiles.cert import PEMCertificatePayload, PKCS12CertificatePayload
 from .profiles.mdm import MDMPayload
 from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
+from .mdmcmds import InstallProfile, AppInstall
+from .mdmcmds.dep import DeviceConfigured
 from os import urandom
 from M2Crypto import SMIME, BIO, X509
 import plistlib
@@ -123,7 +125,10 @@ def enroll():
     if not config:
         abort(500, 'No MDM configuration present; cannot generate enrollment profile')
 
-    profile = Profile(config.prefix, PayloadDisplayName=config.mdm_name)
+    if not config.prefix or not config.prefix.strip():
+        abort(500, 'MDM configuration has no profile prefix')
+
+    profile = Profile(config.prefix + '.enroll', PayloadDisplayName=config.mdm_name)
 
     ca_cert_payload = PEMCertificatePayload(config.prefix + '.mdm-ca', mdm_ca.get_cacert().get_pem(), PayloadDisplayName='MDM CA Certificate')
 
@@ -289,6 +294,23 @@ def parse_plist_input_data(f):
         return f(*args, **kwargs)
     return decorator
 
+def device_first_post_enroll(device, awaiting=False):
+    print 'enroll:', 'UpdateInventoryDevInfoCommand'
+    db_session.add(UpdateInventoryDevInfoCommand.new_queued_command(device))
+
+    # install all group profiles
+    for group in device.mdm_groups:
+        for profile in group.profiles:
+            db_session.add(InstallProfile.new_queued_command(device, {'id': profile.id}))
+
+    if awaiting:
+        # in DEP Await state, send DeviceConfigured to proceed with setup
+        db_session.add(DeviceConfigured.new_queued_command(device))
+
+    db_session.commit()
+
+    push_to_device(device)
+
 @mdm_app.route("/checkin", methods=['PUT'])
 @device_cert_check(no_device_okay=True)
 @parse_plist_input_data
@@ -323,30 +345,36 @@ def checkin():
         except NoResultFound:
             # no device found, let's make a new one!
             device = Device()
+            db_session.add(device)
 
             device.udid = resp['UDID']
 
         if 'Topic' in resp:
             device.topic = resp['Topic']
 
+        # remove the previous device token (in the case of a re-enrollment) to
+        # tell the difference between a periodic TokenUpdate and the first
+        # post-enrollment TokenUpdate
+        device.token = None
+        device.first_user_message_seen = False
+
         # TODO: we're essentially trusting the device to give the correct security infomration here
         device.certificate = g.device_cert
 
-        db_session.add(device)
         db_session.commit()
 
         return 'OK'
     elif resp['MessageType'] == 'TokenUpdate':
+        current_app.logger.info('TokenUpdate received')
+        print print_resp
+
         # TODO: a TokenUpdate can either be for a device or a user (per OS X extensions)
         if 'UserID' in resp:
-            print 'Skipping User Token Update'
+            current_app.logger.warn('per-user TokenUpdate not yet implemented, skipping')
             return 'OK'
 
         # TODO: check to make sure device == UDID == cert, etc.
         device = db_session.query(Device).filter(Device.udid == resp['UDID']).one()
-
-        print 'TokenUpdate'
-        print print_resp
 
         # device.certificate = g.device_cert
 
@@ -356,28 +384,30 @@ def checkin():
         if 'Topic' in resp:
             device.topic = resp['Topic']
 
+        first_token_update = False if device.token else True
+
         if 'Token' in resp:
             device.token = resp['Token'].data.encode('base64')
+        else:
+            current_app.logger.error('TokenUpdate message missing Token')
+            abort(400, 'invalid data supplied')
 
         if 'UnlockToken' in resp:
             device.unlock_token = resp['UnlockToken'].data.encode('base64')
 
         db_session.commit()
 
-        # TokenUpdate implies successful MDM profile installation. let's kick off a check-in
-
-        # queue next command in DB for device
-        new_qc = UpdateInventoryDevInfoCommand.new_queued_command(device)
-        db_session.add(new_qc)
-
-        db_session.commit()
-
-        push_to_device(device)
+        if first_token_update:
+            # the first TokenUpdate implies successful MDM profile install.
+            # kick off our first-device commands, noting any DEP Await state
+            current_app.logger.info('sending initial post-enrollment MDM command(s) to device=%d', g.device.id)
+            device_first_post_enroll(g.device, awaiting=resp.get('AwaitingConfiguration', False))
 
         return 'OK'
     elif resp['MessageType'] == 'UserAuthenticate':
         print print_resp
-        # abort(410, 'OS X per-user authentication not yet supported')
+        current_app.logger.warn('per-user authentication not yet implemented, skipping')
+        abort(410, 'per-user authentication not yet supported')
         # TODO: we can theoretically do a digest authentication on the actual
         # end-user's password supplied at the login screen. this will depend
         # depend heavily on any given user's backend. Perhaps provide some
@@ -420,6 +450,22 @@ def checkin():
     print 'Invalid message type'
     abort(500, 'Invalid message type')
 
+def device_first_user_message(device):
+    '''Queue the MDM commands appropriate for a first-user-message seen
+    event. Currently used to inititate DEP app installations.'''
+
+    device.first_user_message_seen = True
+
+    for group in device.mdm_groups:
+        app_q = db_session.query(App).join(app_group_assoc, and_(app_group_assoc.c.mdm_group_id == group.id, app_group_assoc.c.app_id == App.id)).filter(app_group_assoc.c.install_early == True)
+
+        for app in app_q:
+            db_session.add(AppInstall.new_queued_command(device, {'id': app.id}))
+
+    db_session.commit()
+
+    push_to_device(device)
+
 @mdm_app.route("/mdm", methods=['PUT'])
 @device_cert_check()
 @parse_plist_input_data
@@ -430,18 +476,30 @@ def mdm():
         current_app.logger.info('provided UDID does not match device UDID')
         abort(400, 'invalid input data')
 
+    if 'UserID' in g.plist_data:
+        # Note that with DEP this is an opportune time to queue up an 
+        # application install for the /device/ despite this being a per-user
+        # MDM command. this is becasue DEP appears to only allow apps to be
+        # installed while a user is logged in. note also the undocumented
+        # NotOnConsole key to (possibly) indicate that this is a UI login?
+        device_first_user_message(g.device)
+        current_app.logger.warn('per-user MDM command not yet supported')
+        return ''
+
     if 'Status' not in g.plist_data:
-        current_app.logger.info('invalid MDM request (no Status provided) from device id %d' % g.device.id)
+        current_app.logger.error('invalid MDM request (no Status provided) from device id %d' % g.device.id)
         abort(400, 'invalid input data')
     else:
         status = g.plist_data['Status']
 
     current_app.logger.info('device id=%d udid=%s processing status=%s', g.device.id, g.device.udid, status)
 
+    print g.plist_data
+
     if status != 'Idle':
 
         if 'CommandUUID' not in g.plist_data:
-            current_app.logger.info('missing CommandUUID for non-Idle status')
+            current_app.logger.error('missing CommandUUID for non-Idle status')
             abort(400, 'invalid input data')
 
         try:
@@ -472,8 +530,12 @@ def mdm():
         except NoResultFound:
             current_app.logger.info('no record of command uuid=%s', g.plist_data['CommandUUID'])
 
+    if status == 'NotNow':
+        current_app.logger.warn('NotNow status received, forgoing any further commands')
+        return ''
+
     while True:
-        command = QueuedCommand.get_next_device_command(g.device, notnow_seen=(status == 'NotNow'))
+        command = QueuedCommand.get_next_device_command(g.device)
 
         if not command:
             break

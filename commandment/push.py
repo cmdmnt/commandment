@@ -12,6 +12,7 @@ from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey 
 from .pki.ca import get_ca, PushCertificate
 from .pki.m2certs import Certificate, RSAPrivateKey
 import random
+import time
 try:
     from ssl import SSLError
 except ImportError:
@@ -73,8 +74,10 @@ def push_to_device(device_or_devices):
 
             mdm_payload = MDMPayload(device.push_magic)
 
+            expiry = time.time() + 86400
+
             # add a frame for this topic
-            topic_frames[device.topic].add_item(token_hex, mdm_payload, random.getrandbits(32), 0, 10)
+            topic_frames[device.topic].add_item(token_hex, mdm_payload, random.getrandbits(32), expiry, 10)
         else:
             # TODO: configure and use real logging
             print 'Cannot send APNs to device: no APNs connection found (by device topic)'

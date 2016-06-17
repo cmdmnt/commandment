@@ -1,0 +1,49 @@
+{% set section = 'app' %}
+{% extends "admin/layout.html" %}
+{% block content %}
+
+<h1>Admin - App: {{ app.filename }}</h1>
+
+<form id="groupmod" action="{{ app.id }}/groupmod" method="POST">
+
+<table border="1">
+
+<tr>
+	<th>Group membership</th>
+	<th>Install early<br>(DEP first user message)</th>
+</tr>
+
+{% for group in groups %}
+
+<tr>
+	<td>
+		<input id="group_id_{{ group['group'].id }}" type="checkbox" name="group_id" value="{{ group['group'].id }}"{% if group['app_id'] %} checked{% endif %}>
+		<label for="group_id_{{ group['group'].id }}">{{ group['group'].group_name }}</label>
+	</td>
+	<td>
+		<input id="install_early_{{ group['group'].id }}" type="checkbox" name='install_early' value="{{ group['group'].id }}"{% if group['install_early'] %} checked{% endif %}>
+		<label for="install_early_{{ group['group'].id }}">Install early</label>
+	</td>
+</tr>
+
+{% endfor %}
+
+</table>
+<br>
+
+<button type="submit" form="groupmod" value="Submit">Update App Group Membership</button>
+
+</form>
+
+<p>
+
+The <em>Install Early</em> checkbox means that when an MDM client is enrolled
+this app will attempt to be installed at the earliest "user checkin" for the
+device. Due to the specifics about how DEP enrollment and app installations
+happen apps can only be installed while users are logged in. Attempt to
+install these apps as soon as possible after the MDM client is enrolled and
+we receive indiciation the first applicable user has logged in.
+
+</p>
+
+{% endblock %}

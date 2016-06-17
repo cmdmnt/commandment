@@ -1,3 +1,4 @@
+{% set section = 'dep' %}
 {% extends "admin/layout.html" %}
 {% block content %}
 
@@ -91,6 +92,19 @@
 <tr>
 
 	<td>
+		<label for="await_device_configured">Await Device Configuration</label>.
+
+		If checked, the device will <strong>not</strong> continue in Setup Assistant until the MDM
+		server sends a command stating that the device is configured.
+	</td>
+	<td>
+		<input type="checkbox" id="await_device_configured" name="await_device_configured" value="1">
+	</td>
+
+</tr>
+<tr>
+
+	<td>
 		<label for="is_mdm_removable">Is MDM Removable</label>.
 
 		If not checked, the MDM payload delivered by the configuration URL cannot be
@@ -160,8 +174,6 @@
 			Restore&mdash;Disables restoring from backup<br>
 		<input type="checkbox" name="skip_setup_items" value="AppleID">
 			AppleID&mdash;Disables signing in to Apple ID and iCloud<br>
-		<input type="checkbox" name="skip_setup_items" value="TOS">
-			TOS&mdash;Skips Terms and Conditions<br>
 		<input type="checkbox" name="skip_setup_items" value="Biometric">
 			Biometric&mdash;Skips Touch ID setup<br>
 		<input type="checkbox" name="skip_setup_items" value="Payment">
@@ -170,14 +182,12 @@
 			Zoom&mdash;Skips zoom setup<br>
 		<input type="checkbox" name="skip_setup_items" value="Android">
 			Android&mdash;If the Restore pane is not skipped, removes Move from Android option from it<br>
+		<input type="checkbox" name="skip_setup_items" value="TOS">
+			TOS&mdash;Skips Terms and Conditions<br>
 		<input type="checkbox" name="skip_setup_items" value="Siri">
 			Siri&mdash;Disables Siri<br>
 		<input type="checkbox" name="skip_setup_items" value="Diagnostics">
 			Diagnostics&mdash;Disables automatically sending diagnostic information<br>
-		<input type="checkbox" name="skip_setup_items" value="Payment">
-			Payment&mdash;Skips Apple Pay setup<br>
-		<input type="checkbox" name="skip_setup_items" value="Passcode">
-			Passcode&mdash;Hides and disables the passcode pane<br>
 		<input type="checkbox" name="skip_setup_items" value="FileVault">
 			FileVault&mdash;Disables FileVault Setup Assistant screen (OS X only)<br>
 	</td>

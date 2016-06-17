@@ -1,3 +1,4 @@
+{% set section = 'app' %}
 {% extends "admin/layout.html" %}
 {% block content %}
 
@@ -9,6 +10,7 @@
 	<th>App ID</th>
 	<th>Filename</th>
 	<th></th>
+	<th></th>
 </tr>
 
 {% for app in apps %}
@@ -16,6 +18,9 @@
 <tr>
 	<td>{{ app.id }}</td>
 	<td>{{ app.filename }}</td>
+	<td style="white-space:nowrap;">
+		<a href="/admin/app/manage/{{ app.id }}">[ Manage App ]</a>
+	</td>
 	<td style="white-space:nowrap;">
 		<a href="/admin/app/delete/{{ app.id }}">[ Delete App ]</a>
 	</td>

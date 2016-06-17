@@ -1,3 +1,4 @@
+{% set section = 'dep' %}
 {% extends "admin/layout.html" %}
 {% block title %}DEP Management{% endblock %}
 {% block content %}
@@ -23,7 +24,12 @@
 {% for dep_config in dep_configs %}
 
 <tr>
-	<td>{{ dep_config.id }}</td>
+	<td>
+		{{ dep_config.id }}
+		{% if dep_config.url_base %}
+			<strong>(depsim)</strong>
+		{% endif %}
+	</td>
 	<td style="color:{% if dep_config.server_token %}#0b0{% else %}red{% endif %};">
 		{% if not dep_config.server_token %}<strong>Not</strong> {% endif %}Present
 	</td>

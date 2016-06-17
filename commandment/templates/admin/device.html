@@ -1,3 +1,4 @@
+{% set section = 'device' %}
 {% extends "admin/layout.html" %}
 {% block content %}
 
@@ -23,7 +24,7 @@
 </tr>
 <tr>
 	<th>Storage Used %</th>
-	<td>{{ ((device.info_json['AvailableDeviceCapacity'] / device.info_json['DeviceCapacity']) * 100)|int }}%</td>
+	<td>{{ (100 - ((device.info_json.get('AvailableDeviceCapacity',0) / device.info_json.get('DeviceCapacity',1)) * 100)) |int}}%</td>
 </tr>
 <tr>
 	<th>OS Version</th>

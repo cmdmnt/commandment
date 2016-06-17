@@ -211,7 +211,7 @@ class AppInstall(QueuedMDMCommand):
         config = db_session.query(MDMConfig).one()
 
         cmd_dict = {}
-        cmd_dict['ManifestURL'] = '%s/app/%d/manifest' % (config.base_url(), self.input_data['app_id'])
+        cmd_dict['ManifestURL'] = '%s/app/%d/manifest' % (config.base_url(), self.input_data['id'])
         cmd_dict['Options'] = {'NotManaged': True}
         cmd_dict['ManagementFlags'] = 0
 

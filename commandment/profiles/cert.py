@@ -16,9 +16,8 @@ class PEMCertificatePayload(Payload):
     payload_type = 'com.apple.security.pem'
 
     def __init__(self, identifier, cert_data, uuid=None, **kwargs):
+        kwargs['PayloadContent'] = plistlib.Data(cert_data)
         Payload.__init__(self, self.payload_type, identifier, uuid, **kwargs)
-
-        self.payload['PayloadContent'] = plistlib.Data(cert_data)
 
 class PKCS12CertificatePayload(Payload):
     '''Password-protected identity certificate. Only one certificate may be
@@ -31,9 +30,7 @@ class PKCS12CertificatePayload(Payload):
     payload_type = 'com.apple.security.pkcs12'
 
     def __init__(self, identifier, cert_data, password=None, uuid=None, **kwargs):
-        Payload.__init__(self, self.payload_type, identifier, uuid, **kwargs)
-
-        self.payload['PayloadContent'] = plistlib.Data(cert_data)
-
+        kwargs['PayloadContent'] = plistlib.Data(cert_data)
         if password:
-            self.payload['Password'] = password
+            kwargs['Password'] = password
+        Payload.__init__(self, self.payload_type, identifier, uuid, **kwargs)

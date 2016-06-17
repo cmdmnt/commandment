@@ -6,9 +6,9 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 from flask import Blueprint, render_template, Response, request, redirect, current_app, abort, make_response
 from .pki.ca import get_ca, PushCertificate
 from .pki.m2certs import X509Error, Certificate, RSAPrivateKey, CertificateRequest
-from .database import db_session, and_, or_
+from .database import db_session, and_, or_, update, insert, delete
 from .pki.m2certs import Certificate
-from .models import CERT_TYPES, profile_group_assoc, device_group_assoc, Device
+from .models import CERT_TYPES, profile_group_assoc, device_group_assoc, Device, app_group_assoc
 from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig
 from .models import App, DEPConfig, DEPProfile
 from .profiles.restrictions import RestrictionsPayload
@@ -33,6 +33,10 @@ class FixedLocationResponse(Response):
     autocorrect_location_header = False
 
 admin_app = Blueprint('admin_app', __name__)
+
+@admin_app.route('/')
+def index():
+    return redirect('/admin/config/edit', Response=FixedLocationResponse)
 
 @admin_app.route('/certificates')
 def admin_certificates():
@@ -343,6 +347,9 @@ def admin_device(device_id):
 
     apps = db_session.query(App.id, App.filename)
 
+    if device.info_json is None:
+        device.info_json = {}
+
     return render_template('admin/device.html', device=device, groups=group_q, apps=apps)
 
 def install_group_profiles_to_device(group, device):
@@ -422,7 +429,7 @@ def admin_device_appinst(device_id):
     app_id = int(request.form['application'])
 
     # note singular tuple for subject here
-    new_appinst = AppInstall.new_queued_command(device, {'app_id': app_id})
+    new_appinst = AppInstall.new_queued_command(device, {'id': app_id})
     db_session.add(new_appinst)
     db_session.commit()
     push_to_device(device)
@@ -513,6 +520,80 @@ def admin_app_delete(app_id):
 
     return redirect('/admin/apps', Response=FixedLocationResponse)
 
+@admin_app.route('/app/manage/<int:app_id>', methods=['GET'])
+def admin_app_manage(app_id):
+    app = db_session.query(App).filter(App.id == app_id).one()
+
+    # get all MDMGroups left joining against our assoc. table to see if this device is in any of those groups
+    group_q = db_session.query(
+        MDMGroup,
+        app_group_assoc.c.app_id,
+        app_group_assoc.c.install_early).\
+            outerjoin(
+                app_group_assoc,
+                and_(
+                    app_group_assoc.c.mdm_group_id == MDMGroup.id,
+                    app_group_assoc.c.app_id == app_id))
+
+    groups = [dict(zip(('group', 'app_id', 'install_early', ), r)) for r in group_q]
+
+    return render_template('admin/app_manage.html', app=app, groups=groups)
+
+@admin_app.route('/app/manage/<int:app_id>/groupmod', methods=['POST'])
+def admin_app_manage_groupmod(app_id):
+    app = db_session.query(App).filter(App.id == app_id).one()
+
+    q = db_session.query(
+        app_group_assoc.c.mdm_group_id,
+        app_group_assoc.c.install_early).\
+            filter(app_group_assoc.c.app_id == app.id)
+
+    app_groups = dict(q.all())
+
+    new_app_groups = {}
+
+    form_groups = request.form.getlist('group_id', type=int)
+
+    for gid in form_groups:
+        if gid not in new_app_groups:
+            new_app_groups[gid] = False
+
+    form_ie = request.form.getlist('install_early', type=int)
+
+    for gid in form_ie:
+        if gid in new_app_groups:
+            new_app_groups[gid] = True
+
+    before_groups = set(app_groups.keys())
+    after_groups = set(new_app_groups.keys())
+
+    gm_delete = before_groups.difference(after_groups)
+    gm_same = before_groups.intersection(after_groups)
+    gm_add = after_groups.difference(before_groups)
+
+    for same_id in gm_same:
+        q = update(app_group_assoc).\
+            values(install_early=bool(new_app_groups.get(same_id))).\
+            where(and_(app_group_assoc.c.app_id == app.id, app_group_assoc.c.mdm_group_id == same_id))
+        db_session.execute(q)
+
+    if gm_delete:
+        q = delete(app_group_assoc).\
+            where(and_(app_group_assoc.c.app_id == app.id, app_group_assoc.c.mdm_group_id.in_(gm_delete)))
+        db_session.execute(q)
+
+    for add_id in gm_add:
+        q = insert(app_group_assoc).values(
+            app_id=app_id,
+            mdm_group_id=add_id,
+            install_early=bool(new_app_groups.get(add_id)))
+
+        db_session.execute(q)
+
+    db_session.commit()
+
+    return redirect('/admin/apps', Response=FixedLocationResponse)
+
 @admin_app.route('/config/add', methods=['GET', 'POST'])
 def admin_config_add():
     mdm_ca = get_ca()
@@ -543,7 +624,10 @@ def admin_config_add():
 
         new_config.mdm_name = request.form['name']
         new_config.description = request.form['description'] if request.form['description'] else None
-        new_config.prefix = request.form['prefix'].rstrip('.')
+        new_config.prefix = request.form['prefix'].strip('.')
+
+        if not new_config.prefix:
+            abort(400, 'No profile prefix provided')
 
         # TODO: validate this input (but DB constraints should catch it, too)
         new_config.ca_cert_id = int(request.form['ca_cert'])
@@ -679,7 +763,7 @@ def dep_tokenupload(dep_id):
 @admin_app.route('/dep/profile/add', methods=['GET', 'POST'])
 def dep_profile_add():
     if request.method == 'POST':
-        form_bools = ('allow_pairing', 'is_supervised', 'is_multi_user', 'is_mandatory', 'is_mdm_removable')
+        form_bools = ('allow_pairing', 'is_supervised', 'is_multi_user', 'is_mandatory', 'await_device_configured', 'is_mdm_removable')
         form_strs = ('profile_name', 'support_phone_number', 'support_email_address', 'department', 'org_magic')
 
         profile = {}
@@ -748,7 +832,7 @@ def dep_profile_manage(profile_id):
         if len(submitted_dev_ids):
             devices = db_session.query(Device).filter(and_(Device.dep_config == dep_profile.dep_config, or_(*[Device.id == i for i in submitted_dev_ids])))
             assign_devices(dep_profile, devices)
-        return 'tbd'
+        return redirect('/admin/dep/index', Response=FixedLocationResponse)
 
 @admin_app.route('/dep/test1/<int:dep_id>')
 def dep_test1(dep_id):

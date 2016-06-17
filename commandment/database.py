@@ -9,7 +9,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.mutable import Mutable
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.types import TypeDecorator
-from sqlalchemy import Text, and_, or_
+from sqlalchemy import Text, and_, or_, and_, update, insert, delete
 import json
 
 engine = None

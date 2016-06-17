@@ -8,7 +8,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from .mutablelist import MutableList
-from .database import JSONEncodedDict, Base
+from .database import JSONEncodedDict, Base, or_, and_
 from profiles.mdm import MDM_AR__ALL
 
 CERT_TYPES = {
@@ -80,12 +80,13 @@ class Device(Base):
     dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
     dep_config = relationship('DEPConfig', backref='devices')
     info_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
+    first_user_message_seen = Column(Boolean, nullable=False, default=False)
 
     certificate_id = Column(ForeignKey('certificate.id'))
     certificate = relationship('Certificate', backref='devices')
 
     def __repr__(self):
-        return '<Device ID=%r UDID=%r>' % (self.id, self.udid)
+        return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
 
 
 class QueuedCommand(Base):
@@ -94,10 +95,11 @@ class QueuedCommand(Base):
     id = Column(Integer, primary_key=True)
 
     command_class = Column(String, nullable=False) # string representation of our local command handler
+    # request_type = Column(String, index=True, nullable=False) # actual command name
     uuid = Column(String(36), index=True, unique=True, nullable=False)
     input_data = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True) # JSON add'l data as input to command builder
     queued_status = Column(String(1), index=True, nullable=False, default='Q') # 'Q' = Queued, 'S' = Sent
-    result = Column(String, nullable=True) # Status key of MDM command result submission
+    result = Column(String, index=True, nullable=True) # Status key of MDM command result submission
 
     # queued_stamp
     # sent_stamp
@@ -123,12 +125,13 @@ class QueuedCommand(Base):
         return cls.query.filter(cls.uuid == uuid).one()
 
     @classmethod
-    def get_next_device_command(cls, device, notnow_seen=False):
-        # TODO: test for NotNow case as docs say if we get this it's unlikely
-        # we'll be able to send more NowNow-able commands
-
-        # TODO: order_by queued_stamp
-        return cls.query.filter(cls.device == device, cls.queued_status == 'Q').first()
+    def get_next_device_command(cls, device):
+        # d == d AND (q_status == Q OR (q_status == R AND result == 'NotNow'))
+        return cls.query.filter(
+            and_(cls.device == device,
+                or_(cls.queued_status == 'Q',
+                    and_(cls.queued_status == 'R',
+                        cls.result == 'NotNow')))).order_by(cls.id).first()
 
     def __repr__(self):
         return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.queued_status)
@@ -146,6 +149,9 @@ class Profile(Base):
     uuid = Column(String(36), index=True, unique=True, nullable=False) # duplicated from within profile_data for searching
     profile_data = Column(Text, nullable=False) # serialized XML (or signed, encrypted) profile data
 
+    def __repr__(self):
+        return '<Profile ID=%r UUID=%r>' % (self.id, self.uuid)
+
 device_group_assoc = Table('device_group', Base.metadata,
     Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
     Column('device_id', Integer, ForeignKey('device.id')),
@@ -154,6 +160,15 @@ device_group_assoc = Table('device_group', Base.metadata,
 profile_group_assoc = Table('profile_group', Base.metadata,
     Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
     Column('profile_id', Integer, ForeignKey('profile.id')),
+)
+
+app_group_assoc = Table('app_group', Base.metadata,
+    Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
+    Column('app_id', Integer, ForeignKey('app.id')),
+    # install_early is just a colloqualism to mean 'install as early as
+    # possible.' initiallly this is in support for installing apps out of the
+    # gate for DEP
+    Column('install_early', Boolean),
 )
 
 class MDMGroup(Base):
@@ -165,6 +180,10 @@ class MDMGroup(Base):
 
     devices = relationship('Device', secondary=device_group_assoc, backref='mdm_groups')
     profiles = relationship('Profile', secondary=profile_group_assoc, backref='mdm_groups')
+    apps = relationship('App', secondary=app_group_assoc, backref='mdm_groups')
+
+    def __repr__(self):
+        return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
 
 class MDMConfig(Base):
     __tablename__ = 'mdm_config'
@@ -217,6 +236,9 @@ class App(Base):
 
     def path_format(self):
         return '%010d.dat' % self.id
+
+    def __repr__(self):
+        return '<App ID=%r Filename=%r>' % (self.id, self.filename)
 
 class DEPConfig(Base):
     __tablename__ = 'dep_config'
