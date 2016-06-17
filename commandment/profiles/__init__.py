@@ -11,13 +11,30 @@ from uuid import uuid4
 class Payload(object):
     '''Apple Configuration Profile Payload base class'''
     def __init__(self, payload_type, identifier, uuid=None, version=1, **kwargs):
+        if not identifier:
+            raise ValueError('payload identifier is required')
+
+        if identifier.startswith('.'):
+            raise ValueError('payload identifier cannot start with a period')
+
+        if not payload_type:
+            raise ValueError('payload type is required')
+
+        if int(version) < 1:
+            raise ValueError('payload version must be >= 1')
+
         # required keys (in all payload & profile types)
         self.payload = {
             'PayloadType': payload_type,
             'PayloadIdentifier': identifier,
             'PayloadUUID': uuid if uuid else str(uuid4()).upper(),
-            'PayloadVersion': version,
+            'PayloadVersion': int(version),
         }
+
+        # remove any required fields from the optional supplied keys
+        for kwkey in self.payload.keys():
+            if kwkey in kwargs:
+                del kwargs[kwkey]
 
         # apply any additional argument keys to our payload
         self.payload.update(kwargs)
