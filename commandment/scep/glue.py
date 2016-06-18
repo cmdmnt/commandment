@@ -157,6 +157,7 @@ V_ASN1_OBJECT = 6
 V_ASN1_PRINTABLESTRING = 19
 
 NID_pkcs9_contentType = 50
+NID_pkcs9_challengePassword = 54
 
 class ASN1TypeValue(Union):
     _fields_ = [
@@ -331,6 +332,14 @@ def init_libcrypto_prototypes(libcrypto):
         c_void_p, # BIO *
         c_int]
     libcrypto.PKCS7_decrypt.restype = c_int
+
+    # int X509_REQ_get_attr_by_NID(const X509_REQ *req, int nid, int lastpos)
+    libcrypto.X509_REQ_get_attr_by_NID.argtypes = [c_void_p, c_int, c_int]
+    libcrypto.X509_REQ_get_attr_by_NID.restype = c_int
+
+    # X509_ATTRIBUTE *X509_REQ_get_attr(const X509_REQ *req, int loc)
+    libcrypto.X509_REQ_get_attr.argtypes = [c_void_p, c_int]
+    libcrypto.X509_REQ_get_attr.restype = POINTER(X509_ATTRIBUTE)
 
 def init_libcrypto(lib_path=None):
     if not lib_path:

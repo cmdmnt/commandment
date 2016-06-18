@@ -317,3 +317,30 @@ def degenerate_pkcs7_der(m2_x509s):
     get_lc().PKCS7_free(ct_p7)
 
     return pkcs7_der
+
+def get_challenge_password(req):
+    ct_req = c_void_p(long(req.get_m2_req().req))
+
+    idx = get_lc().X509_REQ_get_attr_by_NID(ct_req, NID_pkcs9_challengePassword, -1)
+
+    if idx < 0:
+        return None
+
+    ct_x509_attr = get_lc().X509_REQ_get_attr(ct_req, idx)
+    ct_asn1_type_p = get_lc().sk_value(ct_x509_attr.contents.value.set, 0)
+    ct_asn1_type = cast(ct_asn1_type_p, POINTER(ASN1Type))
+
+    assert get_lc().ASN1_TYPE_get(ct_asn1_type) == V_ASN1_PRINTABLESTRING
+
+    ct_attr_ptr = ct_asn1_type.contents.value.asn1_string
+
+    attr_len = get_lc().ASN1_STRING_length(ct_attr_ptr)
+
+    if attr_len <= 0:
+        return ''
+
+    ct_buf = create_string_buffer(attr_len)
+    ct_data = get_lc().ASN1_STRING_data(ct_attr_ptr, attr_len)
+    memmove(ct_buf, ct_data, attr_len)
+
+    return ct_buf.raw
