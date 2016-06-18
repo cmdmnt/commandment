@@ -9,7 +9,7 @@ from .pki.ca import get_ca, PushCertificate
 from .pki.m2certs import Certificate, RSAPrivateKey
 from .database import db_session, NoResultFound, or_, and_
 from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
-from .models import App, MDMGroup, app_group_assoc
+from .models import App, MDMGroup, app_group_assoc, SCEPConfig
 from .profiles import Profile
 from .profiles.cert import PEMCertificatePayload, PKCS12CertificatePayload, SCEPPayload
 from .profiles.mdm import MDMPayload
@@ -149,7 +149,7 @@ def enroll():
     # NOTE: any device requesting enrollment will be generating new CA-signed
     # certificates. may want to gate the enrollment page by password or other
     # authentication
-    if True:
+    if config.device_identity_method == 'provide':
         # make new device privkey, certificate then CA sign and persist
         # certificate finally return new Identity object
 
@@ -167,15 +167,21 @@ def enroll():
 
         profile.append_payload(new_dev_ident_payload)
         cert_uuid = new_dev_ident_payload.get_uuid()
-    else:
+    elif config.device_identity_method == 'ourscep':
         # SCEP is preferred
+        scep_config = db_session.query(SCEPConfig).one()
+
         scep_payload = SCEPPayload(
             config.prefix + '.mdm-scep',
-            'http://127.0.0.1:5080',
-            PayloadContent=dict(Keysize=2048),
+            config.scep_url,
+            PayloadContent=dict(
+                Keysize=2048,
+                Challenge=scep_config.challenge),
             PayloadDisplayName='MDM SCEP')
         profile.append_payload(scep_payload)
         cert_uuid = scep_payload.get_uuid()
+    else:
+        abort(500, 'Invalid device identity method')
 
     new_mdm_payload = MDMPayload(
         config.prefix + '.mdm',
