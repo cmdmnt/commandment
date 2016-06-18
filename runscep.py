@@ -7,7 +7,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 from flask import Flask
 from commandment.scep.glue import init_libcrypto, get_libcrypto
 from commandment.scep.message import SCEPAttribute
-from commandment.scep.app import scep_app
+from commandment.scep.app import scep_app, init_scep_record
 from commandment.database import config_engine, init_db
 
 import os
@@ -57,7 +57,10 @@ if __name__ == '__main__':
 
     app.wsgi_app = WSGIChunkedBodyCopy(app.wsgi_app)
 
+    with app.app_context():
+        init_scep_record()
+
     app.run(
         host='0.0.0.0',
-        port=app.config.get('SCEP_PORT', 5080),
+        port=app.config.get('SCEP_PORT'),
         threaded=True)

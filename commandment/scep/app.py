@@ -9,11 +9,21 @@ from M2Crypto import X509, EVP
 from commandment.pki.m2certs import Certificate, CertificateRequest, RSAPrivateKey
 from os import urandom
 from ..pki.ca import get_ca
+from ..database import db_session, NoResultFound
+from ..models import SCEPConfig
 
 FORCE_DEGENERATE_FOR_SINGLE_CERT = True
 CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
 
 scep_app = Blueprint('scep_app', __name__)
+
+def init_scep_record():
+    try:
+        db_session.query(SCEPConfig).one()
+    except NoResultFound:
+        scep_config = SCEPConfig(challenge=urandom(32).encode('hex'))
+        db_session.add(scep_config)
+        db_session.commit()
 
 @scep_app.route('/cgi-bin/pkiclient.exe', methods=['GET', 'POST'])
 @scep_app.route('/scep', methods=['GET', 'POST'])
@@ -21,6 +31,7 @@ scep_app = Blueprint('scep_app', __name__)
 def scep():
     op = request.args.get('operation')
     mdm_ca = get_ca()
+    scep_config = db_session.query(SCEPConfig).one()
 
     if op == 'GetCACert':
         certs = [mdm_ca.get_cacert().get_m2_cert()]
@@ -61,6 +72,9 @@ def scep():
                 m2_evp_cakey)
 
             cert_req = CertificateRequest.load_der(req)
+
+            # if get_challenge_password(cert_req) == scep_config.challenge:
+            # else
 
             # sign request and save to DB
             new_cert, db_new_cert = mdm_ca.sign_new_device_req(cert_req)

@@ -10,7 +10,7 @@ from .database import db_session, and_, or_, update, insert, delete
 from .pki.m2certs import Certificate
 from .models import CERT_TYPES, profile_group_assoc, device_group_assoc, Device, app_group_assoc
 from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig
-from .models import App, DEPConfig, DEPProfile
+from .models import App, DEPConfig, DEPProfile, SCEPConfig
 from .profiles.restrictions import RestrictionsPayload
 from .profiles import Profile
 from .mdmcmds import InstallProfile, RemoveProfile, AppInstall
@@ -26,6 +26,7 @@ import json
 from .utils.dep import DEP
 from .utils.dep_utils import initial_fetch, mdm_profile, assign_devices
 import datetime
+from urlparse import urlparse
 
 class FixedLocationResponse(Response):
     # override Werkzeug default behaviour of "fixing up" once-non-compliant
@@ -626,7 +627,19 @@ def admin_config_add():
         new_config.description = request.form['description'] if request.form['description'] else None
         new_config.prefix = request.form['prefix'].strip('.')
 
-        if not new_config.prefix:
+        new_config.device_identity_method = request.form.get('device_identity_method')
+
+        if new_config.device_identity_method == 'ourscep':
+            frm_scep_hostname = request.form.get('ourscep_hostname')
+            scep_hostname = frm_scep_hostname if frm_scep_hostname else request.form['hostname']
+            new_config.scep_url = 'http://%s:%d' % (scep_hostname, current_app.config.get('SCEP_PORT'))
+        elif new_config.device_identity_method == 'provide':
+            new_config.scep_url = None
+            new_config.scep_challenge = None
+        else:
+            abort(400, 'Invalid device identity method')
+
+        if not new_config.prefix.strip().strip('.'):
             abort(400, 'No profile prefix provided')
 
         # TODO: validate this input (but DB constraints should catch it, too)
@@ -639,6 +652,8 @@ def admin_config_add():
 
         return redirect('/admin/config/edit', Response=FixedLocationResponse)
     else:
+        scep_config = db_session.query(SCEPConfig).first()
+
         # get relevant certificates
         q = db_session.query(DBCertificate).join(DBPrivateKey.certificates).filter(or_(DBCertificate.cert_type == 'mdm.cacert', DBCertificate.cert_type == 'mdm.pushcert'))
 
@@ -658,17 +673,45 @@ def admin_config_add():
         if not push_certs or not ca_certs:
             return redirect('/admin/certificates', Response=FixedLocationResponse)
 
-        return render_template('admin/config/add.html', ca_certs=ca_certs, push_certs=push_certs)
+        return render_template(
+            'admin/config/add.html',
+            ca_certs=ca_certs,
+            push_certs=push_certs,
+            scep_port=current_app.config.get('SCEP_PORT'),
+            scep_present=bool(scep_config))
 
 @admin_app.route('/config/edit', methods=['GET', 'POST'])
 def admin_config():
     config = db_session.query(MDMConfig).first()
+    scep_config = db_session.query(SCEPConfig).first()
+
+
     if not config:
         return redirect('/admin/config/add', Response=FixedLocationResponse)
+
+    existing_hostname = urlparse(config.base_url()).hostname
+    existing_scep_hostname = '' if not config.scep_url else urlparse(config.scep_url).hostname
+
+    if existing_scep_hostname == existing_hostname:
+        existing_scep_hostname = ''
+
     if request.method == 'POST':
         config.ca_cert_id = int(request.form['ca_cert'])
         config.mdm_name = request.form['name']
         config.description = request.form['description'] if request.form['description'] else None
+
+        config.device_identity_method = request.form.get('device_identity_method')
+
+        if config.device_identity_method == 'ourscep':
+            frm_scep_hostname = request.form.get('ourscep_hostname')
+            scep_hostname = frm_scep_hostname if frm_scep_hostname else urlparse(config.base_url()).hostname
+            config.scep_url = 'http://%s:%d' % (scep_hostname, current_app.config.get('SCEP_PORT'))
+        elif config.device_identity_method == 'provide':
+            config.scep_url = None
+            config.scep_challenge = None
+        else:
+            abort(400, 'Invalid device identity method')
+
         db_session.commit()
         return redirect('/admin/config/edit', Response=FixedLocationResponse)
     else:
@@ -676,8 +719,14 @@ def admin_config():
         for i in ca_certs:
             cert = Certificate.load(str(i.pem_certificate))
             i.subject_text = cert.get_subject_as_text()
-        print type(config.description)
-        return render_template('admin/config/edit.html', config=config, ca_certs=ca_certs)
+        return render_template(
+            'admin/config/edit.html',
+            config=config,
+            ca_certs=ca_certs,
+            scep_port=current_app.config.get('SCEP_PORT'),
+            scep_present=bool(scep_config),
+            device_identity_method=config.device_identity_method,
+            ourscep_hostname=existing_scep_hostname)
 
 @admin_app.route('/dep/')
 @admin_app.route('/dep/index')

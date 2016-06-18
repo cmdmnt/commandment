@@ -4,7 +4,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from .mutablelist import MutableList
@@ -207,6 +207,12 @@ class MDMConfig(Base):
     push_cert_id = Column(ForeignKey('certificate.id'), nullable=False)
     push_cert = relationship('Certificate', foreign_keys=[push_cert_id]) # , backref='push_cert_mdm_config'
 
+    # note: we default to 'provide' here despite its lower security because
+    # it requires no other dependencies, i.e. a better user experience
+    device_identity_method = Column(Enum('ourscep', 'scep', 'provide'), default='provide', nullable=False)
+    scep_url = Column(String, nullable=True)
+    scep_challenge = Column(String, nullable=True)
+
     def base_url(self):
         # yuck, since we don't actually save the base URL in our MDMConfig we'll
         # have to compute it from the MDM URL by stripping off the trailing "/mdm"
@@ -214,6 +220,12 @@ class MDMConfig(Base):
             return self.mdm_url[:-4]
         else:
             return ''
+
+class SCEPConfig(Base):
+    __tablename__ = 'scep_config'
+
+    id = Column(Integer, primary_key=True)
+    challenge = Column(String, nullable=False)
 
 class App(Base):
     __tablename__ = 'app'

@@ -128,6 +128,59 @@
 </tr>
 
 <tr>
+	<th>
+		<h4>Device Certificates</h4>
+		<p>Select the method of device certificate enrollment. SCEP is the
+		preferred method as this keeps the device's private key on the device
+		only.</p>
+	</th>
+	<td>
+
+		{% if not scep_present %}
+			<em>
+				Commandment SCEP configuration not present
+				(SCEP server not run yet?)
+			</em>
+			<br>
+		{% endif %}
+
+		<input id="ourscep" type="radio" name="device_identity_method" value="ourscep"{% if not scep_present %} disabled{% else %} checked{% endif %}>
+		<label for="ourscep">Commandment SCEP server</label>
+
+		<br>
+
+		<label for="ourscep_hostname">Hostname:</label>
+		<input id="ourscep_hostname" name="ourscep_hostname" type="text" placeholder="Leave blank for Cmdmnt hostname" size="40"{% if not scep_present %} disabled{% endif %}>
+
+		Port: {{ scep_port }}
+
+<!--
+		<hr>
+
+		<input id="other_scep" type="radio" name="device_identity_method" value="other_scep" disabled>
+		<label for="other_scep">3rd-party SCEP server</label> <em>(Not yet supported)</em>
+
+		<br>
+
+		<label for="other_scep_url">URL:</label>
+		<input name="other_scep_url" type="text" size="40" disabled>
+
+		<br >
+
+		<label for="other_scep_challenge">Challenge:</label>
+		<input name="other_scep_challenge" type="text" size="40" disabled>
+-->
+		<hr>
+
+		<input id="provide" type="radio" name="device_identity_method" value="provide"{% if not scep_present %} checked{% endif %}>
+		<label for="provide">Provide PKCS12 identity to device (certificate
+		and private key).</label> <em>WARNING:</em> Do not re-use the
+		generated enrollment profiles between devices.
+
+	</td>
+</tr>
+
+<tr>
 	<td colspan="2" style="text-align:right;">
 		<button type="submit" form="addconfig" value="Submit">Add Configuration</button>
 	</td>
