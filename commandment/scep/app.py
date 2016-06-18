@@ -73,8 +73,9 @@ def scep():
 
             cert_req = CertificateRequest.load_der(req)
 
-            # if get_challenge_password(cert_req) == scep_config.challenge:
-            # else
+            if get_challenge_password(cert_req) != scep_config.challenge:
+                # yikes, really need to send an error PKIMessage
+                abort(400, 'Invalid challenge')
 
             # sign request and save to DB
             new_cert, db_new_cert = mdm_ca.sign_new_device_req(cert_req)
