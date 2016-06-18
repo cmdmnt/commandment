@@ -99,6 +99,10 @@ class CA(object):
 
         return (Identity(dev_key, dev_crt), db_dev_crt)
 
+class WebCertificate(Certificate):
+    def get_cn(self):
+        return self.get_m2_cert().get_subject().CN
+
 class PushCertificate(Certificate):
     def get_topic(self):
         x509_uid_name_entries = self.get_m2_cert().get_subject().get_entries_by_nid(NID_userId)

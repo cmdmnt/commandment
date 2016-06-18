@@ -62,6 +62,6 @@ if __name__ == '__main__':
 
     app.run(
         host='0.0.0.0',
-        port=app.config.get('PORT', 5443),
+        port=app.config.get('PORT'),
         ssl_context=(cert_file, pkey_file),
         threaded=True)

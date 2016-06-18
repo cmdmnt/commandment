@@ -4,7 +4,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 from flask import Blueprint, render_template, Response, request, redirect, current_app, abort, make_response
-from .pki.ca import get_ca, PushCertificate
+from .pki.ca import get_ca, PushCertificate, WebCertificate
 from .pki.m2certs import X509Error, Certificate, RSAPrivateKey, CertificateRequest
 from .database import db_session, and_, or_, update, insert, delete
 from .pki.m2certs import Certificate
@@ -655,10 +655,16 @@ def admin_config_add():
         scep_config = db_session.query(SCEPConfig).first()
 
         # get relevant certificates
-        q = db_session.query(DBCertificate).join(DBPrivateKey.certificates).filter(or_(DBCertificate.cert_type == 'mdm.cacert', DBCertificate.cert_type == 'mdm.pushcert'))
+        q = db_session.query(DBCertificate).\
+            join(DBPrivateKey.certificates).\
+            filter(or_(
+                DBCertificate.cert_type == 'mdm.cacert',
+                DBCertificate.cert_type == 'mdm.pushcert',
+                DBCertificate.cert_type == 'mdm.webcrt'))
 
         ca_certs = []
         push_certs = []
+        web_cert_cn = None
         for i in q:
             if i.cert_type == 'mdm.pushcert':
                 cert = PushCertificate.load(str(i.pem_certificate))
@@ -669,16 +675,27 @@ def admin_config_add():
                 cert = Certificate.load(str(i.pem_certificate))
                 i.subject_text = cert.get_subject_as_text()
                 ca_certs.append(i)
+            elif i.cert_type == 'mdm.webcrt':
+                cert = WebCertificate.load(str(i.pem_certificate))
+                web_cert_cn = cert.get_cn()
 
         if not push_certs or not ca_certs:
             return redirect('/admin/certificates', Response=FixedLocationResponse)
+
+        if not web_cert_cn or not web_cert_cn.strip().strip('.'):
+            web_cert_cn = 'example.com'
+
+        reverse_web_cn = '.'.join(list(reversed(web_cert_cn.split('.'))) + ['mdm'])
 
         return render_template(
             'admin/config/add.html',
             ca_certs=ca_certs,
             push_certs=push_certs,
             scep_port=current_app.config.get('SCEP_PORT'),
-            scep_present=bool(scep_config))
+            scep_present=bool(scep_config),
+            port=current_app.config.get('PORT'),
+            web_cert_cn=web_cert_cn,
+            reverse_web_cn=reverse_web_cn)
 
 @admin_app.route('/config/edit', methods=['GET', 'POST'])
 def admin_config():

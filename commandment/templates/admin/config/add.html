@@ -24,7 +24,7 @@
 		Name of MDM enrollment profile</p>
 	</th>
 	<td>
-		<input name="name" type="text" size="50">
+		<input name="name" type="text" size="50" value="My Commandment MDM server">
 	</td>
 </tr>
 
@@ -46,7 +46,7 @@
 		"com.example.mymdm".</p>
 	</th>
 	<td>
-		<input name="prefix" type="text" placeholder="com.example.mymdm" size="50" value="com.example.mdm">
+		<input name="prefix" type="text" placeholder="com.example.mymdm" size="50" value="{{ reverse_web_cn }}">
 	</td>
 </tr>
 
@@ -69,9 +69,9 @@
 	</th>
 	<td>
 		https://
-		<input name="hostname" type="text" placeholder="mdm.example.com" size="30">
+		<input name="hostname" type="text" placeholder="mdm.example.com" size="30" value="{{ web_cert_cn }}">
 		:
-		<input name="port" type="text" placeholder="443" size="6" maxlength="5">
+		<input name="port" type="text" placeholder="443" size="6" maxlength="5" value="{{ port }}">
 		<!-- TODO: change to type=number? -->
 	</td>
 </tr>
