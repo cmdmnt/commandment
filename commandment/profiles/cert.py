@@ -34,3 +34,18 @@ class PKCS12CertificatePayload(Payload):
         if password:
             kwargs['Password'] = password
         Payload.__init__(self, self.payload_type, identifier, uuid, **kwargs)
+
+class SCEPPayload(Payload):
+    '''SCEP (Simple Certificate Enrollment Protocol) payload automates the
+    request of a client certificate from an SCEP server'''
+
+    payload_type = 'com.apple.security.scep'
+
+    def __init__(self, identifier, url, uuid=None, **kwargs):
+        # SCEP payload is an odd one. all of the keys are in the
+        # PayloadContent key
+        if 'PayloadContent' in kwargs:
+            kwargs['PayloadContent']['URL'] = url
+        else:
+            kwargs['PayloadContent'] = {'URL': url}
+        Payload.__init__(self, self.payload_type, identifier, uuid, **kwargs)

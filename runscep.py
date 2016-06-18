@@ -8,6 +8,7 @@ from flask import Flask
 from commandment.scep.glue import init_libcrypto, get_libcrypto
 from commandment.scep.message import SCEPMessageOID
 from commandment.scep.app import scep_app
+from commandment.database import config_engine, init_db
 
 import os
 from cStringIO import StringIO
@@ -47,6 +48,10 @@ if __name__ == '__main__':
     init_libcrypto(app.config.get('LIBCRYPTO_PATH'))
 
     SCEPMessageOID.openssl_init()
+
+    config_engine(app.config['DATABASE_URI'], app.config['DATABASE_ECHO'])
+
+    init_db()
 
     app.register_blueprint(scep_app)
 

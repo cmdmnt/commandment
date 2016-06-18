@@ -62,6 +62,26 @@ class CA(object):
     def get_cacert(self):
         return self.ca_cert
 
+    def sign_new_device_req(self, csr):
+        '''Sign and persist a new device certificate request'''
+
+        dev_signed_cert = Certificate.cert_from_req_signed_by_cacert(csr, self.ca_cert, self.ca_privkey)
+
+        db_dev_crt = self.save_new_device_cert(dev_signed_cert)
+
+        return dev_signed_cert, db_dev_crt
+
+    def save_new_device_cert(self, cert):
+        # cert should be of type Certificate
+        db_dev_crt = DBCertificate()
+        db_dev_crt.cert_type = 'mdm.device'
+        db_dev_crt.pem_certificate = cert.get_pem()
+        db_session.add(db_dev_crt)
+
+        db_session.commit()
+
+        return db_dev_crt
+
     def gen_new_device_identity(self):
         '''Generate a new certificat and key intended for a new MDM payload
 
@@ -75,15 +95,7 @@ class CA(object):
 
         dev_csr = CertificateRequest(dev_key, CN=MDM_DEVICE_CN)
 
-        dev_crt = Certificate.cert_from_req_signed_by_cacert(dev_csr, self.ca_cert, self.ca_privkey)
-
-        # save certificate in DB
-        db_dev_crt = DBCertificate()
-        db_dev_crt.cert_type = 'mdm.device'
-        db_dev_crt.pem_certificate = dev_crt.get_pem()
-        db_session.add(db_dev_crt)
-
-        db_session.commit()
+        dev_crt, db_dev_crt = self.sign_new_device_req(dev_csr)
 
         return (Identity(dev_key, dev_crt), db_dev_crt)
 

@@ -8,8 +8,10 @@ from .message import *
 from M2Crypto import X509, EVP
 from commandment.pki.m2certs import Certificate, CertificateRequest, RSAPrivateKey
 from os import urandom
+from ..pki.ca import get_ca
 
 FORCE_DEGENERATE_FOR_SINGLE_CERT = True
+CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
 
 scep_app = Blueprint('scep_app', __name__)
 
@@ -18,24 +20,23 @@ scep_app = Blueprint('scep_app', __name__)
 @scep_app.route('/', methods=['GET', 'POST'])
 def scep():
     op = request.args.get('operation')
+    mdm_ca = get_ca()
 
     if op == 'GetCACert':
-        certs = [X509.load_cert('commandment/scep/support/ca.crt')]
+        certs = [mdm_ca.get_cacert().get_m2_cert()]
 
         if len(certs) == 1 and not FORCE_DEGENERATE_FOR_SINGLE_CERT:
             return Response(certs[0].as_der(), mimetype='application/x-x509-ca-cert')
         elif len(certs):
-            x = degenerate_pkcs7_der(certs)
-            open('/tmp/degen.p7', 'w').write(x)
-            return Response(x, mimetype='application/x-x509-ca-ra-cert')
+            p7_degenerate = degenerate_pkcs7_der(certs)
+            return Response(p7_degenerate, mimetype='application/x-x509-ca-ra-cert')
     elif op == 'GetCACaps':
-        # TODO: SHA-2 and AES req'd?
-        return 'POSTPKIOperation'
+        return '\n'.join(CACAPS)
     elif op == 'PKIOperation':
         if request.method == 'GET':
             msg = request.args.get('message')
-            # Note: OS X improperly encodes the base64 query param by not encoding
-            # spaces as %2B and instead leaving them as +'s. Correct for this.
+            # note: OS X improperly encodes the base64 query param by not
+            # encoding spaces as %2B and instead leaving them as +'s
             msg = msg.replace(' ', '+')
             msg = msg.decode('base64')
         elif request.method == 'POST':
@@ -50,24 +51,26 @@ def scep():
         if pki_msg.message_type == PKCSReq.message_type:
             current_app.logger.debug('received PKCSReq SCEP message')
 
+            m2_evp_cakey = EVP.PKey()
+            m2_evp_cakey.assign_rsa(mdm_ca.ca_privkey.get_m2_rsa(), capture=0)
+
+            m2_x509_cacert = mdm_ca.get_cacert().get_m2_cert()
+
             req = pki_msg.get_decrypted_envelope_data(
-                X509.load_cert('commandment/scep/support/ca.crt'),
-                EVP.load_key('commandment/scep/support/ca.key'))
+                m2_x509_cacert,
+                m2_evp_cakey)
 
             cert_req = CertificateRequest.load_der(req)
 
-            ca_cert = Certificate.load_file('commandment/scep/support/ca.crt')
-            ca_key = RSAPrivateKey.load_file('commandment/scep/support/ca.key')
-
-            new_cert = Certificate.cert_from_req_signed_by_cacert(
-                cert_req, ca_cert, ca_key, serial=22)
+            # sign request and save to DB
+            new_cert, db_new_cert = mdm_ca.sign_new_device_req(cert_req)
 
             new_cert_degen = degenerate_pkcs7_der([new_cert.get_m2_cert()])
 
             repl_msg = CertRep()
             repl_msg.transaction_id = pki_msg.transaction_id
-            repl_msg.signing_cert = X509.load_cert('commandment/scep/support/ca.crt')
-            repl_msg.signing_pkey = EVP.load_key('commandment/scep/support/ca.key')
+            repl_msg.signing_cert = m2_x509_cacert
+            repl_msg.signing_pkey = m2_evp_cakey
 
             repl_msg.signedcontent = new_cert_degen
             repl_msg.encrypt_envelope_data(pki_msg.signing_cert)
@@ -81,4 +84,4 @@ def scep():
             current_app.logger.error('unhandled SCEP message type: %d', pki_msg.message_type)
             return ''
     else:
-        abort(404, 'invalid operation')
+        abort(404, 'unknown SCEP operation')

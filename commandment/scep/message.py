@@ -110,13 +110,13 @@ class SCEPMessage(object):
 
         raise SCEPMessageKeyError('matching message type not found')
 
-    def encrypt_envelope_data(self, x509):
+    def encrypt_envelope_data(self, x509, cipher='aes_128_cbc'):
         buf = BIO.MemoryBuffer(self.signedcontent)
 
         sk = X509.X509_Stack()
         sk.push(x509)
 
-        p7 = m2.pkcs7_encrypt(sk._ptr(), buf._ptr(), m2.des_cbc(), m2.PKCS7_BINARY)
+        p7 = m2.pkcs7_encrypt(sk._ptr(), buf._ptr(), getattr(m2, cipher)(), m2.PKCS7_BINARY)
 
         out = BIO.MemoryBuffer()
         assert m2.pkcs7_write_bio_der(p7, out._ptr())

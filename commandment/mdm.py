@@ -11,7 +11,7 @@ from .database import db_session, NoResultFound, or_, and_
 from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
 from .models import App, MDMGroup, app_group_assoc
 from .profiles import Profile
-from .profiles.cert import PEMCertificatePayload, PKCS12CertificatePayload
+from .profiles.cert import PEMCertificatePayload, PKCS12CertificatePayload, SCEPPayload
 from .profiles.mdm import MDMPayload
 from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
 from .mdmcmds import InstallProfile, AppInstall
@@ -146,31 +146,40 @@ def enroll():
 
     topic = push_cert.get_topic()
 
-    # make new device privkey, certificate then CA sign and persist certificate finally return new Identity object
-
     # NOTE: any device requesting enrollment will be generating new CA-signed
     # certificates. may want to gate the enrollment page by password or other
     # authentication
+    if True:
+        # make new device privkey, certificate then CA sign and persist
+        # certificate finally return new Identity object
 
-    # NOTE2: at a high-level there are two choices for how to get client
-    # identity certificates onto the device: 1. embeddeding an PKCS12
-    # identitiy (what we're doing) and 2. using SCEP to hand off certificates.
-    # Apple recommends the latter method but not everyone will have a SCEP
-    # infrastructure and due to complexities we're using this methodology at
-    # the moment
-    new_dev_ident, db_dev_cert = mdm_ca.gen_new_device_identity()
+        new_dev_ident, db_dev_cert = mdm_ca.gen_new_device_identity()
 
-    # random password for PKCS12 payload
-    p12pw = urandom(20).encode('hex')
+        # random password for PKCS12 payload
+        p12pw = urandom(20).encode('hex')
 
-    # generate PCKS12 profile payload
-    new_dev_ident_payload = PKCS12CertificatePayload(config.prefix + '.id-cert', new_dev_ident.gen_pkcs12(p12pw), p12pw, PayloadDisplayName='Device Identity Certificate')
+        # generate PCKS12 profile payload
+        new_dev_ident_payload = PKCS12CertificatePayload(
+            config.prefix + '.id-cert',
+            new_dev_ident.gen_pkcs12(p12pw),
+            p12pw,
+            PayloadDisplayName='Device Identity Certificate')
 
-    profile.append_payload(new_dev_ident_payload)
+        profile.append_payload(new_dev_ident_payload)
+        cert_uuid = new_dev_ident_payload.get_uuid()
+    else:
+        # SCEP is preferred
+        scep_payload = SCEPPayload(
+            config.prefix + '.mdm-scep',
+            'http://127.0.0.1:5080',
+            PayloadContent=dict(Keysize=2048),
+            PayloadDisplayName='MDM SCEP')
+        profile.append_payload(scep_payload)
+        cert_uuid = scep_payload.get_uuid()
 
     new_mdm_payload = MDMPayload(
         config.prefix + '.mdm',
-        new_dev_ident_payload.get_uuid(),
+        cert_uuid,
         topic, # APNs push topic
         config.mdm_url,
         config.access_rights,
