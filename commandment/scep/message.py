@@ -7,10 +7,10 @@ from M2Crypto import m2, SMIME, BIO, X509, EVP
 from .glue import *
 from .glue import get_libcrypto as get_lc
 
-class SCEPMessageOIDKeyError(KeyError):
+class SCEPAttributeKeyError(KeyError):
     pass
 
-class SCEPMessageOID(object):
+class SCEPAttribute(object):
     @classmethod
     def get_string(self, ct_x509_attr):
         '''Return a string by unmarshalling and copying the raw value from
@@ -61,9 +61,9 @@ class SCEPMessageOID(object):
                 if 0 == get_lc().OBJ_cmp(ct_x509_attr.contents.object, get_lc().OBJ_nid2obj(scls.nid)):
                     return scls
 
-        raise SCEPMessageOIDKeyError('matching ASN1 SCEP OID object not found')
+        raise SCEPAttributeKeyError('matching ASN1 SCEP OID object not found')
 
-class MessageType(SCEPMessageOID):
+class MessageType(SCEPAttribute):
     name = 'messageType'
     oid = '2.16.840.1.113733.1.9.2'
     asn1_type = V_ASN1_PRINTABLESTRING
@@ -72,27 +72,27 @@ PKI_STATUS_SUCCESS = '0'
 PKI_STATUS_FAILURE = '2'
 PKI_STATUS_PENDING = '3'
 
-class PkiStatus(SCEPMessageOID):
+class PkiStatus(SCEPAttribute):
     name = 'pkiStatus'
     oid = '2.16.840.1.113733.1.9.3'
     asn1_type = V_ASN1_PRINTABLESTRING
 
-class FailInfo(SCEPMessageOID):
+class FailInfo(SCEPAttribute):
     name = 'failInfo'
     oid = '2.16.840.1.113733.1.9.4'
     asn1_type = V_ASN1_PRINTABLESTRING
 
-class SenderNonce(SCEPMessageOID):
+class SenderNonce(SCEPAttribute):
     name = 'senderNonce'
     oid = '2.16.840.1.113733.1.9.5'
     asn1_type = V_ASN1_OCTET_STRING
 
-class RecipientNonce(SCEPMessageOID):
+class RecipientNonce(SCEPAttribute):
     name = 'recipientNonce'
     oid = '2.16.840.1.113733.1.9.6'
     asn1_type = V_ASN1_OCTET_STRING
 
-class TransactionId(SCEPMessageOID):
+class TransactionId(SCEPAttribute):
     name = 'transactionID'
     oid = '2.16.840.1.113733.1.9.7'
     asn1_type = V_ASN1_PRINTABLESTRING
@@ -243,8 +243,8 @@ class SCEPMessage(object):
 
             try:
                 # try to find a matching OID attribute that we handle
-                oid_obj = SCEPMessageOID.find_by_matching_x509_attr_asn1_obj(ct_x509_attr)
-            except SCEPMessageOIDKeyError:
+                oid_obj = SCEPAttribute.find_by_matching_x509_attr_asn1_obj(ct_x509_attr)
+            except SCEPAttributeKeyError:
                 continue
 
             attrs.append((oid_obj, oid_obj.get_string(ct_x509_attr)))
