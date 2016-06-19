@@ -177,9 +177,6 @@ class Certificate(object):
     def set_issuer(self, cert):
         self.cert.set_issuer(cert.get_m2_cert().get_subject())
 
-    def set_ca_extn(self):
-        self.cert.add_ext(X509.new_extension('basicConstraints', 'CA:TRUE'))
-
     def set_ski_extn(self):
         self.cert.add_ext(X509.new_extension('subjectKeyIdentifier', self.cert.get_fingerprint()))
 
@@ -207,9 +204,12 @@ class Certificate(object):
         cacert.make_valid()
         cacert.set_ski_extn()
 
-        cacert.set_ca_extn()
         cacert.set_issuer(cacert)
         cacert.set_aki_extn(cacert)
+
+        # cacert.cert.add_ext(X509.new_extension('extendedKeyUsage', 'clientAuth', critical=1))
+        # cacert.cert.add_ext(X509.new_extension('keyUsage', 'digitalSignature, keyEncipherment, keyCertSign', critical=1))
+        cacert.cert.add_ext(X509.new_extension('basicConstraints', 'CA:TRUE', critical=1))
 
         ca_pk = EVP.PKey()
         ca_pk.assign_rsa(req.get_privkey().get_m2_rsa(), capture=0)
@@ -229,6 +229,10 @@ class Certificate(object):
 
         cert.set_issuer(cacert)
         cert.set_aki_extn(cacert)
+
+        # cert.cert.add_ext(X509.new_extension('extendedKeyUsage', 'serverAuth,clientAuth,emailProtection', critical=1))
+        # cert.cert.add_ext(X509.new_extension('keyUsage', 'digitalSignature, keyEncipherment', critical=1))
+        cert.cert.add_ext(X509.new_extension('basicConstraints', 'CA:FALSE', critical=1))
 
         ca_pk = EVP.PKey()
         ca_pk.assign_rsa(ca_privkey.get_m2_rsa(), capture=0)

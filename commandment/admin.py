@@ -155,8 +155,10 @@ def admin_certificates_new():
         # XXX: TODO: Great unsanitized input, batman!
         new_csr = CertificateRequest(new_pk, **subject_names)
 
+        mdm_ca = get_ca()
         # create (and self-sign) the web certificate request
-        new_crt = Certificate.cacert_from_req(new_csr)
+        # new_crt = Certificate.cacert_from_req(new_csr)
+        new_crt = Certificate.cert_from_req_signed_by_cacert(new_csr, mdm_ca.ca_cert, mdm_ca.ca_privkey)
 
         # save CA private key in DB
         db_new_pk = DBPrivateKey()

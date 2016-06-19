@@ -128,8 +128,10 @@ def get_or_generate_web_certificate(cn):
         # generate csr
         web_csr = CertificateRequest(web_pk, CN=cn)
 
-        # create (and self-sign) the web certificate request
-        web_crt = Certificate.cacert_from_req(web_csr)
+        mdm_ca = CA()
+
+        # create (and sign) the web certificate request
+        web_crt = Certificate.cert_from_req_signed_by_cacert(web_csr, mdm_ca.ca_cert, mdm_ca.ca_privkey)
 
         # save CA private key in DB
         db_web_pk = DBPrivateKey()
