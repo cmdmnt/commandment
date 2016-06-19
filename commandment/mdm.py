@@ -176,7 +176,12 @@ def enroll():
             config.scep_url,
             PayloadContent=dict(
                 Keysize=2048,
-                Challenge=scep_config.challenge),
+                Challenge=scep_config.challenge,
+                # CAFingerprint=plistlib.Data(mdm_ca.get_cacert().get_m2_cert().get_fingerprint('sha1').decode('hex')),
+                # Subject=[
+                #     [ ['CN', 'MDM Enrollment'] ],
+                # ],
+                ),
             PayloadDisplayName='MDM SCEP')
         profile.append_payload(scep_payload)
         cert_uuid = scep_payload.get_uuid()
