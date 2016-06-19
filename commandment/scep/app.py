@@ -12,7 +12,7 @@ from ..pki.ca import get_ca
 from ..database import db_session, NoResultFound
 from ..models import SCEPConfig
 
-FORCE_DEGENERATE_FOR_SINGLE_CERT = True
+FORCE_DEGENERATE_FOR_SINGLE_CERT = False
 CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
 
 scep_app = Blueprint('scep_app', __name__)
