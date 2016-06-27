@@ -4,10 +4,9 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 from flask import Blueprint, render_template, Response, request, redirect, current_app, abort, make_response
-from .pki.ca import get_ca, PushCertificate, WebCertificate
-from .pki.m2certs import X509Error, Certificate, RSAPrivateKey, CertificateRequest
+from .pki.ca import get_ca, PushCertificate
+from .pki.x509 import X509Error, Certificate, PrivateKey, CertificateRequest
 from .database import db_session, and_, or_, update, insert, delete
-from .pki.m2certs import Certificate
 from .models import CERT_TYPES, profile_group_assoc, device_group_assoc, Device, app_group_assoc
 from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig
 from .models import App, DEPConfig, DEPProfile, SCEPConfig
@@ -53,14 +52,14 @@ def admin_certificates():
     utcnow = datetime.datetime.utcnow()
     for cert_row in cert_rows:
         installed_certs.append(cert_row.cert_type)
-        row_cert = Certificate.load(str(cert_row.pem_certificate))
+        row_cert = cert_row.to_x509()
         not_after = row_cert.get_not_after().replace(tzinfo=None)
         dict_row = {
             'id': cert_row.id,
             'name': cert_row.cert_type,
             'not_after': not_after,
             'expired': not_after <= utcnow,
-            'subject': row_cert.get_subject_as_text(),
+            'subject': row_cert.get_subject_text(),
             'title': CERT_TYPES[cert_row.cert_type]['title'] if CERT_TYPES.get(cert_row.cert_type) else '',
             'description': CERT_TYPES[cert_row.cert_type]['description'] if CERT_TYPES.get(cert_row.cert_type) else '',
             'required': bool(CERT_TYPES[cert_row.cert_type].get('required')) if CERT_TYPES.get(cert_row.cert_type) else False,
@@ -84,13 +83,13 @@ def admin_certificates():
 @admin_app.route('/certificates/add/<certtype>', methods=['GET', 'POST'])
 def admin_certificates_add(certtype):
     if certtype not in CERT_TYPES.keys():
-        return 'Invalid certificate type' 
+        return 'Invalid certificate type'
     if request.method == 'POST':
         if not request.form.get('certificate'):
             return 'No certificate supplied!'
 
         try:
-            cert = Certificate.load(str(request.form.get('certificate')))
+            cert = Certificate.from_pem(request.form.get('certificate'))
         except X509Error:
             return 'Invalid X509 Certificate'
 
@@ -99,18 +98,17 @@ def admin_certificates_add(certtype):
 
         pkey = None
         try:
-            pkey = RSAPrivateKey.load(str(request.form.get('privatekey')))
+            pkey = PrivateKey.from_pem(request.form.get('privatekey'))
         except:
             pkey = None
 
         if pkey:
-            if not cert.belongs_to_key(pkey):
+            if not cert.belongs_to_private_key(pkey):
                 return 'Private key does not match certificate (RSA modulus mismatch)'
 
         # save our newly uploaded certificates
-        dbc = DBCertificate()
-        dbc.cert_type = certtype
-        dbc.pem_certificate = str(request.form.get('certificate'))
+        dbc = DBCertificate.from_x509(cert, certtype)
+
         db_session.add(dbc)
 
         # save private key if we have one
@@ -129,6 +127,8 @@ def admin_certificates_add(certtype):
 
 @admin_app.route('/certificates/new', methods=['GET', 'POST'])
 def admin_certificates_new():
+    mdm_ca = get_ca()
+
     approved_certs = ['mdm.webcrt']
 
     if request.method == 'POST':
@@ -149,32 +149,18 @@ def admin_certificates_new():
                 subject_names.update({i: str(request.form[i])})
 
         print 'Generating test web certificate and CA'
-        new_pk = RSAPrivateKey()
 
-        # generate csr
-        # XXX: TODO: Great unsanitized input, batman!
-        new_csr = CertificateRequest(new_pk, **subject_names)
+        web_req, web_pk = CertificateRequest.with_new_private_key(**subject_names)
 
-        mdm_ca = get_ca()
-        # create (and self-sign) the web certificate request
-        # new_crt = Certificate.cacert_from_req(new_csr)
-        new_crt = Certificate.cert_from_req_signed_by_cacert(new_csr, mdm_ca.ca_cert, mdm_ca.ca_privkey)
+        web_crt = mdm_ca.ca_identity.sign_cert_req(web_req)
 
-        # save CA private key in DB
-        db_new_pk = DBPrivateKey()
-        db_new_pk.pem_key = new_pk.get_pem()
+        db_cert = DBCertificate.from_x509(web_crt, 'mdm.webcrt')
+        db_pk = DBPrivateKey.from_x509(web_pk)
 
-        db_session.add(db_new_pk)
+        db_session.add(db_cert)
+        db_session.add(db_pk)
 
-        # save certificate
-        db_new_crt = DBCertificate()
-        db_new_crt.cert_type = request.form['cert_type']
-        db_new_crt.pem_certificate = new_crt.get_pem()
-
-        db_session.add(db_new_crt)
-
-        # add certificate to private key
-        db_new_pk.certificates.append(db_new_crt)
+        db_pk.certificates.append(db_cert)
 
         db_session.commit()
 
@@ -604,13 +590,9 @@ def admin_config_add():
     if request.method == 'POST':
         push_cert = db_session.query(DBCertificate).filter(DBCertificate.id == int(request.form['push_cert'])).one()
 
-        cert = PushCertificate.load(str(push_cert.pem_certificate))
-
-        topic = cert.get_topic()
-
         new_config = MDMConfig()
 
-        new_config.topic = topic
+        new_config.topic = push_cert.to_x509(cert_type=PushCertificate).get_topic()
 
         base_url = 'https://' + request.form['hostname']
 
@@ -667,19 +649,15 @@ def admin_config_add():
         ca_certs = []
         push_certs = []
         web_cert_cn = None
-        for i in q:
-            if i.cert_type == 'mdm.pushcert':
-                cert = PushCertificate.load(str(i.pem_certificate))
-                topic = cert.get_topic()
-                i.subject_text = topic
-                push_certs.append(i)
-            elif i.cert_type == 'mdm.cacert':
-                cert = Certificate.load(str(i.pem_certificate))
-                i.subject_text = cert.get_subject_as_text()
-                ca_certs.append(i)
-            elif i.cert_type == 'mdm.webcrt':
-                cert = WebCertificate.load(str(i.pem_certificate))
-                web_cert_cn = cert.get_cn()
+        for cert in q:
+            cert.subject_text = cert.subject
+            if cert.cert_type == 'mdm.pushcert':
+                cert.subject_text = cert.to_x509(cert_type=PushCertificate).get_topic()
+                push_certs.append(cert)
+            elif cert.cert_type == 'mdm.cacert':
+                ca_certs.append(cert)
+            elif cert.cert_type == 'mdm.webcrt':
+                web_cert_cn = cert.to_x509().get_cn()
 
         if not push_certs or not ca_certs:
             return redirect('/admin/certificates', Response=FixedLocationResponse)
@@ -736,8 +714,7 @@ def admin_config():
     else:
         ca_certs = db_session.query(DBCertificate).join(DBPrivateKey.certificates).filter(DBCertificate.cert_type == 'mdm.cacert')
         for i in ca_certs:
-            cert = Certificate.load(str(i.pem_certificate))
-            i.subject_text = cert.get_subject_as_text()
+            i.subject_text = i.to_x509().get_subject_text()
         return render_template(
             'admin/config/edit.html',
             config=config,

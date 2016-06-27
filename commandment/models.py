@@ -11,6 +11,8 @@ from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
 from profiles.mdm import MDM_AR__ALL
 
+from .pki.x509 import (Certificate as X509Certificate, PrivateKey as X509PrivateKey)
+
 CERT_TYPES = {
     'mdm.pushcert': {
         'title': 'APNS MDM Push Certificate',
@@ -47,22 +49,97 @@ class PrivateKey(Base):
     __tablename__ = 'rsa_private_key'
 
     id = Column(Integer, primary_key=True)
-    pem_key = Column(Text)
+    pem_key = Column(Text, nullable=False)
 
     certificates = relationship('Certificate', secondary=certificate_private_key_assoc, backref='privatekeys')
+
+    def to_x509(self, key_type=X509PrivateKey):
+        return key_type.from_pem(self.pem_key)
+
+    @classmethod
+    def from_x509(cls, private_key):
+        newcls = cls()
+        newcls.pem_key = private_key.to_pem()
+        return newcls
+
+class CertificateRequest(Base):
+    __tablename__ = 'certificate_request'
+
+    id = Column(Integer, primary_key=True)
+    req_type = Column(String(64), nullable=False, index=True) # CERT_TYPES.keys()
+    subject = Column(Text, nullable=True)
+    pem_request = Column(Text, nullable=False)
+
+certreq_private_key_assoc = Table('certreq_private_key', Base.metadata,
+    Column('certreq_id', Integer, ForeignKey('certificate_request.id')),
+    Column('privatekey_id', Integer, ForeignKey('rsa_private_key.id')),
+)
 
 class Certificate(Base):
     __tablename__ = 'certificate'
 
     id = Column(Integer, primary_key=True)
-    cert_type = Column(String(64), index=True)
-    pem_certificate = Column(Text, index=True)
+    cert_type = Column(String(64), nullable=False, index=True) # CERT_TYPES.keys()
+
+    subject = Column(Text, nullable=True)
+
+    not_before = Column(DateTime(timezone=False), nullable=False)
+    not_after = Column(DateTime(timezone=False), nullable=False)
+
+    # SHA-256 hash of DER-encoded certificate
+    fingerprint = Column(String(64), nullable=False, index=True, unique=True) # Unique
+
+    # subject_key_id?
+    # auth_key_id?
+
+    # sourced_from = 'scep, self-signed, imported, signed' ?
+
+    pem_certificate = Column(Text, nullable=False)
 
     @classmethod
     def find_one_by_cert_type(cls, cert_type):
         return cls.query.filter(cls.cert_type == cert_type).one()
 
+    def to_x509(self, cert_type=X509Certificate):
+        return cert_type.from_pem(self.pem_certificate)
 
+    @classmethod
+    def from_x509(cls, certificate, cert_type):
+        newcls = cls()
+        newcls.cert_type = cert_type
+        newcls.subject = certificate.get_subject_text()
+        newcls.not_before = certificate.get_not_before()
+        newcls.not_after = certificate.get_not_after()
+        newcls.fingerprint = certificate.get_fingerprint('sha256')
+        newcls.pem_certificate = certificate.to_pem()
+        return newcls
+
+certreq_cert_assoc = Table('certreq_cert', Base.metadata,
+    Column('certreq_id', Integer, ForeignKey('certificate_request.id')),
+    Column('certificate_id', Integer, ForeignKey('certificate.id')),
+)
+
+class InternalCA(Base):
+    __tablename__ = 'internal_ca'
+
+    id = Column(Integer, primary_key=True)
+    ca_type = Column(String(64), nullable=False, index=True)
+    serial = Column(Integer, nullable=False)
+
+    certificate_id = Column(ForeignKey('certificate.id'), unique=True)
+    certificate = relationship('Certificate', backref='internalca')
+
+    def get_next_serial(self):
+        '''Increment our serial number and return it for use in a 
+        new certificate'''
+
+        # MAX(serial) + 1
+        pass
+
+internalca_issued_cert_assoc = Table('internalca_issued_cert', Base.metadata,
+    Column('certificate_id', Integer, ForeignKey('certificate.id')),
+    Column('internalca_id', Integer, ForeignKey('internal_ca.id')),
+)
 
 class Device(Base):
     __tablename__ = 'device'

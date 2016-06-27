@@ -6,7 +6,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 from flask import Blueprint, render_template, make_response, request, abort
 from flask import current_app, send_file, g
 from .pki.ca import get_ca, PushCertificate
-from .pki.m2certs import Certificate, RSAPrivateKey
+from .pki.x509 import Certificate
 from .database import db_session, NoResultFound, or_, and_
 from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
 from .models import App, MDMGroup, app_group_assoc, SCEPConfig
@@ -32,27 +32,6 @@ mdm_app = Blueprint('mdm_app', __name__)
 @mdm_app.route('/')
 def index():
     return render_template('enroll.html')
-
-@mdm_app.route('/ca.crt')
-def cacrt():
-    mdm_ca = get_ca()
-    return mdm_ca.get_cacert().get_pem()
-
-@mdm_app.route('/webcerts')
-def webcerts():
-    config = db_session.query(MDMConfig).one()
-
-    profile = Profile(config.prefix + '.webcrt', PayloadDisplayName='MDM Web Cert Profile')
-
-    # find and include all mdm.webcrt's
-    q = db_session.query(DBCertificate).filter(DBCertificate.cert_type == 'mdm.webcrt')
-    for i, cert in enumerate(q):
-        new_webcrt_profile = PEMCertificatePayload(config.prefix + '.webcrt.%d' % i, str(cert.pem_certificate), PayloadDisplayName='Web Server Certificate')
-        profile.append_payload(new_webcrt_profile)
-
-    resp = make_response(profile.generate_plist())
-    resp.headers['Content-Type'] = PROFILE_CONTENT_TYPE
-    return resp
 
 def base64_to_pem(crypto_type, b64_text, width=76):
     lines = ''
@@ -130,25 +109,24 @@ def enroll():
 
     profile = Profile(config.prefix + '.enroll', PayloadDisplayName=config.mdm_name)
 
-    ca_cert_payload = PEMCertificatePayload(config.prefix + '.mdm-ca', mdm_ca.get_cacert().get_pem(), PayloadDisplayName='MDM CA Certificate')
+    print mdm_ca.get_cacert().to_pem()
+    ca_cert_payload = PEMCertificatePayload(config.prefix + '.mdm-ca', str(mdm_ca.get_cacert().to_pem()).strip(), PayloadDisplayName='MDM CA Certificate')
 
     profile.append_payload(ca_cert_payload)
 
     # find and include all mdm.webcrt's
     q = db_session.query(DBCertificate).filter(DBCertificate.cert_type == 'mdm.webcrt')
     for i, cert in enumerate(q):
-        new_webcrt_profile = PEMCertificatePayload(config.prefix + '.webcrt.%d' % i, str(cert.pem_certificate), PayloadDisplayName='Web Server Certificate')
+        print cert.pem_certificate
+        new_webcrt_profile = PEMCertificatePayload(config.prefix + '.webcrt.%d' % i, str(cert.pem_certificate).strip(), PayloadDisplayName='Web Server Certificate')
         profile.append_payload(new_webcrt_profile)
 
-    db_push_cert = config.push_cert
-
-    push_cert = PushCertificate.load(str(db_push_cert.pem_certificate))
-
+    push_cert = config.push_cert.to_x509(cert_type=PushCertificate)
     topic = push_cert.get_topic()
 
-    # NOTE: any device requesting enrollment will be generating new CA-signed
-    # certificates. may want to gate the enrollment page by password or other
-    # authentication
+    # NOTE: any device requesting non-SCEP enrollment will be generating new
+    # CA-signed certificates. may want to gate the enrollment page by password
+    # or other authentication
     if config.device_identity_method == 'provide':
         # make new device privkey, certificate then CA sign and persist
         # certificate finally return new Identity object
@@ -161,7 +139,7 @@ def enroll():
         # generate PCKS12 profile payload
         new_dev_ident_payload = PKCS12CertificatePayload(
             config.prefix + '.id-cert',
-            new_dev_ident.gen_pkcs12(p12pw),
+            new_dev_ident.to_pkcs12(p12pw),
             p12pw,
             PayloadDisplayName='Device Identity Certificate')
 
@@ -224,7 +202,7 @@ def verify_mdm_signature(mdm_sig, req_data):
     mdm_ca = get_ca()
 
     # can probably directly use m2 certificate here
-    ca_x509_bio = BIO.MemoryBuffer(mdm_ca.get_cacert().get_pem())
+    ca_x509_bio = BIO.MemoryBuffer(mdm_ca.get_cacert().to_pem())
     ca_x509 = X509.load_cert_bio(ca_x509_bio)
 
     cert_store = X509.X509_Store()
@@ -266,11 +244,8 @@ def device_cert_check(no_device_okay=False):
             device_supplied_cert = verify_mdm_signature(pkcs7_pem_sig, request.data)
 
             try:
-                # reload cert as passed in as both a sanity check and to reformat
-                # in case the PEM as passed in (from the web server) is different
-                # then how OpenSSL/M2Crypto would have formatted it
-                reloaded_cert = Certificate.load(str(device_supplied_cert))
-                g.device_cert = db_session.query(DBCertificate).filter(DBCertificate.pem_certificate == str(reloaded_cert.get_pem())).one()
+                dev_cert_fprint = Certificate.from_pem(device_supplied_cert).get_fingerprint()
+                g.device_cert = db_session.query(DBCertificate).filter(DBCertificate.fingerprint == dev_cert_fprint).one()
             except NoResultFound:
                 current_app.logger.info('supplied device certificate not found; returning invalid')
                 abort(400, 'certificate invalid')

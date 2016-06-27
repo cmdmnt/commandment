@@ -7,10 +7,9 @@ from apns import APNs, Payload, Frame
 import os
 import tempfile
 import atexit
-from .database import db_session, NoResultFound
+from .database import db_session
 from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
-from .pki.ca import get_ca, PushCertificate
-from .pki.m2certs import Certificate, RSAPrivateKey
+from .pki.ca import PushCertificate
 import random
 import time
 try:
@@ -21,10 +20,12 @@ except ImportError:
 apns_cxns = {}
 
 def push_init():
-    q = db_session.query(DBCertificate, DBPrivateKey).join(DBCertificate, DBPrivateKey.certificates).filter(DBCertificate.cert_type == 'mdm.pushcert')
+    q = db_session.query(DBCertificate, DBPrivateKey)\
+        .join(DBCertificate, DBPrivateKey.certificates)\
+        .filter(DBCertificate.cert_type == 'mdm.pushcert')
 
     for db_cert, db_pk in q:
-        cert = PushCertificate.load(str(db_cert.pem_certificate))
+        cert = db_cert.to_x509(cert_type=PushCertificate)
         cert_topic = cert.get_topic()
 
         if cert_topic in apns_cxns:
