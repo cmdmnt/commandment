@@ -1,0 +1,46 @@
+{% set section = 'cert' %}
+{% extends "admin/layout.html" %}
+{% block content %}
+
+<a href="https://mdmcert.download/instructions">See instructions here</a>
+
+<h1>
+	(Step 5) Generate New mdmcert.download Request
+</h1>
+
+<form id="new" action="submit" method="POST">
+
+<p>Make sure you've <em>already</em> registered on the <a href="https://mdmcert.download/">mdmcert.download</a> site!</p>
+<br>
+<label for="email">Email address</label>
+<input type="input" name="email" id="email" form="new">
+<button type="submit" form="new" value="Submit">Submit</button>
+
+</form>
+
+<h1>
+	(Step 7) Upload MDM Push Cert from Identity.Apple.com
+</h1>
+<form id="upload_encr" action="upload_encr" method="POST" enctype="multipart/form-data">
+
+<label for="upload_encr_widget">mdmcert Encrypted Cert Req (from email) - *.plist.b64.p7 file</label>
+<input type="file" id="upload_encr_widget" form="upload_encr" name="upload_encr_file">
+
+<button type="submit" form="upload_encr" value="Submit">Upload Encrypted Request</button>
+
+</form>
+
+
+<h1>
+	(Step 9) Upload MDM Push Cert from Identity.Apple.com
+</h1>
+<form id="upload_cert" action="upload_cert" method="POST" enctype="multipart/form-data">
+
+<label for="upload_cert_widget">mdmcert Push Certificate (from identity.apple.com)</label>
+<input type="file" form="upload_cert" id="upload_cert_widget" name="upload_cert_file">
+
+<button type="submit" form="upload_cert" value="Submit">Upload Push Cert</button>
+
+</form>
+
+{% endblock %}

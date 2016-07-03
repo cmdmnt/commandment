@@ -11,7 +11,9 @@ from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
 from profiles.mdm import MDM_AR__ALL
 
-from .pki.x509 import (Certificate as X509Certificate, PrivateKey as X509PrivateKey)
+from .pki.x509 import (Certificate as X509Certificate,
+                       PrivateKey as X509PrivateKey,
+                       CertificateRequest as X509CertificateRequest)
 
 CERT_TYPES = {
     'mdm.pushcert': {
@@ -45,6 +47,11 @@ certificate_private_key_assoc = Table('certificate_private_key', Base.metadata,
     Column('privatekey_id', Integer, ForeignKey('rsa_private_key.id')),
 )
 
+certreq_private_key_assoc = Table('certreq_private_key', Base.metadata,
+    Column('certreq_id', Integer, ForeignKey('certificate_request.id')),
+    Column('privatekey_id', Integer, ForeignKey('rsa_private_key.id')),
+)
+
 class PrivateKey(Base):
     __tablename__ = 'rsa_private_key'
 
@@ -52,6 +59,7 @@ class PrivateKey(Base):
     pem_key = Column(Text, nullable=False)
 
     certificates = relationship('Certificate', secondary=certificate_private_key_assoc, backref='privatekeys')
+    certificate_requests = relationship('CertificateRequest', secondary=certreq_private_key_assoc, backref='privatekeys')
 
     def to_x509(self, key_type=X509PrivateKey):
         return key_type.from_pem(self.pem_key)
@@ -70,10 +78,16 @@ class CertificateRequest(Base):
     subject = Column(Text, nullable=True)
     pem_request = Column(Text, nullable=False)
 
-certreq_private_key_assoc = Table('certreq_private_key', Base.metadata,
-    Column('certreq_id', Integer, ForeignKey('certificate_request.id')),
-    Column('privatekey_id', Integer, ForeignKey('rsa_private_key.id')),
-)
+    def to_x509(self, request_type=X509CertificateRequest):
+        return request_type.from_pem(self.pem_request)
+
+    @classmethod
+    def from_x509(cls, req, req_type):
+        newcls = cls()
+        newcls.subject = req.get_subject_text()
+        newcls.req_type = req_type
+        newcls.pem_request = req.to_pem()
+        return newcls
 
 class Certificate(Base):
     __tablename__ = 'certificate'

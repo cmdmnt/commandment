@@ -86,6 +86,13 @@ class CertificateRequest(object):
         assert newcls._req.verify(newcls._req.get_pubkey()) == 1
         return newcls
 
+    @classmethod
+    def from_pem(cls, data):
+        newcls = cls.__new__(cls)
+        newcls._req = X509.load_request_string(str(data), format=X509.FORMAT_PEM)
+        assert newcls._req.verify(newcls._req.get_pubkey()) == 1
+        return newcls
+
     def to_pem(self):
         return self._req.as_pem()
 
@@ -113,6 +120,9 @@ class CertificateRequest(object):
 
     def _m2_req(self):
         return self._req
+
+    def get_subject_text(self):
+        return self._get_subject().as_text()
 
 class CertificatePolicy(object):
     ca = False

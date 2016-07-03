@@ -6,12 +6,14 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 from flask import Flask
 from .mdm import mdm_app
 from .admin import admin_app
+from .mdmcert import admin_mdmcert_app
 
 def create_app():
     app = Flask(__name__)
 
     app.register_blueprint(mdm_app)
     app.register_blueprint(admin_app, url_prefix='/admin')
+    app.register_blueprint(admin_mdmcert_app, url_prefix='/admin/mdmcert')
 
     from .database import db_session
 
