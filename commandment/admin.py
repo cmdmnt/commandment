@@ -26,6 +26,7 @@ from .utils.dep import DEP
 from .utils.dep_utils import initial_fetch, mdm_profile, assign_devices
 import datetime
 from urlparse import urlparse
+from base64 import b64encode
 
 class FixedLocationResponse(Response):
     # override Werkzeug default behaviour of "fixing up" once-non-compliant
@@ -838,11 +839,9 @@ def dep_profile_add():
         profile['url'] = mdm.base_url() + '/enroll'
 
         # find and include all mdm.webcrt's
-        anchor_certs = []
+        # TODO: find actual cert chain rather than specific web cert
         q = db_session.query(DBCertificate).filter(DBCertificate.cert_type == 'mdm.webcrt')
-        for dbcert in q:
-            cert = Certificate.load(str(dbcert.pem_certificate))
-            anchor_certs.append(cert.get_der().encode('base64'))
+        anchor_certs = [b64encode(cert.to_x509().to_der()) for cert in q]
 
         if anchor_certs:
             profile['anchor_certs'] = anchor_certs
