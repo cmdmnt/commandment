@@ -318,8 +318,8 @@ def degenerate_pkcs7_der(m2_x509s):
 
     return pkcs7_der
 
-def get_challenge_password(req):
-    ct_req = c_void_p(long(req.get_m2_req().req))
+def get_challenge_password(m2_req):
+    ct_req = c_void_p(long(m2_req.req))
 
     idx = get_lc().X509_REQ_get_attr_by_NID(ct_req, NID_pkcs9_challengePassword, -1)
 

@@ -51,6 +51,9 @@ class CA(object):
     def get_cacert(self):
         return self.ca_identity.get_cert()
 
+    def get_private_key(self):
+        return self.ca_identity.get_private_key()
+
     def sign_new_device_req(self, csr):
         '''Sign and persist a new device certificate request'''
 

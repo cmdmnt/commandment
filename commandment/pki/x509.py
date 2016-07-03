@@ -111,6 +111,9 @@ class CertificateRequest(object):
         assert hasher.update(evp_der) == 1
         return hexlify(hasher.final())
 
+    def _m2_req(self):
+        return self._req
+
 class CertificatePolicy(object):
     ca = False
 
@@ -242,6 +245,9 @@ class Certificate(object):
 
     def get_not_after(self):
         return self._x509.get_not_after().get_datetime()
+
+    def _m2_x509(self):
+        return self._x509
 
 class CACertificatePolicy(CertificatePolicy):
     ca = True
