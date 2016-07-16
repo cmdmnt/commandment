@@ -8,6 +8,8 @@ import os
 import tempfile
 import atexit
 import werkzeug.serving
+import pkg_resources
+import json
 from commandment.app import create_app
 from commandment.database import config_engine, init_db
 from commandment.pki.ca import get_or_generate_web_certificate
@@ -22,7 +24,23 @@ if __name__ == '__main__':
     if os.environ.get('COMMANDMENT_SETTINGS'):
         app.config.from_envvar('COMMANDMENT_SETTINGS')
 
-    config_engine(app.config['DATABASE_URI'], app.config['DATABASE_ECHO'])
+    configuration = {
+        'database': {
+            'uri': app.config['DATABASE_URI'],
+            'echo': app.config['DATABASE_ECHO']
+        }
+    }
+
+    configuration_file = pkg_resources.resource_filename(
+        pkg_resources.Requirement.parse('commandment'),
+        'config/config.json'
+    )
+    if os.path.exists(configuration_file):
+        with open(configuration_file, 'r') as configuration_fh:
+            loaded_configuration = json.load(configuration_fh)
+        configuration.update(loaded_configuration)
+
+    config_engine(configuration['database']['uri'], configuration['database']['echo'])
 
     init_db()
 
