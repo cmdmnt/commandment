@@ -347,6 +347,7 @@ def install_group_profiles_to_device(group, device):
 
     # note singular tuple for subject here
     for profile_id, in q:
+        print "Installing profile ", profile_id, " due to group change"
         new_qc = InstallProfile.new_queued_command(device, {'id': profile_id})
         db_session.add(new_qc)
 
