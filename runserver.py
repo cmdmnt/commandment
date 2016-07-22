@@ -10,6 +10,7 @@ import atexit
 import werkzeug.serving
 import pkg_resources
 import json
+from flask import url_for
 from commandment.app import create_app
 from commandment.database import config_engine, init_db
 from commandment.pki.ca import get_or_generate_web_certificate
@@ -17,29 +18,35 @@ from commandment.runner import start_runner, stop_runner
 from commandment.push import push_init
 
 if __name__ == '__main__':
-    app = create_app()
-
-    app.config.from_object('commandment.default_settings')
-
-    if os.environ.get('COMMANDMENT_SETTINGS'):
-        app.config.from_envvar('COMMANDMENT_SETTINGS')
-
     configuration = {
-        'database': {
-            'uri': app.config['DATABASE_URI'],
-            'echo': app.config['DATABASE_ECHO']
-        }
+        'debug': False
     }
 
     configuration_file = pkg_resources.resource_filename(
         pkg_resources.Requirement.parse('commandment'),
         'config/config.json'
     )
+
     if os.path.exists(configuration_file):
         with open(configuration_file, 'r') as configuration_fh:
             loaded_configuration = json.load(configuration_fh)
         configuration.update(loaded_configuration)
 
+    app = create_app(debug=configuration['debug'])
+
+    app.config.from_object('commandment.default_settings')
+
+    if os.environ.get('COMMANDMENT_SETTINGS'):
+        app.config.from_envvar('COMMANDMENT_SETTINGS')
+
+    if 'database' not in configuration:
+        configuration['database'] = {
+            'uri': app.config['DATABASE_URI'],
+            'echo': app.config['DATABASE_ECHO']
+        }
+
+
+    print configuration['database']['uri'], configuration['database']['echo']
     config_engine(configuration['database']['uri'], configuration['database']['echo'])
 
     init_db()

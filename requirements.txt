@@ -6,3 +6,5 @@ apns
 oauthlib
 passlib
 biplist
+flask-restful
+pytest-flask

@@ -7,12 +7,15 @@ from flask import Flask
 from .mdm import mdm_app
 from .admin import admin_app
 from .mdmcert import admin_mdmcert_app
+from .api import create_api
 
-def create_app():
+def create_app(debug=False):
     app = Flask(__name__)
+    api_app = create_api(debug)
 
     app.register_blueprint(mdm_app)
     app.register_blueprint(admin_app, url_prefix='/admin')
+    app.register_blueprint(api_app, url_prefix='/api')
     app.register_blueprint(admin_mdmcert_app, url_prefix='/admin/mdmcert')
 
     from .database import db_session

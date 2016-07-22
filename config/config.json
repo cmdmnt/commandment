@@ -1,0 +1,6 @@
+{
+    "database": {
+        "uri": "sqlite:///mdm.db",
+        "echo": false
+    }
+}

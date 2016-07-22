@@ -240,6 +240,27 @@ class Profile(Base):
     uuid = Column(String(36), index=True, unique=True, nullable=False) # duplicated from within profile_data for searching
     profile_data = Column(Text, nullable=False) # serialized XML (or signed, encrypted) profile data
 
+    def __init__(self, identifier, uuid, profile_data):
+        self.identifier = identifier
+        self.uuid = uuid
+        self.profile_data = profile_data
+
+    def update(self, identifier=None, uuid=None, profile_data=None):
+        if identifier is not None:
+            self.identifier = identifier
+        if uuid is not None:
+            self.uuid = uuid
+        if profile_data is not None:
+            self.profile_data = profile_data
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'identifier': self.identifier,
+            'uuid': self.uuid,
+            'profile_data': self.profile_data
+        }
+
     def __repr__(self):
         return '<Profile ID=%r UUID=%r>' % (self.id, self.uuid)
 
@@ -275,6 +296,13 @@ class MDMGroup(Base):
 
     def __repr__(self):
         return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'group_name': self.group_name,
+            'description': self.description
+        }
 
 class MDMConfig(Base):
     __tablename__ = 'mdm_config'

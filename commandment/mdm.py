@@ -296,6 +296,7 @@ def device_first_post_enroll(device, awaiting=False):
     # install all group profiles
     for group in device.mdm_groups:
         for profile in group.profiles:
+            print "Installing profile ", profile.id
             db_session.add(InstallProfile.new_queued_command(device, {'id': profile.id}))
 
     if awaiting:

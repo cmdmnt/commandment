@@ -242,7 +242,23 @@ def admin_profiles_edit1(profile_id):
     if request.method == 'POST':
         db_prof = db_session.query(DBProfile).filter(DBProfile.id == profile_id).one()
 
-        myprofile = Profile.from_plist(db_prof.profile_data)
+        try:
+            myprofile = Profile.from_plist(db_prof.profile_data)
+        except:
+            config = db_session.query(MDMConfig).one()
+
+            myrestr = RestrictionsPayload(config.prefix + '.tstRstctPld', allowiTunes=(request.form.get('allowiTunes') == 'checked'))
+
+            # generate us a unique identifier that shouldn't change for this profile
+            myidentifier = config.prefix + '.profile.' + str(uuid.uuid4())
+
+            myprofile = Profile(myidentifier, PayloadDisplayName='Test1 Restrictions')
+
+            myprofile.append_payload(myrestr)
+
+            db_prof.identifier = myidentifier
+            db_prof.uuid = myprofile.get_uuid()
+
 
         # TODO: need an API to *get* a profile out
         # TODO: assuming first payload is ours. bad, bad.
@@ -256,7 +272,9 @@ def admin_profiles_edit1(profile_id):
 
         db_prof.uuid = myprofile.set_uuid()
 
-        db_prof.profile_data = myprofile.generate_plist()
+        #db_prof.profile_data = myprofile.generate_plist()
+        current_app.logger.error(request.form.get('xml'))
+        db_prof.profile_data = request.form.get('xml')
 
         db_session.commit()
 
@@ -267,13 +285,27 @@ def admin_profiles_edit1(profile_id):
         # get all MDMGroups left joining against our assoc. table to see if this profile is in any of those groups
         group_q = db_session.query(MDMGroup, profile_group_assoc.c.profile_id).outerjoin(profile_group_assoc, and_(profile_group_assoc.c.mdm_group_id == MDMGroup.id, profile_group_assoc.c.profile_id == db_prof.id))
 
-        myprofile = Profile.from_plist(db_prof.profile_data)
+        try:
+            myprofile = Profile.from_plist(db_prof.profile_data)
 
-        # TODO: need an API to *get* a profile out
-        # TODO: assuming first payload is ours. bad, bad.
-        mypld = myprofile.payloads[0]
+            # TODO: need an API to *get* a profile out
+            # TODO: assuming first payload is ours. bad, bad.
+            has_pld = len(myprofile.payloads) > 0
+        except:
+            has_pld = False
 
-        return render_template('admin/profiles/edit.html', identifier=myprofile.get_identifier(), uuid=myprofile.get_uuid(), allowiTunes=mypld.payload.get('allowiTunes'), id=db_prof.id, groups=group_q)
+        if has_pld:
+            mypld = myprofile.payloads[0]
+
+        return render_template(
+            'admin/profiles/edit.html',
+            identifier=myprofile.get_identifier() if has_pld else '[Unknown]',
+            uuid=myprofile.get_uuid() if has_pld else '[Unknown]',
+            allowiTunes=(not has_pld or mypld.payload.get('allowiTunes')),
+            id=db_prof.id,
+            groups=group_q,
+            xml=db_prof.profile_data
+        )
 
 @admin_app.route('/profiles/groupmod/<int:profile_id>', methods=['POST'])
 def admin_profiles_groupmod1(profile_id):
@@ -347,6 +379,7 @@ def install_group_profiles_to_device(group, device):
 
     # note singular tuple for subject here
     for profile_id, in q:
+        print "Installing profile ", profile_id, " due to group change"
         new_qc = InstallProfile.new_queued_command(device, {'id': profile_id})
         db_session.add(new_qc)
 
