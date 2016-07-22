@@ -1,4 +1,4 @@
-"""test_api_profile.py: Tests for API profile access"""
+"""test_api_mdm_group.py: Tests for API group access"""
 
 __author__ = "Phil Weir <phil.weir@flaxandteal.co.uk>"
 
@@ -24,29 +24,10 @@ def mdm_group():
 
     return group
 
-@pytest.fixture
-def profile():
-    profile_uuid = str(uuid.uuid4())
-
-    profile = {
-        'identifier': 'com.example.test.' + profile_uuid,
-        'uuid': profile_uuid,
-        'profile_data': '',
-        'groups': []
-    }
-
-    return profile
-
 @pytest.yield_fixture(scope="session")
 def app():
     app = capp.create_app(debug=True)
     cdatabase.config_engine('sqlite://', echo=True)
-    #sessionmaker = sqlalchemy.orm.sessionmaker(
-    #    autocommit=False,
-    #    autoflush=False,
-    #    bind=engine
-    #)
-    #session = sqlalchemy.orm.scoped_session(sessionmaker)
     cdatabase.init_db()
     connection = cdatabase.engine.connect()
 
@@ -73,8 +54,23 @@ class TestAPIProfile:
 
         return True
 
-    def test_put(self, client, profile):
-        res = client.put(url_for('api_app.profileresource'), data=profile)
+    def test_get_by_name(self, client, mdm_group):
+        mdm_group = MDMGroup(**mdm_group)
+
+        cdatabase.db_session.add(mdm_group)
+        cdatabase.db_session.commit()
+
+        res = client.get(url_for('api_app.mdmgroupresource'), data={'group_name': mdm_group.group_name})
+
+        assert self.assert_json(res.headers)
+        assert self.assert_success(res)
+        data = json.loads(res.data)
+
+        assert len(data) == 1
+        assert data[0]['id'] == mdm_group.id
+
+    def test_put(self, client, group):
+        res = client.put(url_for('api_app.groupresource'), data=group)
         assert self.assert_json(res.headers)
         assert self.assert_success(res)
 
@@ -84,11 +80,11 @@ class TestAPIProfile:
         assert isinstance(data['id'], int)
         assert data['id'] > 0
 
-    def test_get(self, client, profile):
-        res = client.put(url_for('api_app.profileresource'), data=profile)
+    def test_get(self, client, group):
+        res = client.put(url_for('api_app.groupresource'), data=group)
         data = json.loads(res.data)
 
-        res = client.get(url_for('api_app.profileresource', id=data['id']))
+        res = client.get(url_for('api_app.groupresource', id=data['id']))
 
         data = json.loads(res.data)
 
@@ -96,33 +92,33 @@ class TestAPIProfile:
         assert isinstance(data['id'], int)
         assert data['id'] > 0
 
-        profile['id'] = data['id']
-        assert profile == data
+        group['id'] = data['id']
+        assert group == data
 
-    def test_delete(self, client, profile):
-        res = client.put(url_for('api_app.profileresource'), data=profile)
+    def test_delete(self, client, group):
+        res = client.put(url_for('api_app.groupresource'), data=group)
         data = json.loads(res.data)
 
-        res = client.delete(url_for('api_app.profileresource', id=data['id']))
+        res = client.delete(url_for('api_app.groupresource', id=data['id']))
 
-        res = client.get(url_for('api_app.profileresource', id=data['id']))
+        res = client.get(url_for('api_app.groupresource', id=data['id']))
 
         assert res.status_code == 404
 
-    def test_post(self, client, profile):
-        res = client.put(url_for('api_app.profileresource'), data=profile)
+    def test_post(self, client, group):
+        res = client.put(url_for('api_app.groupresource'), data=group)
         data = json.loads(res.data)
 
-        profile['profile_data'] = 'something else'
-        res = client.post(url_for('api_app.profileresource', id=data['id']), data=profile)
+        group['group_name'] = 'something else'
+        res = client.post(url_for('api_app.groupresource', id=data['id']), data=group)
 
         assert self.assert_success(res)
 
-        res = client.get(url_for('api_app.profileresource', id=data['id']))
+        res = client.get(url_for('api_app.groupresource', id=data['id']))
 
         assert self.assert_json(res.headers)
         assert self.assert_success(res)
         data = json.loads(res.data)
 
-        profile['id'] = data['id']
-        assert data == profile
+        group['id'] = data['id']
+        assert data == group

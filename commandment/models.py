@@ -297,6 +297,13 @@ class MDMGroup(Base):
     def __repr__(self):
         return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
 
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'group_name': self.group_name,
+            'description': self.description
+        }
+
 class MDMConfig(Base):
     __tablename__ = 'mdm_config'
 

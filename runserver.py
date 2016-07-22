@@ -10,6 +10,7 @@ import atexit
 import werkzeug.serving
 import pkg_resources
 import json
+from flask import url_for
 from commandment.app import create_app
 from commandment.database import config_engine, init_db
 from commandment.pki.ca import get_or_generate_web_certificate
@@ -45,6 +46,7 @@ if __name__ == '__main__':
         }
 
 
+    print configuration['database']['uri'], configuration['database']['echo']
     config_engine(configuration['database']['uri'], configuration['database']['echo'])
 
     init_db()
