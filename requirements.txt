@@ -1,4 +1,4 @@
-M2Crypto
+M2Crypto >= 0.25
 pyOpenSSL
 Flask
 SQLAlchemy
@@ -8,3 +8,5 @@ passlib
 biplist
 flask-restful
 pytest-flask
+flask-redis
+mockredispy

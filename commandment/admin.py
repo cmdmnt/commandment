@@ -8,7 +8,7 @@ from .pki.ca import get_ca, PushCertificate
 from .pki.x509 import X509Error, Certificate, PrivateKey, CertificateRequest
 from .database import db_session, and_, or_, update, insert, delete
 from .models import CERT_TYPES, profile_group_assoc, device_group_assoc, Device, app_group_assoc
-from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig
+from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig, QueuedCommand
 from .models import App, DEPConfig, DEPProfile, SCEPConfig
 from .profiles.restrictions import RestrictionsPayload
 from .profiles import Profile
@@ -304,7 +304,8 @@ def admin_profiles_edit1(profile_id):
             allowiTunes=(not has_pld or mypld.payload.get('allowiTunes')),
             id=db_prof.id,
             groups=group_q,
-            xml=db_prof.profile_data
+            xml=db_prof.profile_data,
+            state=db_prof.get_state()
         )
 
 @admin_app.route('/profiles/groupmod/<int:profile_id>', methods=['POST'])
@@ -360,8 +361,20 @@ def devices():
 
     return render_template('admin/devices.html', devices=devices)
 
+@admin_app.route('/device/delete/<int:device_id>')
+def admin_device_delete(device_id):
+    device_q = db_session.query(Device).filter(Device.id == device_id)
+    device = device_q.one()
+
+    db_session.query(QueuedCommand).filter(QueuedCommand.device_id == device_id).delete()
+    db_session.delete(device)
+    db_session.commit()
+
+    return redirect('/admin/devices', Response=FixedLocationResponse)
+
 @admin_app.route('/device/<int:device_id>')
 def admin_device(device_id):
+    #db_session.query(Device).filter(Device.id == device_id).delete()
     device = db_session.query(Device).filter(Device.id == device_id).one()
 
     # get all MDMGroups left joining against our assoc. table to see if this device is in any of those groups

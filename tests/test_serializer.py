@@ -7,6 +7,8 @@ import datetime
 import pytest
 import json
 
+from fixtures import app
+
 class TestJSONMobileEncoder:
     def test_cannot_serialize_unknown_type(self):
         encoder = serializer.JSONMobileEncoder()

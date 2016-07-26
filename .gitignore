@@ -1,5 +1,5 @@
 *.pyc
-mdm.db
+mdm.db*
 commandment/apps
 .cache
 /venv

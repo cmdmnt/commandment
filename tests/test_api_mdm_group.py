@@ -8,10 +8,12 @@ import json
 import sqlalchemy
 import sqlalchemy.orm
 import uuid
-from commandment import app as capp, database as cdatabase
+from commandment import database as cdatabase
 from commandment.models import Profile, MDMGroup
 from pytest_flask.fixtures import client
 from flask import url_for
+
+from fixtures import app
 
 @pytest.fixture
 def mdm_group():
@@ -23,18 +25,6 @@ def mdm_group():
     }
 
     return group
-
-@pytest.yield_fixture(scope="session")
-def app():
-    app = capp.create_app(debug=True)
-    cdatabase.config_engine('sqlite://', echo=True)
-    cdatabase.init_db()
-    connection = cdatabase.engine.connect()
-
-    yield app
-
-    connection.close()
-    cdatabase.Base.metadata.drop_all(bind=cdatabase.engine)
 
 
 class TestAPIProfile:
@@ -69,8 +59,8 @@ class TestAPIProfile:
         assert len(data) == 1
         assert data[0]['id'] == mdm_group.id
 
-    def test_put(self, client, group):
-        res = client.put(url_for('api_app.groupresource'), data=group)
+    def test_put(self, client, mdm_group):
+        res = client.put(url_for('api_app.mdmgroupresource'), data=mdm_group)
         assert self.assert_json(res.headers)
         assert self.assert_success(res)
 
@@ -80,11 +70,11 @@ class TestAPIProfile:
         assert isinstance(data['id'], int)
         assert data['id'] > 0
 
-    def test_get(self, client, group):
-        res = client.put(url_for('api_app.groupresource'), data=group)
+    def test_get(self, client, mdm_group):
+        res = client.put(url_for('api_app.mdmgroupresource'), data=mdm_group)
         data = json.loads(res.data)
 
-        res = client.get(url_for('api_app.groupresource', id=data['id']))
+        res = client.get(url_for('api_app.mdmgroupresource', id=data['id']))
 
         data = json.loads(res.data)
 
@@ -92,33 +82,33 @@ class TestAPIProfile:
         assert isinstance(data['id'], int)
         assert data['id'] > 0
 
-        group['id'] = data['id']
-        assert group == data
+        mdm_group['id'] = data['id']
+        assert mdm_group == data
 
-    def test_delete(self, client, group):
-        res = client.put(url_for('api_app.groupresource'), data=group)
+    def test_delete(self, client, mdm_group):
+        res = client.put(url_for('api_app.mdmgroupresource'), data=mdm_group)
         data = json.loads(res.data)
 
-        res = client.delete(url_for('api_app.groupresource', id=data['id']))
+        res = client.delete(url_for('api_app.mdmgroupresource', id=data['id']))
 
-        res = client.get(url_for('api_app.groupresource', id=data['id']))
+        res = client.get(url_for('api_app.mdmgroupresource', id=data['id']))
 
         assert res.status_code == 404
 
-    def test_post(self, client, group):
-        res = client.put(url_for('api_app.groupresource'), data=group)
+    def test_post(self, client, mdm_group):
+        res = client.put(url_for('api_app.mdmgroupresource'), data=mdm_group)
         data = json.loads(res.data)
 
-        group['group_name'] = 'something else'
-        res = client.post(url_for('api_app.groupresource', id=data['id']), data=group)
+        mdm_group['group_name'] = 'something else'
+        res = client.post(url_for('api_app.mdmgroupresource', id=data['id']), data=mdm_group)
 
         assert self.assert_success(res)
 
-        res = client.get(url_for('api_app.groupresource', id=data['id']))
+        res = client.get(url_for('api_app.mdmgroupresource', id=data['id']))
 
         assert self.assert_json(res.headers)
         assert self.assert_success(res)
         data = json.loads(res.data)
 
-        group['id'] = data['id']
-        assert data == group
+        mdm_group['id'] = data['id']
+        assert data == mdm_group

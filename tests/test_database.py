@@ -5,6 +5,8 @@ __author__ = "Phil Weir <phil.weir@flaxandteal.co.uk>"
 from commandment import database
 import datetime
 
+from fixtures import app
+
 class TestJSONEncodedDict:
     def test_process_bind_param_accepts_none_value(self):
         json_encoded_dict = database.JSONEncodedDict()

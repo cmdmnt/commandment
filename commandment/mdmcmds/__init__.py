@@ -7,6 +7,8 @@ from uuid import uuid4
 from ..database import db_session
 from ..models import QueuedCommand, Profile as DBProfile, MDMConfig
 from ..profiles import Profile
+from ..mdm import enroll
+from flask import current_app
 import json
 import plistlib # needed for Data() wrapper
 
@@ -128,7 +130,12 @@ class UpdateInventoryDevInfoCommand(QueuedMDMCommand):
 
     def process_response_dict(self, result):
         self.device.info_json = result['QueryResponses']
+        existing_serial_number = self.device.serial_number
         self.device.serial_number = result['QueryResponses'].get('SerialNumber')
+        current_app.logger.info("Got device info (%s)" % str(existing_serial_number))
+        if not existing_serial_number:
+            current_app.logger.info("... for the first time")
+            enroll.notify_serial_first_received(self.device.udid, self.device.serial_number)
         if 'Locales' in result:
             # Locales key seems quite verbose on OS X, just strip it for now
             del result['Locales']

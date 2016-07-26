@@ -10,6 +10,7 @@ import atexit
 import werkzeug.serving
 import pkg_resources
 import json
+from flask.ext.redis import FlaskRedis
 from flask import url_for
 from commandment.app import create_app
 from commandment.database import config_engine, init_db
@@ -32,19 +33,18 @@ if __name__ == '__main__':
             loaded_configuration = json.load(configuration_fh)
         configuration.update(loaded_configuration)
 
-    app = create_app(debug=configuration['debug'])
+    for key in ('host', 'port', 'pass', 'database'):
+        keyu = key.upper()
+        if os.environ.get('REDIS_%s' % keyu):
+            configuration['redis'][key] = os.environ.get('REDIS_%s' % keyu)
 
-    app.config.from_object('commandment.default_settings')
-
-    if os.environ.get('COMMANDMENT_SETTINGS'):
-        app.config.from_envvar('COMMANDMENT_SETTINGS')
+    app = create_app(configuration['debug'], FlaskRedis(), configuration)
 
     if 'database' not in configuration:
         configuration['database'] = {
             'uri': app.config['DATABASE_URI'],
             'echo': app.config['DATABASE_ECHO']
         }
-
 
     print configuration['database']['uri'], configuration['database']['echo']
     config_engine(configuration['database']['uri'], configuration['database']['echo'])

@@ -2,5 +2,11 @@
     "database": {
         "uri": "sqlite:///mdm.db",
         "echo": false
+    },
+    "redis": {
+        "host": "localhost",
+        "port": 6379,
+        "pass": "",
+        "database": 0
     }
 }

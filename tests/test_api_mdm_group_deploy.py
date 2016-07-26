@@ -8,10 +8,12 @@ import json
 import sqlalchemy
 import sqlalchemy.orm
 import uuid
-from commandment import app as capp, database as cdatabase
+from commandment import database as cdatabase
 from commandment.models import Profile, MDMGroup
 from pytest_flask.fixtures import client
 from flask import url_for
+
+from fixtures import app
 
 @pytest.fixture
 def mdm_group():
@@ -35,18 +37,6 @@ def profile():
     }
 
     return profile
-
-@pytest.yield_fixture(scope="session")
-def app():
-    app = capp.create_app(debug=True)
-    cdatabase.config_engine('sqlite://', echo=True)
-    cdatabase.init_db()
-    connection = cdatabase.engine.connect()
-
-    yield app
-
-    connection.close()
-    cdatabase.Base.metadata.drop_all(bind=cdatabase.engine)
 
 
 class TestAPIProfile:

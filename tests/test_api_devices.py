@@ -1,4 +1,4 @@
-"""test_api_profile.py: Tests for API profile access"""
+"""test_api_device.py: Tests for API device access"""
 
 __author__ = "Phil Weir <phil.weir@flaxandteal.co.uk>"
 
@@ -9,7 +9,7 @@ import sqlalchemy
 import sqlalchemy.orm
 import uuid
 from commandment import database as cdatabase
-from commandment.models import Profile, MDMGroup
+from commandment.models import Device, MDMGroup
 from pytest_flask.fixtures import client
 from flask import url_for
 
@@ -27,20 +27,19 @@ def mdm_group():
     return group
 
 @pytest.fixture
-def profile():
-    profile_uuid = str(uuid.uuid4())
+def device():
+    device_uuid = str(uuid.uuid4())
 
-    profile = {
-        'identifier': 'com.example.test.' + profile_uuid,
-        'uuid': profile_uuid,
-        'profile_data': '',
+    device = {
+        'udid': device_uuid,
+        'serial_number': '90210',
         'groups': []
     }
 
-    return profile
+    return device
 
 
-class TestAPIProfile:
+class TestAPIDevice:
     @staticmethod
     def assert_success(response):
         if response.status_code != 200:
@@ -57,8 +56,8 @@ class TestAPIProfile:
 
         return True
 
-    def test_put(self, client, profile):
-        res = client.put(url_for('api_app.profileresource'), data=profile)
+    def test_put(self, client, device):
+        res = client.put(url_for('api_app.deviceresource'), data=device)
         assert self.assert_json(res.headers)
         assert self.assert_success(res)
 
@@ -68,11 +67,11 @@ class TestAPIProfile:
         assert isinstance(data['id'], int)
         assert data['id'] > 0
 
-    def test_get(self, client, profile):
-        res = client.put(url_for('api_app.profileresource'), data=profile)
+    def test_get(self, client, device):
+        res = client.put(url_for('api_app.deviceresource'), data=device)
         data = json.loads(res.data)
 
-        res = client.get(url_for('api_app.profileresource', id=data['id']))
+        res = client.get(url_for('api_app.deviceresource', id=data['id']))
 
         data = json.loads(res.data)
 
@@ -80,33 +79,34 @@ class TestAPIProfile:
         assert isinstance(data['id'], int)
         assert data['id'] > 0
 
-        profile['id'] = data['id']
-        assert profile == data
+        device['id'] = data['id']
+        assert device == data
 
-    def test_delete(self, client, profile):
-        res = client.put(url_for('api_app.profileresource'), data=profile)
+    def test_delete(self, client, device):
+        res = client.put(url_for('api_app.deviceresource'), data=device)
         data = json.loads(res.data)
 
-        res = client.delete(url_for('api_app.profileresource', id=data['id']))
+        res = client.delete(url_for('api_app.deviceresource', id=data['id']))
 
-        res = client.get(url_for('api_app.profileresource', id=data['id']))
+        res = client.get(url_for('api_app.deviceresource', id=data['id']))
 
         assert res.status_code == 404
 
-    def test_post(self, client, profile):
-        res = client.put(url_for('api_app.profileresource'), data=profile)
+    def test_post(self, client, device):
+        res = client.put(url_for('api_app.deviceresource'), data=device)
         data = json.loads(res.data)
 
-        profile['profile_data'] = 'something else'
-        res = client.post(url_for('api_app.profileresource', id=data['id']), data=profile)
+        device['udid'] = str(uuid.uuid4())
+        device['serial_number'] = '12131415'
+        res = client.post(url_for('api_app.deviceresource', id=data['id']), data=device)
 
         assert self.assert_success(res)
 
-        res = client.get(url_for('api_app.profileresource', id=data['id']))
+        res = client.get(url_for('api_app.deviceresource', id=data['id']))
 
         assert self.assert_json(res.headers)
         assert self.assert_success(res)
         data = json.loads(res.data)
 
-        profile['id'] = data['id']
-        assert data == profile
+        device['id'] = data['id']
+        assert data == device
