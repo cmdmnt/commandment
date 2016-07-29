@@ -3,10 +3,11 @@ Copyright (c) 2016 Flax & Teal Limited
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
-from flask import Blueprint, current_app
+from flask import Blueprint, current_app, abort
 from flask.ext.restful import Api, Resource, reqparse
 import json
-from .models import Profile, MDMGroup, Device
+from .models import Profile, MDMGroup, Device, ProfileStatus
+from .profiles.service import ProfileService
 from .database import db_session
 from .admin import install_group_profiles_to_device, remove_group_profiles_from_device
 from .push import push_to_device
@@ -104,9 +105,8 @@ class ProfileResource(Resource):
         profile = Profile(**{x: args[x] for x in self.fillable})
         db_session.add(profile)
 
-        if 'groups' in args and args['groups'] is not None:
-            group_list = json.loads(args['groups']);
-            profile.mdm_groups = [db_session.query(MDMGroup).get(g['id']) for g in group_list]
+        # You can't add groups en-mass here, as that requires a deployment
+        # and status changes for each
 
         db_session.commit()
 
@@ -143,18 +143,47 @@ class ProfileResource(Resource):
 
         profile.update(**{x: args[x] for x in self.fillable if (x in args and args[x] is not None)})
 
-        if 'groups' in args and args['groups'] is not None:
-            group_list = json.loads(args['groups']);
-            profile.mdm_groups = [db_session.query(MDMGroup).get(g['id']) for g in group_list]
+        # Can't update groups for the reasons above
 
         db_session.commit()
 
     # Delete
     def delete(self, id):
         profile = db_session.query(Profile).get(id)
-        db_session.delete(profile)
+
+        if profile.status == ProfileStatus.ACTIVE:
+            profile_service = ProfileService()
+            profile_service.remove(profile, delete=True)
+        elif profile.status == ProfileStatus.INACTIVE:
+            db_session.delete(profile)
+        else:
+            abort(400, "Can only delete a profile in a static (non-PENDING) state")
 
         db_session.commit()
+
+    # [Deployment]
+    class Deploy(Resource):
+        # Redeploy
+        def put(self, id):
+            profile = db_session.query(Profile).get(id)
+
+            profile_service = ProfileService()
+            profile_service.install(profile)
+
+            db_session.commit()
+
+            return {"message": "Queued"}
+
+        # Undeploy
+        def delete(self, id):
+            profile = db_session.query(Profile).get(id)
+
+            profile_service = ProfileService()
+            profile_service.remove(profile)
+
+            db_session.commit()
+
+            return {"message": "Queued"}
 
 class MDMGroupResource(Resource):
     fillable = ('group_name', 'description')
@@ -207,31 +236,37 @@ class MDMGroupResource(Resource):
 
         db_session.commit()
 
-    # [Deployment]
-    class Deploy(Resource):
-        # Redeploy
-        def put(self, id):
+    # [Profiles]
+    class Profile(Resource):
+        def put(self, id, profile_id):
             group = db_session.query(MDMGroup).get(id)
-            devices = group.devices
-            for device in devices:
-                install_group_profiles_to_device(group, device)
+            profile = db_session.query(Profile).get(profile_id)
+
+            if profile in group.profiles:
+                return {"message": "Already in group"}
+
+            if profile.status != ProfileStatus.INACTIVE:
+                return abort(400, "Cannot change groups while profile is not inactive")
+
+            group.profiles.append(profile)
             db_session.commit()
 
-            for device in devices:
-                push_to_device(device)
-            return {'devices_count': len(devices)}
+            return {"message": "Success"}
 
-        # Undeploy
-        def delete(self, id):
+        def delete(self, id, profile_id):
             group = db_session.query(MDMGroup).get(id)
-            devices = group.devices
-            for device in devices:
-                remove_group_profiles_from_device(group, device)
+            profile = db_session.query(Profile).get(profile_id)
+
+            if profile not in group.profiles:
+                return abort(400, "Not in group")
+
+            if profile.status != ProfileStatus.INACTIVE:
+                return abort(400, "Cannot change groups while profile is not inactive")
+
+            group.profiles.remove(profile)
             db_session.commit()
 
-            for device in devices:
-                push_to_device(device)
-            return {'devices_count': len(devices)}
+            return {"message": "Success"}
 
 
 def create_api(debug=False):
@@ -240,8 +275,9 @@ def create_api(debug=False):
     api.debug = debug
 
     api.add_resource(ProfileResource, '/profiles', '/profile/<int:id>')
+    api.add_resource(ProfileResource.Deploy, '/profile/<int:id>/deploy', endpoint='profileresource_deploy')
     api.add_resource(DeviceResource, '/devices', '/device/<int:id>')
     api.add_resource(MDMGroupResource, '/mdm_groups', '/mdm_group/<int:id>', endpoint='mdmgroupresource')
-    api.add_resource(MDMGroupResource.Deploy, '/mdm_group/<int:id>/deploy', endpoint='mdmgroupresource_deploy')
+    api.add_resource(MDMGroupResource.Profile, '/mdm_group/<int:id>/profile/<int:profile_id>', endpoint='mdmgroupresource_profile')
 
     return api_app

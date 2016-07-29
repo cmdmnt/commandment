@@ -4,12 +4,13 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 import datetime
+import enum
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
-from profiles.mdm import MDM_AR__ALL
+from .profiles.mdm import MDM_AR__ALL
 
 from .pki.x509 import (Certificate as X509Certificate,
                        PrivateKey as X509PrivateKey,
@@ -250,6 +251,13 @@ class QueuedCommand(Base):
 
 
 
+class ProfileStatus(enum.Enum):
+    INACTIVE = 0
+    ACTIVE = 1
+    PENDING_REMOVAL = 2
+    PENDING_INSTALLATION = 3
+    PENDING_DELETION = 4
+
 class Profile(Base):
     __tablename__ = 'profile'
 
@@ -257,22 +265,15 @@ class Profile(Base):
     identifier = Column(String, index=True, unique=True, nullable=False) # duplicated from within profile_data for searching
     uuid = Column(String(36), index=True, unique=True, nullable=False) # duplicated from within profile_data for searching
     profile_data = Column(Text, nullable=False) # serialized XML (or signed, encrypted) profile data
-    status = Column(Integer, nullable=False)
+    _status = Column("status", Integer, nullable=False, default=ProfileStatus.INACTIVE.value)
 
-    class State:
-        _status = None
-        _states = ['INACTIVE', 'ACTIVE', 'PENDING_REMOVAL', 'PENDING_DEPLOYMENT']
+    @property
+    def status(self):
+        return ProfileStatus(self._status)
 
-        def __init__(self, status, state_name):
-            self._status = status
-            self._state_name = state_name
-
-        def __repr__(self):
-            return '<State Status=%d Name=%s>' % (self._status, self._state_name)
-
-        @classmethod
-        def create(cls, status):
-            return cls(status, cls._states[status])
+    @status.setter
+    def status(self, status):
+        self._status = status.value
 
 
     def __init__(self, **kwargs):
@@ -294,11 +295,9 @@ class Profile(Base):
             'identifier': self.identifier,
             'uuid': self.uuid,
             'profile_data': self.profile_data,
-            'status': self.status
+            'status': self.status.value,
+            'status_name': self.status.name
         }
-
-    def get_state(self):
-        return Profile.State.create(self.status)
 
     def __repr__(self):
         return '<Profile ID=%r UUID=%r>' % (self.id, self.uuid)

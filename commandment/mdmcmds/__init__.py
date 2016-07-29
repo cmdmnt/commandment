@@ -5,7 +5,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 from uuid import uuid4
 from ..database import db_session
-from ..models import QueuedCommand, Profile as DBProfile, MDMConfig
+from ..models import QueuedCommand, Profile as DBProfile, MDMConfig, ProfileStatus
 from ..profiles import Profile
 from ..mdm import enroll
 from flask import current_app
@@ -190,12 +190,17 @@ class GenericQueryProfiles(QueuedMDMCommand):
 class RemoveProfile(QueuedMDMCommand):
     request_type = 'RemoveProfile'
     def generate_command_dict(self):
-        return {'Identifier': self.input_data['Identifier']}
+        return {'Identifier': self.input_data['Identifier'], 'UUID': self.input_data['UUID']}
 
     def process_response_dict(self, result):
         print 'RemoveProfile.process_response_dict() called'
         if result['Status'] == 'Acknowledged':
-            print 'Successfully removed profile identifier:', self.input_data['Identifier']
+            print 'Successfully removed profile identifier:', self.input_data['Identifier'], self.input_data['UUID']
+            profiles = db_session.query(DBProfile).filter(DBProfile.uuid == self.input_data['UUID']).all()
+            for profile in  profiles:
+                if profile.status == ProfileStatus.PENDING_DELETION:
+                    db_session.delete(profile)
+            db_session.commit()
         else:
             pprint.pprint(result)
 

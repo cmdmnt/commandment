@@ -8,10 +8,11 @@ from .pki.ca import get_ca, PushCertificate
 from .pki.x509 import X509Error, Certificate, PrivateKey, CertificateRequest
 from .database import db_session, and_, or_, update, insert, delete
 from .models import CERT_TYPES, profile_group_assoc, device_group_assoc, Device, app_group_assoc
-from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig, QueuedCommand
+from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig, QueuedCommand, ProfileStatus
 from .models import App, DEPConfig, DEPProfile, SCEPConfig
 from .profiles.restrictions import RestrictionsPayload
 from .profiles import Profile
+from .profiles.service import ProfileService
 from .mdmcmds import InstallProfile, RemoveProfile, AppInstall
 from .push import push_to_device
 import uuid
@@ -305,7 +306,7 @@ def admin_profiles_edit1(profile_id):
             id=db_prof.id,
             groups=group_q,
             xml=db_prof.profile_data,
-            state=db_prof.get_state()
+            status=db_prof.status
         )
 
 @admin_app.route('/profiles/groupmod/<int:profile_id>', methods=['POST'])
@@ -330,8 +331,37 @@ def admin_profiles_groupmod1(profile_id):
     return redirect('/admin/profiles/edit/%d' % int(profile.id), Response=FixedLocationResponse)
 
 
+@admin_app.route('/profiles/force_status/<int:profile_id>/<int:status>')
+def admin_profiles_force_status1(profile_id, status):
+    profile = db_session.query(DBProfile).get(profile_id)
+    profile.status = ProfileStatus(status)
+    db_session.commit()
+    return redirect('/admin/profiles', Response=FixedLocationResponse)
+
+@admin_app.route('/profiles/install/<int:profile_id>')
+def admin_profiles_install1(profile_id):
+    profile = db_session.query(DBProfile).get(profile_id)
+
+    profile_service = ProfileService()
+    profile_service.install(profile)
+
+    db_session.commit()
+
+    return redirect('/admin/profiles', Response=FixedLocationResponse)
+
 @admin_app.route('/profiles/remove/<int:profile_id>')
 def admin_profiles_remove1(profile_id):
+    profile = db_session.query(DBProfile).get(profile_id)
+
+    profile_service = ProfileService()
+    profile_service.remove(profile)
+
+    db_session.commit()
+
+    return redirect('/admin/profiles', Response=FixedLocationResponse)
+
+@admin_app.route('/profiles/delete/<int:profile_id>')
+def admin_profiles_delete1(profile_id):
     q = db_session.query(DBProfile).filter(DBProfile.id == profile_id).delete(synchronize_session=False)
     db_session.commit()
     return redirect('/admin/profiles', Response=FixedLocationResponse)
@@ -397,12 +427,12 @@ def install_group_profiles_to_device(group, device):
         db_session.add(new_qc)
 
 def remove_group_profiles_from_device(group, device):
-    q = db_session.query(DBProfile.identifier).join(profile_group_assoc).filter(profile_group_assoc.c.mdm_group_id == group.id)
+    q = db_session.query(DBProfile.identifier, DBProfile.uuid).join(profile_group_assoc).filter(profile_group_assoc.c.mdm_group_id == group.id)
 
     # note singular tuple for subject here
-    for profile_identifier, in q:
+    for profile_identifier, profile_uuid in q:
         print 'Queueing removal of profile identifier:', profile_identifier
-        new_qc = RemoveProfile.new_queued_command(device, {'Identifier': profile_identifier})
+        new_qc = RemoveProfile.new_queued_command(device, {'Identifier': profile_identifier, 'UUID': profile_uuid})
         db_session.add(new_qc)
 
 @admin_app.route('/device/<int:device_id>/groupmod', methods=['POST'])

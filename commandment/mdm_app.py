@@ -5,7 +5,9 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 import base64
 from .push import push_to_device
-from .mdm import do_enroll, do_mdm_payload, do_checkin, do_mdm, do_send_dev_info, do_app_manifest, do_app_download, device_cert_check, parse_plist_input_data
+from .mdm.actions import do_mdm_payload, do_checkin, do_mdm, do_send_dev_info, do_app_manifest, do_app_download, do_enroll
+from .mdm.utils import parse_plist_input_data
+from .mdm.device import device_cert_check
 from .models import Device
 from .database import db_session
 from flask import Blueprint, render_template, request, current_app

@@ -11,8 +11,8 @@
 <table border=1>
 
 <tr>
-	<td>State</td>
-	<td>{{ state }}</td>
+	<td>Status</td>
+        <td>{{ status }} : {{ status.name }}</td>
 </tr>
 
 <tr>
@@ -23,6 +23,22 @@
 <tr>
 	<td>Profile UUID (will get new upon modification)</td>
 	<td>{{ uuid }}</td>
+</tr>
+
+{% if status.value == 0 %}
+<tr>
+  <td><a href='../install/{{ id }}'>INSTALL</a></td>
+</tr>
+{% endif %}
+
+{% if status.value == 1 %}
+<tr>
+  <td><a href='../remove/{{ id }}'>REMOVE</a></td>
+</tr>
+{% endif %}
+
+<tr>
+  <td><a href='../force_status/{{ id }}/0'>[FORCE RESET STATUS]</a></td>
 </tr>
 
 </table>

@@ -5,7 +5,6 @@ __author__ = "Phil Weir <phil.weir@flaxandteal.co.uk>"
 from commandment import database as cdatabase
 from commandment.mdm import enroll
 from commandment.models import Device
-from mockredis import MockRedis
 import json
 
 from fixtures import app
@@ -23,18 +22,26 @@ class TestEnrolment:
         cdatabase.db_session.add(device)
         cdatabase.db_session.commit()
 
+        redis_client = app.redis_store._redis_client
+
+        pubsub = {}
+        for channel in ('enroll', 'serial'):
+            pubsub_channel = redis_client.pubsub()
+            pubsub_channel.subscribe('commandment.' + channel)
+            pubsub_channel.get_message()
+            pubsub[channel] = pubsub_channel
+
         new_device = enroll.enroll_from_plist(plist)
 
-        redis_client = app.redis_store._redis_client
-        channel = redis_client.pubsub['commandment.enroll']
-        assert len(channel) == 1
+        message = pubsub['enroll'].get_message()['data']
+        assert pubsub['enroll'].get_message() is None
 
-        payload = json.loads(channel[0])
+        payload = json.loads(message)
         assert payload == {'udid': plist['UDID']}
 
-        channel = redis_client.pubsub['commandment.serial']
-        assert len(channel) == 1
+        message = pubsub['serial'].get_message()['data']
+        assert pubsub['serial'].get_message() is None
 
-        payload = json.loads(channel[0])
+        payload = json.loads(message)
         assert payload == {'udid': plist['UDID'], 'serial_number': plist['SERIAL']}
         assert new_device.id == device.id

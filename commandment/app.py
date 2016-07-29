@@ -4,6 +4,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 import os
+from rq import Queue
 from flask import Flask
 from .mdm_app import mdm_app
 from .admin import admin_app
@@ -37,6 +38,8 @@ def create_app(debug, redis_store, configuration=None):
     print "REDIS: ", app.config.get('REDIS_URL')
     redis_store.init_app(app)
     app.redis_store = redis_store
+    app.redis_queue = Queue(connection=redis_store._redis_client)
+    app.redis_queue.enqueue('commandment.tasks.process_profile_deployment_change')
 
     from .database import db_session
 

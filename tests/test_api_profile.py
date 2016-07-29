@@ -8,8 +8,9 @@ import json
 import sqlalchemy
 import sqlalchemy.orm
 import uuid
+from utils import get_queued_jobs
 from commandment import database as cdatabase
-from commandment.models import Profile, MDMGroup
+from commandment.models import Profile, MDMGroup, ProfileStatus
 from pytest_flask.fixtures import client
 from flask import url_for
 
@@ -34,7 +35,7 @@ def profile():
         'identifier': 'com.example.test.' + profile_uuid,
         'uuid': profile_uuid,
         'profile_data': '',
-        'groups': []
+        'status': ProfileStatus.INACTIVE
     }
 
     return profile
@@ -80,18 +81,37 @@ class TestAPIProfile:
         assert isinstance(data['id'], int)
         assert data['id'] > 0
 
-        profile['id'] = data['id']
-        assert profile == data
+        assert data['identifier'] == profile['identifier']
+        assert data['uuid'] == profile['uuid']
+        assert data['status'] == profile['status'].value
 
     def test_delete(self, client, profile):
-        res = client.put(url_for('api_app.profileresource'), data=profile)
-        data = json.loads(res.data)
+        profile_dict = profile
+        for status in list(ProfileStatus):
+            profile = Profile(**profile_dict)
+            profile.status = status
+            cdatabase.db_session.add(profile)
+            cdatabase.db_session.commit()
+            profile_id = profile.id
 
-        res = client.delete(url_for('api_app.profileresource', id=data['id']))
+            res = client.delete(url_for('api_app.profileresource', id=profile_id))
 
-        res = client.get(url_for('api_app.profileresource', id=data['id']))
+            res = client.get(url_for('api_app.profileresource', id=profile_id))
+            assert self.assert_json(res.headers)
 
-        assert res.status_code == 404
+            deleted = False
+            if status == ProfileStatus.ACTIVE:
+                assert self.assert_success(res)
+                assert profile.status == ProfileStatus.PENDING_DELETION
+            elif status == ProfileStatus.INACTIVE:
+                assert res.status_code == 404
+                deleted = True
+            else:
+                assert profile.status == status
+
+            if not deleted:
+                cdatabase.db_session.delete(profile)
+                cdatabase.db_session.commit()
 
     def test_post(self, client, profile):
         res = client.put(url_for('api_app.profileresource'), data=profile)
@@ -108,5 +128,62 @@ class TestAPIProfile:
         assert self.assert_success(res)
         data = json.loads(res.data)
 
-        profile['id'] = data['id']
-        assert data == profile
+        assert data['identifier'] == profile['identifier']
+        assert data['uuid'] == profile['uuid']
+        assert data['status'] == profile['status'].value
+
+    def test_deploy_works_only_if_inactive(self, client, profile, app):
+        profile = Profile(**profile)
+
+        cdatabase.db_session.add(profile)
+        cdatabase.db_session.commit()
+
+        redis_client = app.redis_store._redis_client
+
+        for status in list(ProfileStatus):
+            redis_client.flushall()
+            profile.status = status
+            cdatabase.db_session.commit()
+            res = client.put(url_for('api_app.profileresource_deploy', id=profile.id))
+            assert self.assert_json(res.headers)
+
+            if status == ProfileStatus.INACTIVE:
+                assert self.assert_success(res)
+                assert profile.status == ProfileStatus.PENDING_INSTALLATION
+                assert get_queued_jobs(redis_client) == ['commandment.tasks.process_profile_deployment_change(%d)' % profile.id]
+            elif status == ProfileStatus.ACTIVE:
+                assert self.assert_success(res)
+                assert profile.status == ProfileStatus.ACTIVE
+                assert get_queued_jobs(redis_client) == []
+            else:
+                assert res.status_code == 400
+                assert profile.status == status
+                assert get_queued_jobs(redis_client) == []
+
+    def test_undeploy_works_only_if_active(self, client, profile, app):
+        profile = Profile(**profile)
+
+        redis_client = app.redis_store._redis_client
+
+        cdatabase.db_session.add(profile)
+        cdatabase.db_session.commit()
+
+        for status in list(ProfileStatus):
+            redis_client.flushall()
+            profile.status = status
+            cdatabase.db_session.commit()
+            res = client.delete(url_for('api_app.profileresource_deploy', id=profile.id))
+            assert self.assert_json(res.headers)
+
+            if status == ProfileStatus.ACTIVE:
+                assert self.assert_success(res)
+                assert profile.status == ProfileStatus.PENDING_REMOVAL
+                assert get_queued_jobs(redis_client) == ['commandment.tasks.process_profile_deployment_change(%d)' % profile.id]
+            elif status == ProfileStatus.INACTIVE:
+                assert self.assert_success(res)
+                assert profile.status == ProfileStatus.INACTIVE
+                assert get_queued_jobs(redis_client) == []
+            else:
+                assert res.status_code == 400
+                assert profile.status == status
+                assert get_queued_jobs(redis_client) == []
