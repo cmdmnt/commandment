@@ -27,7 +27,7 @@ def mdm_group():
     return group
 
 
-class TestAPIProfile:
+class TestAPIGroup:
     @staticmethod
     def assert_success(response):
         if response.status_code != 200:
@@ -44,7 +44,7 @@ class TestAPIProfile:
 
         return True
 
-    def test_get_by_name(self, client, mdm_group):
+    def test_get_by_name_retrieves_group_if_found(self, client, mdm_group):
         mdm_group = MDMGroup(**mdm_group)
 
         cdatabase.db_session.add(mdm_group)
@@ -58,6 +58,20 @@ class TestAPIProfile:
 
         assert len(data) == 1
         assert data[0]['id'] == mdm_group.id
+
+    def test_get_by_name_returns_empty_if_missing(self, client, mdm_group):
+        mdm_group = MDMGroup(**mdm_group)
+
+        cdatabase.db_session.add(mdm_group)
+        cdatabase.db_session.commit()
+
+        res = client.get(url_for('api_app.mdmgroupresource'), data={'group_name': 'carrots'})
+
+        assert self.assert_json(res.headers)
+        assert self.assert_success(res)
+        data = json.loads(res.data)
+
+        assert len(data) == 0
 
     def test_put(self, client, mdm_group):
         res = client.put(url_for('api_app.mdmgroupresource'), data=mdm_group)

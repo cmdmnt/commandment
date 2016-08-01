@@ -378,7 +378,9 @@ def handle_token_update(resp, print_resp):
         # the first TokenUpdate implies successful MDM profile install.
         # kick off our first-device commands, noting any DEP Await state
         current_app.logger.info('sending initial post-enrollment MDM command(s) to device=%d', g.device.id)
-        mdm_device.device_first_post_enroll(g.device, awaiting=resp.get('AwaitingConfiguration', False))
+        # Previously, this was a direct call to mdm_device.device_first_post_enroll but it seemed to often stall
+        current_app.redis_queue.enqueue('commandment.tasks.process_enrolment_complete', g.device.id, resp.get('AwaitingConfiguration', False))
+
 
     return 'OK'
 

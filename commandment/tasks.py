@@ -1,10 +1,11 @@
 """mdm app module: Controller logic for MDM Blueprint"""
 
 import logging
-from .models import Profile, ProfileStatus
+from .models import Profile, ProfileStatus, Device
 from .database import db_session
 from .push import push_to_device
 from .profiles.service import ProfileService
+from .mdm import device as mdm_device
 
 __author__ = "Phil Weir <phil.weir@flaxandteal.co.uk>"
 
@@ -44,3 +45,8 @@ def process_profile_deployment_change(profile_id):
 
     profile.status = target
     db_session.commit()
+
+def process_enrolment_complete(device_id, awaiting):
+    device = db_session.query(Device).get(device_id)
+    print device
+    mdm_device.device_first_post_enroll(device, awaiting)
