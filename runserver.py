@@ -46,6 +46,14 @@ if __name__ == '__main__':
             'echo': app.config['DATABASE_ECHO']
         }
 
+    if os.environ.get('COMMANDMENT_PORT'):
+        configuration['port'] = int(os.environ.get('COMMANDMENT_PORT'))
+
+    if 'port' not in configuration:
+        configuration['port'] = app.config.get('PORT')
+
+    app.config.update(configuration)
+
     print configuration['database']['uri'], configuration['database']['echo']
     config_engine(configuration['database']['uri'], configuration['database']['echo'])
 
@@ -87,6 +95,6 @@ if __name__ == '__main__':
 
     app.run(
         host='0.0.0.0',
-        port=app.config.get('PORT'),
+        port=configuration['port'],
         ssl_context=(cert_file, pkey_file),
         threaded=True)

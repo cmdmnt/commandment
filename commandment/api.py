@@ -151,6 +151,9 @@ class ProfileResource(Resource):
     def delete(self, id):
         profile = db_session.query(Profile).get(id)
 
+        if not profile:
+            abort(404, "Profile not found")
+
         if profile.status == ProfileStatus.ACTIVE:
             profile_service = ProfileService()
             profile_service.remove(profile, delete=True)
@@ -268,6 +271,53 @@ class MDMGroupResource(Resource):
 
             return {"message": "Success"}
 
+    # [Devices]
+    class Device(Resource):
+        def put(self, id, device_id):
+            current_app.logger.info('Added device to group')
+            group = db_session.query(MDMGroup).get(id)
+            device = db_session.query(Device).get(device_id)
+            profile_service = ProfileService()
+
+            if device in group.devices:
+                return {"message": "Already in group"}
+
+            for profile in group.profiles:
+                if profile.status == ProfileStatus.ACTIVE:
+                    profile_service.finalize_installation(profile, device)
+
+            db_session.commit()
+
+            group.devices.append(device)
+
+            db_session.commit()
+
+            return {"message": "Success"}
+
+        def delete(self, id, device_id):
+            group = db_session.query(MDMGroup).get(id)
+            device = db_session.query(Device).get(device_id)
+            profile_service = ProfileService()
+
+            if device not in group.devices:
+                return abort(400, str(group.devices))
+
+            currently_deployed_profiles = [profile for profile in group.profiles if profile.status == ProfileStatus.ACTIVE]
+            group.devices.remove(device)
+
+            # We do not want group changes in a separate job to affect this device while we remove profiles
+            db_session.commit()
+
+            # Event (and job) would be better here (an ORM event would possibly not give us the correct sequence of calls)
+            # FIXME: what happens if a profile is pending removal before this but job enacted afterwards?
+            for profile in group.profiles:
+                if profile.status == ProfileStatus.ACTIVE:
+                    profile_service.finalize_removal(profile, device)
+
+            db_session.commit()
+
+            return {"message": "Success"}
+
 
 def create_api(debug=False):
     api_app = Blueprint('api_app', __name__)
@@ -279,5 +329,6 @@ def create_api(debug=False):
     api.add_resource(DeviceResource, '/devices', '/device/<int:id>')
     api.add_resource(MDMGroupResource, '/mdm_groups', '/mdm_group/<int:id>', endpoint='mdmgroupresource')
     api.add_resource(MDMGroupResource.Profile, '/mdm_group/<int:id>/profile/<int:profile_id>', endpoint='mdmgroupresource_profile')
+    api.add_resource(MDMGroupResource.Device, '/mdm_group/<int:id>/device/<int:device_id>', endpoint='mdmgroupresource_device')
 
     return api_app

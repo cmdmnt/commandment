@@ -5,10 +5,11 @@ __author__ = "Phil Weir <phil.weir@flaxandteal.co.uk>"
 import sys
 import pytest
 import json
+import mock
 import sqlalchemy
 import sqlalchemy.orm
 import uuid
-from commandment import database as cdatabase
+from commandment import database as cdatabase, api as capi
 from commandment.models import Profile, MDMGroup, ProfileStatus, Device
 from pytest_flask.fixtures import client
 from flask import url_for
@@ -32,6 +33,67 @@ class TestAPIProfile:
             raise AssertionError("Response was not JSON")
 
         return True
+
+    def test_when_device_is_added_to_group_profiles_are_installed(self, client, device, profile, mdm_group):
+        device = Device(**device)
+        profile = Profile(**profile)
+        profile_service = mock.MagicMock()
+
+        # FIXME: there has to be a better way...
+        original_profile_service = capi.ProfileService
+
+        mdm_group = MDMGroup(**mdm_group)
+        profile.status = ProfileStatus.ACTIVE
+        mdm_group.profiles.append(profile)
+        cdatabase.db_session.add(device)
+        cdatabase.db_session.add(profile)
+        cdatabase.db_session.add(mdm_group)
+        cdatabase.db_session.commit()
+
+        try:
+            capi.ProfileService = mock.MagicMock()
+            capi.ProfileService.return_value = profile_service
+            res = client.put(url_for('api_app.mdmgroupresource_device', id=mdm_group.id, device_id=device.id))
+        finally:
+            capi.ProfileService = original_profile_service
+
+        assert self.assert_json(res.headers)
+        assert self.assert_success(res)
+        data = json.loads(res.data)
+        assert data['message'] == "Success"
+        profile_service.finalize_installation.assert_called_once_with(profile, device)
+
+    def test_when_device_is_removed_from_group_profiles_are_removed(self, client, device, profile, mdm_group):
+        device = Device(**device)
+        profile = Profile(**profile)
+        profile_service = mock.MagicMock()
+
+        # FIXME: there has to be a better way...
+        original_profile_service = capi.ProfileService
+        capi.ProfileService = mock.MagicMock()
+        capi.ProfileService.return_value = profile_service
+
+        mdm_group = MDMGroup(**mdm_group)
+        profile.status = ProfileStatus.ACTIVE
+        mdm_group.devices.append(device)
+        mdm_group.profiles.append(profile)
+        cdatabase.db_session.add(device)
+        cdatabase.db_session.add(profile)
+        cdatabase.db_session.add(mdm_group)
+        cdatabase.db_session.commit()
+
+        try:
+            capi.ProfileService = mock.MagicMock()
+            capi.ProfileService.return_value = profile_service
+            res = client.delete(url_for('api_app.mdmgroupresource_device', id=mdm_group.id, device_id=device.id))
+        finally:
+            capi.ProfileService = original_profile_service
+
+        assert self.assert_json(res.headers)
+        assert self.assert_success(res)
+        data = json.loads(res.data)
+        assert data['message'] == "Success"
+        profile_service.finalize_removal.assert_called_once_with(profile, device)
 
     def test_can_switch_membership_of_an_inactive_profile(self, client, profile, mdm_group):
         profile = Profile(**profile)

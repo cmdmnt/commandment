@@ -774,6 +774,20 @@ def admin_config():
         config.mdm_name = request.form['name']
         config.description = request.form['description'] if request.form['description'] else None
 
+        if request.form.get('reset_url'):
+            base_url = 'https://' + request.form['reset_url_hostname']
+
+            if request.form['reset_url_port']:
+                portno = int(request.form['reset_url_port'])
+
+                if portno < 1 or portno > (2 ** 16):
+                    abort(400, 'Invalid port number')
+
+                base_url += ':%d' % portno
+
+            config.mdm_url = base_url + '/mdm'
+            config.checkin_url = base_url + '/checkin'
+
         config.device_identity_method = request.form.get('device_identity_method')
 
         if config.device_identity_method == 'ourscep':

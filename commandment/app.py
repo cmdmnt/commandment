@@ -39,7 +39,6 @@ def create_app(debug, redis_store, configuration=None):
     redis_store.init_app(app)
     app.redis_store = redis_store
     app.redis_queue = Queue(connection=redis_store._redis_client)
-    app.redis_queue.enqueue('commandment.tasks.process_profile_deployment_change')
 
     from .database import db_session
 

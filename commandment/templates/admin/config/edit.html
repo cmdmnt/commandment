@@ -66,6 +66,21 @@
 
 <tr>
 	<th>
+		<h4>Reset URLs</h4>
+		<p>Reset the URLs used for MDM and checkin actions based on the current base.</p>
+	</th>
+	<td>
+                <p>{{ config.mdm_url }}</p>
+		<em>Reset</em> <input type="checkbox" name="reset_url" >
+		https://
+		<input name="reset_url_hostname" type="text" placeholder="mdm.example.com" size="30" value="">
+		:
+		<input name="reset_url_port" type="text" placeholder="443" size="6" maxlength="5" value="{{ config.port }}">
+	</td>
+</tr>
+
+<tr>
+	<th>
 		<h4>Certificate Authority</h4>
 		<p>Certificate Authority (CA) that will issue and sign device identity
 		certificates to each enrolling device.</p>

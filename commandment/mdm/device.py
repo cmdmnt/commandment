@@ -14,7 +14,7 @@ from . import enroll
 from ..pki.x509 import Certificate
 from ..database import db_session, NoResultFound, or_, and_
 from ..profiles.mdm import MDMPayload
-from ..models import App, app_group_assoc, SCEPConfig, Device, Certificate as DBCertificate, MDMGroup, MDMConfig, QueuedCommand
+from ..models import App, app_group_assoc, SCEPConfig, Device, Certificate as DBCertificate, MDMGroup, MDMConfig, QueuedCommand, ProfileStatus
 from ..mdmcmds.dep import DeviceConfigured
 from ..pki.ca import PushCertificate
 from ..push import push_to_device
@@ -79,8 +79,9 @@ def device_first_post_enroll(device, awaiting=False):
     # install all group profiles
     for group in device.mdm_groups:
         for profile in group.profiles:
-            print "Installing profile ", profile.id
-            db_session.add(InstallProfile.new_queued_command(device, {'id': profile.id}))
+            if profile.status == ProfileStatus.ACTIVE:
+                print "Installing profile ", profile.id
+                db_session.add(InstallProfile.new_queued_command(device, {'id': profile.id}))
 
     if awaiting:
         # in DEP Await state, send DeviceConfigured to proceed with setup
