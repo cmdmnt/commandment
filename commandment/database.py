@@ -11,6 +11,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.types import TypeDecorator
 from sqlalchemy import Text, and_, or_, and_, update, insert, delete
 import json
+from datetime import datetime
 
 engine = None
 mysessionmaker = sessionmaker()
@@ -30,6 +31,14 @@ def init_db():
     global engine
     Base.metadata.create_all(bind=engine)
 
+def json_datetime_serializer(o):
+    '''Serialize datetime objects into ISO format string dates'''
+
+    if isinstance(o, datetime):
+        return o.isoformat()
+
+    raise TypeError(repr(o) + " is not JSON serializable")
+
 class JSONEncodedDict(TypeDecorator):
     '''Represents an immutable structure as a json-encoded string'''
     impl = Text
@@ -38,7 +47,7 @@ class JSONEncodedDict(TypeDecorator):
         if value is None:
             return None
 
-        return json.dumps(value, separators=(',', ':'))
+        return json.dumps(value, separators=(',', ':'), default=json_datetime_serializer)
 
     def process_result_value(self, value, dialect):
         if not value:
