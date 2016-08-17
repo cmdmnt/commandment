@@ -13,18 +13,32 @@
 	<th>Serial No.</th>
 	<th>Storage Used %</th>
 	<th>OS Version</th>
+	<th>UDID</th>
 	<th></th>
 </tr>
 
 {% for device in devices %}
 
 <tr>
+{% if device.info_json.get('ModelName') %}
 	<td>{{ device.info_json['DeviceName'] }}</td>
 	<td>{{ device.info_json['ModelName'] }}</td>
 	<td>{{ device.info_json['ProductName'] }}</td>
 	<td style="font-family:monospace;">{{ device.serial_number }}</td>
 	<td>{{ (100 - ((device.info_json.get('AvailableDeviceCapacity',0) / device.info_json.get('DeviceCapacity',1)) * 100)) |int}}%</td>
 	<td>{{ device.info_json['OSVersion']}}
+{% else %}
+	<td colspan="6" style="text-align:center;">
+		<em>Device ID {{ device.id }} checked in, but no MDM inventory data yet</em>
+	</td>
+{% endif %}
+	<td>
+	{% if device.udid %}
+		<span title="UDID: {{ device.udid }}">Yes</span>
+	{% else %}
+		No
+	{% endif %}
+	</td>
 	<td style="white-space:nowrap;">
 		<a href="/admin/device/{{ device.id }}">[ View Device ]</a>
 		<a href="/send_dev_info/{{ device.id }}">[ Send Dev Info. Cmd. ]</a>
