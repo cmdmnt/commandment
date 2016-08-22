@@ -4,6 +4,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 import base64
+import re
 from .push import push_to_device
 from .mdm.actions import do_mdm_payload, do_checkin, do_mdm, do_send_dev_info, do_app_manifest, do_app_download, do_enroll
 from .mdm.utils import parse_plist_input_data
@@ -19,16 +20,19 @@ def index():
     """Show enrolment page"""
     return render_template('enroll.html')
 
-@mdm_app.route('/enroll', methods=['GET', 'POST'])
-def enroll():
+@mdm_app.route('/enroll/<id_token>', methods=['GET', 'POST'])
+def enroll(id_token):
     """Accept request from device to enroll it"""
     if request.method == 'POST' and \
             request.headers.get('Content-type', '').lower() == \
                 'application/pkcs7-signature':
 
-        do_enroll(base64.b64encode(request.data))
+        do_enroll(base64.b64encode(request.data), id_token)
 
-    return do_mdm_payload()
+    # Ensure token is alphanumeric and -, _
+    id_token = re.sub(r'/[^a-zA-Z0-9-_]/', '', id_token)
+
+    return do_mdm_payload(id_token)
 
 @mdm_app.route('/send_mdm/<int:dev_id>')
 def send_mdm(dev_id):
@@ -37,12 +41,12 @@ def send_mdm(dev_id):
     push_to_device(device)
     return 'Sent Push Notification'
 
-@mdm_app.route("/checkin", methods=['PUT'])
+@mdm_app.route("/checkin/<id_token>", methods=['PUT'])
 @device_cert_check(no_device_okay=True)
 @parse_plist_input_data
-def checkin():
+def checkin(id_token):
     """Check in from device"""
-    return do_checkin()
+    return do_checkin(id_token)
 
 @mdm_app.route("/mdm", methods=['PUT'])
 @device_cert_check()

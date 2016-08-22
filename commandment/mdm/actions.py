@@ -29,7 +29,7 @@ TRUST_DEV_PROVIDED_CERT = True
 
 PROFILE_CONTENT_TYPE = 'application/x-apple-aspen-config'
 
-def do_enroll(pks7):
+def do_enroll(pks7, token):
     """Enroll a device from the pks7 data it sent."""
 
     current_app.logger.info("ENROLL")
@@ -39,7 +39,7 @@ def do_enroll(pks7):
 
     return device
 
-def generate_mdm_payload():
+def generate_mdm_payload(id_token):
     """Get a payload with the necessary information about the MDM"""
     mdm_ca = get_ca()
 
@@ -111,7 +111,7 @@ def generate_mdm_payload():
         topic, # APNs push topic
         config.mdm_url,
         config.access_rights,
-        CheckInURL=config.checkin_url,
+        CheckInURL='%s/%s' % (config.checkin_url, id_token),
         # we can validate MDM device client certs provided via SSL/TLS.
         # however this requires an SSL framework that is able to do that.
         # alternatively we may optionally have the client digitally sign the
@@ -250,15 +250,15 @@ def do_app_download(app_id, filename):
 
     return send_file(os.path.join(current_app.config['APP_UPLOAD_ROOT'], app.path_format()))
 
-def do_mdm_payload():
+def do_mdm_payload(id_token):
     """Create a response containing an MDM configuration"""
-    plist = generate_mdm_payload()
+    plist = generate_mdm_payload(id_token)
 
     resp = make_response(plist)
     resp.headers['Content-Type'] = PROFILE_CONTENT_TYPE
     return resp
 
-def do_checkin():
+def do_checkin(id_token):
     """Check in from device"""
     resp = g.plist_data
     print_resp = resp.copy()
@@ -268,7 +268,7 @@ def do_checkin():
         print_resp['UnlockToken'] = '[Hiding Unlock Token]'
 
     if resp['MessageType'] == 'Authenticate':
-        return handle_authenticate(resp)
+        return handle_authenticate(resp, id_token)
     elif resp['MessageType'] == 'TokenUpdate':
         return handle_token_update(resp, print_resp)
     elif resp['MessageType'] == 'UserAuthenticate':
@@ -284,7 +284,7 @@ def do_checkin():
     print 'Invalid message type'
     abort(500, 'Invalid message type')
 
-def handle_authenticate(resp):
+def handle_authenticate(resp, id_token):
     """Handle authentication"""
 
     # TODO: check to make sure device == UDID == cert, etc.
@@ -318,7 +318,7 @@ def handle_authenticate(resp):
         # to match the device by serial number - we don't have that
         # yet.
         device.udid = resp['UDID']
-        enroll.notify_enrolled(device.udid)
+        enroll.notify_enrolled(device.udid, id_token)
 
     if 'Topic' in resp:
         device.topic = resp['Topic']

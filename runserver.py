@@ -52,6 +52,8 @@ if __name__ == '__main__':
     if 'port' not in configuration:
         configuration['port'] = app.config.get('PORT')
 
+    app.logger.info(configuration)
+
     app.config.update(configuration)
 
     print configuration['database']['uri'], configuration['database']['echo']

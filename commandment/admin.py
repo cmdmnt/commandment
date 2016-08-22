@@ -787,6 +787,8 @@ def admin_config():
 
             config.mdm_url = base_url + '/mdm'
             config.checkin_url = base_url + '/checkin'
+        current_app.logger.info(request.form.get('reset_url'))
+        current_app.logger.info(config.checkin_url)
 
         config.device_identity_method = request.form.get('device_identity_method')
 
@@ -926,7 +928,7 @@ def dep_profile_add():
         dep = db_session.query(DEPConfig).filter(DEPConfig.id == request.form.get('dep_config_id', type=int)).one()
         mdm = db_session.query(MDMConfig).filter(MDMConfig.id == request.form.get('mdm_config_id', type=int)).one()
 
-        profile['url'] = mdm.base_url() + '/enroll'
+        profile['url'] = mdm.base_url() + '/enroll/dep'
 
         # find and include all mdm.webcrt's
         # TODO: find actual cert chain rather than specific web cert

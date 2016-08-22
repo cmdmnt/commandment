@@ -7,7 +7,7 @@ from ..models import Device
 
 __author__ = "Phil Weir <phil.weir@flaxandteal.co.uk>"
 
-def enroll_from_plist(plist):
+def enroll_from_plist(plist, id_token):
     """Use a registration plist to enroll a device."""
 
     try:
@@ -30,17 +30,18 @@ def enroll_from_plist(plist):
         db_session.commit()
     # TODO: except too many results (e.g. perhaps both a UDID and a SERIAL found?)
 
-    notify_enrolled(device.udid)
+    notify_enrolled(device.udid, id_token)
     notify_serial_first_received(device.udid, device.serial_number)
 
     return device
 
-def notify_enrolled(udid):
+def notify_enrolled(udid, id_token):
     """Raise an event in Redis channel for first UDID receipt"""
 
     current_app.logger.info("Publish Redis commandment.enroll for %s" % udid)
     current_app.redis_store.publish('commandment.enroll', json.dumps({
-        'udid': udid
+        'udid': udid,
+        'token': id_token
     }))
 
 def notify_serial_first_received(udid, serial_number):
