@@ -42,13 +42,12 @@ def new_extension_fixed(name, value, critical=0, issuer=None, _pyfree=1):
     if name == 'subjectKeyIdentifier' and \
         value.strip('0123456789abcdefABCDEF:') is not '':
         raise ValueError('value must be precomputed hash')
-    lhash = m2.x509v3_lhash()
-    ctx = m2.x509v3_set_conf_lhash(lhash)
+    ctx = m2.x509v3_set_nconf()
 
     # zero out structure, assign issuer
     fix_ctx(ctx, issuer)
 
-    x509_ext_ptr = m2.x509v3_ext_conf(lhash, ctx, name, value)
+    x509_ext_ptr = m2.x509v3_ext_conf(None, ctx, name, value)
 
     if x509_ext_ptr is None:
         raise Exception

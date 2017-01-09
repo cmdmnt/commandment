@@ -8,6 +8,10 @@ import os
 import tempfile
 import atexit
 import werkzeug.serving
+import pkg_resources
+import json
+from flask.ext.redis import FlaskRedis
+from flask import url_for
 from commandment.app import create_app
 from commandment.database import config_engine, init_db
 from commandment.pki.ca import get_or_generate_web_certificate
@@ -15,14 +19,45 @@ from commandment.runner import start_runner, stop_runner
 from commandment.push import push_init
 
 if __name__ == '__main__':
-    app = create_app()
+    configuration = {
+        'debug': False
+    }
 
-    app.config.from_object('commandment.default_settings')
+    configuration_file = pkg_resources.resource_filename(
+        pkg_resources.Requirement.parse('commandment'),
+        'config/config.json'
+    )
 
-    if os.environ.get('COMMANDMENT_SETTINGS'):
-        app.config.from_envvar('COMMANDMENT_SETTINGS')
+    if os.path.exists(configuration_file):
+        with open(configuration_file, 'r') as configuration_fh:
+            loaded_configuration = json.load(configuration_fh)
+        configuration.update(loaded_configuration)
 
-    config_engine(app.config['DATABASE_URI'], app.config['DATABASE_ECHO'])
+    for key in ('host', 'port', 'pass', 'database'):
+        keyu = key.upper()
+        if os.environ.get('REDIS_%s' % keyu):
+            configuration['redis'][key] = os.environ.get('REDIS_%s' % keyu)
+
+    app = create_app(configuration['debug'], FlaskRedis(), configuration)
+
+    if 'database' not in configuration:
+        configuration['database'] = {
+            'uri': app.config['DATABASE_URI'],
+            'echo': app.config['DATABASE_ECHO']
+        }
+
+    if os.environ.get('COMMANDMENT_PORT'):
+        configuration['port'] = int(os.environ.get('COMMANDMENT_PORT'))
+
+    if 'port' not in configuration:
+        configuration['port'] = app.config.get('PORT')
+
+    app.logger.info(configuration)
+
+    app.config.update(configuration)
+
+    print configuration['database']['uri'], configuration['database']['echo']
+    config_engine(configuration['database']['uri'], configuration['database']['echo'])
 
     init_db()
 
@@ -62,6 +97,6 @@ if __name__ == '__main__':
 
     app.run(
         host='0.0.0.0',
-        port=app.config.get('PORT'),
+        port=configuration['port'],
         ssl_context=(cert_file, pkey_file),
         threaded=True)

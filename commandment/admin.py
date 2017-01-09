@@ -8,10 +8,11 @@ from .pki.ca import get_ca, PushCertificate
 from .pki.x509 import X509Error, Certificate, PrivateKey, CertificateRequest
 from .database import db_session, and_, or_, update, insert, delete
 from .models import CERT_TYPES, profile_group_assoc, device_group_assoc, Device, app_group_assoc
-from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig
+from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig, QueuedCommand, ProfileStatus
 from .models import App, DEPConfig, DEPProfile, SCEPConfig
 from .profiles.restrictions import RestrictionsPayload
 from .profiles import Profile
+from .profiles.service import ProfileService
 from .mdmcmds import InstallProfile, RemoveProfile, AppInstall
 from .push import push_to_device
 import uuid
@@ -242,7 +243,23 @@ def admin_profiles_edit1(profile_id):
     if request.method == 'POST':
         db_prof = db_session.query(DBProfile).filter(DBProfile.id == profile_id).one()
 
-        myprofile = Profile.from_plist(db_prof.profile_data)
+        try:
+            myprofile = Profile.from_plist(db_prof.profile_data)
+        except:
+            config = db_session.query(MDMConfig).one()
+
+            myrestr = RestrictionsPayload(config.prefix + '.tstRstctPld', allowiTunes=(request.form.get('allowiTunes') == 'checked'))
+
+            # generate us a unique identifier that shouldn't change for this profile
+            myidentifier = config.prefix + '.profile.' + str(uuid.uuid4())
+
+            myprofile = Profile(myidentifier, PayloadDisplayName='Test1 Restrictions')
+
+            myprofile.append_payload(myrestr)
+
+            db_prof.identifier = myidentifier
+            db_prof.uuid = myprofile.get_uuid()
+
 
         # TODO: need an API to *get* a profile out
         # TODO: assuming first payload is ours. bad, bad.
@@ -256,7 +273,9 @@ def admin_profiles_edit1(profile_id):
 
         db_prof.uuid = myprofile.set_uuid()
 
-        db_prof.profile_data = myprofile.generate_plist()
+        #db_prof.profile_data = myprofile.generate_plist()
+        current_app.logger.error(request.form.get('xml'))
+        db_prof.profile_data = request.form.get('xml')
 
         db_session.commit()
 
@@ -267,13 +286,28 @@ def admin_profiles_edit1(profile_id):
         # get all MDMGroups left joining against our assoc. table to see if this profile is in any of those groups
         group_q = db_session.query(MDMGroup, profile_group_assoc.c.profile_id).outerjoin(profile_group_assoc, and_(profile_group_assoc.c.mdm_group_id == MDMGroup.id, profile_group_assoc.c.profile_id == db_prof.id))
 
-        myprofile = Profile.from_plist(db_prof.profile_data)
+        try:
+            myprofile = Profile.from_plist(db_prof.profile_data)
 
-        # TODO: need an API to *get* a profile out
-        # TODO: assuming first payload is ours. bad, bad.
-        mypld = myprofile.payloads[0]
+            # TODO: need an API to *get* a profile out
+            # TODO: assuming first payload is ours. bad, bad.
+            has_pld = len(myprofile.payloads) > 0
+        except:
+            has_pld = False
 
-        return render_template('admin/profiles/edit.html', identifier=myprofile.get_identifier(), uuid=myprofile.get_uuid(), allowiTunes=mypld.payload.get('allowiTunes'), id=db_prof.id, groups=group_q)
+        if has_pld:
+            mypld = myprofile.payloads[0]
+
+        return render_template(
+            'admin/profiles/edit.html',
+            identifier=myprofile.get_identifier() if has_pld else '[Unknown]',
+            uuid=myprofile.get_uuid() if has_pld else '[Unknown]',
+            allowiTunes=(not has_pld or mypld.payload.get('allowiTunes')),
+            id=db_prof.id,
+            groups=group_q,
+            xml=db_prof.profile_data,
+            status=db_prof.status
+        )
 
 @admin_app.route('/profiles/groupmod/<int:profile_id>', methods=['POST'])
 def admin_profiles_groupmod1(profile_id):
@@ -297,8 +331,37 @@ def admin_profiles_groupmod1(profile_id):
     return redirect('/admin/profiles/edit/%d' % int(profile.id), Response=FixedLocationResponse)
 
 
+@admin_app.route('/profiles/force_status/<int:profile_id>/<int:status>')
+def admin_profiles_force_status1(profile_id, status):
+    profile = db_session.query(DBProfile).get(profile_id)
+    profile.status = ProfileStatus(status)
+    db_session.commit()
+    return redirect('/admin/profiles', Response=FixedLocationResponse)
+
+@admin_app.route('/profiles/install/<int:profile_id>')
+def admin_profiles_install1(profile_id):
+    profile = db_session.query(DBProfile).get(profile_id)
+
+    profile_service = ProfileService()
+    profile_service.install(profile)
+
+    db_session.commit()
+
+    return redirect('/admin/profiles', Response=FixedLocationResponse)
+
 @admin_app.route('/profiles/remove/<int:profile_id>')
 def admin_profiles_remove1(profile_id):
+    profile = db_session.query(DBProfile).get(profile_id)
+
+    profile_service = ProfileService()
+    profile_service.remove(profile)
+
+    db_session.commit()
+
+    return redirect('/admin/profiles', Response=FixedLocationResponse)
+
+@admin_app.route('/profiles/delete/<int:profile_id>')
+def admin_profiles_delete1(profile_id):
     q = db_session.query(DBProfile).filter(DBProfile.id == profile_id).delete(synchronize_session=False)
     db_session.commit()
     return redirect('/admin/profiles', Response=FixedLocationResponse)
@@ -328,8 +391,20 @@ def devices():
 
     return render_template('admin/devices.html', devices=devices)
 
+@admin_app.route('/device/delete/<int:device_id>')
+def admin_device_delete(device_id):
+    device_q = db_session.query(Device).filter(Device.id == device_id)
+    device = device_q.one()
+
+    db_session.query(QueuedCommand).filter(QueuedCommand.device_id == device_id).delete()
+    db_session.delete(device)
+    db_session.commit()
+
+    return redirect('/admin/devices', Response=FixedLocationResponse)
+
 @admin_app.route('/device/<int:device_id>')
 def admin_device(device_id):
+    #db_session.query(Device).filter(Device.id == device_id).delete()
     device = db_session.query(Device).filter(Device.id == device_id).one()
 
     # get all MDMGroups left joining against our assoc. table to see if this device is in any of those groups
@@ -347,16 +422,17 @@ def install_group_profiles_to_device(group, device):
 
     # note singular tuple for subject here
     for profile_id, in q:
+        print "Installing profile ", profile_id, " due to group change"
         new_qc = InstallProfile.new_queued_command(device, {'id': profile_id})
         db_session.add(new_qc)
 
 def remove_group_profiles_from_device(group, device):
-    q = db_session.query(DBProfile.identifier).join(profile_group_assoc).filter(profile_group_assoc.c.mdm_group_id == group.id)
+    q = db_session.query(DBProfile.identifier, DBProfile.uuid).join(profile_group_assoc).filter(profile_group_assoc.c.mdm_group_id == group.id)
 
     # note singular tuple for subject here
-    for profile_identifier, in q:
+    for profile_identifier, profile_uuid in q:
         print 'Queueing removal of profile identifier:', profile_identifier
-        new_qc = RemoveProfile.new_queued_command(device, {'Identifier': profile_identifier})
+        new_qc = RemoveProfile.new_queued_command(device, {'Identifier': profile_identifier, 'UUID': profile_uuid})
         db_session.add(new_qc)
 
 @admin_app.route('/device/<int:device_id>/groupmod', methods=['POST'])
@@ -698,6 +774,22 @@ def admin_config():
         config.mdm_name = request.form['name']
         config.description = request.form['description'] if request.form['description'] else None
 
+        if request.form.get('reset_url'):
+            base_url = 'https://' + request.form['reset_url_hostname']
+
+            if request.form['reset_url_port']:
+                portno = int(request.form['reset_url_port'])
+
+                if portno < 1 or portno > (2 ** 16):
+                    abort(400, 'Invalid port number')
+
+                base_url += ':%d' % portno
+
+            config.mdm_url = base_url + '/mdm'
+            config.checkin_url = base_url + '/checkin'
+        current_app.logger.info(request.form.get('reset_url'))
+        current_app.logger.info(config.checkin_url)
+
         config.device_identity_method = request.form.get('device_identity_method')
 
         if config.device_identity_method == 'ourscep':
@@ -836,7 +928,7 @@ def dep_profile_add():
         dep = db_session.query(DEPConfig).filter(DEPConfig.id == request.form.get('dep_config_id', type=int)).one()
         mdm = db_session.query(MDMConfig).filter(MDMConfig.id == request.form.get('mdm_config_id', type=int)).one()
 
-        profile['url'] = mdm.base_url() + '/enroll'
+        profile['url'] = mdm.base_url() + '/enroll/dep'
 
         # find and include all mdm.webcrt's
         # TODO: find actual cert chain rather than specific web cert

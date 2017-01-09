@@ -11,6 +11,11 @@
 <table border=1>
 
 <tr>
+	<td>Status</td>
+        <td>{{ status }} : {{ status.name }}</td>
+</tr>
+
+<tr>
 	<td>Profile Identifier</td>
 	<td>{{ identifier }}</td>
 </tr>
@@ -18,6 +23,22 @@
 <tr>
 	<td>Profile UUID (will get new upon modification)</td>
 	<td>{{ uuid }}</td>
+</tr>
+
+{% if status.value == 0 %}
+<tr>
+  <td><a href='../install/{{ id }}'>INSTALL</a></td>
+</tr>
+{% endif %}
+
+{% if status.value == 1 %}
+<tr>
+  <td><a href='../remove/{{ id }}'>REMOVE</a></td>
+</tr>
+{% endif %}
+
+<tr>
+  <td><a href='../force_status/{{ id }}/0'>[FORCE RESET STATUS]</a></td>
 </tr>
 
 </table>
@@ -38,6 +59,11 @@
 </tr>
 
 </table>
+
+<h2>XML</h2>
+<textarea name="xml" cols=100 rows=40>
+{{ xml }}
+</textarea>
 
 </form>
 
