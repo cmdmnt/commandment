@@ -4,12 +4,13 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 import datetime
+import enum
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
-from profiles.mdm import MDM_AR__ALL
+from .profiles.mdm import MDM_AR__ALL
 
 from .pki.x509 import (Certificate as X509Certificate,
                        PrivateKey as X509PrivateKey,
@@ -176,6 +177,22 @@ class Device(Base):
     certificate_id = Column(ForeignKey('certificate.id'))
     certificate = relationship('Certificate', backref='devices')
 
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
+
+    def update(self, udid=None, serial_number=None):
+        if udid is not None:
+            self.udid = udid
+        if serial_number is not None:
+            self.serial_number = serial_number
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'udid': self.udid,
+            'serial_number': self.serial_number
+        }
+
     def __repr__(self):
         return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
 
@@ -232,6 +249,15 @@ class QueuedCommand(Base):
 #   Column('profile_id', Integer, ForeignKey('profile.id')),
 # )
 
+
+
+class ProfileStatus(enum.Enum):
+    INACTIVE = 0
+    ACTIVE = 1
+    PENDING_REMOVAL = 2
+    PENDING_INSTALLATION = 3
+    PENDING_DELETION = 4
+
 class Profile(Base):
     __tablename__ = 'profile'
 
@@ -239,6 +265,39 @@ class Profile(Base):
     identifier = Column(String, index=True, unique=True, nullable=False) # duplicated from within profile_data for searching
     uuid = Column(String(36), index=True, unique=True, nullable=False) # duplicated from within profile_data for searching
     profile_data = Column(Text, nullable=False) # serialized XML (or signed, encrypted) profile data
+    _status = Column("status", Integer, nullable=False, default=ProfileStatus.INACTIVE.value)
+
+    @property
+    def status(self):
+        return ProfileStatus(self._status)
+
+    @status.setter
+    def status(self, status):
+        self._status = status.value
+
+
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
+
+    def update(self, identifier=None, uuid=None, profile_data=None, status=None):
+        if identifier is not None:
+            self.identifier = identifier
+        if uuid is not None:
+            self.uuid = uuid
+        if profile_data is not None:
+            self.profile_data = profile_data
+        if status is not None:
+            self.status = status
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'identifier': self.identifier,
+            'uuid': self.uuid,
+            'profile_data': self.profile_data,
+            'status': self.status.value,
+            'status_name': self.status.name
+        }
 
     def __repr__(self):
         return '<Profile ID=%r UUID=%r>' % (self.id, self.uuid)
@@ -273,8 +332,24 @@ class MDMGroup(Base):
     profiles = relationship('Profile', secondary=profile_group_assoc, backref='mdm_groups')
     apps = relationship('App', secondary=app_group_assoc, backref='mdm_groups')
 
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
+
     def __repr__(self):
         return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
+
+    def update(self, group_name=None, description=None):
+        if group_name is not None:
+            self.group_name = group_name
+        if description is not None:
+            self.description = description
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'group_name': self.group_name,
+            'description': self.description
+        }
 
 class MDMConfig(Base):
     __tablename__ = 'mdm_config'

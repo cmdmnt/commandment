@@ -12,6 +12,7 @@ from sqlalchemy.types import TypeDecorator
 from sqlalchemy import Text, and_, or_, and_, update, insert, delete
 import json
 from datetime import datetime
+import serializer
 
 engine = None
 mysessionmaker = sessionmaker()
@@ -42,12 +43,13 @@ def json_datetime_serializer(o):
 class JSONEncodedDict(TypeDecorator):
     '''Represents an immutable structure as a json-encoded string'''
     impl = Text
+    encoding_cls = serializer.JSONMobileEncoder
 
     def process_bind_param(self, value, dialect):
         if value is None:
             return None
 
-        return json.dumps(value, separators=(',', ':'), default=json_datetime_serializer)
+        return json.dumps(value, separators=(',', ':'), cls=self.encoding_cls)
 
     def process_result_value(self, value, dialect):
         if not value:

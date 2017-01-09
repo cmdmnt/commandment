@@ -1,8 +1,14 @@
-M2Crypto<0.25
+M2Crypto >= 0.25
 pyOpenSSL
 Flask
-SQLAlchemy
+SQLAlchemy >= 1.1.0b1
 apns
 oauthlib
 passlib
 biplist
+flask-restful
+pytest-flask
+flask-redis
+fakeredis
+rq
+mock

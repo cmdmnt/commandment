@@ -48,7 +48,7 @@ def dep_configs_needing_updates():
         and_(DEPConfig.server_token != None,
              or_(DEPConfig.initial_fetch_complete == False,
                  DEPConfig.next_check == None,
-                 DEPConfig.next_check <= datetime.datetime.utcnow())))
+                 DEPConfig.next_check <= datetime.datetime.utcnow()))).all()
 
 def dep_cursor_retired():
     return datetime.datetime.utcnow() - datetime.timedelta(days=DEP_CURSOR_EXPIRE_DAYS)
@@ -176,7 +176,7 @@ def mdm_profile(mdm, **options):
     return dep_profile
 
 def unsubmitted_dep_profiles():
-    return db_session.query(DEPProfile).filter(DEPProfile.uuid == None)
+    return db_session.query(DEPProfile).filter(DEPProfile.uuid == None).all()
 
 def submit_dep_profiles(dep_profiles):
     for dep_profile in dep_profiles:

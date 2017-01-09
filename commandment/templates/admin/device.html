@@ -11,6 +11,10 @@
 	<td>{{ device.info_json['DeviceName'] }}</td>
 </tr>
 <tr>
+	<th>Device UDID</th>
+	<td>{{ device.info_json['UDID'] }}</td>
+</tr>
+<tr>
 	<th>Type</th>
 	<td>{{ device.info_json['ModelName'] }}</td>
 </tr>
@@ -95,6 +99,6 @@
 
 </form>
 
-<p><a href="/admin/devices">[ Devices ]</a></p>
+<p><a href="/admin/devices">[ Devices ]</a> <a href="/admin/device/delete/{{ device.id }}">[ Delete ]</a></p>
 
 {% endblock %}
