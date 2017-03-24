@@ -4,6 +4,10 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 import datetime
+from cryptography.hazmat.backends import default_backend
+from cryptography import x509
+from cryptography.hazmat.primitives import serialization, hashes
+
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
@@ -11,9 +15,6 @@ from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
 from .profiles.mdm import MDM_AR__ALL
 
-from .pki.x509 import (Certificate as X509Certificate,
-                       PrivateKey as X509PrivateKey,
-                       CertificateRequest as X509CertificateRequest)
 
 CERT_TYPES = {
     'mdm.pushcert': {
@@ -61,13 +62,35 @@ class PrivateKey(Base):
     certificates = relationship('Certificate', secondary=certificate_private_key_assoc, backref='privatekeys')
     certificate_requests = relationship('CertificateRequest', secondary=certreq_private_key_assoc, backref='privatekeys')
 
-    def to_x509(self, key_type=X509PrivateKey):
-        return key_type.from_pem(self.pem_key)
+    def to_crypto(self):
+        """Create an instance of RSAPrivateKey from this database model.
+
+        :return: RSAPrivateKey instance
+        :rtype: cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
+        """
+        rsa = serialization.load_pem_private_key(
+            self.pem_key,
+            password=None,
+            backend=default_backend()
+        )
+        return rsa
 
     @classmethod
-    def from_x509(cls, private_key):
+    def from_crypto(cls, private_key):
+        """
+        Create an instance of the PrivateKey model from a cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
+        
+        :param cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey private_key: RSA Private Key
+        :return: the model
+        :rtype: PrivateKey
+        """
+        pem = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
         newcls = cls()
-        newcls.pem_key = private_key.to_pem()
+        newcls.pem_key = pem
         return newcls
 
 class CertificateRequest(Base):
@@ -78,15 +101,31 @@ class CertificateRequest(Base):
     subject = Column(Text, nullable=True)
     pem_request = Column(Text, nullable=False)
 
-    def to_x509(self, request_type=X509CertificateRequest):
-        return request_type.from_pem(self.pem_request)
+    def to_crypto(self):
+        """Create an instance of CertificateSigningRequest from this database model.
+
+        :return: Certificate signing request
+        :rtype: cryptography.x509.CertificateSigningRequest
+        """
+        csr = x509.load_pem_x509_csr(self.pem_request, default_backend())
+        return csr
 
     @classmethod
-    def from_x509(cls, req, req_type):
+    def from_crypto(cls, signing_request):
+        """
+        Create an instance of the PrivateKey model from a cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
+
+        :param cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey private_key: RSA Private Key
+        :return: the model
+        :rtype: PrivateKey
+        """
+        pem = signing_request.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
         newcls = cls()
-        newcls.subject = req.get_subject_text()
-        newcls.req_type = req_type
-        newcls.pem_request = req.to_pem()
+        newcls.pem_request = pem
         return newcls
 
 class Certificate(Base):
@@ -114,18 +153,28 @@ class Certificate(Base):
     def find_one_by_cert_type(cls, cert_type):
         return cls.query.filter(cls.cert_type == cert_type).one()
 
-    def to_x509(self, cert_type=X509Certificate):
-        return cert_type.from_pem(self.pem_certificate)
+    def to_crypto(self):
+        """Create an instance of Certificate from this database model.
+
+        :return: Certificate
+        :rtype: cryptography.x509.Certificate
+        """
+        cert = x509.load_pem_x509_certificate(self.pem_certificate, default_backend())
+        return cert
 
     @classmethod
-    def from_x509(cls, certificate, cert_type):
+    def from_crypto(cls, certificate):
         newcls = cls()
-        newcls.cert_type = cert_type
-        newcls.subject = certificate.get_subject_text()
-        newcls.not_before = certificate.get_not_before()
-        newcls.not_after = certificate.get_not_after()
-        newcls.fingerprint = certificate.get_fingerprint('sha256')
-        newcls.pem_certificate = certificate.to_pem()
+
+        newcls.subject = certificate.subject
+        newcls.not_before = certificate.not_valid_before
+        newcls.not_after = certificate.not_valid_after
+        newcls.fingerprint = certificate.fingerprint(hashes.SHA256())
+        newcls.pem_certificate = certificate.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
         return newcls
 
 certreq_cert_assoc = Table('certreq_cert', Base.metadata,

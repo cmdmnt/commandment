@@ -3,12 +3,12 @@ Copyright (c) 2016 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
-from M2Crypto import RSA, EVP, X509, BIO, ASN1, m2
-from M2Crypto.X509 import X509Error
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+
 from time import time
 from binascii import hexlify
-from .m2fix import new_extension_fixed
-from OpenSSL.crypto import PKCS12, load_certificate, load_privatekey, FILETYPE_PEM
 
 '''As an attempt to separate the M2 APIs and this abstraction we've tried
 to prepend an undersore (_) to all underlying M2 objects.'''
@@ -22,36 +22,42 @@ DEFAULT_X509_FPRINT_DIGEST = 'sha256'
 class ModulusMismatch(Exception):
     pass
 
+
 class InvalidCertificatePolicy(Exception):
     pass
 
 class PrivateKey(object):
     def __init__(self, keysize=None):
-        self._rsa = RSA.gen_key(keysize or DEFAULT_RSA_KEYSIZE, m2.RSA_F4, lambda: None)
-        assert self._rsa.check_key() == 1
-
-    def _new_evp(self):
-        evp = EVP.PKey()
-        evp.assign_rsa(self._rsa, capture=0)
-        return evp
+        self._rsa = rsa.generate_private_key(
+            public_exponent=65535,
+            key_size=keysize or DEFAULT_RSA_KEYSIZE,
+            backend=default_backend(),
+        )
 
     def to_pem(self):
-        return self._rsa.as_pem(None)
+        pem = self._rsa.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
+        )
+        return pem
 
     def to_der(self):
-        bio = BIO.MemoryBuffer()
-        assert self._rsa.save_key_der_bio(bio)
-        return bio.read()
-
-    def get_pubkey_modulus(self):
-        key_e, key_n = self._rsa.pub()
-        # uncertain what the extra five bytes are
-        return hexlify(key_n[5:])
+        der = self._rsa.private_bytes(
+            encoding=serialization.Encoding.DER,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
+        )
+        return der
 
     @classmethod
     def from_pem(cls, data):
         newcls = cls.__new__(cls)
-        newcls._rsa = RSA.load_key_string(str(data))
+        newcls._rsa = serialization.load_pem_private_key(
+            data,
+            password=None,
+            backend=default_backend()
+        )
         return newcls
 
 class CertificateRequest(object):

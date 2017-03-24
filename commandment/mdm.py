@@ -6,7 +6,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 from flask import Blueprint, render_template, make_response, request, abort
 from flask import current_app, send_file, g
 from .pki.ca import get_ca, PushCertificate
-from .pki.x509 import Certificate
+from cryptography.x509 import Certificate
 from .database import db_session, NoResultFound, or_, and_
 from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
 from .models import App, MDMGroup, app_group_assoc, SCEPConfig
@@ -17,7 +17,6 @@ from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
 from .mdmcmds import InstallProfile, AppInstall
 from .mdmcmds.dep import DeviceConfigured
 from os import urandom
-from M2Crypto import SMIME, BIO, X509
 import plistlib
 from .push import push_to_device
 import os
@@ -29,9 +28,11 @@ TRUST_DEV_PROVIDED_CERT = True
 
 mdm_app = Blueprint('mdm_app', __name__)
 
+
 @mdm_app.route('/')
 def index():
     return render_template('enroll.html')
+
 
 def base64_to_pem(crypto_type, b64_text, width=76):
     lines = ''
@@ -40,63 +41,9 @@ def base64_to_pem(crypto_type, b64_text, width=76):
 
     return '-----BEGIN %s-----\n%s-----END %s-----' % (crypto_type, lines, crypto_type)
 
+
 @mdm_app.route('/enroll', methods=['GET', 'POST'])
 def enroll():
-    if request.method == 'POST' and \
-            request.headers.get('Content-type', '').lower() == \
-                'application/pkcs7-signature':
-        # DEP request
-
-        # base64 encode the DER data, and wrap in a PEM-ish format for SMIME.load_pkcs7_bio()
-        req_data = base64_to_pem('PKCS7', base64.b64encode(request.data))
-
-        p7_bio = BIO.MemoryBuffer(str(req_data))
-        p7 = SMIME.load_pkcs7_bio(p7_bio)
-
-        p7_signers = p7.get0_signers(X509.X509_Stack())
-
-        signer = SMIME.SMIME()
-        signer.set_x509_store(X509.X509_Store())
-        signer.set_x509_stack(p7_signers)
-
-        # TODO/XXX: not verifying ANY certificates!
-        #
-        # spec says we should verify against the "Apple Root CA" and that this
-        # CMS message contains all intermediates to do that verification.
-        # M2Crypto has no way to get at all the intermediate certificates to
-        # do this manually we'd need to extract all of the certificates and
-        # verify the chain aginst it. Note as of 2016-03-14 on a brand new
-        # iPad Apple was including an expired certificate in this chain. Note
-        # also that at least one of the intermediate certificates had a
-        # certificate purpose apparently not appropraite for CMS/SMIME
-        # verification. For now just verify with no CA and skip any
-        # verification.
-        plist_text = signer.verify(p7, None, flags=SMIME.PKCS7_NOVERIFY)
-
-        plist = plistlib.readPlistFromString(plist_text)
-
-        try:
-            device = db_session.query(Device).filter(or_(Device.serial_number == plist['SERIAL'], Device.udid == plist['UDID'])).one()
-            # assign in case absent (UDID present only - not likely due to spec)
-            device.serial_number = plist['SERIAL']
-            # assign in case different (e.g. changing serial UDIDs i.e. VM testing)
-            device.udid = plist['UDID']
-        except NoResultFound:
-            # should never get here, we could take benefit of the doubt and
-            # allow the enrollment anyway, though..?
-            current_app.logger.warn('DEP enrollment attempt but no serial number nor UDID found!')
-
-            device = Device()
-            device.serial_number = plist['SERIAL']
-            device.udid = plist['UDID']
-            # TODO: do we care about PRODUCT, VERSION, or LANGUAGE here?
-
-            db_session.add(device)
-            db_session.commit()
-        # TODO: except too many results (e.g. perhaps both a UDID and a SERIAL found?)
-    else:
-        device = None
-
     mdm_ca = get_ca()
 
     config = db_session.query(MDMConfig).first()
@@ -110,7 +57,8 @@ def enroll():
     profile = Profile(config.prefix + '.enroll', PayloadDisplayName=config.mdm_name)
 
     print(mdm_ca.get_cacert().to_pem())
-    ca_cert_payload = PEMCertificatePayload(config.prefix + '.mdm-ca', str(mdm_ca.get_cacert().to_pem()).strip(), PayloadDisplayName='MDM CA Certificate')
+    ca_cert_payload = PEMCertificatePayload(config.prefix + '.mdm-ca', str(mdm_ca.get_cacert().to_pem()).strip(),
+                                            PayloadDisplayName='MDM CA Certificate')
 
     profile.append_payload(ca_cert_payload)
 
@@ -118,7 +66,8 @@ def enroll():
     q = db_session.query(DBCertificate).filter(DBCertificate.cert_type == 'mdm.webcrt')
     for i, cert in enumerate(q):
         print(cert.pem_certificate)
-        new_webcrt_profile = PEMCertificatePayload(config.prefix + '.webcrt.%d' % i, str(cert.pem_certificate).strip(), PayloadDisplayName='Web Server Certificate')
+        new_webcrt_profile = PEMCertificatePayload(config.prefix + '.webcrt.%d' % i, str(cert.pem_certificate).strip(),
+                                                   PayloadDisplayName='Web Server Certificate')
         profile.append_payload(new_webcrt_profile)
 
     push_cert = config.push_cert.to_x509(cert_type=PushCertificate)
@@ -159,7 +108,7 @@ def enroll():
                 # Subject=[
                 #     [ ['CN', 'MDM Enrollment'] ],
                 # ],
-                ),
+            ),
             PayloadDisplayName='MDM SCEP')
         profile.append_payload(scep_payload)
         cert_uuid = scep_payload.get_uuid()
@@ -169,7 +118,7 @@ def enroll():
     new_mdm_payload = MDMPayload(
         config.prefix + '.mdm',
         cert_uuid,
-        topic, # APNs push topic
+        topic,  # APNs push topic
         config.mdm_url,
         config.access_rights,
         CheckInURL=config.checkin_url,
@@ -182,7 +131,8 @@ def enroll():
         # request
         SignMessage=True,
         CheckOutWhenRemoved=True,
-        ServerCapabilities=['com.apple.mdm.per-user-connections'], # per-network user & mobile account authentication (OS X extensions)
+        ServerCapabilities=['com.apple.mdm.per-user-connections'],
+        # per-network user & mobile account authentication (OS X extensions)
         PayloadDisplayName='Device Configuration and Management')
 
     profile.append_payload(new_mdm_payload)
@@ -191,38 +141,6 @@ def enroll():
     resp.headers['Content-Type'] = PROFILE_CONTENT_TYPE
     return resp
 
-def verify_mdm_signature(mdm_sig, req_data):
-    '''Verify the client's supplied MDM signature and return the client certificate included in the signature.'''
-
-    p7_bio = BIO.MemoryBuffer(str(mdm_sig))
-    p7 = SMIME.load_pkcs7_bio(p7_bio)
-
-    p7_signers = p7.get0_signers(X509.X509_Stack())
-
-    mdm_ca = get_ca()
-
-    # can probably directly use m2 certificate here
-    ca_x509_bio = BIO.MemoryBuffer(mdm_ca.get_cacert().to_pem())
-    ca_x509 = X509.load_cert_bio(ca_x509_bio)
-
-    cert_store = X509.X509_Store()
-    cert_store.add_x509(ca_x509)
-
-    signer = SMIME.SMIME()
-    signer.set_x509_store(cert_store)
-    signer.set_x509_stack(p7_signers)
-
-    # NOTE: may need to do something special if we can't cleanly convert
-    # to string from Unicode. must be byte-accurate as the signature won't
-    # match otherwise
-    data_bio = BIO.MemoryBuffer(req_data)
-
-    # will raise an exception if verification fails
-    # if no CA certificate we get an:
-    #   PKCS7_Error: certificate verify error
-    signer.verify(p7, data_bio)
-
-    return p7_signers[0].as_pem()
 
 @mdm_app.route('/send_mdm/<int:dev_id>')
 def send_mdm(dev_id):
@@ -230,9 +148,11 @@ def send_mdm(dev_id):
     push_to_device(device)
     return 'Sent Push Notification'
 
+
 def device_cert_check(no_device_okay=False):
     '''Performs a set of checks on a request to make sure it came from a
     legimately enrolled device in this MDM system'''
+
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -240,22 +160,23 @@ def device_cert_check(no_device_okay=False):
             # TODO: implement alternate methods of getting supplied client cert
             # (e.g. request.headers['X-Ssl-Client-Cert'].replace('\n ', '\n') for 
             # nginx)
-            pkcs7_pem_sig = base64_to_pem('PKCS7', request.headers['Mdm-Signature'])
-            device_supplied_cert = verify_mdm_signature(pkcs7_pem_sig, request.data)
-
-            try:
-                dev_cert_fprint = Certificate.from_pem(device_supplied_cert).get_fingerprint()
-                g.device_cert = db_session.query(DBCertificate).filter(DBCertificate.fingerprint == dev_cert_fprint).one()
-            except NoResultFound:
-                current_app.logger.info('supplied device certificate not found; returning invalid')
-                abort(400, 'certificate invalid')
+            # pkcs7_pem_sig = base64_to_pem('PKCS7', request.headers['Mdm-Signature'])
+            # device_supplied_cert = verify_mdm_signature(pkcs7_pem_sig, request.data)
+            #
+            # try:
+            #     dev_cert_fprint = Certificate.from_pem(device_supplied_cert).get_fingerprint()
+            #     g.device_cert = db_session.query(DBCertificate).filter(DBCertificate.fingerprint == dev_cert_fprint).one()
+            # except NoResultFound:
+            #     current_app.logger.info('supplied device certificate not found; returning invalid')
+            #     abort(400, 'certificate invalid')
 
             # get a list of the devices that correspond to this certificate
             cert_devices = g.device_cert.devices
 
             if len(cert_devices) > 1:
                 dev_id_list = ', '.join([i.id for i in cert_devices])
-                current_app.logger.info('certificate has more than one device assigned (%s); returning invalid' % dev_id_list)
+                current_app.logger.info(
+                    'certificate has more than one device assigned (%s); returning invalid' % dev_id_list)
                 abort(500, 'certificate configuration invalid')
             elif len(cert_devices) < 1 and no_device_okay is not True:
                 current_app.logger.info('certificate has no associated device; returning invalid')
@@ -273,21 +194,27 @@ def device_cert_check(no_device_okay=False):
                 g.device = None
 
             return f(*args, **kwargs)
+
         return wrapper
+
     return decorator
+
 
 def parse_plist_input_data(f):
     '''Parses plist data as HTTP input from request'''
+
     @wraps(f)
     def decorator(*args, **kwargs):
         try:
-            g.plist_data = plistlib.readPlistFromString(request.data)
+            g.plist_data = plistlib.loads(request.data)
         except:
             current_app.logger.info('could not parse property list input data')
             abort(400, 'invalid input data')
 
         return f(*args, **kwargs)
+
     return decorator
+
 
 def device_first_post_enroll(device, awaiting=False):
     print('enroll:', 'UpdateInventoryDevInfoCommand')
@@ -305,6 +232,7 @@ def device_first_post_enroll(device, awaiting=False):
     db_session.commit()
 
     push_to_device(device)
+
 
 @mdm_app.route("/checkin", methods=['PUT'])
 @device_cert_check(no_device_okay=True)
@@ -332,11 +260,11 @@ def checkin():
                     # try to enroll using the same-cert profile, so best to block
                     # here
                     print('WARNING: device provided identity cert does not' \
-                        ' match issued cert! (possibly a re-enrollment?)')
+                          ' match issued cert! (possibly a re-enrollment?)')
                     db_session.delete(device.certificate)
                 else:
                     raise Exception('device provided identity cert does not' \
-                        ' match issued cert! (possibly a re-enrollment?)')
+                                    ' match issued cert! (possibly a re-enrollment?)')
         except NoResultFound:
             # no device found, let's make a new one!
             device = Device()
@@ -414,7 +342,8 @@ def checkin():
             # no digest necessary and thus no AuthToken necessary for this OS X user
             # digdict = {'DigestChallenge': ''}
 
-            digdict = {'DigestChallenge': 'Digest nonce="%s",realm="%s"' % (urandom(20).encode('base64'), config.prefix)}
+            digdict = {
+                'DigestChallenge': 'Digest nonce="%s",realm="%s"' % (urandom(20).encode('base64'), config.prefix)}
 
             print(digdict)
 
@@ -427,7 +356,6 @@ def checkin():
 
             tokdict = {'AuthToken': urandom(20).encode('hex')}
             print(tokdict)
-
 
             resp = make_response(plistlib.writePlistToString(tokdict))
             resp.headers['Content-Type'] = 'application/xml'
@@ -445,6 +373,7 @@ def checkin():
     print('Invalid message type')
     abort(500, 'Invalid message type')
 
+
 def device_first_user_message(device):
     '''Queue the MDM commands appropriate for a first-user-message seen
     event. Currently used to inititate DEP app installations.'''
@@ -452,7 +381,9 @@ def device_first_user_message(device):
     device.first_user_message_seen = True
 
     for group in device.mdm_groups:
-        app_q = db_session.query(App).join(app_group_assoc, and_(app_group_assoc.c.mdm_group_id == group.id, app_group_assoc.c.app_id == App.id)).filter(app_group_assoc.c.install_early == True)
+        app_q = db_session.query(App).join(app_group_assoc, and_(app_group_assoc.c.mdm_group_id == group.id,
+                                                                 app_group_assoc.c.app_id == App.id)).filter(
+            app_group_assoc.c.install_early == True)
 
         for app in app_q:
             db_session.add(AppInstall.new_queued_command(device, {'id': app.id}))
@@ -460,6 +391,7 @@ def device_first_user_message(device):
     db_session.commit()
 
     push_to_device(device)
+
 
 @mdm_app.route("/mdm", methods=['PUT'])
 @device_cert_check()
@@ -556,7 +488,8 @@ def mdm():
         # get command dictionary representation (e.g. the full command to send)
         output_dict = mdm_command.generate_dict()
 
-        current_app.logger.info('sending %s MDM command class=%s to device=%d', mdm_command.request_type, command.command_class, g.device.id)
+        current_app.logger.info('sending %s MDM command class=%s to device=%d', mdm_command.request_type,
+                                command.command_class, g.device.id)
 
         # convert to plist and send
         resp = make_response(plistlib.writePlistToString(output_dict))
@@ -572,6 +505,7 @@ def mdm():
     # return empty response as we have no further work
     return ''
 
+
 @mdm_app.route('/send_dev_info/<int:dev_id>')
 def send_dev_info(dev_id):
     device = db_session.query(Device).filter(Device.id == dev_id).one()
@@ -585,6 +519,7 @@ def send_dev_info(dev_id):
 
     return 'OK'
 
+
 @mdm_app.route("/app/<int:app_id>/manifest")
 def app_manifest(app_id):
     app_q = db_session.query(App).filter(App.id == app_id)
@@ -597,7 +532,7 @@ def app_manifest(app_id):
         'md5-size': app.md5_chunk_size,
         'md5s': app.md5_chunk_hashes.split(':'),
         'url': '%s/app/%d/download/%s' % (config.base_url(), app_id, app.filename),
-        }
+    }
 
     metadata = {'kind': 'software', 'title': app.filename, 'sizeInBytes': app.filesize}
 
@@ -619,6 +554,7 @@ def app_manifest(app_id):
     resp = make_response(plistlib.writePlistToString(manifest))
     resp.headers['Content-Type'] = 'application/xml'
     return resp
+
 
 @mdm_app.route("/app/<int:app_id>/download/<filename>")
 def app_download(app_id, filename):

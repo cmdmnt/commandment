@@ -3,7 +3,7 @@ Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
-from apns import APNs, Payload, Frame
+import apns2
 import os
 import tempfile
 import atexit
@@ -20,8 +20,11 @@ except ImportError:
 apns_cxns = {}
 
 def push_init():
-    q = db_session.query(DBCertificate, DBPrivateKey)\
-        .join(DBCertificate, DBPrivateKey.certificates)\
+    """
+    Instantiate APNS2Client(s) from push certificate(s) stored within the database.
+    """
+    q = db_session.query(DBCertificate, DBPrivateKey) \
+        .join(DBCertificate, DBPrivateKey.certificates) \
         .filter(DBCertificate.cert_type == 'mdm.pushcert')
 
     for db_cert, db_pk in q:
@@ -40,16 +43,15 @@ def push_init():
         os.close(cert_handle)
         os.close(pkey_handle)
 
-        apns = APNs(cert_file=cert_file, key_file=pkey_file, enhanced=True)
+        apns = apns2.APNSClient(mode='dev', client_cert=cert_file)
         apns_cxns[cert_topic] = apns
 
-class MDMPayload(Payload):
+
+class MDMPayload(apns2.Payload):
     """A class representing an MDM APNs message payload"""
     def __init__(self, push_magic):
-        self.mdm = push_magic
+        super(MDMPayload, self).__init__(custom={'mdm': push_magic})
 
-    def dict(self):
-        return {'mdm': self.mdm}
 
 def push_to_device(device_or_devices):
     # get an iterable list of devices even if one wasn't specified

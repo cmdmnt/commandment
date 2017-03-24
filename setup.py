@@ -14,10 +14,13 @@ setup(
     ],
     keywords='MDM',
     install_requires=[
-        'apns',
+        'apns2-client',
         'biplist',
         'cryptography',
         'Flask',
+        'Flask-REST-JSONAPI',
+        'Flask-SQLAlchemy',
+        'Flask-Cors',
         'oauthlib',
         'passlib',
         'SQLAlchemy'

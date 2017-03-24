@@ -1,4 +1,4 @@
-DATABASE_URI = 'sqlite:///mdm.db'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///mdm.db'
 DATABASE_ECHO = True
 DEBUG = True
 
