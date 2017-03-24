@@ -9,7 +9,7 @@ import tempfile
 import atexit
 from .database import db_session
 from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
-from .pki.ca import PushCertificate
+from .pki.certificateauthority import PushCertificate
 import random
 import time
 try:

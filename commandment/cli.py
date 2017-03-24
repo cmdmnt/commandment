@@ -10,7 +10,7 @@ import atexit
 import werkzeug.serving
 from commandment.app import create_app
 from commandment.database import config_engine, init_db
-from commandment.pki.ca import get_or_generate_web_certificate
+from commandment.pki.certificateauthority import get_or_generate_web_certificate
 from commandment.runner import start_runner, stop_runner
 from commandment.push import push_init
 
@@ -22,9 +22,9 @@ def server():
     if os.environ.get('COMMANDMENT_SETTINGS'):
         app.config.from_envvar('COMMANDMENT_SETTINGS')
 
-    #config_engine(app.config['DATABASE_URI'], app.config['DATABASE_ECHO'])
+    config_engine(app.config['SQLALCHEMY_DATABASE_URI'], app.config['SQLALCHEMY_DATABASE_ECHO'])
 
-    #init_db()
+    init_db()
 
     web_crt_pem, web_key_pem, web_ca_pem = get_or_generate_web_certificate(app.config['DEV_WEB_CERT_CN'])
 
