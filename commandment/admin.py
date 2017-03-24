@@ -61,14 +61,14 @@ def admin_certificates():
     utcnow = datetime.datetime.utcnow()
     for cert_row in cert_rows:
         installed_certs.append(cert_row.cert_type)
-        row_cert = cert_row.to_x509()
-        not_after = row_cert.get_not_after().replace(tzinfo=None)
+        row_cert = cert_row.to_crypto()
+        not_after = row_cert.not_valid_after
         dict_row = {
             'id': cert_row.id,
             'name': cert_row.cert_type,
             'not_after': not_after,
             'expired': not_after <= utcnow,
-            'subject': row_cert.get_subject_text(),
+            'subject': row_cert.subject,
             'title': CERT_TYPES[cert_row.cert_type]['title'] if CERT_TYPES.get(cert_row.cert_type) else '',
             'description': CERT_TYPES[cert_row.cert_type]['description'] if CERT_TYPES.get(cert_row.cert_type) else '',
             'required': bool(CERT_TYPES[cert_row.cert_type].get('required')) if CERT_TYPES.get(
@@ -719,7 +719,8 @@ def admin_config_add():
             elif cert.cert_type == 'mdm.cacert':
                 ca_certs.append(cert)
             elif cert.cert_type == 'mdm.webcrt':
-                web_cert_cn = cert.to_x509().get_cn()
+                web_cert_cn = 'demo'
+                #cert.to_crypto().subject etc TODO
 
         if not push_certs or not ca_certs:
             return redirect('/admin/certificates', Response=FixedLocationResponse)

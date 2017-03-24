@@ -5,7 +5,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 '''Commandment MDM Certificate Authority'''
 
-from flask import g
+from flask import g, current_app
 from ..database import db_session, NoResultFound
 from ..models import (Certificate as DBCertificate,
                       PrivateKey as DBPrivateKey,
@@ -32,6 +32,8 @@ def from_database_or_create():
             .filter(DBCertificate.cert_type == 'mdm.cacert') \
             .one()
         private_key, cert = db_pk.to_crypto(), db_cert.to_crypto()
+        ca = CertificateAuthority(cert, private_key)
+
     except NoResultFound:
         ca = CertificateAuthority.create()
 
@@ -45,10 +47,12 @@ def from_database_or_create():
 
         db_session.commit()
 
+    return ca
+
 def get_ca():
     ca = getattr(g, '_mdm_ca', None)
     if ca is None:
-        ca = g._mdm_ca = CertificateAuthority()
+        ca = g._mdm_ca = from_database_or_create()
     return ca
 
 
@@ -112,7 +116,7 @@ class CertificateAuthority(object):
     @property
     def certificate(self):
         return self._certificate
-
+    
     @certificate.setter
     def certificate(self, value):
         if isinstance(value, str):  # we will assume a PEM string
@@ -127,14 +131,42 @@ class CertificateAuthority(object):
     def private_key(self):
         return self._private_key
 
-    def sign(self, csr):
+    def export_ca_certificate(self, format='pem'):
+        """Export the CA certificate.
+
+        :param str format: The format, 'pem' or 'der'
+        :returns: Certificate data
+        :rtype: Buffer
+        """
+        if format == 'pem':
+            return self.certificate.public_bytes(
+                serialization.Encoding.PEM
+            )
+        else:
+            raise ValueError('Unsupported export format')
+
+    def sign(self, csr: x509.CertificateSigningRequest) -> x509.Certificate:
         """Sign a certificate signing request.
 
         :param CertificateSigningRequest csr: The signing request
         :returns: The signed certificate
         :rtype: x509.Certificate
         """
-        pass
+        builder = x509.CertificateBuilder()
+        cert = builder.subject_name(
+            csr.subject
+        ).issuer_name(
+            self.certificate.subject
+        ).not_valid_before(
+            datetime.datetime.utcnow()
+        ).not_valid_after(
+            datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        ).serial_number(x509.random_serial_number()).public_key(
+            csr.public_key()
+        ).sign(self.private_key, hashes.SHA256(), default_backend())
+
+        return cert
+
 
 
     # def sign_new_device_req(self, csr):
@@ -188,21 +220,23 @@ def get_or_generate_web_certificate(cn):
         else:
             db_cert, db_pk = result
         # TODO: return chain!
-        return (db_cert.pem_certificate, db_pk.pem_key, mdm_ca.get_cacert().to_pem())
+        return (db_cert.pem_certificate, db_pk.pem_key, mdm_ca.export_ca_certificate())
     except NoResultFound:
         web_pk = rsa.generate_private_key(
             public_exponent=65537,
             key_size=2048,
             backend=default_backend(),
         )
-        web_req = x509.CertificateSigningRequestBuilder().subject_name(x509.Name(
-            x509.NameAttribute(NameOID.COMMON_NAME, cn)
-        )).sign(web_pk, hashes.SHA256(), default_backend())
+        web_req = x509.CertificateSigningRequestBuilder().subject_name(x509.Name([
+            x509.NameAttribute(NameOID.COMMON_NAME, 'commandment.dev')
+        ])).sign(web_pk, hashes.SHA256(), default_backend())
 
         web_crt = mdm_ca.sign(web_req)
 
-        db_cert = DBCertificate.from_x509(web_crt, 'mdm.webcrt')
-        db_pk = DBPrivateKey.from_x509(web_pk)
+        print(web_crt.subject)
+
+        db_cert = DBCertificate.from_crypto(web_crt, 'mdm.webcrt')
+        db_pk = DBPrivateKey.from_crypto(web_pk)
 
         db_session.add(db_cert)
         db_session.add(db_pk)
@@ -211,4 +245,4 @@ def get_or_generate_web_certificate(cn):
 
         db_session.commit()
 
-        return (db_cert.pem_certificate, db_pk.pem_key, mdm_ca.get_cacert().to_pem())
+        return (db_cert.pem_certificate, db_pk.pem_key, mdm_ca.export_ca_certificate())

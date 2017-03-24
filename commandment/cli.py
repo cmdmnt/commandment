@@ -25,8 +25,8 @@ def server():
     config_engine(app.config['SQLALCHEMY_DATABASE_URI'], app.config['SQLALCHEMY_DATABASE_ECHO'])
 
     init_db()
-
-    web_crt_pem, web_key_pem, web_ca_pem = get_or_generate_web_certificate(app.config['DEV_WEB_CERT_CN'])
+    with app.app_context():
+        web_crt_pem, web_key_pem, web_ca_pem = get_or_generate_web_certificate(app.config['DEV_WEB_CERT_CN'])
 
     # Werkzeug 0.10 decided to move away from a pyOpenSSL context in favor of
     # a Python 2.7.9+/3.x+ ssl.SSLContext. This sucks because there is no API
@@ -44,7 +44,7 @@ def server():
     pkey_handle, pkey_file = tempfile.mkstemp()
     atexit.register(os.remove, pkey_file)
     atexit.register(os.remove, cert_file)
-    os.write(cert_handle, web_crt_pem + '\n' + web_ca_pem)
+    os.write(cert_handle, web_crt_pem) # + '\n' + web_ca_pem
     os.write(pkey_handle, web_key_pem)
     os.close(cert_handle)
     os.close(pkey_handle)

@@ -4,8 +4,10 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 import datetime
+from enum import Enum
 from cryptography.hazmat.backends import default_backend
 from cryptography import x509
+from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import serialization, hashes
 
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum
@@ -14,6 +16,13 @@ from sqlalchemy.ext.mutable import MutableDict
 from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
 from .profiles.mdm import MDM_AR__ALL
+
+class CertificateType(Enum):
+    PUSH = 'mdm.pushcert'
+    WEB = 'mdm.webrt'
+    CA = 'mdm.cacert'
+    DEVICE = 'mdm.device'
+    
 
 
 CERT_TYPES = {
@@ -163,17 +172,26 @@ class Certificate(Base):
         return cert
 
     @classmethod
-    def from_crypto(cls, certificate):
+    def from_crypto(cls, certificate: x509.Certificate, cert_type: str):
+        """
+        Create a database row from a certificate.
+        
+        :param cryptography.x509.Certificate certificate:
+        :param str cert_type: A special string indicating the purpose of the certificate.
+        :return: The certificate model
+        :rtype: Certificate
+        """
         newcls = cls()
 
-        newcls.subject = certificate.subject
+        common_name = certificate.subject.get_attributes_for_oid(NameOID.COMMON_NAME)
+
+        newcls.cert_type = cert_type
+        newcls.subject = common_name[0].value
         newcls.not_before = certificate.not_valid_before
         newcls.not_after = certificate.not_valid_after
         newcls.fingerprint = certificate.fingerprint(hashes.SHA256())
         newcls.pem_certificate = certificate.public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption(),
+            encoding=serialization.Encoding.PEM
         )
         return newcls
 
