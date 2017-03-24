@@ -141,7 +141,7 @@ class Profile(Payload):
         into. Thus a Profile cannot separately set a PayloadContent key. An
         exception will be raised if this has been done.'''
 
-        if 'PayloadContent' in self.payload.keys():
+        if 'PayloadContent' in list(self.payload.keys()):
             raise Exception('PayloadContent already exists on Profile payload')
 
         self.payloads.append(payload)
@@ -156,7 +156,7 @@ class Profile(Payload):
         into. Thus a Profile cannot separately set a PayloadContent key. An
         exception will be raised if this has been done.'''
 
-        if 'PayloadContent' in self.payload.keys():
+        if 'PayloadContent' in list(self.payload.keys()):
             raise Exception('PayloadContent already exists on Profile payload')
 
         # avoid modifying our actual payload by using a shallow copy

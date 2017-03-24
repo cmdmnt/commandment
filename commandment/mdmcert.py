@@ -14,7 +14,7 @@ from .models import (Certificate as DBCertificate,
 from .database import db_session
 import json
 from base64 import b64encode
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from M2Crypto import BIO, SMIME, X509, m2
 import datetime
 
@@ -38,13 +38,13 @@ def submit_mdmcert_request(email, pem_csr, pem_enc):
         'encrypt': b64encode(pem_enc),
     }
 
-    req = urllib2.Request(
+    req = urllib.request.Request(
         MDMCERT_REQ_URL,
         json.dumps(mdmcert_dict),
         {'Content-Type': 'application/json',
          'User-Agent': 'coMmanDMent/0.1'})
 
-    f = urllib2.urlopen(req)
+    f = urllib.request.urlopen(req)
     resp = f.read()
     f.close()
 
@@ -81,7 +81,7 @@ def submit():
     email = request.form.get('email')
 
     res = submit_mdmcert_request(email, csr.to_pem(), mdm_ca.get_cacert().to_pem())
-    print res.get('result')
+    print(res.get('result'))
     if res.get('result') != 'success':
         return 'Error! ' + res.get('reason', '')
 

@@ -36,12 +36,12 @@ def runner():
 	# TODO: catch everything so we don't interrupt the thread (and it never reschedules)
 	dep_configs = dep_configs_needing_updates()
 	if dep_configs:
-		print 'runner() updating DEP configs', runner_time, datetime.datetime.now()
+		print('runner() updating DEP configs', runner_time, datetime.datetime.now())
 		update_dep_configs(dep_configs)
 
 	dep_profiles = unsubmitted_dep_profiles()
 	if dep_profiles:
-		print 'runner() submitting DEP profiles', runner_time, datetime.datetime.now()
+		print('runner() submitting DEP profiles', runner_time, datetime.datetime.now())
 		submit_dep_profiles(dep_profiles)
 
 	# TODO: certificate expiration warnings/emails

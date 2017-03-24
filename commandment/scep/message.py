@@ -133,22 +133,22 @@ class SCEPMessage(object):
 
     def to_pkcs7_der(self, digest_algo='sha256'):
         m2_p7 = SMIME.PKCS7()
-        ct_p7 = cast(c_void_p(long(m2_p7._ptr())), POINTER(PKCS7))
+        ct_p7 = cast(c_void_p(int(m2_p7._ptr())), POINTER(PKCS7))
 
         assert get_lc().PKCS7_set_type(ct_p7, m2.PKCS7_SIGNED)
         assert get_lc().PKCS7_content_new(ct_p7, m2.PKCS7_DATA)
 
-        ct_signing_cert = c_void_p(long(self.signing_cert._ptr()))
+        ct_signing_cert = c_void_p(int(self.signing_cert._ptr()))
 
         assert get_lc().PKCS7_add_certificate(ct_p7, ct_signing_cert)
 
         m2_digest = getattr(m2, digest_algo)
-        ct_evp_md = c_void_p(long(m2_digest()))
+        ct_evp_md = c_void_p(int(m2_digest()))
 
         ct_si = get_lc().PKCS7_add_signature(
             ct_p7,
             ct_signing_cert,
-            c_void_p(long(self.signing_pkey._ptr())),
+            c_void_p(int(self.signing_pkey._ptr())),
             ct_evp_md)
 
         assert ct_si
@@ -209,7 +209,7 @@ class SCEPMessage(object):
     def from_pkcs7_der(cls, pkcs7_der):
         m2_p7_bio = BIO.MemoryBuffer(pkcs7_der)
         m2_p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(m2_p7_bio._ptr()), 1)
-        ct_p7 = cast(c_void_p(long(m2_p7._ptr())), POINTER(PKCS7))
+        ct_p7 = cast(c_void_p(int(m2_p7._ptr())), POINTER(PKCS7))
 
         ct_sis = get_lc().PKCS7_get_signer_info(ct_p7)
         assert get_lc().sk_num(ct_sis) == 1
@@ -225,7 +225,7 @@ class SCEPMessage(object):
         signing_cert = X509.X509(m2.x509_dup(signing_cert_int._ptr()))
 
         m2_p7buf = BIO.MemoryBuffer()
-        ct_p7buf = c_void_p(long(m2_p7buf._ptr()))
+        ct_p7buf = c_void_p(int(m2_p7buf._ptr()))
 
         assert get_lc().PKCS7_signatureVerify(ct_p7buf, ct_p7, ct_si, ct_x509) >= 0
 
@@ -234,7 +234,7 @@ class SCEPMessage(object):
 
         attrs = []
 
-        for i in xrange(0, get_lc().sk_num(ct_si.contents.auth_attr)):
+        for i in range(0, get_lc().sk_num(ct_si.contents.auth_attr)):
             # loop through the signed attributes
 
             ct_x509_attr_p = get_lc().sk_value(ct_si.contents.auth_attr, i)
@@ -300,7 +300,7 @@ def degenerate_pkcs7_der(m2_x509s):
         # duplicate the provided X509 certificate (as it will get free'd)
         # when we free our PKCS7 structure
         m2_x509_dup = m2.x509_dup(m2_x509._ptr())
-        ct_x509_dup = c_void_p(long(m2_x509_dup))
+        ct_x509_dup = c_void_p(int(m2_x509_dup))
 
         get_lc().sk_push(ct_x509_sk, ct_x509_dup)
 
@@ -308,7 +308,7 @@ def degenerate_pkcs7_der(m2_x509s):
     ct_p7.contents.d.sign.contents.cert = ct_x509_sk
 
     m2_p7bio = BIO.MemoryBuffer()
-    ct_p7bio = c_void_p(long(m2_p7bio._ptr()))
+    ct_p7bio = c_void_p(int(m2_p7bio._ptr()))
 
     assert get_lc().i2d_PKCS7_bio(ct_p7bio, ct_p7)
 
@@ -319,7 +319,7 @@ def degenerate_pkcs7_der(m2_x509s):
     return pkcs7_der
 
 def get_challenge_password(m2_req):
-    ct_req = c_void_p(long(m2_req.req))
+    ct_req = c_void_p(int(m2_req.req))
 
     idx = get_lc().X509_REQ_get_attr_by_NID(ct_req, NID_pkcs9_challengePassword, -1)
 

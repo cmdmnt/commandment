@@ -25,7 +25,7 @@ import json
 from .utils.dep import DEP
 from .utils.dep_utils import initial_fetch, mdm_profile, assign_devices
 import datetime
-from urlparse import urlparse
+from urllib.parse import urlparse
 from base64 import b64encode
 
 class FixedLocationResponse(Response):
@@ -83,7 +83,7 @@ def admin_certificates():
 
 @admin_app.route('/certificates/add/<certtype>', methods=['GET', 'POST'])
 def admin_certificates_add(certtype):
-    if certtype not in CERT_TYPES.keys():
+    if certtype not in list(CERT_TYPES.keys()):
         return 'Invalid certificate type'
     if request.method == 'POST':
         if not request.form.get('certificate'):
@@ -133,23 +133,23 @@ def admin_certificates_new():
     approved_certs = ['mdm.webcrt']
 
     if request.method == 'POST':
-        print 'cert type', request.form['cert_type']
-        if 'cert_type' not in request.form.keys() or request.form['cert_type'] not in approved_certs:
+        print('cert type', request.form['cert_type'])
+        if 'cert_type' not in list(request.form.keys()) or request.form['cert_type'] not in approved_certs:
             abort(400, 'Invalid cert_type!')
 
         # all certs must have a CN?
-        if 'CN' not in request.form.keys() or not request.form['CN']:
+        if 'CN' not in list(request.form.keys()) or not request.form['CN']:
             abort(400, 'No common name!')
 
         approved_input = ('C', 'CN', 'OU', 'L', 'O', 'ST')
 
         # get dictionary of any appropriate fields submitted
         subject_names = {}
-        for i in request.form.keys():
+        for i in list(request.form.keys()):
             if i in approved_input:
                 subject_names.update({i: str(request.form[i])})
 
-        print 'Generating test web certificate and CA'
+        print('Generating test web certificate and CA')
 
         web_req, web_pk = CertificateRequest.with_new_private_key(**subject_names)
 
@@ -355,7 +355,7 @@ def remove_group_profiles_from_device(group, device):
 
     # note singular tuple for subject here
     for profile_identifier, in q:
-        print 'Queueing removal of profile identifier:', profile_identifier
+        print('Queueing removal of profile identifier:', profile_identifier)
         new_qc = RemoveProfile.new_queued_command(device, {'Identifier': profile_identifier})
         db_session.add(new_qc)
 
@@ -377,14 +377,14 @@ def admin_device_groupmod(device_id):
             # this device is in this group currently
             if group.id not in new_group_memberships:
                 # this device is being removed from this group!
-                print 'Device %d is being REMOVED from Group %d (%s)!' % (device.id, group.id, group.group_name)
+                print('Device %d is being REMOVED from Group %d (%s)!' % (device.id, group.id, group.group_name))
                 group_removals.append(group)
             # else:
             #   print 'Device %d is REMAINING in Group %d (%s)!' % (device.id, group.id, group.group_name)
         else:
             # this device is NOT in this group currently
             if group.id in new_group_memberships:
-                print 'Device %d is being ADDED to Group %d (%s)!' % (device.id, group.id, group.group_name)
+                print('Device %d is being ADDED to Group %d (%s)!' % (device.id, group.id, group.group_name))
                 group_additions.append(group)
             # else:
             #   print 'Device %d is REMAINING out of Group %d (%s)!' % (device.id, group.id, group.group_name)
@@ -525,7 +525,7 @@ def admin_app_manage(app_id):
                     app_group_assoc.c.mdm_group_id == MDMGroup.id,
                     app_group_assoc.c.app_id == app_id))
 
-    groups = [dict(zip(('group', 'app_id', 'install_early', ), r)) for r in group_q]
+    groups = [dict(list(zip(('group', 'app_id', 'install_early', ), r))) for r in group_q]
 
     return render_template('admin/app_manage.html', app=app, groups=groups)
 
@@ -816,19 +816,19 @@ def dep_profile_add():
 
         # go through submitted bools and convert to actual bools in the dict
         for form_bool in form_bools:
-            if request.form.has_key(form_bool):
+            if form_bool in request.form:
                 profile[form_bool] = request.form.get(form_bool, type=bool)
 
         # go through submitted strs and convert to actual bools in the dict
         for form_str in form_strs:
-            if request.form.has_key(form_str) and request.form.get(form_str):
+            if form_str in request.form and request.form.get(form_str):
                 profile[form_str] = request.form.get(form_str)
 
         if not 'profile_name' in profile:
             raise Exception('DEP profile must have profile_name')
 
         # gather our skip_setup_items from the form
-        if request.form.has_key('skip_setup_items'):
+        if 'skip_setup_items' in request.form:
             profile['skip_setup_items'] = request.form.getlist('skip_setup_items')
 
         # TODO: await_device_configured

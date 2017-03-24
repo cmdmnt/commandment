@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
-from profiles.mdm import MDM_AR__ALL
+from .profiles.mdm import MDM_AR__ALL
 
 from .pki.x509 import (Certificate as X509Certificate,
                        PrivateKey as X509PrivateKey,

@@ -177,7 +177,7 @@ class GenericQueryProfiles(QueuedMDMCommand):
         return {}
 
     def process_response_dict(self, result):
-        print 'QueryProfiles.process_response_dict() called'
+        print('QueryProfiles.process_response_dict() called')
         pprint.pprint(result)
 
 class RemoveProfile(QueuedMDMCommand):
@@ -186,9 +186,9 @@ class RemoveProfile(QueuedMDMCommand):
         return {'Identifier': self.input_data['Identifier']}
 
     def process_response_dict(self, result):
-        print 'RemoveProfile.process_response_dict() called'
+        print('RemoveProfile.process_response_dict() called')
         if result['Status'] == 'Acknowledged':
-            print 'Successfully removed profile identifier:', self.input_data['Identifier']
+            print('Successfully removed profile identifier:', self.input_data['Identifier'])
         else:
             pprint.pprint(result)
 
@@ -199,9 +199,9 @@ class InstallProfile(QueuedMDMCommand):
         return {'Payload': plistlib.Data(db_profile.profile_data)}
 
     def process_response_dict(self, result):
-        print 'InstallProfile.process_response_dict() called'
+        print('InstallProfile.process_response_dict() called')
         if result['Status'] == 'Acknowledged':
-            print 'Successfully installed profile id:', self.input_data['id']
+            print('Successfully installed profile id:', self.input_data['id'])
         else:
             pprint.pprint(result)
 
@@ -218,5 +218,5 @@ class AppInstall(QueuedMDMCommand):
         return cmd_dict
 
     def process_response_dict(self, result):
-        print 'InstallProfile.process_response_dict() called'
+        print('InstallProfile.process_response_dict() called')
         pprint.pprint(result)

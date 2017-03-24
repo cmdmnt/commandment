@@ -27,10 +27,10 @@ def fix_ctx(m2_ctx, issuer=None):
     Thanks to Matt in comment #13 for the workaround of setting the context
     issuer and zeroing the structure. This fixes a segfault that would
     otherwise happen when setting the extension.'''
-    ctx = X509V3_CTX.from_address(long(m2_ctx))
+    ctx = X509V3_CTX.from_address(int(m2_ctx))
 
     ctx.flags = 0
-    ctx.issuer_cert = long(issuer.x509) if issuer else None
+    ctx.issuer_cert = int(issuer.x509) if issuer else None
     ctx.subject_cert = None
     ctx.subject_req = None
     ctx.crl = None

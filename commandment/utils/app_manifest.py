@@ -38,7 +38,7 @@ def get_pkg_bundle_ids(filename):
 
 	tmp_dir = mkdtemp()
 
-	print 'Extracting Distribution/PackageInfo file to', tmp_dir
+	print('Extracting Distribution/PackageInfo file to', tmp_dir)
 
 	xar_args = [XAR_PATH,
 		'-x', # extract switch
@@ -72,7 +72,7 @@ def get_pkg_bundle_ids(filename):
 		for i in dist_md.getElementsByTagName('bundle'):
 			bundles.append((i.getAttribute('id'), i.getAttribute('CFBundleVersion')))
 
-		print 'Removing Distribution file'
+		print('Removing Distribution file')
 		os.unlink(tmp_dist_file)
 
 	# for non-Distribution packages (use the PackageInfo)
@@ -84,11 +84,11 @@ def get_pkg_bundle_ids(filename):
 		for i in pinf_md.getElementsByTagName('pkg-info'):
 			pkgs.append((i.getAttribute('identifier'), i.getAttribute('version')))
 
-		print 'Removing PackageInfo file'
+		print('Removing PackageInfo file')
 		os.unlink(tmp_pinf_file)
 
 	
-	print 'Removing temp directory'
+	print('Removing temp directory')
 	os.rmdir(tmp_dir)
 
 	return (pkgs, bundles)

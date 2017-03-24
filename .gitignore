@@ -1,3 +1,6 @@
 *.pyc
 mdm.db
 commandment/apps
+
+*.bak
+

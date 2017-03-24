@@ -81,10 +81,10 @@ def push_to_device(device_or_devices):
             topic_frames[device.topic].add_item(token_hex, mdm_payload, random.getrandbits(32), expiry, 10)
         else:
             # TODO: configure and use real logging
-            print 'Cannot send APNs to device: no APNs connection found (by device topic)'
+            print('Cannot send APNs to device: no APNs connection found (by device topic)')
 
     # loop through our by-topic APNs Frames and send away
-    for topic in topic_frames.keys():
+    for topic in list(topic_frames.keys()):
         try:
             apns_cxns[topic].gateway_server.send_notification_multiple(topic_frames[topic])
         except SSLError as e:

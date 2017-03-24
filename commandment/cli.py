@@ -14,7 +14,7 @@ from commandment.pki.ca import get_or_generate_web_certificate
 from commandment.runner import start_runner, stop_runner
 from commandment.push import push_init
 
-if __name__ == '__main__':
+def server():
     app = create_app()
 
     app.config.from_object('commandment.default_settings')

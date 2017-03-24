@@ -63,7 +63,7 @@ class CertificateRequest(object):
 
         subj = X509.X509_Name()
 
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             setattr(subj, key, value)
 
         req.set_subject(subj)

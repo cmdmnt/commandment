@@ -35,7 +35,7 @@ def index():
 
 def base64_to_pem(crypto_type, b64_text, width=76):
     lines = ''
-    for pos in xrange(0, len(b64_text), width):
+    for pos in range(0, len(b64_text), width):
         lines += b64_text[pos:pos + width] + '\n'
 
     return '-----BEGIN %s-----\n%s-----END %s-----' % (crypto_type, lines, crypto_type)
@@ -109,7 +109,7 @@ def enroll():
 
     profile = Profile(config.prefix + '.enroll', PayloadDisplayName=config.mdm_name)
 
-    print mdm_ca.get_cacert().to_pem()
+    print(mdm_ca.get_cacert().to_pem())
     ca_cert_payload = PEMCertificatePayload(config.prefix + '.mdm-ca', str(mdm_ca.get_cacert().to_pem()).strip(), PayloadDisplayName='MDM CA Certificate')
 
     profile.append_payload(ca_cert_payload)
@@ -117,7 +117,7 @@ def enroll():
     # find and include all mdm.webcrt's
     q = db_session.query(DBCertificate).filter(DBCertificate.cert_type == 'mdm.webcrt')
     for i, cert in enumerate(q):
-        print cert.pem_certificate
+        print(cert.pem_certificate)
         new_webcrt_profile = PEMCertificatePayload(config.prefix + '.webcrt.%d' % i, str(cert.pem_certificate).strip(), PayloadDisplayName='Web Server Certificate')
         profile.append_payload(new_webcrt_profile)
 
@@ -290,7 +290,7 @@ def parse_plist_input_data(f):
     return decorator
 
 def device_first_post_enroll(device, awaiting=False):
-    print 'enroll:', 'UpdateInventoryDevInfoCommand'
+    print('enroll:', 'UpdateInventoryDevInfoCommand')
     db_session.add(UpdateInventoryDevInfoCommand.new_queued_command(device))
 
     # install all group profiles
@@ -331,8 +331,8 @@ def checkin():
                     # however shenanegans could be going on where two devices
                     # try to enroll using the same-cert profile, so best to block
                     # here
-                    print 'WARNING: device provided identity cert does not' \
-                        ' match issued cert! (possibly a re-enrollment?)'
+                    print('WARNING: device provided identity cert does not' \
+                        ' match issued cert! (possibly a re-enrollment?)')
                     db_session.delete(device.certificate)
                 else:
                     raise Exception('device provided identity cert does not' \
@@ -361,7 +361,7 @@ def checkin():
         return 'OK'
     elif resp['MessageType'] == 'TokenUpdate':
         current_app.logger.info('TokenUpdate received')
-        print print_resp
+        print(print_resp)
 
         # TODO: a TokenUpdate can either be for a device or a user (per OS X extensions)
         if 'UserID' in resp:
@@ -400,7 +400,7 @@ def checkin():
 
         return 'OK'
     elif resp['MessageType'] == 'UserAuthenticate':
-        print print_resp
+        print(print_resp)
         current_app.logger.warn('per-user authentication not yet implemented, skipping')
         abort(410, 'per-user authentication not yet supported')
         # TODO: we can theoretically do a digest authentication on the actual
@@ -408,7 +408,7 @@ def checkin():
         # depend heavily on any given user's backend. Perhaps provide some
         # functionality of auth plugins against AD, OD, etc.
         if 'DigestResponse' not in resp:
-            print 'no DigestResponse, generating'
+            print('no DigestResponse, generating')
             config = db_session.query(MDMConfig).one()
 
             # no digest necessary and thus no AuthToken necessary for this OS X user
@@ -416,17 +416,17 @@ def checkin():
 
             digdict = {'DigestChallenge': 'Digest nonce="%s",realm="%s"' % (urandom(20).encode('base64'), config.prefix)}
 
-            print digdict
+            print(digdict)
 
             resp = make_response(plistlib.writePlistToString(digdict))
             resp.headers['Content-Type'] = 'application/xml'
             return resp
         else:
-            print 'DigestResponse!'
-            print print_resp
+            print('DigestResponse!')
+            print(print_resp)
 
             tokdict = {'AuthToken': urandom(20).encode('hex')}
-            print tokdict
+            print(tokdict)
 
 
             resp = make_response(plistlib.writePlistToString(tokdict))
@@ -435,14 +435,14 @@ def checkin():
 
             # respond with an AuthToken for the user, all future MDM commands will include this coming from the user
     else:
-        print 'Unknown message type', resp['MessageType']
-        print print_resp
+        print('Unknown message type', resp['MessageType'])
+        print(print_resp)
 
     # a best-effort notification to the MDM system the MDM profile has been removed
     # only sent CheckOutWhenRemoved
     # elif resp['MessageType'] == 'CheckOut':
 
-    print 'Invalid message type'
+    print('Invalid message type')
     abort(500, 'Invalid message type')
 
 def device_first_user_message(device):
@@ -489,7 +489,7 @@ def mdm():
 
     current_app.logger.info('device id=%d udid=%s processing status=%s', g.device.id, g.device.udid, status)
 
-    print g.plist_data
+    print(g.plist_data)
 
     if status != 'Idle':
 
