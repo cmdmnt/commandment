@@ -1,7 +1,7 @@
-'''
+"""
 Copyright (c) 2016 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+"""
 
 from flask import Blueprint, request, Response, abort, current_app
 from .message import *

@@ -1,7 +1,7 @@
-'''
+"""
 Copyright (c) 2016 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+"""
 
 from M2Crypto import m2, SMIME, BIO, X509, EVP
 from .glue import *

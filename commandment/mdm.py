@@ -204,7 +204,7 @@ def device_cert_check(no_device_okay=False):
 
 
 def parse_plist_input_data(f):
-    '''Parses plist data as HTTP input from request'''
+    """Parses plist data as HTTP input from request"""
 
     @wraps(f)
     def decorator(*args, **kwargs):
