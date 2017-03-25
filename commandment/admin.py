@@ -95,7 +95,8 @@ def admin_certificates():
 
 @admin_app.route('/certificates/add/<certtype>', methods=['GET', 'POST'])
 def admin_certificates_add(certtype: str):
-    """Add a new certificate with the usage indicated by ``certtype``, send the certificate as PEM in the content body."""
+    """Add a new certificate with the usage indicated by ``certtype``,
+    send the certificate as PEM in the content body."""
     if certtype not in list(CERT_TYPES.keys()):
         return 'Invalid certificate type'
     if request.method == 'POST':

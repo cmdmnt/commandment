@@ -21,7 +21,7 @@ Base = declarative_base()
 Base.query = db_session.query_property()
 
 
-def config_engine(uri, echo):
+def config_engine(uri: str, echo: bool):
     global engine, mysessionmaker, db_session
 
     engine = create_engine(uri, convert_unicode=True, echo=echo)

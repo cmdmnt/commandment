@@ -21,6 +21,7 @@ setup(
         'Flask-REST-JSONAPI',
         'Flask-SQLAlchemy',
         'Flask-Cors',
+        'Flask-RESTful',
         'oauthlib',
         'passlib',
         'SQLAlchemy'
@@ -30,7 +31,10 @@ setup(
     ],
     extras_requires={
         'ReST': [
-            'Sphinx', 'sphinxcontrib-napoleon', 'sphinx-rtd-theme', 'sphinxcontrib-httpdomain'
+            'Sphinx',
+            'sphinxcontrib-napoleon',
+            'sphinx-rtd-theme',
+            'sphinxcontrib-httpdomain'
         ]
     },
     entry_points={
