@@ -1,7 +1,7 @@
-'''
+"""
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+"""
 
 from flask import Blueprint, render_template, Response, request, redirect, current_app, abort, make_response
 from .pki.certificateauthority import get_ca, PushCertificate
@@ -44,11 +44,13 @@ admin_app = Blueprint('admin_app', __name__)
 
 @admin_app.route('/')
 def index():
+    """Redirects to the MDM configuration page"""
     return redirect('/admin/config/edit', Response=FixedLocationResponse)
 
 
 @admin_app.route('/certificates')
 def admin_certificates():
+    """Show a list of configured certificates, excluding device identities."""
     # merely to generate new CA if not exist
     mdm_ca = get_ca()
 
@@ -93,6 +95,7 @@ def admin_certificates():
 
 @admin_app.route('/certificates/add/<certtype>', methods=['GET', 'POST'])
 def admin_certificates_add(certtype: str):
+    """Add a new certificate with the usage indicated by ``certtype``, send the certificate as PEM in the content body."""
     if certtype not in list(CERT_TYPES.keys()):
         return 'Invalid certificate type'
     if request.method == 'POST':
@@ -138,6 +141,7 @@ def admin_certificates_add(certtype: str):
 
 @admin_app.route('/certificates/new', methods=['GET', 'POST'])
 def admin_certificates_new():
+    """Generate a new certificate signing request for the certificate type specified."""
     mdm_ca = get_ca()
 
     approved_certs = ['mdm.webcrt']
@@ -210,6 +214,7 @@ def admin_certificates_new():
 
 @admin_app.route('/certificates/delete/<int:cert_id>')
 def admin_certificates_delete(cert_id: int):
+    """Delete the certificate with the specified ID"""
     certq = db_session.query(DBCertificate).filter(DBCertificate.id == cert_id)
     cert = certq.one()
     db_session.delete(cert)
@@ -219,6 +224,7 @@ def admin_certificates_delete(cert_id: int):
 
 @admin_app.route('/groups', methods=['GET', 'POST'])
 def admin_groups():
+    """Create or list MDM groups"""
     if request.method == 'POST':
         db_grp = MDMGroup()
         db_grp.group_name = request.form['group_name']
@@ -235,6 +241,11 @@ def admin_groups():
 
 @admin_app.route('/groups/remove/<int:group_id>')
 def admin_groups_remove(group_id: int):
+    """Delete a group by ID
+
+    Arguments:
+        group_id (int): The group identifier
+    """
     q = db_session.query(MDMGroup).filter(MDMGroup.id == group_id).delete(synchronize_session=False)
     db_session.commit()
     return redirect('/admin/groups', Response=FixedLocationResponse)
@@ -242,12 +253,14 @@ def admin_groups_remove(group_id: int):
 
 @admin_app.route('/profiles')
 def admin_profiles1():
+    """Get a list of profiles"""
     profiles = db_session.query(DBProfile)
     return render_template('admin/profiles/index.html', profiles=profiles)
 
 
 @admin_app.route('/profiles/add', methods=['GET', 'POST'])
 def admin_profiles_add1():
+    """Show the profile add form or post a profile"""
     if request.method == 'POST':
         config = db_session.query(MDMConfig).one()
 

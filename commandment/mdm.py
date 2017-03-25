@@ -31,6 +31,7 @@ mdm_app = Blueprint('mdm_app', __name__)
 
 @mdm_app.route('/')
 def index():
+    """Show the enrollment page"""
     return render_template('enroll.html')
 
 
@@ -44,6 +45,7 @@ def base64_to_pem(crypto_type, b64_text, width=76):
 
 @mdm_app.route('/enroll', methods=['GET', 'POST'])
 def enroll():
+    """Generate an enrollment profile."""
     mdm_ca = get_ca()
 
     config = db_session.query(MDMConfig).first()
@@ -144,14 +146,15 @@ def enroll():
 
 @mdm_app.route('/send_mdm/<int:dev_id>')
 def send_mdm(dev_id):
+    """Send a push notification to a device by its commandment id"""
     device = db_session.query(Device).filter(Device.id == dev_id).one()
     push_to_device(device)
     return 'Sent Push Notification'
 
 
 def device_cert_check(no_device_okay=False):
-    '''Performs a set of checks on a request to make sure it came from a
-    legimately enrolled device in this MDM system'''
+    """Performs a set of checks on a request to make sure it came from a
+    legimately enrolled device in this MDM system"""
 
     def decorator(f):
         @wraps(f)
@@ -238,6 +241,7 @@ def device_first_post_enroll(device, awaiting=False):
 @device_cert_check(no_device_okay=True)
 @parse_plist_input_data
 def checkin():
+    """MDM checkin endpoint."""
     resp = g.plist_data
     print_resp = resp.copy()
 
@@ -397,6 +401,7 @@ def device_first_user_message(device):
 @device_cert_check()
 @parse_plist_input_data
 def mdm():
+    """MDM connection endpoint."""
     if g.device.udid != g.plist_data['UDID']:
         # see note in device_cert_check() about old device cert sometimes
         # being provided
@@ -507,7 +512,8 @@ def mdm():
 
 
 @mdm_app.route('/send_dev_info/<int:dev_id>')
-def send_dev_info(dev_id):
+def send_dev_info(dev_id: int):
+    """Queue a ``DeviceInformation`` command for the specified commandment device ID."""
     device = db_session.query(Device).filter(Device.id == dev_id).one()
 
     new_qc = UpdateInventoryDevInfoCommand.new_queued_command(device)
@@ -521,7 +527,8 @@ def send_dev_info(dev_id):
 
 
 @mdm_app.route("/app/<int:app_id>/manifest")
-def app_manifest(app_id):
+def app_manifest(app_id: int):
+    """Retrieve an application manifest for the specified application ID."""
     app_q = db_session.query(App).filter(App.id == app_id)
     app = app_q.one()
 
@@ -557,7 +564,8 @@ def app_manifest(app_id):
 
 
 @mdm_app.route("/app/<int:app_id>/download/<filename>")
-def app_download(app_id, filename):
+def app_download(app_id: int, filename: str):
+    """Download a file corresponding to the specified application ID."""
     app_q = db_session.query(App).filter(App.id == app_id)
     app = app_q.one()
 

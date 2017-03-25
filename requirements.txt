@@ -36,6 +36,7 @@ six==1.10.0
 snowballstemmer==1.2.1
 Sphinx==1.5.3
 sphinx-rtd-theme==0.2.4
+sphinxcontrib-httpdomain==1.5.0
 sphinxcontrib-napoleon==0.6.1
 SQLAlchemy==1.1.6
 ujson==1.35

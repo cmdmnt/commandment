@@ -26,7 +26,9 @@ setup(
         'SQLAlchemy'
     ],
     extras_requires={
-        'ReST': ['Sphinx', 'sphinxcontrib-napoleon', 'sphinx-rtd-theme']
+        'ReST': [
+            'Sphinx', 'sphinxcontrib-napoleon', 'sphinx-rtd-theme', 'sphinxcontrib-httpdomain'
+        ]
     },
     entry_points={
         'console_scripts': [

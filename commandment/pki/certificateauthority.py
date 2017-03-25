@@ -20,6 +20,7 @@ from .x509 import *
 MDM_CA_CN = 'MDM CA'
 MDM_DEVICE_CN = 'MDM Device'
 
+
 def from_database_or_create():
     """Create a new CertificateAuthority from the keypair in the database, or generate new ones if they do not exist.
 
@@ -48,6 +49,7 @@ def from_database_or_create():
         db_session.commit()
 
     return ca
+
 
 def get_ca():
     ca = getattr(g, '_mdm_ca', None)
@@ -116,7 +118,7 @@ class CertificateAuthority(object):
     @property
     def certificate(self):
         return self._certificate
-    
+
     @certificate.setter
     def certificate(self, value):
         if isinstance(value, str):  # we will assume a PEM string
@@ -169,33 +171,35 @@ class CertificateAuthority(object):
 
 
 
-    # def sign_new_device_req(self, csr):
-    #     '''Sign and persist a new device certificate request'''
-    #     signed = self.sign(csr)
-    #     #db_dev_crt = self.save_new_device_cert(dev_signed_cert)
-    #
-    #     #return dev_signed_cert, db_dev_crt
-    #
-    # def save_new_device_cert(self, cert):
-    #     # cert should be of type Certificate
-    #     db_dev_crt = DBCertificate.from_x509(cert, 'mdm.device')
-    #     db_session.add(db_dev_crt)
-    #     db_session.commit()
-    #
-    #     return db_dev_crt
-    #
-    # def gen_new_device_identity(self):
-    #     # we don't persist the key as it should only be held and used by
-    #     # the client device
-    #     dev_csr, dev_key = CertificateRequest.with_new_private_key(CN=MDM_DEVICE_CN)
-    #
-    #     dev_crt, db_dev_crt = self.sign_new_device_req(dev_csr)
-    #
-    #     return (Identity(dev_key, dev_crt), db_dev_crt)
+        # def sign_new_device_req(self, csr):
+        #     '''Sign and persist a new device certificate request'''
+        #     signed = self.sign(csr)
+        #     #db_dev_crt = self.save_new_device_cert(dev_signed_cert)
+        #
+        #     #return dev_signed_cert, db_dev_crt
+        #
+        # def save_new_device_cert(self, cert):
+        #     # cert should be of type Certificate
+        #     db_dev_crt = DBCertificate.from_x509(cert, 'mdm.device')
+        #     db_session.add(db_dev_crt)
+        #     db_session.commit()
+        #
+        #     return db_dev_crt
+        #
+        # def gen_new_device_identity(self):
+        #     # we don't persist the key as it should only be held and used by
+        #     # the client device
+        #     dev_csr, dev_key = CertificateRequest.with_new_private_key(CN=MDM_DEVICE_CN)
+        #
+        #     dev_crt, db_dev_crt = self.sign_new_device_req(dev_csr)
+        #
+        #     return (Identity(dev_key, dev_crt), db_dev_crt)
+
 
 class WebCertificate(Certificate):
     def get_cn(self):
         return self.get_m2_cert().get_subject().CN
+
 
 class PushCertificate(Certificate):
     def get_topic(self):
@@ -208,11 +212,12 @@ class PushCertificate(Certificate):
 
         return topic
 
-def get_or_generate_web_certificate(cn):
+
+def get_or_generate_web_certificate(cn: str) -> (str, str, str):
     mdm_ca = get_ca()
     try:
-        q = db_session.query(DBCertificate, DBPrivateKey)\
-            .join(DBCertificate, DBPrivateKey.certificates)\
+        q = db_session.query(DBCertificate, DBPrivateKey) \
+            .join(DBCertificate, DBPrivateKey.certificates) \
             .filter(DBCertificate.cert_type == 'mdm.webcrt')
         result = q.first()
         if not result:
@@ -232,8 +237,6 @@ def get_or_generate_web_certificate(cn):
         ])).sign(web_pk, hashes.SHA256(), default_backend())
 
         web_crt = mdm_ca.sign(web_req)
-
-        print(web_crt.subject)
 
         db_cert = DBCertificate.from_crypto(web_crt, 'mdm.webcrt')
         db_pk = DBPrivateKey.from_crypto(web_pk)
