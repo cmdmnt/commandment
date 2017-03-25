@@ -12,7 +12,7 @@ import tempfile
 import atexit
 from .database import db_session
 from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
-from .pki.certificateauthority import PushCertificate
+from .pki.cryptography import Certificate
 import random
 import time
 try:
@@ -46,7 +46,7 @@ def push_init():
         os.close(cert_handle)
         os.close(pkey_handle)
 
-        apns = apns2.APNSClient(mode='dev', client_cert=cert_file)
+        apns = apns2.APNSClient(mode='prod', client_cert=cert_file)
         apns_cxns[cert_topic] = apns
 
 
@@ -78,6 +78,7 @@ def push_to_device(device_or_devices):
             # decode from as-stored base64 into hex encoding for apns library
             token_hex = device.token.decode('base64').encode('hex')
 
+            payload = apns2.Payload()
             mdm_payload = MDMPayload(device.push_magic)
 
             expiry = time.time() + 86400

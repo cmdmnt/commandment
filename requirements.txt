@@ -28,10 +28,12 @@ oauthlib==2.0.2
 packaging==16.8
 passlib==1.7.1
 pockets==0.3.2
+py==1.4.33
 pycparser==2.17
 Pygments==2.2.0
 PyJWT==1.4.2
 pyparsing==2.2.0
+pytest==3.0.7
 pytz==2016.10
 requests==2.13.0
 six==1.10.0

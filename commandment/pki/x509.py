@@ -1,7 +1,7 @@
-'''
+"""
 Copyright (c) 2016 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+"""
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -60,75 +60,6 @@ class PrivateKey(object):
         )
         return newcls
 
-class CertificateRequest(object):
-    def __init__(self, private_key, digest=None, **kwargs):
-        evp = private_key._new_evp()
-
-        req = X509.Request()
-        req.set_pubkey(evp)
-
-        subj = X509.X509_Name()
-
-        for key, value in kwargs.items():
-            setattr(subj, key, value)
-
-        req.set_subject(subj)
-
-        req.sign(evp, digest or DEFAULT_REQ_SIGN_DIGEST)
-
-        assert req.verify(evp) == 1
-
-        self._req = req
-
-    @classmethod
-    def with_new_private_key(cls, keysize=None, digest=None, **kwargs):
-        private_key = PrivateKey(keysize)
-        return (cls(private_key, digest, **kwargs), private_key)
-
-    @classmethod
-    def from_der(cls, data):
-        newcls = cls.__new__(cls)
-        newcls._req = X509.load_request_string(str(data), format=X509.FORMAT_DER)
-        assert newcls._req.verify(newcls._req.get_pubkey()) == 1
-        return newcls
-
-    @classmethod
-    def from_pem(cls, data):
-        newcls = cls.__new__(cls)
-        newcls._req = X509.load_request_string(str(data), format=X509.FORMAT_PEM)
-        assert newcls._req.verify(newcls._req.get_pubkey()) == 1
-        return newcls
-
-    def to_pem(self):
-        return self._req.as_pem()
-
-    def to_der(self):
-        return self._req.as_der()
-
-    def _get_subject(self):
-        return self._req.get_subject()
-
-    def __repr__(self):
-        cn_text = self._get_subject().as_text()
-        return '<%s Subject=%r at %s>' % (self.__class__.__name__,
-                                          cn_text,
-                                          format(id(self), '#x'))
-
-    def _get_pubkey(self):
-        return self._req.get_pubkey()
-
-    def get_pubkey_fingerprint(self, digest=None):
-        _evp = self._get_pubkey()
-        evp_der = _evp.as_der()
-        hasher = EVP.MessageDigest(digest or DEFAULT_SUBJECT_KEY_DIGEST)
-        assert hasher.update(evp_der) == 1
-        return hexlify(hasher.final())
-
-    def _m2_req(self):
-        return self._req
-
-    def get_subject_text(self):
-        return self._get_subject().as_text()
 
 class CertificatePolicy(object):
     ca = False

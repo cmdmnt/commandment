@@ -196,22 +196,6 @@ class CertificateAuthority(object):
         #     return (Identity(dev_key, dev_crt), db_dev_crt)
 
 
-class WebCertificate(Certificate):
-    def get_cn(self):
-        return self.get_m2_cert().get_subject().CN
-
-
-class PushCertificate(Certificate):
-    def get_topic(self):
-        x509_uid_name_entries = self._x509.get_subject().get_entries_by_nid(NID_userId)
-
-        if len(x509_uid_name_entries) != 1:
-            raise AttributeError('No UID entry in APNS Push certificate subject')
-
-        topic = x509_uid_name_entries[0].get_data().as_text()
-
-        return topic
-
 
 def get_or_generate_web_certificate(cn: str) -> (str, str, str):
     mdm_ca = get_ca()

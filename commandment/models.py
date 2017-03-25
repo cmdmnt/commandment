@@ -12,6 +12,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import serialization, hashes
+from .pki.cryptography import Certificate as CMDCertificate
 
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum
 from sqlalchemy.orm import relationship
@@ -20,12 +21,12 @@ from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
 from .profiles.mdm import MDM_AR__ALL
 
+
 class CertificateType(Enum):
     PUSH = 'mdm.pushcert'
     WEB = 'mdm.webrt'
     CA = 'mdm.cacert'
     DEVICE = 'mdm.device'
-    
 
 
 CERT_TYPES = {
@@ -56,14 +57,15 @@ CERT_TYPES = {
 }
 
 certificate_private_key_assoc = Table('certificate_private_key', Base.metadata,
-    Column('certificate_id', Integer, ForeignKey('certificate.id')),
-    Column('privatekey_id', Integer, ForeignKey('rsa_private_key.id')),
-)
+                                      Column('certificate_id', Integer, ForeignKey('certificate.id')),
+                                      Column('privatekey_id', Integer, ForeignKey('rsa_private_key.id')),
+                                      )
 
 certreq_private_key_assoc = Table('certreq_private_key', Base.metadata,
-    Column('certreq_id', Integer, ForeignKey('certificate_request.id')),
-    Column('privatekey_id', Integer, ForeignKey('rsa_private_key.id')),
-)
+                                  Column('certreq_id', Integer, ForeignKey('certificate_request.id')),
+                                  Column('privatekey_id', Integer, ForeignKey('rsa_private_key.id')),
+                                  )
+
 
 class PrivateKey(Base):
     """RSA Private Key Model"""
@@ -74,13 +76,14 @@ class PrivateKey(Base):
     pem_key = Column(Text, nullable=False)
 
     certificates = relationship('Certificate', secondary=certificate_private_key_assoc, backref='privatekeys')
-    certificate_requests = relationship('CertificateRequest', secondary=certreq_private_key_assoc, backref='privatekeys')
+    certificate_requests = relationship('CertificateRequest', secondary=certreq_private_key_assoc,
+                                        backref='privatekeys')
 
     def to_crypto(self):
         """Create an instance of RSAPrivateKey from this database model.
 
-        :return: RSAPrivateKey instance
-        :rtype: cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
+        Returns:
+            cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey: The private key    
         """
         rsa = serialization.load_pem_private_key(
             self.pem_key,
@@ -93,10 +96,12 @@ class PrivateKey(Base):
     def from_crypto(cls, private_key):
         """
         Create an instance of the PrivateKey model from a cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
-        
-        :param cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey private_key: RSA Private Key
-        :return: the model
-        :rtype: PrivateKey
+
+        Arguments:
+            private_key (cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey): The private key to import
+
+        Returns:
+            The model populated with the private key in PEM format.
         """
         pem = private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
@@ -107,16 +112,18 @@ class PrivateKey(Base):
         newcls.pem_key = pem
         return newcls
 
+
 class CertificateRequest(Base):
     __tablename__ = 'certificate_request'
 
     id = Column(Integer, primary_key=True)
-    req_type = Column(String(64), nullable=False, index=True) # CERT_TYPES.keys()
+    req_type = Column(String(64), nullable=False, index=True)  # CERT_TYPES.keys()
     subject = Column(Text, nullable=True)
     pem_request = Column(Text, nullable=False)
 
     def to_crypto(self):
         """Create an instance of CertificateSigningRequest from this database model.
+
 
         :return: Certificate signing request
         :rtype: cryptography.x509.CertificateSigningRequest
@@ -142,11 +149,12 @@ class CertificateRequest(Base):
         newcls.pem_request = pem
         return newcls
 
+
 class Certificate(Base):
     __tablename__ = 'certificate'
 
     id = Column(Integer, primary_key=True)
-    cert_type = Column(String(64), nullable=False, index=True) # CERT_TYPES.keys()
+    cert_type = Column(String(64), nullable=False, index=True)  # CERT_TYPES.keys()
 
     subject = Column(Text, nullable=True)
 
@@ -154,7 +162,7 @@ class Certificate(Base):
     not_after = Column(DateTime(timezone=False), nullable=False)
 
     # SHA-256 hash of DER-encoded certificate
-    fingerprint = Column(String(64), nullable=False, index=True, unique=True) # Unique
+    fingerprint = Column(String(64), nullable=False, index=True, unique=True)  # Unique
 
     # subject_key_id?
     # auth_key_id?
@@ -200,12 +208,15 @@ class Certificate(Base):
         )
         return newcls
 
+
 certreq_cert_assoc = Table('certreq_cert', Base.metadata,
-    Column('certreq_id', Integer, ForeignKey('certificate_request.id')),
-    Column('certificate_id', Integer, ForeignKey('certificate.id')),
-)
+                           Column('certreq_id', Integer, ForeignKey('certificate_request.id')),
+                           Column('certificate_id', Integer, ForeignKey('certificate.id')),
+                           )
+
 
 class InternalCA(Base):
+    """The InternalCA model keeps track of the issued certificate serial numbers."""
     __tablename__ = 'internal_ca'
 
     id = Column(Integer, primary_key=True)
@@ -222,10 +233,12 @@ class InternalCA(Base):
         # MAX(serial) + 1
         pass
 
+
 internalca_issued_cert_assoc = Table('internalca_issued_cert', Base.metadata,
-    Column('certificate_id', Integer, ForeignKey('certificate.id')),
-    Column('internalca_id', Integer, ForeignKey('internal_ca.id')),
-)
+                                     Column('certificate_id', Integer, ForeignKey('certificate.id')),
+                                     Column('internalca_id', Integer, ForeignKey('internal_ca.id')),
+                                     )
+
 
 class Device(Base):
     """An enrolled device."""
@@ -235,7 +248,7 @@ class Device(Base):
 
     udid = Column(String, index=True, nullable=True)
     push_magic = Column(String, nullable=True)
-    token = Column(String, nullable=True) # stored as b64-encoded raw data
+    token = Column(String, nullable=True)  # stored as b64-encoded raw data
     unlock_token = Column(String(), nullable=True)
     topic = Column(String, nullable=True)
 
@@ -258,12 +271,13 @@ class QueuedCommand(Base):
 
     id = Column(Integer, primary_key=True)
 
-    command_class = Column(String, nullable=False) # string representation of our local command handler
+    command_class = Column(String, nullable=False)  # string representation of our local command handler
     # request_type = Column(String, index=True, nullable=False) # actual command name
     uuid = Column(String(36), index=True, unique=True, nullable=False)
-    input_data = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True) # JSON add'l data as input to command builder
-    queued_status = Column(String(1), index=True, nullable=False, default='Q') # 'Q' = Queued, 'S' = Sent
-    result = Column(String, index=True, nullable=True) # Status key of MDM command result submission
+    input_data = Column(MutableDict.as_mutable(JSONEncodedDict),
+                        nullable=True)  # JSON add'l data as input to command builder
+    queued_status = Column(String(1), index=True, nullable=False, default='Q')  # 'Q' = Queued, 'S' = Sent
+    result = Column(String, index=True, nullable=True)  # Status key of MDM command result submission
 
     # queued_stamp
     # sent_stamp
@@ -293,12 +307,13 @@ class QueuedCommand(Base):
         # d == d AND (q_status == Q OR (q_status == R AND result == 'NotNow'))
         return cls.query.filter(
             and_(cls.device == device,
-                or_(cls.queued_status == 'Q',
-                    and_(cls.queued_status == 'R',
-                        cls.result == 'NotNow')))).order_by(cls.id).first()
+                 or_(cls.queued_status == 'Q',
+                     and_(cls.queued_status == 'R',
+                          cls.result == 'NotNow')))).order_by(cls.id).first()
 
     def __repr__(self):
         return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.queued_status)
+
 
 # profile_device_assoc = Table('profile_device', Base.metadata,
 #   Column('device_id', Integer, ForeignKey('device.id')),
@@ -309,31 +324,35 @@ class Profile(Base):
     __tablename__ = 'profile'
 
     id = Column(Integer, primary_key=True)
-    identifier = Column(String, index=True, unique=True, nullable=False) # duplicated from within profile_data for searching
-    uuid = Column(String(36), index=True, unique=True, nullable=False) # duplicated from within profile_data for searching
-    profile_data = Column(Text, nullable=False) # serialized XML (or signed, encrypted) profile data
+    identifier = Column(String, index=True, unique=True,
+                        nullable=False)  # duplicated from within profile_data for searching
+    uuid = Column(String(36), index=True, unique=True,
+                  nullable=False)  # duplicated from within profile_data for searching
+    profile_data = Column(Text, nullable=False)  # serialized XML (or signed, encrypted) profile data
 
     def __repr__(self):
         return '<Profile ID=%r UUID=%r>' % (self.id, self.uuid)
 
+
 device_group_assoc = Table('device_group', Base.metadata,
-    Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-    Column('device_id', Integer, ForeignKey('device.id')),
-)
+                           Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
+                           Column('device_id', Integer, ForeignKey('device.id')),
+                           )
 
 profile_group_assoc = Table('profile_group', Base.metadata,
-    Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-    Column('profile_id', Integer, ForeignKey('profile.id')),
-)
+                            Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
+                            Column('profile_id', Integer, ForeignKey('profile.id')),
+                            )
 
 app_group_assoc = Table('app_group', Base.metadata,
-    Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-    Column('app_id', Integer, ForeignKey('app.id')),
-    # install_early is just a colloqualism to mean 'install as early as
-    # possible.' initiallly this is in support for installing apps out of the
-    # gate for DEP
-    Column('install_early', Boolean),
-)
+                        Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
+                        Column('app_id', Integer, ForeignKey('app.id')),
+                        # install_early is just a colloqualism to mean 'install as early as
+                        # possible.' initiallly this is in support for installing apps out of the
+                        # gate for DEP
+                        Column('install_early', Boolean),
+                        )
+
 
 class MDMGroup(Base):
     __tablename__ = 'mdm_group'
@@ -349,6 +368,7 @@ class MDMGroup(Base):
     def __repr__(self):
         return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
 
+
 class MDMConfig(Base):
     __tablename__ = 'mdm_config'
 
@@ -356,7 +376,7 @@ class MDMConfig(Base):
 
     prefix = Column(String, nullable=False, unique=True)
     addl_config = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-    topic = Column(String, nullable=False) # APNs Push Topic
+    topic = Column(String, nullable=False)  # APNs Push Topic
     access_rights = Column(Integer, default=MDM_AR__ALL, nullable=False)
 
     mdm_url = Column(String, nullable=False)
@@ -366,10 +386,10 @@ class MDMConfig(Base):
     description = Column(String, nullable=True)
 
     ca_cert_id = Column(ForeignKey('certificate.id'))
-    ca_cert = relationship('Certificate', foreign_keys=[ca_cert_id]) # , backref='ca_cert_mdm_config'
+    ca_cert = relationship('Certificate', foreign_keys=[ca_cert_id])  # , backref='ca_cert_mdm_config'
 
     push_cert_id = Column(ForeignKey('certificate.id'), nullable=False)
-    push_cert = relationship('Certificate', foreign_keys=[push_cert_id]) # , backref='push_cert_mdm_config'
+    push_cert = relationship('Certificate', foreign_keys=[push_cert_id])  # , backref='push_cert_mdm_config'
 
     # note: we default to 'provide' here despite its lower security because
     # it requires no other dependencies, i.e. a better user experience
@@ -385,11 +405,13 @@ class MDMConfig(Base):
         else:
             return ''
 
+
 class SCEPConfig(Base):
     __tablename__ = 'scep_config'
 
     id = Column(Integer, primary_key=True)
     challenge = Column(String, nullable=False)
+
 
 class App(Base):
     __tablename__ = 'app'
@@ -399,13 +421,13 @@ class App(Base):
     filename = Column(String, nullable=False, unique=True)
     filesize = Column(Integer, nullable=False)
 
-    md5_hash = Column(String(32), nullable=False) # MD5 hash of the entire file
+    md5_hash = Column(String(32), nullable=False)  # MD5 hash of the entire file
 
     # MDM clients support a chunked method of retrival of the download file
     # presumably to best support OTA download of large updates. These fields
     # are in support of that mechanism
     md5_chunk_size = Column(Integer, nullable=False)
-    md5_chunk_hashes = Column(Text, nullable=True) # colon (:) separated list of MD5 chunk hashes
+    md5_chunk_hashes = Column(Text, nullable=True)  # colon (:) separated list of MD5 chunk hashes
 
     bundle_ids_json = Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
     pkg_ids_json = Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
@@ -415,6 +437,7 @@ class App(Base):
 
     def __repr__(self):
         return '<App ID=%r Filename=%r>' % (self.id, self.filename)
+
 
 class DEPConfig(Base):
     __tablename__ = 'dep_config'
@@ -431,15 +454,16 @@ class DEPConfig(Base):
     initial_fetch_complete = Column(Boolean, nullable=False, default=False)
     next_check = Column(DateTime(timezone=False), nullable=True)
     device_cursor = Column(String)
-    device_cursor_recevied = Column(DateTime(timezone=False), nullable=True) # shouldn't use if more than 7 days old
+    device_cursor_recevied = Column(DateTime(timezone=False), nullable=True)  # shouldn't use if more than 7 days old
 
-    url_base = Column(String, nullable=True) # testing server environment if used
+    url_base = Column(String, nullable=True)  # testing server environment if used
 
     def last_check_delta(self):
         if self.next_check:
             return str(self.next_check - datetime.datetime.utcnow())
         else:
             return ''
+
 
 class DEPProfile(Base):
     __tablename__ = 'dep_profile'
@@ -453,7 +477,7 @@ class DEPProfile(Base):
     dep_config = relationship('DEPConfig', backref='dep_profiles')
 
     # DEP-assigned UUID for this DEP profile
-    uuid = Column(String(36), index=True, nullable=True) # should be unique but it's assigned to us so can't be null
+    uuid = Column(String(36), index=True, nullable=True)  # should be unique but it's assigned to us so can't be null
 
     profile_data = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=False)
 

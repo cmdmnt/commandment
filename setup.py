@@ -25,6 +25,9 @@ setup(
         'passlib',
         'SQLAlchemy'
     ],
+    tests_requires=[
+        'pytest'
+    ],
     extras_requires={
         'ReST': [
             'Sphinx', 'sphinxcontrib-napoleon', 'sphinx-rtd-theme', 'sphinxcontrib-httpdomain'

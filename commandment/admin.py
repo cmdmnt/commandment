@@ -4,7 +4,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 
 from flask import Blueprint, render_template, Response, request, redirect, current_app, abort, make_response
-from .pki.certificateauthority import get_ca, PushCertificate
+from .pki.certificateauthority import get_ca
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend

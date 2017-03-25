@@ -139,6 +139,9 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# IDEA
+*.iml
+
 # commandment
 mdm.db
 commandment/apps
