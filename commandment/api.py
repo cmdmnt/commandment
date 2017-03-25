@@ -24,6 +24,15 @@ class DeviceSchema(Schema):
     id = fields.Str(dump_only=True)
     name = fields.Str()
 
+class CertificateSchema(Schema):
+    class Meta:
+        type_ = 'certificate'
+        self_view = 'certificate_detail'
+        self_view_kwargs = {'id': '<id>'}
+        self_view_many = 'certificate_list'
+
+    id = fields.Str(dump_only=True)
+    name = fields.Str()
 
 # Resource Managers
 
@@ -37,10 +46,19 @@ class DeviceDetail(ResourceDetail):
     data_layer = {'session': db_session,
                   'model': Device}
 
+class CertificateList(ResourceList):
+    schema = CertificateSchema
+    data_layer = {'session': db_session, 'model': DBCertificate}
+
+class CertificateDetail(ResourceList):
+    schema = CertificateSchema
+    data_layer = {'session': db_session, 'model': DBCertificate}
 
 api = Api(api_app)
 api.route(DeviceList, 'device_list', '/v1/devices')
 api.route(DeviceDetail, 'device_detail', '/v1/devices/<int:id>')
+api.route(CertificateList, 'certificate_list', '/v1/certificates')
+api.route(CertificateDetail, 'certificate_detail', '/v1/certificates/<int:id>')
 
 
 @api_app.route('/v1/devices/<int:device_id>/push')
@@ -48,30 +66,30 @@ def push(device_id: int):
     device = db_session.query(Device).filter(Device.id == device_id).one()
     push_to_device(device)
 
+#
+# @api_app.route('/v1/push_certificates', methods=['POST'])
+# def post_push_certificates():
+#     """Upload a push certificate to the MDM.
+#
+#     :reqheader Accept: application/x-pkcs12
+#     :resheader Content-Type: application/json
+#     :statuscode 204: no error
+#     :statuscode 400: invalid certificate supplied
+#     """
+#     pass
 
-@api_app.route('/v1/push_certificates', methods=['POST'])
-def post_push_certificates():
-    """Upload a push certificate to the MDM.
 
-    :reqheader Accept: application/x-pkcs12
-    :resheader Content-Type: application/json
-    :statuscode 204: no error
-    :statuscode 400: invalid certificate supplied
-    """
-    pass
-
-
-@api_app.route('/v1/certificates/<int:certificate_id>', methods=['GET', 'PUT'])
-def certificate(certificate_id: int):
-    cert = db_session.query(DBCertificate).filter(DBCertificate.id == certificate_id).one()
-
-    if request.method == 'GET':
-        return cert.pem_certificate, 200, {'Content-Type': 'application/x-pem-file'}
-    else:
-        cert.pem_certificate = request.form['data']
-        cert.commit()
-
-        return None, 202
+# @api_app.route('/v1/certificates/<int:certificate_id>', methods=['GET', 'PUT'])
+# def certificate(certificate_id: int):
+#     cert = db_session.query(DBCertificate).filter(DBCertificate.id == certificate_id).one()
+#
+#     if request.method == 'GET':
+#         return cert.pem_certificate, 200, {'Content-Type': 'application/x-pem-file'}
+#     else:
+#         cert.pem_certificate = request.form['data']
+#         cert.commit()
+#
+#         return None, 202
 
 
 
