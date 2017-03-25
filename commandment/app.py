@@ -1,7 +1,7 @@
-'''
+"""
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+"""
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy

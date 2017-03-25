@@ -25,6 +25,9 @@ setup(
         'passlib',
         'SQLAlchemy'
     ],
+    extras_requires={
+        'ReST': ['sphinxcontrib-napoleon', 'sphinx-rtd-theme']
+    },
     entry_points={
         'console_scripts': [
             'commandment=commandment.cli:server'

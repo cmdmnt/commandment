@@ -1,7 +1,7 @@
-'''
+"""
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+"""
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -20,6 +20,7 @@ db_session = scoped_session(mysessionmaker)
 Base = declarative_base()
 Base.query = db_session.query_property()
 
+
 def config_engine(uri, echo):
     global engine, mysessionmaker, db_session
 
@@ -27,20 +28,27 @@ def config_engine(uri, echo):
     db_session.remove()
     mysessionmaker.configure(autocommit=False, autoflush=False, bind=engine)
 
+
 def init_db():
     global engine
     Base.metadata.create_all(bind=engine)
 
+
 def json_datetime_serializer(o):
-    '''Serialize datetime objects into ISO format string dates'''
+    """Serialize datetime objects into ISO format string dates
+
+    Raises:
+        TypeError: If the object cannot be serialized.
+    """
 
     if isinstance(o, datetime):
         return o.isoformat()
 
     raise TypeError(repr(o) + " is not JSON serializable")
 
+
 class JSONEncodedDict(TypeDecorator):
-    '''Represents an immutable structure as a json-encoded string'''
+    """Represents an immutable structure as a json-encoded string"""
     impl = Text
 
     def process_bind_param(self, value, dialect):
