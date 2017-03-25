@@ -92,7 +92,7 @@ def admin_certificates():
 
 
 @admin_app.route('/certificates/add/<certtype>', methods=['GET', 'POST'])
-def admin_certificates_add(certtype):
+def admin_certificates_add(certtype: str):
     if certtype not in list(CERT_TYPES.keys()):
         return 'Invalid certificate type'
     if request.method == 'POST':
@@ -209,7 +209,7 @@ def admin_certificates_new():
 
 
 @admin_app.route('/certificates/delete/<int:cert_id>')
-def admin_certificates_delete(cert_id):
+def admin_certificates_delete(cert_id: int):
     certq = db_session.query(DBCertificate).filter(DBCertificate.id == cert_id)
     cert = certq.one()
     db_session.delete(cert)
@@ -234,7 +234,7 @@ def admin_groups():
 
 
 @admin_app.route('/groups/remove/<int:group_id>')
-def admin_groups_remove(group_id):
+def admin_groups_remove(group_id: int):
     q = db_session.query(MDMGroup).filter(MDMGroup.id == group_id).delete(synchronize_session=False)
     db_session.commit()
     return redirect('/admin/groups', Response=FixedLocationResponse)
@@ -277,7 +277,7 @@ def admin_profiles_add1():
 
 
 @admin_app.route('/profiles/edit/<int:profile_id>', methods=['GET', 'POST'])
-def admin_profiles_edit1(profile_id):
+def admin_profiles_edit1(profile_id: int):
     # db_session
     if request.method == 'POST':
         db_prof = db_session.query(DBProfile).filter(DBProfile.id == profile_id).one()
@@ -320,7 +320,7 @@ def admin_profiles_edit1(profile_id):
 
 
 @admin_app.route('/profiles/groupmod/<int:profile_id>', methods=['POST'])
-def admin_profiles_groupmod1(profile_id):
+def admin_profiles_groupmod1(profile_id: int):
     # get device info
     profile = db_session.query(DBProfile).filter(DBProfile.id == profile_id).one()
 
@@ -342,14 +342,14 @@ def admin_profiles_groupmod1(profile_id):
 
 
 @admin_app.route('/profiles/remove/<int:profile_id>')
-def admin_profiles_remove1(profile_id):
+def admin_profiles_remove1(profile_id: int):
     q = db_session.query(DBProfile).filter(DBProfile.id == profile_id).delete(synchronize_session=False)
     db_session.commit()
     return redirect('/admin/profiles', Response=FixedLocationResponse)
 
 
 @admin_app.route('/profiles/upload/<int:profile_id>', methods=['POST'])
-def admin_profiles_upload(profile_id):
+def admin_profiles_upload(profile_id: int):
     profile = db_session.query(DBProfile).filter(DBProfile.id == profile_id).one()
 
     upl_profile = request.files['profile'].stream.read()

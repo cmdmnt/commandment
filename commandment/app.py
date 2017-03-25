@@ -12,7 +12,7 @@ from .mdmcert import admin_mdmcert_app
 db = SQLAlchemy()
 
 
-def create_app():
+def create_app() -> Flask:
     app = Flask(__name__)
     db.init_app(app)
 
