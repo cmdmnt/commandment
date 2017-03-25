@@ -8,7 +8,7 @@ from marshmallow_jsonapi import fields
 from .database import db_session
 from .models import Device
 
-api_app = Blueprint('mdm_app', __name__)
+api_app = Blueprint('api_app', __name__)
 
 
 # Schemas
@@ -30,6 +30,13 @@ class DeviceList(ResourceList):
     schema = DeviceSchema
     data_layer = {'session': db_session, 'model': Device}
 
-with current_app:
-    api = Api(current_app)
-    api.route(DeviceList, 'device_list', '/devices')
+
+class DeviceDetail(ResourceDetail):
+    schema = DeviceSchema
+    data_layer = {'session': db_session,
+                  'model': Device}
+
+
+api = Api(api_app)
+api.route(DeviceList, 'device_list', '/v1/devices')
+api.route(DeviceDetail, 'device_detail', '/v1/devices/<int:id>')

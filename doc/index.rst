@@ -11,6 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   rest/index.rst
    api/index.rst
 
 

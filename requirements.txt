@@ -10,6 +10,7 @@ cryptography==1.8.1
 docutils==0.13.1
 Flask==0.12
 Flask-Cors==3.0.2
+Flask-JWT==0.3.2
 Flask-REST-JSONAPI==0.11.4
 Flask-SQLAlchemy==2.2
 h2==2.6.1
@@ -29,6 +30,7 @@ passlib==1.7.1
 pockets==0.3.2
 pycparser==2.17
 Pygments==2.2.0
+PyJWT==1.4.2
 pyparsing==2.2.0
 pytz==2016.10
 requests==2.13.0
