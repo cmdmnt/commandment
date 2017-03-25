@@ -1,7 +1,10 @@
-'''
+"""
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+
+Attributes:
+    apns_cxns (dict): A dictionary containing APNS connections keyed by the push certificate topic.
+"""
 
 import apns2
 import os

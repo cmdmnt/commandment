@@ -1,0 +1,4 @@
+push
+====
+
+.. automodule:: commandment.push

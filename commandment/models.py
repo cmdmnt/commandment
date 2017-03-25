@@ -1,7 +1,10 @@
-'''
+"""
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+
+Attributes:
+    CERT_TYPES (dict): A dictionary keyed by the usage of the certificate: APNS, SSL, CA, or device identity.
+"""
 
 import datetime
 from enum import Enum
@@ -63,8 +66,10 @@ certreq_private_key_assoc = Table('certreq_private_key', Base.metadata,
 )
 
 class PrivateKey(Base):
+    """RSA Private Key Model"""
     __tablename__ = 'rsa_private_key'
 
+    #: id column
     id = Column(Integer, primary_key=True)
     pem_key = Column(Text, nullable=False)
 
@@ -223,6 +228,7 @@ internalca_issued_cert_assoc = Table('internalca_issued_cert', Base.metadata,
 )
 
 class Device(Base):
+    """An enrolled device."""
     __tablename__ = 'device'
 
     id = Column(Integer, primary_key=True)
