@@ -64,7 +64,7 @@ declare module "redux-api-middleware" {
             endpoint: string;  // or function
             method: HTTPVerb;
             body?: any;
-            headers?: string; // or function
+            headers?: { [propName: string]: string }; // or function
             credentials?: 'omit' | 'same-origin' | 'include';
             bailout?: boolean; // or function
             types: [R, S, F];
