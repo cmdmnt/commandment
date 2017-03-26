@@ -1,7 +1,7 @@
 import * as actions from '../actions/certificates';
 
 
-interface CertificatesState {
+export interface CertificatesState {
     items: Array<any>;
     lastReceived?: Date;
 }

@@ -1,10 +1,11 @@
 import {combineReducers} from 'redux';
-import {routerReducer} from 'react-router-redux';
+import {routerReducer, RouterState} from 'react-router-redux';
 
-import {certificates} from './certificates';
+import {certificates, CertificatesState} from './certificates';
 
 export interface RootState {
-        
+    router?: RouterState;
+    certificates?: CertificatesState;
 }
 
 

@@ -9,7 +9,13 @@ export const INDEX_SUCCESS: INDEX_SUCCESS = 'certificates/INDEX_SUCCESS';
 export type INDEX_FAILURE = 'certificates/INDEX_FAILURE';
 export const INDEX_FAILURE: INDEX_FAILURE = 'certificates/INDEX_FAILURE';
 
-export const index = (limit: number = 50, offset: number = 0, sort: Array<string> = [], filter: string): RSAA => {
+export const index = (
+    limit: number = 50,
+    offset: number = 0,
+    sort: Array<string> = [],
+    filter: string
+): RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE> => {
+        
     return {
         [CALL_API]: {
             endpoint: '/api/v1/certificates',
