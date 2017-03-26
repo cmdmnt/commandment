@@ -11,7 +11,7 @@ const initialState: CertificatesState = {
     lastReceived: null
 };
 
-export default function certificates(state: CertificatesState = initialState, action: any): CertificatesState {
+export function certificates(state: CertificatesState = initialState, action: any): CertificatesState {
     switch (action.type) {
         default:
             return state

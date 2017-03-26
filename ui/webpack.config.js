@@ -4,7 +4,7 @@ module.exports = {
   entry: {
     app: [
       'react-hot-loader/patch',
-      './entry.ts'
+      './src/entry.tsx'
     ]
   },
 
@@ -28,5 +28,11 @@ module.exports = {
         loaders: ['react-hot-loader/webpack', 'awesome-typescript-loader']
       }
     ]
-  }
+  },
+
+    devServer: {
+      publicPath: "http://localhost:4000/static/",
+        hot: true,
+        port: 4000
+    }
 };
