@@ -14,15 +14,15 @@ export const configureStore = (initialState: RootState, ...middlewares: Array<Mi
             apiMiddleware,
             ...middlewares
         )
-    )
+    );
 
     const store = createStore(
         rootReducer,
         initialState,
         enhancer
-    )
+    );
 
     return store;
-}
+};
 
 export default configureStore;
