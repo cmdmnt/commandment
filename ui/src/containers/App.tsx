@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
 import {RouteComponentProps} from 'react-router';
 
 import {Navigation} from './Navigation';
@@ -17,9 +17,8 @@ interface AppProps {
 }
 
 @connect<AppState, AppDispatchProps, RouteComponentProps<any>>(
-    (state) => {
-        return {router: state.router}
-    }
+    state => {},
+    (dispatch: Dispatch<any>) => {}
 )
 export class App extends React.Component<AppProps & RouteComponentProps<any>, AppState> {
     

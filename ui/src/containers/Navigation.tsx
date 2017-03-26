@@ -15,13 +15,7 @@ export class Navigation extends React.Component<undefined, undefined> {
                 </Navbar.Header>
                 <Navbar.Collapse>
                     <Nav>
-                        <li><Link to='/devices'>Devices</Link></li>
-                        <li><Link to='/groups'>Groups</Link></li>
-                        <li><Link to='/profiles'>Profiles</Link></li>
-                        <li><Link to='/apps'>Apps</Link></li>
-                        <li><Link to='/dep'>DEP</Link></li>
-                        <li><Link to='/certificates'>Certs</Link></li>
-                        <li><Link to='/config'>Config</Link></li>
+                        <NavItem>Config</NavItem>
                     </Nav>
                     <Nav pullRight>
                     </Nav>

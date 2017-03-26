@@ -1,4 +1,4 @@
-/// <reference path="../types/redux-api-middleware.d.ts" />
+/// <reference path="../typings/redux-api-middleware.d.ts" />
 import { CALL_API, RSAA } from 'redux-api-middleware';
 import { JSONAPI_HEADERS } from './constants'
 

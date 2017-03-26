@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block head %}
-        <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
         <title>{% block title %}{% endblock %} - MDM Admin</title>
     {% endblock %}
-
 </head>
 <body>
     <div id="root">
-        redux
+        loading
     </div>
-    <script src="https://localhost:4000/static/bundle.js" type="text/javascript"></script>
+    <script src="https://localhost:4000/static/app.js" type="text/javascript"></script>
 </body>
 </html>

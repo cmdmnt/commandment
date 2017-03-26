@@ -9,6 +9,7 @@ import {configureStore} from './store/configureStore';
 import {RootState} from './reducers';
 
 import {App} from './containers/App';
+import '../sass/app.scss';
 
 const initialState: RootState = {};
 
@@ -16,20 +17,14 @@ const history = createHistory();
 const store = configureStore(initialState, routerMiddleware(history));
 
 render(
-    <AppContainer>
-        <Provider store={store}>
-            <ConnectedRouter history={history}>
-                <div>
-                    <App>
-                        Rendered
-                    </App>
-                </div>
-            </ConnectedRouter>
-        </Provider>
-    </AppContainer>,
+    <Provider store={store}>
+        <ConnectedRouter history={history}>
+            <AppContainer>
+                <App>
+                    Rendered
+                </App>
+            </AppContainer>
+        </ConnectedRouter>
+    </Provider>,
     document.getElementById('root')
 )
-
-// if (module.hot) {
-//     module.hot.accept('./containers/App', () => { render(App) });
-// }

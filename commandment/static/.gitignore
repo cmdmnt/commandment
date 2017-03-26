@@ -1,2 +1,4 @@
 bundle.js
 *.map
+fonts/*
+css/*
