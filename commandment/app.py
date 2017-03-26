@@ -18,7 +18,7 @@ def create_app() -> Flask:
     db.init_app(app)
 
     app.register_blueprint(mdm_app)
-    app.register_blueprint(admin_app, url_prefix='/admin')
+    app.register_blueprint(admin_app)
     app.register_blueprint(admin_mdmcert_app, url_prefix='/admin/mdmcert')
     app.register_blueprint(api_app, url_prefix='/api')
 

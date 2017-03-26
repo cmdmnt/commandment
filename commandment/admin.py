@@ -44,8 +44,7 @@ admin_app = Blueprint('admin_app', __name__)
 
 @admin_app.route('/')
 def index():
-    """Redirects to the MDM configuration page"""
-    return redirect('/admin/config/edit', Response=FixedLocationResponse)
+    return render_template('index.html')
 
 
 @admin_app.route('/certificates')

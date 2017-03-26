@@ -1,9 +1,7 @@
 import * as React from 'react';
 import {Link} from 'react-router-dom';
-import {connect} from 'react-redux';
 import {Navbar, Nav, NavItem, MenuItem, NavDropdown} from 'react-bootstrap';
 
-@connect()
 export class Navigation extends React.Component<undefined, undefined> {
     render() {
 

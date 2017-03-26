@@ -29,7 +29,7 @@ TRUST_DEV_PROVIDED_CERT = True
 mdm_app = Blueprint('mdm_app', __name__)
 
 
-@mdm_app.route('/')
+@mdm_app.route('/enroll/')
 def index():
     """Show the enrollment page"""
     return render_template('enroll.html')
@@ -43,7 +43,7 @@ def base64_to_pem(crypto_type, b64_text, width=76):
     return '-----BEGIN %s-----\n%s-----END %s-----' % (crypto_type, lines, crypto_type)
 
 
-@mdm_app.route('/enroll', methods=['GET', 'POST'])
+@mdm_app.route('/enroll/profile', methods=['GET', 'POST'])
 def enroll():
     """Generate an enrollment profile."""
     mdm_ca = get_ca()
