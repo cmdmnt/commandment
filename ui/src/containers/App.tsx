@@ -17,8 +17,9 @@ interface AppProps {
 }
 
 @connect<AppState, AppDispatchProps, RouteComponentProps<any>>(
-    state => {},
-    dispatch => {}
+    (state) => {
+        return {router: state.router}
+    }
 )
 export class App extends React.Component<AppProps & RouteComponentProps<any>, AppState> {
     
