@@ -9,6 +9,7 @@ import {configureStore} from './store/configureStore';
 import {RootState} from './reducers';
 
 import {App} from './containers/App';
+import {AssistantPage} from './containers/config/AssistantPage';
 import {SCEPPage} from './containers/config/SCEPPage';
 import '../sass/app.scss';
 
@@ -24,6 +25,7 @@ render(
         <ConnectedRouter history={history}>
             <AppContainer>
                 <App>
+                    <Route path='/config/assistant' component={AssistantPage} />
                     <Route path='/config/scep' component={SCEPPage} />
                 </App>
             </AppContainer>

@@ -975,3 +975,11 @@ def dep_test1(dep_id):
 
     return 'initial_fetch complete'
     # return '<pre>%s</pre>' % str(mdm_profile(mdm))
+
+@admin_app.route('/scep/test')
+def scep_test():
+    """Test an external SCEP endpoint by performing and returning the GetCACaps data.
+    
+    TODO: Really needs CSRF protection
+    """
+    pass

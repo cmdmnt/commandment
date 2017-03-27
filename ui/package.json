@@ -19,6 +19,7 @@
     "@types/react-router-dom": "^4.0.1",
     "@types/react-router-redux": "^4.0.43",
     "@types/redux-form": "^6.3.6",
+    "apeman-react-upload": "^3.1.1",
     "awesome-typescript-loader": "^3.1.2",
     "css-loader": "^0.27.3",
     "extract-text-webpack-plugin": "^2.1.0",
