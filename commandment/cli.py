@@ -55,10 +55,12 @@ def server():
     # starting our runner threads when either the reloader (debug) is off, or
     # only in the reloader sub-process and not the reloader parent process to
     # avoid extraneous threads being created.
-    if not app.config.get('DEBUG') or werkzeug.serving.is_running_from_reloader():
-        start_runner()
-        atexit.register(stop_runner)
-        push_init()
+
+    # TODO: re-enable runner after python3 rewrite
+    # if not app.config.get('DEBUG') or werkzeug.serving.is_running_from_reloader():
+    #     start_runner()
+    #     atexit.register(stop_runner)
+    #     push_init()
 
     app.run(
         host='0.0.0.0',

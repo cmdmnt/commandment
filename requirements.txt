@@ -12,7 +12,6 @@ Flask==0.12
 Flask-Cors==3.0.2
 Flask-JWT==0.3.2
 Flask-REST-JSONAPI==0.11.4
-Flask-SQLAlchemy==2.2
 h2==2.6.1
 hpack==2.3.0
 hyper==0.7.0
