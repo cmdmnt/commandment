@@ -57,7 +57,8 @@ declare module "redux-api-middleware" {
 
     
     //type CALL_API = Symbol('CALL_API');
-    export const CALL_API = 'CALL_API'; // Cheating for now
+    //export const CALL_API: CALL_API = Symbol('CALL_API');
+    //export const CALL_API = 'CALL_API'; // Cheating for now
 
     interface RSAA<R, S, F> {
         [propName: string]: { // Symbol as object key seems impossible

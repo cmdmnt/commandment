@@ -40,12 +40,31 @@ module.exports = {
           }, {
             loader: 'resolve-url-loader'
           }, {
-            loader: 'sass-loader?sourceMap'
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true
+            }
           }]
       },
       {
-        test: /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
-        use: ['file-loader?publicPath=fonts/&outputPath=fonts/']
+        test: /\.(png|jpg|svg|gif)$/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 10000,
+            name: '[name]-[hash].[ext]'
+          }
+        }]
+      },
+      {
+        test: /\.(ttf|eot|svg|woff|woff2)$/,
+        use: [{
+          loader: 'file-loader',
+          options: {
+            publicPath: 'https://localhost:4000/static/fonts/',
+            outputPath: 'fonts/'
+          }
+        }]
       }
     ]
   },

@@ -3,3 +3,4 @@ export const JSONAPI_HEADERS = {
     'Accept': 'application/vnd.api+json'
 };
 
+export type CertificatePurpose = 'apns' | 'ssl';

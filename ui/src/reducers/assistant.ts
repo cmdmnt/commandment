@@ -10,8 +10,20 @@ const initialState: AssistantState = {
     currentStep: 0
 };
 
-export function assistant(state: AssistantState = initialState, action: any): AssistantState {
+export type AssistantAction = actions.NextStepAction | actions.PrevStepAction;
+
+export function assistant(state: AssistantState = initialState, action: AssistantAction): AssistantState {
     switch (action.type) {
+        case actions.NEXT_STEP:
+            return {
+                ...state,
+                currentStep: (state.currentStep + 1)
+            };
+        case actions.PREV_STEP:
+            return {
+                ...state,
+                currentStep: (state.currentStep - 1)
+            };
         default:
             return state
     }
