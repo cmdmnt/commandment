@@ -1,9 +1,13 @@
 const path = require('path');
+const webpack = require('webpack');
+const { CheckerPlugin } = require('awesome-typescript-loader');
 
 module.exports = {
   entry: {
     app: [
       'react-hot-loader/patch',
+      'webpack-dev-server/client?https://localhost:4000',
+      'webpack/hot/only-dev-server',
       './src/entry.tsx'
     ]
   },
@@ -45,6 +49,10 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new CheckerPlugin()
+  ],
 
   devServer: {
     publicPath: "https://localhost:4000/static/",
