@@ -1,0 +1,19 @@
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+
+
+.navigation {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: #eee;
+  padding: 20px;
+}
+
+.navitem {
+  padding: 0 1rem;
+}
+

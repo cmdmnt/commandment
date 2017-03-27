@@ -145,3 +145,6 @@ fabric.properties
 # commandment
 mdm.db
 commandment/apps
+
+# Flask settings.cfg
+settings.cfg
