@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { connect, Dispatch } from 'react-redux';
 import {RouteComponentProps} from 'react-router';
-import { SCEPConfigurationForm, FormData } from '../../forms/SCEPConfigurationForm';
+import {IndexAction, index, FetchPushCertificateAction, fetchPushCertificate} from "../../actions/certificates";
+import {bindActionCreators} from "redux";
 
 
 interface SSLPageState {
@@ -9,21 +10,30 @@ interface SSLPageState {
 }
 
 interface SSLPageDispatchProps {
-
+    index: IndexAction;
+    fetchPushCertificate: FetchPushCertificateAction;
 }
 
 interface SSLPageProps {
 
 }
 
-@connect()
-export class SSLPage extends React.Component<SSLPageProps & RouteComponentProps<any>, SSLPageState> {
+@connect(
+    (state: any, ownProps?: any) => { return {} },
+    (dispatch: Dispatch<any>) => {
+        return bindActionCreators({
+            index,
+            fetchPushCertificate
+        }, dispatch);
+    }
+)
+export class SSLPage extends React.Component<SSLPageProps & SSLPageState & SSLPageDispatchProps, SSLPageState> {
 
-    handleSubmit = (values: FormData) => {
+    componentWillMount() {
+        this.props.fetchPushCertificate();
+    }
 
-    };
-
-    render() {
+    render(): JSX.Element {
         const {
             children
         } = this.props;

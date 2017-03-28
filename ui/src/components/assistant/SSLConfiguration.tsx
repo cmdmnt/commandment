@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {ApUpload, ApUploadStyle} from 'apeman-react-upload';
+import * as Upload from 'rc-upload';
 
 interface SSLConfigurationProps {
     onClickGenerateCSR: () => void;
@@ -39,13 +39,9 @@ export class SSLConfiguration extends React.Component<SSLConfigurationProps,unde
                     <div className='row'>
                         <div className='column'>
                             <h3>Upload an SSL Certificate</h3>
-                            <ApUpload multiple={ false }
-                                      id="apns-certificate-upload"
-                                      name="apns-certificate-upload-input"
-                                      accept="application/x-pkcs12"
-                                      onLoad={ this.handleLoaded }
-                                      onError={ this.handleError }
-                                      text='Upload a PKCS#12 (.p12) File'
+                            <Upload
+                                name='ssl_certificate'
+                                accept="application/x-pkcs12"
                             />
                         </div>
                         <div className='column column-10 text-middle'>

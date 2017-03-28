@@ -12,6 +12,7 @@ import {App} from './containers/App';
 import {AssistantPage} from './containers/config/AssistantPage';
 import {SCEPPage} from './containers/config/SCEPPage';
 import '../sass/app.scss';
+import {SSLPage} from "./containers/config/SSLPage";
 
 const initialState: RootState = {};
 
@@ -27,6 +28,7 @@ render(
                 <App>
                     <Route path='/config/assistant' component={AssistantPage} />
                     <Route path='/config/scep' component={SCEPPage} />
+                    <Route path='/config/ssl' component={SSLPage} />
                 </App>
             </AppContainer>
         </ConnectedRouter>

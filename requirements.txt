@@ -1,4 +1,5 @@
 alabaster==0.7.10
+aniso8601==1.2.0
 apns==2.0.1
 apns2-client==0.5.3
 asn1crypto==0.22.0
@@ -11,7 +12,10 @@ docutils==0.13.1
 Flask==0.12
 Flask-Cors==3.0.2
 Flask-JWT==0.3.2
+Flask-OAuthlib==0.9.3
 Flask-REST-JSONAPI==0.11.4
+Flask-RESTful==0.3.5
+Flask-SQLAlchemy==2.2
 h2==2.6.1
 hpack==2.3.0
 hyper==0.7.0
@@ -33,8 +37,10 @@ Pygments==2.2.0
 PyJWT==1.4.2
 pyparsing==2.2.0
 pytest==3.0.7
+python-dateutil==2.6.0
 pytz==2016.10
 requests==2.13.0
+requests-oauthlib==0.8.0
 six==1.10.0
 snowballstemmer==1.2.1
 Sphinx==1.5.3

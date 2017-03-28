@@ -26,14 +26,12 @@ export class Assistant extends React.Component<AssistantProps, AssistantState> {
         this.props.onClickPrev();
     };
 
-    render(): ReactNode {
+    render(): JSX.Element {
         const {
             currentStep,
             totalSteps,
             components
         } = this.props;
-
-        const progressLabel = `Step ${currentStep+1} of ${totalSteps}`;
 
         const dots = [];
         for (let x = 0; x < totalSteps; x++) {

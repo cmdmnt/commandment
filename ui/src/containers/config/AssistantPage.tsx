@@ -10,9 +10,14 @@ import {APNSConfiguration} from '../../components/assistant/APNSConfiguration';
 import {SSLConfiguration} from "../../components/assistant/SSLConfiguration";
 import {SCEPConfiguration} from "../../components/assistant/SCEPConfiguration";
 import {FinalStep} from "../../components/assistant/FinalStep";
+import {RootState} from "../../reducers/index";
 
 interface AssistantPageState {
+    handleGenerateSSLCSR: () => void;
+}
 
+interface AssistantPageStateProps {
+    assistant: any;
 }
 
 interface AssistantPageDispatchProps {
@@ -21,12 +26,16 @@ interface AssistantPageDispatchProps {
     newCertificateSigningRequest: (purpose: string) => void;
 }
 
-interface AssistantPageProps extends AssistantPageDispatchProps {
+interface AssistantPageProps extends AssistantPageDispatchProps, AssistantPageStateProps {
 
 }
 
-@connect(
-    state => state.assistant,
+// & RouteComponentProps<any>
+
+@connect<AssistantPageStateProps, AssistantPageDispatchProps, any>(
+    (state: RootState, ownProps?: any): AssistantPageStateProps => {
+        return state.assistant
+    },
     (dispatch: Dispatch<any>) => {
         return bindActionCreators({
             nextStep,
@@ -35,9 +44,8 @@ interface AssistantPageProps extends AssistantPageDispatchProps {
         }, dispatch);
     }
 )
-export class AssistantPage extends React.Component<AssistantPageProps & RouteComponentProps<any>, AssistantPageState> {
-
-
+export class AssistantPage extends React.Component<AssistantPageProps, AssistantPageState> {
+    
     handleGenerateSSLCSR = () => {
         console.log('generating an SSL CSR');
         this.props.newCertificateSigningRequest('ssl');

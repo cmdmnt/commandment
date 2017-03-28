@@ -55,7 +55,8 @@ declare module "redux-api-middleware" {
         meta: any;
     }
 
-    
+
+    export const CALL_API: symbol;
     //type CALL_API = Symbol('CALL_API');
     //export const CALL_API: CALL_API = Symbol('CALL_API');
     //export const CALL_API = 'CALL_API'; // Cheating for now

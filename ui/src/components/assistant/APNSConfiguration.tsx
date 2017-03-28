@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {ApUpload, ApUploadStyle} from 'apeman-react-upload';
+import * as Upload from 'rc-upload';
 
 interface APNSConfigurationProps {
 
@@ -7,15 +7,24 @@ interface APNSConfigurationProps {
 
 export class APNSConfiguration extends React.Component<APNSConfigurationProps,undefined> {
 
-    handleLoaded = (urls: Array<string>) => {
-        console.dir(urls);
+    handleReady = (): void => {
+        console.log('ready');
     };
 
-    handleError = (err: Error) => {
-        console.log(err);
+    handleStart = (): void => {
+        console.log('start');
     };
 
-    render() {
+    handleError = (): void => {
+        console.log('er');
+    };
+
+    handleSuccess = (): void => {
+        console.log('success');
+    };
+
+    render(): JSX.Element {
+        
         return (
             <div className='APNSConfiguration'>
                 <div className='reversed padded title'><i className="fa fa-certificate" /> Push Certificate</div>
@@ -27,22 +36,24 @@ export class APNSConfiguration extends React.Component<APNSConfigurationProps,un
                     </div>
                     <div className='row'>
                         <div className='column'>
-
-
-                            <h3>Upload a Push Certificate</h3>
-                            <ApUpload multiple={ false }
-                                      id="apns-certificate-upload"
-                                      name="apns-certificate-upload-input"
-                                      accept="application/x-pkcs12"
-                                      onLoad={ this.handleLoaded }
-                                      onError={ this.handleError }
-                                      text='Upload a PKCS#12 (.p12) File'
-                            />
+                            <h3>Upload a Push Certificate (PEM)</h3>
+                            <Upload
+                                name='file'
+                                accept='application/x-pem-file'
+                                action='/api/v1/push.pem'
+                                onReady={this.handleReady}
+                                onStart={this.handleStart}
+                                onError={this.handleError}
+                                onSuccess={this.handleSuccess}
+                            >
+                                <button className='button button-outline'>Upload</button>
+                            </Upload>
                         </div>
                         <div className='column column-10 text-middle'>
                             <h3 className='text-middle'>OR</h3>
                         </div>
                         <div className='column'>
+                            <h3>Generate CSR</h3>
                             <button className='button button-outline'>Generate</button>
                             <p>
                                 a signing request

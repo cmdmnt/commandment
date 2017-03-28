@@ -21,7 +21,7 @@ export const newCertificateSigningRequest = (purpose: CertificatePurpose): RSAA<
                 NEW_FAILURE
             ],
             headers: JSONAPI_HEADERS,
-            payload: JSON.stringify({ purpose })
+            body: JSON.stringify({ purpose })
         }
     }
 };
