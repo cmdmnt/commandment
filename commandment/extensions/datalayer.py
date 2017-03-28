@@ -35,7 +35,7 @@ class ExtendedSqlalchemyDataLayer(SqlalchemyDataLayer):
             except NoResultFound:
                 obj = None
         else:
-            self.session.query(self.model)
+            obj = self.session.query(self.model).first()
 
         self.after_get_object(obj, view_kwargs)
 
