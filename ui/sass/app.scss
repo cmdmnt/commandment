@@ -4,7 +4,7 @@
 @import 'upload';
 
 .top-margin {
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 /* intended to be used where a button must appear next to an input with a label on top */
@@ -41,3 +41,6 @@
   vertical-align: middle;
 }
 
+.warning {
+  color: red;
+}

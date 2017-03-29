@@ -12,6 +12,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import rsa
 from .pki.cryptography import Certificate as CMDCertificate
 
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum
@@ -79,7 +80,21 @@ class PrivateKey(Base):
     certificate_requests = relationship('CertificateRequest', secondary=certreq_private_key_assoc,
                                         backref='privatekeys')
 
-    def to_crypto(self):
+    @classmethod
+    def generate(cls, key_size: int=2048) -> rsa.RSAPrivateKey:
+        """Create an RSA private key.
+        
+        Returns:
+             cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey: The private key    
+        """
+        key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=key_size,
+            backend=default_backend()
+        )
+        return key
+
+    def to_crypto(self) -> rsa.RSAPrivateKey:
         """Create an instance of RSAPrivateKey from this database model.
 
         Returns:
@@ -93,7 +108,7 @@ class PrivateKey(Base):
         return rsa
 
     @classmethod
-    def from_crypto(cls, private_key):
+    def from_crypto(cls, private_key: rsa.RSAPrivateKey):
         """
         Create an instance of the PrivateKey model from a cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
 
@@ -121,6 +136,18 @@ class CertificateRequest(Base):
     subject = Column(Text, nullable=True)
     pem_request = Column(Text, nullable=False)
 
+    @classmethod
+    def generate(cls, name: x509.Name):
+        """Create a Certificate Signing Request.
+        
+        Returns:
+              Tuple of (private key, csr)
+        """
+        key = PrivateKey.generate()
+        csr = x509.CertificateSigningRequestBuilder().subject_name(name).sign(key, hashes.SHA256(), default_backend())
+        
+        return key, csr
+
     def to_crypto(self):
         """Create an instance of CertificateSigningRequest from this database model.
 
@@ -132,13 +159,14 @@ class CertificateRequest(Base):
         return csr
 
     @classmethod
-    def from_crypto(cls, signing_request):
-        """
-        Create an instance of the PrivateKey model from a cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
-
-        :param cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey private_key: RSA Private Key
-        :return: the model
-        :rtype: PrivateKey
+    def from_crypto(cls, signing_request: x509.CertificateSigningRequest):
+        """Create an instance of the CertificateRequest model given a crypto certificate signing request.
+        
+        Args:
+            signing_request (cryptography.x509.CertificateSigningRequest)
+                
+        Returns:
+            Instance of CertificateRequest model
         """
         pem = signing_request.public_bytes(
             encoding=serialization.Encoding.PEM,

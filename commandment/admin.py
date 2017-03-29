@@ -47,7 +47,7 @@ def index():
     return render_template('index.html')
 
 
-@admin_app.route('/certificates')
+@admin_app.route('/old/certificates')
 def admin_certificates():
     """Show a list of configured certificates, excluding device identities."""
     # merely to generate new CA if not exist
