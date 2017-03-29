@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect, Dispatch } from 'react-redux';
 import {RouteComponentProps} from 'react-router';
 import {
-    IndexActionRequest, index, FetchPushCertificateActionRequest, fetchPushCertificate,
+    IndexActionRequest, index,
     FetchCertificateTypeActionRequest, fetchCertificatesForType
 } from "../../actions/certificates";
 import {bindActionCreators} from "redux";
@@ -17,10 +17,9 @@ interface SSLPageState {
 interface SSLPageDispatchProps {
     index: IndexActionRequest;
     fetchCertificatesForType: FetchCertificateTypeActionRequest;
-    fetchPushCertificate: FetchPushCertificateActionRequest;
 }
 
-interface SSLPageProps extends SSLPageState, SSLPageDispatchProps {
+interface SSLPageProps extends SSLPageState, SSLPageDispatchProps, RouteComponentProps<any> {
 
 }
 
@@ -31,7 +30,6 @@ interface SSLPageProps extends SSLPageState, SSLPageDispatchProps {
     (dispatch: Dispatch<any>): SSLPageDispatchProps => {
         return bindActionCreators({
             index,
-            fetchPushCertificate,
             fetchCertificatesForType
         }, dispatch);
     }

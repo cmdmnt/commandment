@@ -6,29 +6,31 @@ import {IndexActionRequest} from "../actions/certificates";
 import {bindActionCreators} from "redux";
 import * as apiActions from '../actions/certificates';
 import {CertificatesState} from "../reducers/certificates";
+import {RootState} from "../reducers/index";
+import {RouteComponentProps} from "react-router";
 
-interface StateProps {
+interface ReduxStateProps {
     certificates: CertificatesState;
 }
 
-interface DispatchProps {
+interface ReduxDispatchProps {
     index: IndexActionRequest;
 }
 
-interface CertificatesPageProps extends StateProps, DispatchProps {
+interface CertificatesPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
 }
 
-@connect<StateProps, DispatchProps, CertificatesPageProps>(
-    (state: any, ownProps?: any): StateProps => {
+@connect<ReduxStateProps, ReduxDispatchProps, CertificatesPageProps>(
+    (state: RootState, ownProps?: any): ReduxStateProps => {
         return { certificates: state.certificates };
     },
-    (dispatch: Dispatch<any>): DispatchProps => {
+    (dispatch: Dispatch<any>): ReduxDispatchProps => {
         return bindActionCreators({
             index: apiActions.index
         }, dispatch);
     }
 )
-export class CertificatesPage extends React.Component<CertificatesPageProps, any> {
+export class CertificatesPage extends React.Component<CertificatesPageProps, undefined> {
 
     componentWillMount(): void {
         this.props.index();

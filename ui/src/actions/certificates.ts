@@ -10,7 +10,7 @@ export type INDEX_FAILURE = 'certificates/INDEX_FAILURE';
 export const INDEX_FAILURE: INDEX_FAILURE = 'certificates/INDEX_FAILURE';
 
 export interface IndexActionRequest {
-    (size: number, number: number, sort: Array<string>, filter?: Array<FlaskFilter>): RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>;
+    (size?: number, number?: number, sort?: Array<string>, filter?: Array<FlaskFilter>): RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>;
 }
 
 export interface IndexActionResponse {
@@ -91,7 +91,7 @@ export type CERTTYPE_FAILURE = 'certificates/CERTTYPE_FAILURE';
 export const CERTTYPE_FAILURE: CERTTYPE_FAILURE = 'certificates/CERTTYPE_FAILURE';
 
 export interface FetchCertificateTypeActionRequest {
-    (): RSAA<CERTTYPE_REQUEST, CERTTYPE_SUCCESS, CERTTYPE_FAILURE>;
+    (certType: string): RSAA<CERTTYPE_REQUEST, CERTTYPE_SUCCESS, CERTTYPE_FAILURE>;
 }
 
 export interface FetchCertificateTypeActionResponse {
@@ -100,7 +100,7 @@ export interface FetchCertificateTypeActionResponse {
 }
 
 
-export const fetchCertificatesForType = (certType: string): RSAA<CERTTYPE_REQUEST, CERTTYPE_SUCCESS, CERTTYPE_FAILURE> => {
+export const fetchCertificatesForType: FetchCertificateTypeActionRequest = (certType: string): RSAA<CERTTYPE_REQUEST, CERTTYPE_SUCCESS, CERTTYPE_FAILURE> => {
     return {
         [CALL_API]: {
             endpoint: `/api/v1/certificates/type/${certType}`,

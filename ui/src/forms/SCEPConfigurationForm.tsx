@@ -10,7 +10,7 @@ interface SCEPConfigurationFormProps extends FormProps<FormData, any, any> {
 
 }
 
-@reduxForm({
+@reduxForm<FormData, SCEPConfigurationFormProps, undefined>({
     form: 'scep_configuration'
 })
 export class SCEPConfigurationForm extends React.Component<SCEPConfigurationFormProps, undefined> {
