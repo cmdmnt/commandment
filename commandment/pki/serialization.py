@@ -49,9 +49,7 @@ def to_pem(certificate: x509.Certificate) -> str:
           PEM string
     """
     serialized = certificate.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption()
+        encoding=serialization.Encoding.PEM
     )
 
     return serialized

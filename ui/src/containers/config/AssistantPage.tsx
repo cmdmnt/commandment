@@ -27,8 +27,6 @@ interface AssistantPageProps extends AssistantPageDispatchProps, AssistantPageSt
     handleGenerateSSLCSR: () => void;
 }
 
-// & RouteComponentProps<any>
-
 @connect<AssistantPageStateProps, AssistantPageDispatchProps, AssistantPageProps>(
     (state: RootState, ownProps?: any): AssistantPageStateProps => {
         return state.assistant

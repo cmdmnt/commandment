@@ -1,10 +1,11 @@
-from flask import Blueprint, request, abort, send_file
+from flask import Blueprint, request, abort, send_file, current_app
 from sqlalchemy.orm.exc import NoResultFound
 
 from .database import db_session
 from .models import Device, Certificate, PrivateKey
 from .pki import serialization
 from cryptography.x509.oid import NameOID
+from cryptography.hazmat.primitives import hashes
 
 api_push_app = Blueprint('api_push_app', __name__)
 
@@ -18,40 +19,53 @@ api_push_app = Blueprint('api_push_app', __name__)
 @api_push_app.route('/v1/push/certificate/public', methods=['POST'])
 def upload_push_certificate_public():
     """Upload a push certificate pubkey to the MDM.
-    
-    The type of certificate encoding will be guessed from the Content-Type header in the request.
+
+    The certificate is expected to be uploaded as multipart/form-data with the input name `file`.
+    The format is expected to be PEM encoding.
     
     TODO: The reason for invalid certificate should be part of a json response
 
     :reqheader Accept: application/json
-    :reqheader Content-Type: application/x-pem-file 
-    :reqheader Content-Type: application/x-x509-user-cert
+    :reqheader Content-Type: multipart/form-data
     :statuscode 204: no error
     :statuscode 400: invalid certificate supplied
     """
-    if request.headers['Content-Type'] not in ['application/x-pem-file', 'application/x-x509-user-cert']:
-        abort(400, 'Invalid Content-Type supplied for public key')
+    if 'file' not in request.files:
+        abort(400, 'no file uploaded in request data')
 
-    if request.headers['Content-Type'] == 'application/x-pem-file':
-        crypto_cert = serialization.from_pem(request.data)
+    f = request.files['file']
+
+    # try to guess the upload Content-Type
+    if f.content_type == 'application/x-x509-ca-cert':
+        current_app.logger.debug('decoding DER certificate')
+        der_data = f.read()
+        crypto_cert = serialization.from_der(der_data)
+
+    elif f.content_type == 'application/x-pem-data':
+        current_app.logger.debug('decoding PEM certificate')
+        pem_data = f.read()
+        crypto_cert = serialization.from_pem(pem_data)
+        
     else:
-        crypto_cert = serialization.from_der(request.data)
+        abort(400, 'cannot determine certificate encoding type')
+
+    
 
     try:
         c = db_session.query(Certificate).filter(Certificate.cert_type == 'mdm.pushcert').one()
     except NoResultFound:
-        c = Certificate(cert_type='mdm_pushcert')
+        c = Certificate(cert_type='mdm.pushcert')
 
-    c.subject = crypto_cert.subject.get_attributes_for_oid(NameOID.COMMON_NAME)
+    c.subject = crypto_cert.subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
     c.not_before = crypto_cert.not_valid_before
     c.not_after = crypto_cert.not_valid_after
-    c.fingerprint = crypto_cert.fingerprint
+    c.fingerprint = crypto_cert.fingerprint(hashes.SHA256())
     c.pem_certificate = serialization.to_pem(crypto_cert)
 
     db_session.add(c)
     db_session.commit()
 
-    return None, 204, None
+    return 'Success', 204, None
 
 
 @api_push_app.route('/v1/push/certificate/private', methods=['POST'])

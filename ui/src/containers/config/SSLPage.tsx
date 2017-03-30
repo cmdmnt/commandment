@@ -84,7 +84,7 @@ export class SSLPage extends React.Component<SSLPageProps, undefined> {
                             <Upload
                                 name='file'
                                 accept='application/x-pem-file'
-                                action='/api/v1/push_certificate_data'
+                                action='/api/v1/push/certificate/public'
                             >
                             <button className='button button-outline'>
                                 <i className='fa fa-refresh' /> Replace
