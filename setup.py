@@ -4,7 +4,7 @@ setup(
     version="0.1",
     description="Commandment is an Open Source Apple MDM server with support for managing iOS and macOS devices",
     packages=find_packages(),
-    author="jessepeterson",
+    author="mosen",
     license="MIT",
     url="https://github.com/mosen/commandment",
     classifiers=[
@@ -14,19 +14,22 @@ setup(
     ],
     keywords='MDM',
     install_requires=[
-        'apns2-client',
-        'biplist',
-        'cryptography',
+        'apns2-client>=0.5.3',
+        'biplist>=1.0.1',
+        'cryptography>=1.8.1',
         'Flask',
-        'Flask-REST-JSONAPI==0.11.4',
-        'Flask-Cors',
+        'Flask-REST-JSONAPI>=0.11',
+        'Flask-Cors>=3.0',
         'Flask-RESTful',
         'oauthlib',
         'passlib',
-        'SQLAlchemy'
+        'SQLAlchemy>=1.1.6',
+        'acme>=0.12.0'
     ],
-    tests_requires=[
-        'pytest'
+    python_requires='>=3.5',
+    tests_require=[
+        'pytest',
+        'mock'
     ],
     extras_requires={
         'ReST': [
@@ -36,6 +39,7 @@ setup(
             'sphinxcontrib-httpdomain'
         ]
     },
+    setup_requires=['pytest-runner'],
     entry_points={
         'console_scripts': [
             'commandment=commandment.cli:server'
