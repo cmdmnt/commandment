@@ -7,9 +7,14 @@ import './CertificateDetail.scss';
 interface CertificateDetailProps {
     certificate: JSONAPIDetailResponse<Certificate>;
     title: string;
+    onClickDelete: (certificateId: number) => void;
 }
 
 export class CertificateDetail extends React.Component<CertificateDetailProps, undefined> {
+
+    handleClickDelete = (event: any): void => {
+        this.props.onClickDelete(this.props.certificate.data.id);
+    };
 
     render() {
         const {
@@ -54,6 +59,7 @@ export class CertificateDetail extends React.Component<CertificateDetailProps, u
         return (
             <div className='CertificateDetail paper padded'>
                 <h3 className='centered'>{icon} {title}</h3>
+                <button className='button' onClick={this.handleClickDelete}>Delete</button>
                 {content}
                 {children}
             </div>

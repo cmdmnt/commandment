@@ -15,7 +15,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "..", "commandment", "static"),
     filename: 'app.js',
-    publicPath: '/static/'
+    publicPath: 'https://localhost:4000/static/'
   },
 
   resolve: {
@@ -74,6 +74,7 @@ module.exports = {
   ],
 
   devServer: {
+    // This must be a full hostname for HMR to work
     publicPath: "https://localhost:4000/static/",
     hot: true,
     port: 4000,

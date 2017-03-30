@@ -29,6 +29,17 @@ class DeviceSchema(Schema):
         strict = True
 
 
+class PrivateKeySchema(Schema):
+    id = fields.Int(dump_only=True)
+    pem_key = fields.Str()
+
+    class Meta:
+        type_ = 'private_keys'
+        self_view = 'api_app.private_key_detail'
+        self_view_kwargs = {'private_key_id': '<id>'}
+        strict = True
+    
+
 class CertificateSchema(Schema):
     """marshmallow-jsonapi schema for Certificate objects."""
     id = fields.Int(dump_only=True)
@@ -38,6 +49,16 @@ class CertificateSchema(Schema):
     not_after = fields.DateTime(dump_only=True)
     # fingerprint = fields.Str(dump_only=True)
     pem_certificate = fields.Str()
+
+    private_key = Relationship(
+        self_view='api_app.certificate_private_keys',
+        self_view_kwargs={'id': '<id>'},
+        related_view='api_app.private_key_detail',
+        related_view_kwargs={'private_key_id': '<id>'},
+        many=False,
+        schema='PrivateKeySchema',
+        type_='private_keys'
+    )
 
     class Meta:
         type_ = 'certificates'

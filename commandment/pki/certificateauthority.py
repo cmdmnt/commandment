@@ -15,7 +15,7 @@ from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
 
-from .x509 import *
+
 
 MDM_CA_CN = 'MDM CA'
 MDM_DEVICE_CN = 'MDM Device'
@@ -140,12 +140,13 @@ class CertificateAuthority(object):
         :returns: Certificate data
         :rtype: Buffer
         """
-        if format == 'pem':
-            return self.certificate.public_bytes(
-                serialization.Encoding.PEM
-            )
-        else:
-            raise ValueError('Unsupported export format')
+        pass
+        # if format == 'pem':
+        #     return self.certificate.public_bytes(
+        #         serialization.Encoding.PEM
+        #     )
+        # else:
+        #     raise ValueError('Unsupported export format')
 
     def sign(self, csr: x509.CertificateSigningRequest) -> x509.Certificate:
         """Sign a certificate signing request.

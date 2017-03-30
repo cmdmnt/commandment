@@ -103,12 +103,45 @@ export interface FetchCertificateTypeActionResponse {
 export const fetchCertificatesForType: FetchCertificateTypeActionRequest = (certType: string): RSAA<CERTTYPE_REQUEST, CERTTYPE_SUCCESS, CERTTYPE_FAILURE> => {
     return {
         [CALL_API]: {
-            endpoint: `/api/v1/certificates/type/${certType}`,
+            endpoint: `/api/v1/certificates/type/${certType}?include=private_key`,
             method: 'GET',
             types: [
                 CERTTYPE_REQUEST,
                 CERTTYPE_SUCCESS,
                 CERTTYPE_FAILURE
+            ],
+            headers: JSONAPI_HEADERS
+        }
+    }
+};
+
+
+export type DELETE_REQUEST = 'certificates/DELETE_REQUEST';
+export const DELETE_REQUEST: DELETE_REQUEST = 'certificates/DELETE_REQUEST';
+export type DELETE_SUCCESS = 'certificates/DELETE_SUCCESS';
+export const DELETE_SUCCESS: DELETE_SUCCESS = 'certificates/DELETE_SUCCESS';
+export type DELETE_FAILURE = 'certificates/DELETE_FAILURE';
+export const DELETE_FAILURE: DELETE_FAILURE = 'certificates/DELETE_FAILURE';
+
+export interface DeleteCertificateActionRequest {
+    (id: number): RSAA<DELETE_REQUEST, DELETE_SUCCESS, DELETE_FAILURE>;
+}
+
+export interface DeleteCertificateActionResponse {
+    type: DELETE_REQUEST | DELETE_SUCCESS | DELETE_FAILURE;
+    payload?: any;
+}
+
+
+export const remove: DeleteCertificateActionRequest = (id: number): RSAA<DELETE_REQUEST, DELETE_SUCCESS, DELETE_FAILURE> => {
+    return {
+        [CALL_API]: {
+            endpoint: `/api/v1/certificates/${id}`,
+            method: 'DELETE',
+            types: [
+                DELETE_REQUEST,
+                DELETE_SUCCESS,
+                DELETE_FAILURE
             ],
             headers: JSONAPI_HEADERS
         }

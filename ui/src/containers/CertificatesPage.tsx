@@ -20,6 +20,10 @@ interface ReduxDispatchProps {
 interface CertificatesPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
 }
 
+interface CertificatesPageState {
+    filter: string;
+}
+
 @connect<ReduxStateProps, ReduxDispatchProps, CertificatesPageProps>(
     (state: RootState, ownProps?: any): ReduxStateProps => {
         return { certificates: state.certificates };
@@ -30,16 +34,24 @@ interface CertificatesPageProps extends ReduxStateProps, ReduxDispatchProps, Rou
         }, dispatch);
     }
 )
-export class CertificatesPage extends React.Component<CertificatesPageProps, undefined> {
+export class CertificatesPage extends React.Component<CertificatesPageProps, CertificatesPageState> {
 
     componentWillMount(): void {
         this.props.index();
     }
 
+    handleFilter = (filterText: string) => {
+        // TODO: debounce filter text
+    };
+
     render(): JSX.Element {
         const {
             certificates
         } = this.props;
+
+        const eventHandlers = {
+            onFilter: this.handleFilter,
+        };
 
         return (
             <div className='CertificatesPage top-margin container'>
@@ -57,12 +69,12 @@ export class CertificatesPage extends React.Component<CertificatesPageProps, und
                                 pageSize: certificates.pageSize,
                                 recordCount: certificates.recordCount
                             }}
-                            events={{
-                            }}
+                            events={eventHandlers}
                         >
                             <RowDefinition>
-                                <ColumnDefinition id="attributes.id" />
-                                <ColumnDefinition id="cert_type" />
+                                <ColumnDefinition id="id" />
+                                <ColumnDefinition title="Type" id="attributes.purpose" />
+                                <ColumnDefinition title="Subject" id="attributes.subject" />
                             </RowDefinition>
                         </Griddle>
                     </div>

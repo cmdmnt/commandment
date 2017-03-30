@@ -3,7 +3,7 @@ import { connect, Dispatch } from 'react-redux';
 import {RouteComponentProps} from 'react-router';
 import {
     IndexActionRequest, index,
-    FetchCertificateTypeActionRequest, fetchCertificatesForType
+    FetchCertificateTypeActionRequest, fetchCertificatesForType, DeleteCertificateActionRequest, remove
 } from "../../actions/certificates";
 import {bindActionCreators} from "redux";
 import {CertificateDetail} from '../../components/CertificateDetail';
@@ -16,6 +16,7 @@ interface SSLPageState {
 
 interface SSLPageDispatchProps {
     index: IndexActionRequest;
+    remove: DeleteCertificateActionRequest;
     fetchCertificatesForType: FetchCertificateTypeActionRequest;
 }
 
@@ -30,7 +31,8 @@ interface SSLPageProps extends SSLPageState, SSLPageDispatchProps, RouteComponen
     (dispatch: Dispatch<any>): SSLPageDispatchProps => {
         return bindActionCreators({
             index,
-            fetchCertificatesForType
+            fetchCertificatesForType,
+            remove
         }, dispatch);
     }
 )
@@ -41,6 +43,10 @@ export class SSLPage extends React.Component<SSLPageProps, undefined> {
         this.props.fetchCertificatesForType('mdm.webcrt');
         this.props.fetchCertificatesForType('mdm.cacrt');
     }
+
+    handleDeleteCertificate = (certificateId: number): void => {
+        this.props.remove(certificateId);
+    };
 
     render(): JSX.Element {
         const {
@@ -71,7 +77,7 @@ export class SSLPage extends React.Component<SSLPageProps, undefined> {
                 </div>
                 <div className='row'>
                     <div className='column'>
-                        <CertificateDetail certificate={pushCertificate} title="Push Certificate">
+                        <CertificateDetail certificate={pushCertificate} title="Push Certificate" onClickDelete={this.handleDeleteCertificate}>
                             <button className='button button-outline'>
                                 <i className='fa fa-plus' /> Generate Request
                             </button>
@@ -90,7 +96,7 @@ export class SSLPage extends React.Component<SSLPageProps, undefined> {
                         </CertificateDetail>
                     </div>
                     <div className='column'>
-                        <CertificateDetail certificate={sslCertificate} title="SSL Certificate">
+                        <CertificateDetail certificate={sslCertificate} title="SSL Certificate" onClickDelete={this.handleDeleteCertificate}>
                             <button className='button button-outline'>
                                 <i className='fa fa-plus' /> Generate Request
                             </button>
@@ -109,7 +115,7 @@ export class SSLPage extends React.Component<SSLPageProps, undefined> {
                         </CertificateDetail>
                     </div>
                     <div className='column'>
-                        <CertificateDetail certificate={scepCACertificate} title="SCEP CA Certificate">
+                        <CertificateDetail certificate={scepCACertificate} title="SCEP CA Certificate" onClickDelete={this.handleDeleteCertificate}>
                             <Upload
                                 name='file'
                                 accept='application/x-pem-file'

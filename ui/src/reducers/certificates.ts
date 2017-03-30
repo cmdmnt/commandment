@@ -1,5 +1,6 @@
 import * as actions from '../actions/certificates';
 import {
+    DeleteCertificateActionRequest, DeleteCertificateActionResponse,
     FetchCertificateTypeActionResponse, FetchPushCertificateActionResponse,
     IndexActionResponse
 } from "../actions/certificates";
@@ -28,7 +29,7 @@ const initialState: CertificatesState = {
     byType: {}
 };
 
-type CertificatesAction = IndexActionResponse | FetchCertificateTypeActionResponse;
+type CertificatesAction = IndexActionResponse | FetchCertificateTypeActionResponse | DeleteCertificateActionResponse;
 
 export function certificates(state: CertificatesState = initialState, action: CertificatesAction): CertificatesState {
     switch (action.type) {
@@ -79,6 +80,23 @@ export function certificates(state: CertificatesState = initialState, action: Ce
                     [action.payload.data.attributes.purpose]: action.payload
                 }
             };
+
+        case actions.DELETE_REQUEST:
+            return {
+                ...state,
+                loading: true
+            };
+
+        case actions.DELETE_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                errorDetail: action.payload
+            };
+
+        case actions.DELETE_SUCCESS:
+            return state;
 
         default:
             return state

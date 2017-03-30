@@ -11,3 +11,7 @@ APP_UPLOAD_ROOT = 'apps'
 
 SCEP_PORT = 5080
 PORT = 5443
+
+PUSH_CERTIFICATE = './push.cer'
+PUSH_CERTIFICATE_KEY = './push.key'
+

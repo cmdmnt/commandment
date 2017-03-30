@@ -21,6 +21,8 @@ setup(
         'Flask-REST-JSONAPI>=0.11',
         'Flask-Cors>=3.0',
         'Flask-RESTful',
+        'Flask-OAuthlib',
+        'Flask-JWT',
         'oauthlib',
         'passlib',
         'SQLAlchemy>=1.1.6',

@@ -32,20 +32,29 @@ class TestApiCertificates:
     #     })
     #     print(res.data)
     #     assert res.status_code == 200
-        
 
-    def test_post_certificate_signing_request(self, app):
-        res = app.post('/api/v1/certificate_signing_requests', headers={
-            'Content-Type': 'application/vnd.api+json',
-            'Accept': 'application/vnd.api+json'
-        }, data=json.dumps({
-            'data': {
-                'type': 'certificate_signing_requests',
-                'attributes': {
-                    'purpose': 'mdm.pushcert',
-                    'subject': 'O=commandment/OU=IT/CN=commandment.dev'
-                }
-            }
-        }))
+    def test_post_push_certificate_pkcs12(self, app, pkcs12_certificate):
+        """Assert that a PKCS#12 can be posted to the push certificate endpoint."""
+        res = app.post('/api/v1/push_certificate', headers={
+            'Content-Type': 'application/x-pkcs12',
+            'Accept': 'application/json'
+        }, data=pkcs12_certificate)
         print(res.data)
-        assert res.status_code == 201
+
+
+
+    # def test_post_certificate_signing_request(self, app):
+    #     res = app.post('/api/v1/certificate_signing_requests', headers={
+    #         'Content-Type': 'application/vnd.api+json',
+    #         'Accept': 'application/vnd.api+json'
+    #     }, data=json.dumps({
+    #         'data': {
+    #             'type': 'certificate_signing_requests',
+    #             'attributes': {
+    #                 'purpose': 'mdm.pushcert',
+    #                 'subject': 'O=commandment/OU=IT/CN=commandment.dev'
+    #             }
+    #         }
+    #     }))
+    #     print(res.data)
+    #     assert res.status_code == 201

@@ -41,6 +41,7 @@
     "react-router-redux": "^5.0.0-alpha.4",
     "redux": "^3.6.0",
     "redux-api-middleware": "^1.0.2",
+    "redux-debounce": "^1.0.1",
     "redux-form": "^6.6.0",
     "redux-thunk": "^2.2.0",
     "resolve-url-loader": "^2.0.2",
