@@ -12,18 +12,16 @@ from .api_push import api_push_app
 from .models import db
 
 
-def create_app(config_filename: str) -> Flask:
+def create_app() -> Flask:
     """Create the Flask Application
 
-    Args:
-        config_filename: Path to the configuration file to load (settings.cfg)
     Returns:
         Instance of the flask application
     """
     app = Flask(__name__)
     app.config.from_object('commandment.default_settings')
-    app.config.from_pyfile(config_filename)
     db.init_app(app)
+    db.create_all(app=app)
 
     app.register_blueprint(mdm_app)
     app.register_blueprint(admin_app)

@@ -54,13 +54,13 @@ CERT_TYPES = {
 }
 
 
-class CertificateBase(db.Model):
+class Certificate(db.Model):
     """Polymorphic base for certificate types."""
     __tablename__ = 'certificates'
 
     id = Column(Integer, primary_key=True)
     pem_data = Column(Text, nullable=False)
-
+    rsa_private_key_id = Column(Integer, ForeignKey('rsa_private_keys.id'))
     # http://www.ietf.org/rfc/rfc5280.txt
     # maximum string lengths are well defined by this RFC and this schema follows those recommendations
     x509_cn = Column(String(64), nullable=True)
@@ -98,34 +98,28 @@ class RSAPrivateKey(db.Model):
         lazy='dynamic'
     )
 
-    certificate_requests = db.relationship(
-        'CertificateRequest',
-        backref='rsa_private_key',
-        lazy='dynamic'
-    )
 
-
-class CertificateSigningRequest(CertificateBase):
+class CertificateSigningRequest(Certificate):
     __mapper_args__ = {'polymorphic_identity': 'csr'}
 
 
-class Certificate(CertificateBase):
+class SSLCertificate(Certificate):
     __mapper_args__ = {'polymorphic_identity': 'mdm.webcrt'}
 
 
-class PushCertificate(CertificateBase):
+class PushCertificate(Certificate):
     __mapper_args__ = {'polymorphic_identity': 'mdm.pushcert'}
 
 
-class CACertificate(CertificateBase):
+class CACertificate(Certificate):
     __mapper_args__ = {'polymorphic_identity': 'mdm.cacert'}
 
 
-class DeviceIdentityCertificate(CertificateBase):
+class DeviceIdentityCertificate(Certificate):
     __mapper_args__ = {'polymorphic_identity': 'mdm.device'}
 
 
-class InternalCA(Base):
+class InternalCA(db.Model):
     """The InternalCA model keeps track of the issued certificate serial numbers."""
     __tablename__ = 'internal_ca'
 
@@ -133,8 +127,8 @@ class InternalCA(Base):
     ca_type = Column(String(64), nullable=False, index=True)
     serial = Column(Integer, nullable=False)
 
-    certificate_id = Column(ForeignKey('certificate.id'), unique=True)
-    certificate = relationship('Certificate', backref='internalca')
+    certificate_id = Column(ForeignKey('certificates.id'), unique=True)
+    certificate = relationship('Certificate', backref='certificate_authority')
 
     def get_next_serial(self):
         '''Increment our serial number and return it for use in a 
@@ -144,9 +138,9 @@ class InternalCA(Base):
         pass
 
 
-class Device(Base):
+class Device(db.Model):
     """An enrolled device."""
-    __tablename__ = 'device'
+    __tablename__ = 'devices'
 
     id = Column(Integer, primary_key=True)
 
@@ -163,14 +157,14 @@ class Device(Base):
     info_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
     first_user_message_seen = Column(Boolean, nullable=False, default=False)
 
-    certificate_id = Column(ForeignKey('certificate.id'))
+    certificate_id = Column(Integer, ForeignKey('certificates.id'))
     certificate = relationship('Certificate', backref='devices')
 
     def __repr__(self):
         return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
 
 
-class QueuedCommand(Base):
+class QueuedCommand(db.Model):
     __tablename__ = 'queued_command'
 
     id = Column(Integer, primary_key=True)
@@ -187,7 +181,7 @@ class QueuedCommand(Base):
     # sent_stamp
     # result_stamp
 
-    device_id = Column(ForeignKey('device.id'), nullable=False)
+    device_id = Column(ForeignKey('devices.id'), nullable=False)
     device = relationship('Device', backref='queued_command')
 
     def set_sent(self):
@@ -224,7 +218,7 @@ class QueuedCommand(Base):
 #   Column('profile_id', Integer, ForeignKey('profile.id')),
 # )
 
-class Profile(Base):
+class Profile(db.Model):
     __tablename__ = 'profile'
 
     id = Column(Integer, primary_key=True)
@@ -238,17 +232,17 @@ class Profile(Base):
         return '<Profile ID=%r UUID=%r>' % (self.id, self.uuid)
 
 
-device_group_assoc = Table('device_group', Base.metadata,
+device_group_assoc = db.Table('device_group', db.Model.metadata,
                            Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-                           Column('device_id', Integer, ForeignKey('device.id')),
+                           Column('device_id', Integer, ForeignKey('devices.id')),
                            )
 
-profile_group_assoc = Table('profile_group', Base.metadata,
+profile_group_assoc = db.Table('profile_group', db.Model.metadata,
                             Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
                             Column('profile_id', Integer, ForeignKey('profile.id')),
                             )
 
-app_group_assoc = Table('app_group', Base.metadata,
+app_group_assoc = db.Table('app_group', db.Model.metadata,
                         Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
                         Column('app_id', Integer, ForeignKey('app.id')),
                         # install_early is just a colloqualism to mean 'install as early as
@@ -258,7 +252,7 @@ app_group_assoc = Table('app_group', Base.metadata,
                         )
 
 
-class MDMGroup(Base):
+class MDMGroup(db.Model):
     __tablename__ = 'mdm_group'
 
     id = Column(Integer, primary_key=True)
@@ -273,7 +267,7 @@ class MDMGroup(Base):
         return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
 
 
-class MDMConfig(Base):
+class MDMConfig(db.Model):
     __tablename__ = 'mdm_config'
 
     id = Column(Integer, primary_key=True)
@@ -289,10 +283,10 @@ class MDMConfig(Base):
     mdm_name = Column(String, nullable=False)
     description = Column(String, nullable=True)
 
-    ca_cert_id = Column(ForeignKey('certificate.id'))
+    ca_cert_id = Column(ForeignKey('certificates.id'))
     ca_cert = relationship('Certificate', foreign_keys=[ca_cert_id])  # , backref='ca_cert_mdm_config'
 
-    push_cert_id = Column(ForeignKey('certificate.id'), nullable=False)
+    push_cert_id = Column(ForeignKey('certificates.id'), nullable=False)
     push_cert = relationship('Certificate', foreign_keys=[push_cert_id])  # , backref='push_cert_mdm_config'
 
     # note: we default to 'provide' here despite its lower security because
@@ -310,14 +304,14 @@ class MDMConfig(Base):
             return ''
 
 
-class SCEPConfig(Base):
+class SCEPConfig(db.Model):
     __tablename__ = 'scep_config'
 
     id = Column(Integer, primary_key=True)
     challenge = Column(String, nullable=False)
 
 
-class App(Base):
+class App(db.Model):
     __tablename__ = 'app'
 
     id = Column(Integer, primary_key=True)
@@ -343,13 +337,13 @@ class App(Base):
         return '<App ID=%r Filename=%r>' % (self.id, self.filename)
 
 
-class DEPConfig(Base):
+class DEPConfig(db.Model):
     __tablename__ = 'dep_config'
 
     id = Column(Integer, primary_key=True)
 
     # certificate for PKI of server token
-    certificate_id = Column(ForeignKey('certificate.id'))
+    certificate_id = Column(ForeignKey('certificates.id'))
     certificate = relationship('Certificate', backref='dep_configs')
 
     server_token = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
@@ -369,7 +363,7 @@ class DEPConfig(Base):
             return ''
 
 
-class DEPProfile(Base):
+class DEPProfile(db.Model):
     __tablename__ = 'dep_profile'
 
     id = Column(Integer, primary_key=True)
@@ -389,7 +383,7 @@ class DEPProfile(Base):
         return self.profile_data['profile_name']
 
 
-class User(Base):
+class User(db.Model):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)

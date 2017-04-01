@@ -101,26 +101,35 @@ class CertificateSigningRequest(object):
         )
 
     @pem_data.setter
-    def pem_data(self, pem_data: str):
+    def pem_data(self, pem_data: bytes):
         self._csr = x509.load_pem_x509_csr(pem_data, default_backend())
 
 
 
 class Certificate(object):
 
-    def __init__(self, model: dbmodels.Certificate = None, certificate: x509.Certificate = None):
+    def __init__(self, type: str, model: dbmodels.Certificate = None, certificate: x509.Certificate = None):
         if certificate is not None:
             self._certificate = certificate
+            self._type = type
+            self._model = None
+            
         elif model is not None:
             self._model = model
+            self._certificate = None
             self.pem_data = model.pem_data
 
     @property
     def pem_data(self):
-        return ''
+        if self._certificate is not None:
+            return self._certificate.public_bytes(
+                serialization.Encoding.PEM
+            )
+        else:
+            return self._model.pem_data
 
     @pem_data.setter
-    def pem_data(self, pem_data: str):
+    def pem_data(self, pem_data: bytes):
         self._certificate = x509.load_pem_x509_certificate(pem_data, default_backend())
 
     @property
@@ -134,16 +143,30 @@ class Certificate(object):
         cn = self._certificate.subject.get_attributes_for_oid(NameOID.COMMON_NAME)
         return cn.value
 
+    def model(self):
+        if self._model is not None:
+            return self._model
+        else:
+            if self._type == 'mdm.cacert':
+                c = dbmodels.CACertificate()
+            elif self._type == 'mdm.webcrt':
+                c = dbmodels.SSLCertificate()
+            elif self._type == 'mdm.pushcert':
+                c = dbmodels.PushCertificate()
+            else:
+                raise ValueError('no suitable cert model available')
 
-    # newcls.cert_type = cert_type
-    # newcls.subject = common_name[0].value
-    # newcls.not_before = certificate.not_valid_before
-    # newcls.not_after = certificate.not_valid_after
-    # newcls.fingerprint = certificate.fingerprint(hashes.SHA256())
-    # newcls.pem_certificate = certificate.public_bytes(
-    #     encoding=serialization.Encoding.PEM
-    # )
-    # return newcls
+            c.pem_data = self.pem_data
+            c.fingerprint = self._certificate.fingerprint(hashes.SHA256())
+            c.not_after = self._certificate.not_valid_after
+            c.not_before = self._certificate.not_valid_before
+            
+            subject = self._certificate.subject
+            cn = subject.get_attributes_for_oid(NameOID.COMMON_NAME)
+            if cn is not None:
+                c.x509_cn = cn[0].value
+
+            return c
 
 
 def certificate_from_pem_upload(file: werkzeug.datastructures.FileStorage) -> x509.Certificate:

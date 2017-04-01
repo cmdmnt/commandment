@@ -6,7 +6,8 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''Commandment MDM Certificate Authority'''
 
 from flask import g, current_app
-from ..database import db_session, NoResultFound
+from ..models import db
+from sqlalchemy.orm.exc import NoResultFound
 import commandment.pki.models as models
 import commandment.models as dbmodels
 import datetime
@@ -22,29 +23,30 @@ MDM_DEVICE_CN = 'MDM Device'
 
 
 def from_database_or_create():
-    """Create a new CertificateAuthority from the keypair in the database, or generate new ones if they do not exist.
+    """Create a new CertificateAuthority from the keypair in the database,
+    or generate new ones if they do not exist.
 
-    :returns: A new (or existing) certificate authority
-    :rtype: CertificateAuthority
+    Returns:
+        A new (or existing) certificate authority.
     """
     try:
-        db_cert = db_session.query(dbmodels.CACertificate).one()
+        db_cert = db.session.query(dbmodels.CACertificate).one()
         db_pk = db_cert.rsa_private_key
-        private_key, cert = models.RSAPrivateKey(model=db_pk), models.Certificate(model=db_cert)
+        private_key, cert = models.RSAPrivateKey(model=db_pk), models.Certificate('mdm.cacert', model=db_cert)
         ca = CertificateAuthority(cert, private_key)
 
     except NoResultFound:
         ca = CertificateAuthority.create()
 
-        db_cert = DBCertificate.from_crypto(ca.certificate, 'mdm.cacert')
-        db_pk = DBPrivateKey.from_crypto(ca.private_key)
+        db_cert = ca.certificate.model()
+        db_pk = dbmodels.RSAPrivateKey(pem_data=ca.private_key.pem_key)
 
-        db_pk.certificates.append(db_cert)
+        db_pk.certificate = db_cert
 
-        db_session.add(db_cert)
-        db_session.add(db_pk)
+        db.session.add(db_cert)
+        db.session.add(db_pk)
 
-        db_session.commit()
+        db.session.commit()
 
     return ca
 
@@ -102,9 +104,10 @@ class CertificateAuthority(object):
         ).not_valid_after(
             datetime.datetime.utcnow() + datetime.timedelta(days=365)
         ).add_extension(
-            x509.BasicConstraints(True, None)
+            x509.BasicConstraints(ca=True, path_length=None),
+            True
         ).sign(private_key, hashes.SHA256(), default_backend())
-        cert_model = models.Certificate(certificate=certificate)
+        cert_model = models.Certificate('mdm.cacert', certificate=certificate)
 
         ca = cls(cert_model, pk_model)
         return ca
@@ -129,7 +132,6 @@ class CertificateAuthority(object):
     def private_key(self) -> models.RSAPrivateKey:
         """Retrieve the CA Private Key"""
         return self._private_key
-
 
     def sign(self, csr: models.CertificateSigningRequest) -> models.Certificate:
         """Sign a certificate signing request.
@@ -157,16 +159,10 @@ class CertificateAuthority(object):
 def get_or_generate_web_certificate(cn: str) -> (str, str, str):
     mdm_ca = get_ca()
     try:
-        q = db_session.query(DBCertificate, DBPrivateKey) \
-            .join(DBCertificate, DBPrivateKey.certificates) \
-            .filter(DBCertificate.cert_type == 'mdm.webcrt')
-        result = q.first()
-        if not result:
-            q.one()
-        else:
-            db_cert, db_pk = result
+        result = db.session.query(dbmodels.SSLCertificate).one()
+
         # TODO: return chain!
-        return (db_cert.pem_certificate, db_pk.pem_key, mdm_ca.export_ca_certificate())
+        return (result.pem_data, result.private_key.pem_data, mdm_ca.certificate.pem_data)
     except NoResultFound:
         web_pk = rsa.generate_private_key(
             public_exponent=65537,
@@ -179,14 +175,14 @@ def get_or_generate_web_certificate(cn: str) -> (str, str, str):
 
         web_crt = mdm_ca.sign(web_req)
 
-        db_cert = DBCertificate.from_crypto(web_crt, 'mdm.webcrt')
-        db_pk = DBPrivateKey.from_crypto(web_pk)
+        db_cert = dbmodels.Certificate.from_crypto(web_crt, 'mdm.webcrt')
+        db_pk = dbmodels.RSAPrivateKey.from_crypto(web_pk)
 
-        db_session.add(db_cert)
-        db_session.add(db_pk)
+        db.session.add(db_cert)
+        db.session.add(db_pk)
 
         db_pk.certificates.append(db_cert)
 
-        db_session.commit()
+        db.session.commit()
 
         return (db_cert.pem_certificate, db_pk.pem_key, mdm_ca.export_ca_certificate())
