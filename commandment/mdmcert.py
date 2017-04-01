@@ -7,8 +7,8 @@ from flask import Blueprint, Response, render_template, request, make_response
 from flask import redirect
 # Response, request, current_app, abort, make_response
 from .models import (Certificate as DBCertificate,
-                     PrivateKey as DBPrivateKey,
-                     CertificateRequest as DBCertificateRequest)
+                     RSAPrivateKey as DBPrivateKey,
+                     CertificateSigningRequest as DBCertificateRequest)
 from .database import db_session
 import json
 from base64 import b64encode

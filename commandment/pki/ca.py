@@ -7,9 +7,8 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 from flask import g, current_app
 from ..database import db_session, NoResultFound
-from ..models import (Certificate as DBCertificate,
-                      PrivateKey as DBPrivateKey,
-                      InternalCA)
+import commandment.pki.models as models
+import commandment.models as dbmodels
 import datetime
 from cryptography import x509
 from cryptography.x509.oid import NameOID
@@ -29,11 +28,9 @@ def from_database_or_create():
     :rtype: CertificateAuthority
     """
     try:
-        db_cert, db_pk = db_session.query(DBCertificate, DBPrivateKey) \
-            .join(DBCertificate, DBPrivateKey.certificates) \
-            .filter(DBCertificate.cert_type == 'mdm.cacert') \
-            .one()
-        private_key, cert = db_pk.to_crypto(), db_cert.to_crypto()
+        db_cert = db_session.query(dbmodels.CACertificate).one()
+        db_pk = db_cert.rsa_private_key
+        private_key, cert = models.RSAPrivateKey(model=db_pk), models.Certificate(model=db_cert)
         ca = CertificateAuthority(cert, private_key)
 
     except NoResultFound:
@@ -90,6 +87,7 @@ class CertificateAuthority(object):
             key_size=key_size,
             backend=default_backend(),
         )
+        pk_model = models.RSAPrivateKey(pk=private_key)
         
         certificate = x509.CertificateBuilder().subject_name(
             subject
@@ -106,15 +104,16 @@ class CertificateAuthority(object):
         ).add_extension(
             x509.BasicConstraints(True, None)
         ).sign(private_key, hashes.SHA256(), default_backend())
+        cert_model = models.Certificate(certificate=certificate)
 
-        ca = cls(certificate, private_key)
+        ca = cls(cert_model, pk_model)
         return ca
 
-    def __init__(self, certificate: x509.Certificate, private_key: rsa.RSAPrivateKey, password=None):
+    def __init__(self, certificate: models.Certificate, private_key: models.RSAPrivateKey, password=None):
         """
         Args:
-            certificate: Instance of cryptography.x509.Certificate with the BasicConstraints CA extension
-            private_key: Instance of cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
+            certificate: Instance of commandment.pki.models.Certificate with the BasicConstraints CA extension
+            private_key: Instance of commandment.pki.models.RSAPrivateKey
             password: Private key password if required (Ignored currently)
             
         """
@@ -122,47 +121,17 @@ class CertificateAuthority(object):
         self._private_key = private_key
 
     @property
-    def certificate(self) -> x509.Certificate:
+    def certificate(self) -> models.Certificate:
+        """Retrieve the CA Certificate"""
         return self._certificate
 
-    @certificate.setter
-    def certificate(self, value):
-        if isinstance(value, str):  # we will assume a PEM string
-            cert = x509.load_pem_x509_certificate(value, default_backend())
-            self._certificate = cert
-        elif isinstance(value, x509.Certificate):
-            self._certificate = value
-        else:
-            raise ValueError('Supplied invalid value for CA certificate')
-
     @property
-    def pem_certificate(self) -> str:
-        """Retrieve the CA certificate as a PEM encoded cert."""
-        serialized = self._certificate.public_bytes(
-            encoding=serialization.Encoding.PEM
-        )
-        return serialized
-
-    @property
-    def private_key(self) -> rsa.RSAPrivateKey:
+    def private_key(self) -> models.RSAPrivateKey:
+        """Retrieve the CA Private Key"""
         return self._private_key
 
-    def export_ca_certificate(self, format='pem'):
-        """Export the CA certificate.
 
-        :param str format: The format, 'pem' or 'der'
-        :returns: Certificate data
-        :rtype: Buffer
-        """
-        pass
-        # if format == 'pem':
-        #     return self.certificate.public_bytes(
-        #         serialization.Encoding.PEM
-        #     )
-        # else:
-        #     raise ValueError('Unsupported export format')
-
-    def sign(self, csr: x509.CertificateSigningRequest) -> x509.Certificate:
+    def sign(self, csr: models.CertificateSigningRequest) -> models.Certificate:
         """Sign a certificate signing request.
 
         :param CertificateSigningRequest csr: The signing request
@@ -183,33 +152,6 @@ class CertificateAuthority(object):
         ).sign(self.private_key, hashes.SHA256(), default_backend())
 
         return cert
-
-
-
-        # def sign_new_device_req(self, csr):
-        #     '''Sign and persist a new device certificate request'''
-        #     signed = self.sign(csr)
-        #     #db_dev_crt = self.save_new_device_cert(dev_signed_cert)
-        #
-        #     #return dev_signed_cert, db_dev_crt
-        #
-        # def save_new_device_cert(self, cert):
-        #     # cert should be of type Certificate
-        #     db_dev_crt = DBCertificate.from_x509(cert, 'mdm.device')
-        #     db_session.add(db_dev_crt)
-        #     db_session.commit()
-        #
-        #     return db_dev_crt
-        #
-        # def gen_new_device_identity(self):
-        #     # we don't persist the key as it should only be held and used by
-        #     # the client device
-        #     dev_csr, dev_key = CertificateRequest.with_new_private_key(CN=MDM_DEVICE_CN)
-        #
-        #     dev_crt, db_dev_crt = self.sign_new_device_req(dev_csr)
-        #
-        #     return (Identity(dev_key, dev_crt), db_dev_crt)
-
 
 
 def get_or_generate_web_certificate(cn: str) -> (str, str, str):

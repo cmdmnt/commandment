@@ -3,7 +3,8 @@ setup(
     name="commandment",
     version="0.1",
     description="Commandment is an Open Source Apple MDM server with support for managing iOS and macOS devices",
-    packages=find_packages(),
+    packages=['commandment'],
+    include_package_data=True,
     author="mosen",
     license="MIT",
     url="https://github.com/mosen/commandment",
@@ -46,7 +47,8 @@ setup(
         'console_scripts': [
             'commandment=commandment.cli:server'
         ]
-    }
+    },
+    zip_safe=False
 )
 
 

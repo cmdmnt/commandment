@@ -6,9 +6,9 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 from flask import Blueprint, render_template, make_response, request, abort
 from flask import current_app, send_file, g
 from cryptography.hazmat.primitives import hashes, serialization
-from .pki.certificateauthority import get_ca
+from .pki.ca import get_ca
 from .database import db_session, NoResultFound, or_, and_
-from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
+from .models import MDMConfig, Certificate as DBCertificate, Device, RSAPrivateKey as DBPrivateKey, QueuedCommand
 from .models import App, MDMGroup, app_group_assoc, SCEPConfig
 from .profiles import Profile
 from .profiles.cert import PEMCertificatePayload, PKCS12CertificatePayload, SCEPPayload

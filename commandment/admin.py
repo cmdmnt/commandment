@@ -8,12 +8,10 @@ from flask import Blueprint, render_template, Response, request, redirect, curre
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import hashes
 
 from .database import db_session, and_, or_, update, insert, delete
 from .models import CERT_TYPES, profile_group_assoc, device_group_assoc, Device, app_group_assoc
-from .models import Certificate as DBCertificate, PrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig
+from .models import Certificate as DBCertificate, RSAPrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig
 from .models import App, DEPConfig, DEPProfile, SCEPConfig
 from .profiles.restrictions import RestrictionsPayload
 from .profiles import Profile

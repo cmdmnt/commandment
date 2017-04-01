@@ -5,8 +5,6 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 from flask import Blueprint, request, Response, abort, current_app
 from .message import *
-from M2Crypto import X509, EVP
-from ..pki.x509 import CertificateRequest
 from os import urandom
 from ..pki.ca import get_ca
 from ..database import db_session, NoResultFound

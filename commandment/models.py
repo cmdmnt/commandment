@@ -5,22 +5,18 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 Attributes:
     CERT_TYPES (dict): A dictionary keyed by the usage of the certificate: APNS, SSL, CA, or device identity.
 """
+from flask_sqlalchemy import SQLAlchemy
 
 import datetime
 from enum import Enum
-from cryptography.hazmat.backends import default_backend
-from cryptography import x509
-from cryptography.x509.oid import NameOID
-from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.asymmetric import rsa
-from .pki.cryptography import Certificate as CMDCertificate
-
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
 from .profiles.mdm import MDM_AR__ALL
+
+db = SQLAlchemy()
 
 
 class CertificateType(Enum):
@@ -57,190 +53,76 @@ CERT_TYPES = {
     },
 }
 
-certificate_private_key_assoc = Table('certificate_private_key', Base.metadata,
-                                      Column('certificate_id', Integer, ForeignKey('certificate.id')),
-                                      Column('privatekey_id', Integer, ForeignKey('rsa_private_key.id')),
-                                      )
 
-certreq_private_key_assoc = Table('certreq_private_key', Base.metadata,
-                                  Column('certreq_id', Integer, ForeignKey('certificate_request.id')),
-                                  Column('privatekey_id', Integer, ForeignKey('rsa_private_key.id')),
-                                  )
-
-
-class PrivateKey(Base):
-    """RSA Private Key Model"""
-    __tablename__ = 'rsa_private_key'
-
-    #: id column
-    id = Column(Integer, primary_key=True)
-    pem_key = Column(Text, nullable=False)
-
-    certificates = relationship('Certificate', secondary=certificate_private_key_assoc, backref='privatekeys')
-    certificate_requests = relationship('CertificateRequest', secondary=certreq_private_key_assoc,
-                                        backref='privatekeys')
-
-    @classmethod
-    def generate(cls, key_size: int=2048) -> rsa.RSAPrivateKey:
-        """Create an RSA private key.
-        
-        Returns:
-             cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey: The private key    
-        """
-        key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=key_size,
-            backend=default_backend()
-        )
-        return key
-
-    def to_crypto(self) -> rsa.RSAPrivateKey:
-        """Create an instance of RSAPrivateKey from this database model.
-
-        Returns:
-            cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey: The private key    
-        """
-        rsa = serialization.load_pem_private_key(
-            self.pem_key,
-            password=None,
-            backend=default_backend()
-        )
-        return rsa
-
-    @classmethod
-    def from_crypto(cls, private_key: rsa.RSAPrivateKey):
-        """
-        Create an instance of the PrivateKey model from a cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
-
-        Arguments:
-            private_key (cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey): The private key to import
-
-        Returns:
-            The model populated with the private key in PEM format.
-        """
-        pem = private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption(),
-        )
-        newcls = cls()
-        newcls.pem_key = pem
-        return newcls
-
-
-class CertificateRequest(Base):
-    __tablename__ = 'certificate_request'
+class CertificateBase(db.Model):
+    """Polymorphic base for certificate types."""
+    __tablename__ = 'certificates'
 
     id = Column(Integer, primary_key=True)
-    req_type = Column(String(64), nullable=False, index=True)  # CERT_TYPES.keys()
-    subject = Column(Text, nullable=True)
-    pem_request = Column(Text, nullable=False)
+    pem_data = Column(Text, nullable=False)
 
-    @classmethod
-    def generate(cls, name: x509.Name):
-        """Create a Certificate Signing Request.
-        
-        Returns:
-              Tuple of (private key, csr)
-        """
-        key = PrivateKey.generate()
-        csr = x509.CertificateSigningRequestBuilder().subject_name(name).sign(key, hashes.SHA256(), default_backend())
-        
-        return key, csr
-
-    def to_crypto(self):
-        """Create an instance of CertificateSigningRequest from this database model.
-
-
-        :return: Certificate signing request
-        :rtype: cryptography.x509.CertificateSigningRequest
-        """
-        csr = x509.load_pem_x509_csr(self.pem_request, default_backend())
-        return csr
-
-    @classmethod
-    def from_crypto(cls, signing_request: x509.CertificateSigningRequest):
-        """Create an instance of the CertificateRequest model given a crypto certificate signing request.
-        
-        Args:
-            signing_request (cryptography.x509.CertificateSigningRequest)
-                
-        Returns:
-            Instance of CertificateRequest model
-        """
-        pem = signing_request.public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption(),
-        )
-        newcls = cls()
-        newcls.pem_request = pem
-        return newcls
-
-
-class Certificate(Base):
-    __tablename__ = 'certificate'
-
-    id = Column(Integer, primary_key=True)
-    cert_type = Column(String(64), nullable=False, index=True)  # CERT_TYPES.keys()
-
-    subject = Column(Text, nullable=True)
+    # http://www.ietf.org/rfc/rfc5280.txt
+    # maximum string lengths are well defined by this RFC and this schema follows those recommendations
+    x509_cn = Column(String(64), nullable=True)
+    x509_ou = Column(String(32))
+    x509_o = Column(String(64))
+    x509_c = Column(String(2))
+    x509_st = Column(String(128))
 
     not_before = Column(DateTime(timezone=False), nullable=False)
     not_after = Column(DateTime(timezone=False), nullable=False)
-
     # SHA-256 hash of DER-encoded certificate
     fingerprint = Column(String(64), nullable=False, index=True, unique=True)  # Unique
 
-    # subject_key_id?
-    # auth_key_id?
+    push_topic = Column(String, nullable=True)  # Only required for push certificate
 
-    # sourced_from = 'scep, self-signed, imported, signed' ?
+    type = Column(String(20))
 
-    pem_certificate = Column(Text, nullable=False)
-
-    @classmethod
-    def find_one_by_cert_type(cls, cert_type):
-        return cls.query.filter(cls.cert_type == cert_type).one()
-
-    def to_crypto(self):
-        """Create an instance of Certificate from this database model.
-
-        :return: Certificate
-        :rtype: cryptography.x509.Certificate
-        """
-        cert = x509.load_pem_x509_certificate(self.pem_certificate, default_backend())
-        return cert
-
-    @classmethod
-    def from_crypto(cls, certificate: x509.Certificate, cert_type: str):
-        """
-        Create a database row from a certificate.
-        
-        :param cryptography.x509.Certificate certificate:
-        :param str cert_type: A special string indicating the purpose of the certificate.
-        :return: The certificate model
-        :rtype: Certificate
-        """
-        newcls = cls()
-
-        common_name = certificate.subject.get_attributes_for_oid(NameOID.COMMON_NAME)
-
-        newcls.cert_type = cert_type
-        newcls.subject = common_name[0].value
-        newcls.not_before = certificate.not_valid_before
-        newcls.not_after = certificate.not_valid_after
-        newcls.fingerprint = certificate.fingerprint(hashes.SHA256())
-        newcls.pem_certificate = certificate.public_bytes(
-            encoding=serialization.Encoding.PEM
-        )
-        return newcls
+    __mapper_args__ = {
+        'polymorphic_on': type,
+        'polymorphic_identity': 'certificate'
+    }
 
 
-certreq_cert_assoc = Table('certreq_cert', Base.metadata,
-                           Column('certreq_id', Integer, ForeignKey('certificate_request.id')),
-                           Column('certificate_id', Integer, ForeignKey('certificate.id')),
-                           )
+class RSAPrivateKey(db.Model):
+    """RSA Private Key Model"""
+    __tablename__ = 'rsa_private_keys'
+
+    #: id column
+    id = Column(Integer, primary_key=True)
+    pem_data = Column(Text, nullable=False)
+
+    certificates = db.relationship(
+        'Certificate',
+        backref='rsa_private_key',
+        lazy='dynamic'
+    )
+
+    certificate_requests = db.relationship(
+        'CertificateRequest',
+        backref='rsa_private_key',
+        lazy='dynamic'
+    )
+
+
+class CertificateSigningRequest(CertificateBase):
+    __mapper_args__ = {'polymorphic_identity': 'csr'}
+
+
+class Certificate(CertificateBase):
+    __mapper_args__ = {'polymorphic_identity': 'mdm.webcrt'}
+
+
+class PushCertificate(CertificateBase):
+    __mapper_args__ = {'polymorphic_identity': 'mdm.pushcert'}
+
+
+class CACertificate(CertificateBase):
+    __mapper_args__ = {'polymorphic_identity': 'mdm.cacert'}
+
+
+class DeviceIdentityCertificate(CertificateBase):
+    __mapper_args__ = {'polymorphic_identity': 'mdm.device'}
 
 
 class InternalCA(Base):
@@ -260,12 +142,6 @@ class InternalCA(Base):
 
         # MAX(serial) + 1
         pass
-
-
-internalca_issued_cert_assoc = Table('internalca_issued_cert', Base.metadata,
-                                     Column('certificate_id', Integer, ForeignKey('certificate.id')),
-                                     Column('internalca_id', Integer, ForeignKey('internal_ca.id')),
-                                     )
 
 
 class Device(Base):

@@ -2,7 +2,7 @@ from flask import Blueprint, request, abort, send_file, current_app
 from sqlalchemy.orm.exc import NoResultFound
 
 from .database import db_session
-from .models import Device, Certificate, PrivateKey
+from .models import Device, Certificate, RSAPrivateKey
 from .pki import serialization
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes

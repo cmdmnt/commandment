@@ -10,9 +10,10 @@ import apns2
 import os
 import tempfile
 import atexit
+import flask
 from .database import db_session
-from .models import MDMConfig, Certificate as DBCertificate, Device, PrivateKey as DBPrivateKey, QueuedCommand
-from .pki.cryptography import Certificate
+from .models import MDMConfig, Certificate as DBCertificate, PushCertificate as DBPushCertificate, Device, RSAPrivateKey as DBPrivateKey, QueuedCommand
+from .pki.models import Certificate, RSAPrivateKey
 import random
 import time
 try:
@@ -20,34 +21,27 @@ try:
 except ImportError:
     from socket import sslerror as SSLError
 
-apns_cxns = {}
 
 def push_init():
     """
     Instantiate APNS2Client(s) from push certificate(s) stored within the database.
     """
-    q = db_session.query(DBCertificate, DBPrivateKey) \
-        .join(DBCertificate, DBPrivateKey.certificates) \
-        .filter(DBCertificate.cert_type == 'mdm.pushcert')
+    db_push_cert = db_session.query(DBPushCertificate).one()
+    db_push_key = db_push_cert.rsa_private_key
 
-    for db_cert, db_pk in q:
-        cert = db_cert.to_x509(cert_type=PushCertificate)
-        cert_topic = cert.get_topic()
+    cert = Certificate(model=db_push_cert)
+    pk = RSAPrivateKey(model=db_push_key)
 
-        if cert_topic in apns_cxns:
-            continue
+    cert_handle, cert_file = tempfile.mkstemp()
+    pkey_handle, pkey_file = tempfile.mkstemp()
+    atexit.register(os.remove, pkey_file)
+    atexit.register(os.remove, cert_file)
+    os.write(cert_handle, cert.pem_data)
+    os.write(pkey_handle, pk.pem_key)
+    os.close(cert_handle)
+    os.close(pkey_handle)
 
-        cert_handle, cert_file = tempfile.mkstemp()
-        pkey_handle, pkey_file = tempfile.mkstemp()
-        atexit.register(os.remove, pkey_file)
-        atexit.register(os.remove, cert_file)
-        os.write(cert_handle, db_cert.pem_certificate)
-        os.write(pkey_handle, db_pk.pem_key)
-        os.close(cert_handle)
-        os.close(pkey_handle)
-
-        apns = apns2.APNSClient(mode='prod', client_cert=cert_file)
-        apns_cxns[cert_topic] = apns
+    flask.g.apns = apns2.APNSClient(mode='prod', client_cert=cert_file)
 
 
 class MDMPayload(apns2.Payload):
@@ -57,58 +51,62 @@ class MDMPayload(apns2.Payload):
 
 
 def push_to_device(device_or_devices):
-    # get an iterable list of devices even if one wasn't specified
-    try:
-        iter(device_or_devices)
-    except TypeError:
-        devices = (device_or_devices, )
-    else:
-        devices = device_or_devices
+    print('noop')
 
-    # keyed access to topics for which we'll have an APNs connection for each
-    topic_frames = {}
 
-    for device in devices:
-
-        if device.topic in apns_cxns:
-            if device.topic not in topic_frames:
-                # create our keyed topic reference if it doesn't exist
-                topic_frames[device.topic] = Frame()
-
-            # decode from as-stored base64 into hex encoding for apns library
-            token_hex = device.token.decode('base64').encode('hex')
-
-            payload = apns2.Payload()
-            mdm_payload = MDMPayload(device.push_magic)
-
-            expiry = time.time() + 86400
-
-            # add a frame for this topic
-            topic_frames[device.topic].add_item(token_hex, mdm_payload, random.getrandbits(32), expiry, 10)
-        else:
-            # TODO: configure and use real logging
-            print('Cannot send APNs to device: no APNs connection found (by device topic)')
-
-    # loop through our by-topic APNs Frames and send away
-    for topic in list(topic_frames.keys()):
-        try:
-            apns_cxns[topic].gateway_server.send_notification_multiple(topic_frames[topic])
-        except SSLError as e:
-            msg = e.__str__()
-
-            if 'sslv3 alert' in msg:
-                # OpenSSL error telling us it received an SSL alert. We search
-                # for a substring. See ssl/ssl_stat.c in OpenSSL sources for
-                # lists of string output for SSL alerts. Full messages appear
-                # like so:
-                #
-                # _ssl.c:504: error:14094416:SSL routines:SSL3_READ_BYTES:sslv3 alert certificate unknown
-
-                if 'certificate unknown' in msg:
-                    # Note: It seems an "unknown certificate" alert is thrown
-                    # rather than an "expired" alert for MDM push certs that
-                    # are, in fact, expired. Seems like an implimentation
-                    # quirk that may change in the future.
-                    raise Exception('MDM Push Certificate not accepted; possibly expired')
-
-            raise
+# def push_to_device(device_or_devices):
+#     # get an iterable list of devices even if one wasn't specified
+#     try:
+#         iter(device_or_devices)
+#     except TypeError:
+#         devices = (device_or_devices, )
+#     else:
+#         devices = device_or_devices
+#
+#     # keyed access to topics for which we'll have an APNs connection for each
+#     topic_frames = {}
+#
+#     for device in devices:
+#
+#         if device.topic in apns_cxns:
+#             if device.topic not in topic_frames:
+#                 # create our keyed topic reference if it doesn't exist
+#                 topic_frames[device.topic] = Frame()
+#
+#             # decode from as-stored base64 into hex encoding for apns library
+#             token_hex = device.token.decode('base64').encode('hex')
+#
+#             payload = apns2.Payload()
+#             mdm_payload = MDMPayload(device.push_magic)
+#
+#             expiry = time.time() + 86400
+#
+#             # add a frame for this topic
+#             topic_frames[device.topic].add_item(token_hex, mdm_payload, random.getrandbits(32), expiry, 10)
+#         else:
+#             # TODO: configure and use real logging
+#             print('Cannot send APNs to device: no APNs connection found (by device topic)')
+#
+#     # loop through our by-topic APNs Frames and send away
+#     for topic in list(topic_frames.keys()):
+#         try:
+#             apns_cxns[topic].gateway_server.send_notification_multiple(topic_frames[topic])
+#         except SSLError as e:
+#             msg = e.__str__()
+#
+#             if 'sslv3 alert' in msg:
+#                 # OpenSSL error telling us it received an SSL alert. We search
+#                 # for a substring. See ssl/ssl_stat.c in OpenSSL sources for
+#                 # lists of string output for SSL alerts. Full messages appear
+#                 # like so:
+#                 #
+#                 # _ssl.c:504: error:14094416:SSL routines:SSL3_READ_BYTES:sslv3 alert certificate unknown
+#
+#                 if 'certificate unknown' in msg:
+#                     # Note: It seems an "unknown certificate" alert is thrown
+#                     # rather than an "expired" alert for MDM push certs that
+#                     # are, in fact, expired. Seems like an implimentation
+#                     # quirk that may change in the future.
+#                     raise Exception('MDM Push Certificate not accepted; possibly expired')
+#
+#             raise
