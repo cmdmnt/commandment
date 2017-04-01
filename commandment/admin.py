@@ -47,51 +47,6 @@ def index():
     return render_template('index.html')
 
 
-# @admin_app.route('/old/certificates')
-# def admin_certificates():
-#     """Show a list of configured certificates, excluding device identities."""
-#     # merely to generate new CA if not exist
-#     mdm_ca = get_ca()
-#
-#     # get a list of configured system certificates
-#     cert_rows = db_session.query(DBCertificate).filter(DBCertificate.cert_type != 'mdm.device')
-#
-#     # assemble a list of dictionaries to pass to our certificate list template
-#     installed_certs = []
-#     cert_output = []
-#     utcnow = datetime.datetime.utcnow()
-#     for cert_row in cert_rows:
-#         installed_certs.append(cert_row.cert_type)
-#         row_cert = cert_row.to_crypto()
-#         not_after = row_cert.not_valid_after
-#         dict_row = {
-#             'id': cert_row.id,
-#             'name': cert_row.cert_type,
-#             'not_after': not_after,
-#             'expired': not_after <= utcnow,
-#             'subject': row_cert.subject,
-#             'title': CERT_TYPES[cert_row.cert_type]['title'] if CERT_TYPES.get(cert_row.cert_type) else '',
-#             'description': CERT_TYPES[cert_row.cert_type]['description'] if CERT_TYPES.get(cert_row.cert_type) else '',
-#             'required': bool(CERT_TYPES[cert_row.cert_type].get('required')) if CERT_TYPES.get(
-#                 cert_row.cert_type) else False,
-#         }
-#         cert_output.append(dict_row)
-#
-#     # assemble all the other required certificate types we know about as options
-#     missing = []
-#     for cert_name in set(CERT_TYPES.keys()).difference(set(installed_certs)):
-#         if cert_name != 'mdm.device':
-#             dict_row = {
-#                 'name': cert_name,
-#                 'title': CERT_TYPES[cert_name]['title'],
-#                 'description': CERT_TYPES[cert_name]['description'],
-#                 'required': bool(CERT_TYPES[cert_name].get('required')),
-#             }
-#             missing.append(dict_row)
-#
-#     return render_template('admin/certificates/index.html', certs=cert_output, missing=missing)
-
-
 @admin_app.route('/certificates/add/<certtype>', methods=['GET', 'POST'])
 def admin_certificates_add(certtype: str):
     """Add a new certificate with the usage indicated by ``certtype``,
@@ -137,89 +92,6 @@ def admin_certificates_add(certtype: str):
         return redirect('/admin/certificates', Response=FixedLocationResponse)
     else:
         return render_template('admin/certificates/add.html', certtype=CERT_TYPES[certtype]['title'])
-
-
-# @admin_app.route('/certificates/new', methods=['GET', 'POST'])
-# def admin_certificates_new():
-#     """Generate a new certificate signing request for the certificate type specified."""
-#     mdm_ca = get_ca()
-#
-#     approved_certs = ['mdm.webcrt']
-#
-#     if request.method == 'POST':
-#         print('cert type', request.form['cert_type'])
-#         if 'cert_type' not in list(request.form.keys()) or request.form['cert_type'] not in approved_certs:
-#             abort(400, 'Invalid cert_type!')
-#
-#         # all certs must have a CN?
-#         if 'CN' not in list(request.form.keys()) or not request.form['CN']:
-#             abort(400, 'No common name!')
-#
-#         approved_input = ('C', 'CN', 'OU', 'L', 'O', 'ST')
-#
-#         # get dictionary of any appropriate fields submitted
-#         subject_names = {}
-#         for i in list(request.form.keys()):
-#             if i in approved_input:
-#                 subject_names.update({i: str(request.form[i])})
-#
-#         print('Generating test web certificate and CA')
-#
-#         web_pk = rsa.generate_private_key(
-#             public_exponent=65537,
-#             key_size=2048,
-#             backend=default_backend()
-#         )
-#         web_req = x509.CertificateSigningRequestBuilder().subject_name(x509.Name(subject_names)
-#                                                                        ).sign(web_pk, hashes.SHA256(),
-#                                                                               default_backend())
-#
-#         # TODO: reimplement mdm_ca
-#         web_crt = x509.CertificateBuilder().subject_name(
-#             x509.Name(subject_names)
-#         ).issuer_name(
-#             x509.Name(subject_names)
-#         ).public_key(
-#             web_pk.public_key()
-#         ).serial_number(
-#             x509.random_serial_number()
-#         ).not_valid_before(
-#             datetime.datetime.utcnow()
-#         ).not_valid_after(
-#             datetime.datetime.utcnow() + datetime.timedelta(days=365)
-#         ).add_extension(
-#             x509.SubjectAlternativeName([x509.DNSName(u"localhost")]),
-#             critical=False
-#         ).sign(web_pk, hashes.SHA256(), default_backend())
-#
-#         db_cert = DBCertificate.from_x509(web_crt, 'mdm.webcrt')
-#         db_pk = DBPrivateKey.from_x509(web_pk)
-#
-#         db_session.add(db_cert)
-#         db_session.add(db_pk)
-#
-#         db_pk.certificates.append(db_cert)
-#
-#         db_session.commit()
-#
-#         # after successful addition
-#         return redirect('/admin/certificates', Response=FixedLocationResponse)
-#     else:
-#         cert_types = {}
-#         for i in approved_certs:
-#             cert_types[i] = CERT_TYPES[i]['title']
-#
-#         return render_template('admin/certificates/new.html', cert_types=cert_types)
-
-
-@admin_app.route('/certificates/delete/<int:cert_id>')
-def admin_certificates_delete(cert_id: int):
-    """Delete the certificate with the specified ID"""
-    certq = db_session.query(DBCertificate).filter(DBCertificate.id == cert_id)
-    cert = certq.one()
-    db_session.delete(cert)
-    db_session.commit()
-    return redirect('/admin/certificates', Response=FixedLocationResponse)
 
 
 @admin_app.route('/groups', methods=['GET', 'POST'])
@@ -375,34 +247,6 @@ def admin_profiles_upload(profile_id: int):
 
     db_session.commit()
     return redirect('/admin/profiles', Response=FixedLocationResponse)
-
-
-@admin_app.route('/devices')
-def devices():
-    devices = db_session.query(Device)
-
-    for i in devices:
-        if i.info_json is None:
-            i.info_json = {}
-
-    return render_template('admin/devices.html', devices=devices)
-
-
-@admin_app.route('/device/<int:device_id>')
-def admin_device(device_id):
-    device = db_session.query(Device).filter(Device.id == device_id).one()
-
-    # get all MDMGroups left joining against our assoc. table to see if this device is in any of those groups
-    group_q = db_session.query(MDMGroup, device_group_assoc.c.device_id).outerjoin(device_group_assoc, and_(
-        device_group_assoc.c.mdm_group_id == MDMGroup.id, device_group_assoc.c.device_id == device.id))
-
-    apps = db_session.query(App.id, App.filename)
-
-    if device.info_json is None:
-        device.info_json = {}
-
-    return render_template('admin/device.html', device=device, groups=group_q, apps=apps)
-
 
 def install_group_profiles_to_device(group, device):
     q = db_session.query(DBProfile.id).join(profile_group_assoc).filter(profile_group_assoc.c.mdm_group_id == group.id)
@@ -975,11 +819,3 @@ def dep_test1(dep_id):
 
     return 'initial_fetch complete'
     # return '<pre>%s</pre>' % str(mdm_profile(mdm))
-
-@admin_app.route('/scep/test')
-def scep_test():
-    """Test an external SCEP endpoint by performing and returning the GetCACaps data.
-    
-    TODO: Really needs CSRF protection
-    """
-    pass

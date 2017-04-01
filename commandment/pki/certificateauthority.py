@@ -13,8 +13,9 @@ from ..models import (Certificate as DBCertificate,
 import datetime
 from cryptography import x509
 from cryptography.x509.oid import NameOID
-from cryptography.hazmat.primitives import hashes
-
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
 
 
 MDM_CA_CN = 'MDM CA'
@@ -72,20 +73,24 @@ class CertificateAuthority(object):
     ])
 
     @classmethod
-    def create(cls, subject=default_subject, key_size=2048, san=u'localhost'):
-        """Create a new Certificate Authority by generating a new key pair
+    def create(cls, subject=default_subject, key_size=2048):
+        """Create a new Certificate Authority.
 
-        :param cryptography.x509.Name subject: The certificate subject to use
-        :param int key_size: The RSA private key size, default is 2048.
-        :param str san: A subject alternative name to add to the certificate
-        :return: The newly created certificate authority
-        :rtype: CertificateAuthority
+        Generates a new private key and self-signs a CA certificate.
+
+        Args:
+            subject: cryptography.x509.Name The certificate subject to use
+            key_size: The RSA private key size integer, default is 2048.
+
+        Returns:
+            Instance of CertificateAuthority
         """
         private_key = rsa.generate_private_key(
             public_exponent=65537,
             key_size=key_size,
             backend=default_backend(),
         )
+        
         certificate = x509.CertificateBuilder().subject_name(
             subject
         ).issuer_name(
@@ -99,24 +104,25 @@ class CertificateAuthority(object):
         ).not_valid_after(
             datetime.datetime.utcnow() + datetime.timedelta(days=365)
         ).add_extension(
-            x509.SubjectAlternativeName([x509.DNSName(san)]),
-            critical=False
+            x509.BasicConstraints(True, None)
         ).sign(private_key, hashes.SHA256(), default_backend())
 
         ca = cls(certificate, private_key)
         return ca
 
-    def __init__(self, certificate, private_key, password=None):
+    def __init__(self, certificate: x509.Certificate, private_key: rsa.RSAPrivateKey, password=None):
         """
-        :param cryptography.x509.Certificate certificate:
-        :param cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey private_key:
-        :param str password: (ignored for now) The password used to decrypt the private key.
+        Args:
+            certificate: Instance of cryptography.x509.Certificate with the BasicConstraints CA extension
+            private_key: Instance of cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
+            password: Private key password if required (Ignored currently)
+            
         """
         self._certificate = certificate
         self._private_key = private_key
 
     @property
-    def certificate(self):
+    def certificate(self) -> x509.Certificate:
         return self._certificate
 
     @certificate.setter
@@ -130,7 +136,15 @@ class CertificateAuthority(object):
             raise ValueError('Supplied invalid value for CA certificate')
 
     @property
-    def private_key(self):
+    def pem_certificate(self) -> str:
+        """Retrieve the CA certificate as a PEM encoded cert."""
+        serialized = self._certificate.public_bytes(
+            encoding=serialization.Encoding.PEM
+        )
+        return serialized
+
+    @property
+    def private_key(self) -> rsa.RSAPrivateKey:
         return self._private_key
 
     def export_ca_certificate(self, format='pem'):

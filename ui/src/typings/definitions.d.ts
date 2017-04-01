@@ -7,6 +7,22 @@ declare interface Certificate {
     fingerprint?: string;
 }
 
+declare interface MDMConfig {
+    prefix: string;
+    addl_config: string;
+    topic: string;
+    access_rights: number;
+    mdm_url: string;
+    checkin_url: string;
+    mdm_name: string;
+    description: string;
+    ca_cert_id: number;
+    push_cert_id: number;
+    device_identity_method: string;
+    scep_url: string;
+    scep_challenge: string;
+}
+
 declare interface JSONAPIObject<TObject> {
     id: string|number;
     type: string;
