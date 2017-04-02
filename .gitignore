@@ -1,3 +1,4 @@
 *.pyc
-mdm.db
-commandment/apps
+/mdm.db
+/commandment/apps/
+/local_settings.py
