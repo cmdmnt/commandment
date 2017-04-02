@@ -60,6 +60,12 @@ class PushCertificateList(ResourceList):
         'model': PushCertificate
     }
 
+class CACertificateList(ResourceList):
+    schema = CertificateSchema
+    data_layer = {
+        'session': db.session,
+        'model': CACertificate
+    }
 
 class SSLCertificateDetail(ResourceDetail):
     schema = CertificateSchema
@@ -82,5 +88,5 @@ api.route(PrivateKeyDetail, 'private_key_detail', '/v1/private_keys/<int:private
 
 api.route(PushCertificateList, 'push_certificates_list', '/v1/push_certificates')
 api.route(SSLCertificateDetail, 'ssl_certificate_detail', '/v1/ssl_certificate')
-
+api.route(CACertificateList, 'ca_certificates_list', '/v1/ca_certificates')
 

@@ -1,7 +1,8 @@
 
+
 declare interface Certificate {
-    purpose: string;
-    subject: string;
+    type: string;
+    x509_cn: string;
     not_before: Date;
     not_after: Date;
     fingerprint?: string;

@@ -1,9 +1,12 @@
+import {combineReducers} from 'redux';
 import * as actions from '../actions/certificates';
 import {
     DeleteCertificateActionRequest, DeleteCertificateActionResponse,
-    FetchCertificateTypeActionResponse, FetchPushCertificateActionResponse,
+    FetchCertificateTypeActionResponse, FetchPushCertificatesActionResponse,
     IndexActionResponse
 } from "../actions/certificates";
+import {PushState} from "./certificates/push";
+import {push} from './certificates/push';
 
 
 export interface CertificatesState {
@@ -16,6 +19,7 @@ export interface CertificatesState {
     pageSize: number;
     recordCount?: number;
     byType?: { [propName: string]: JSONAPIDetailResponse<Certificate> };
+    push?: PushState
 }
 
 const initialState: CertificatesState = {
@@ -29,7 +33,7 @@ const initialState: CertificatesState = {
     byType: {}
 };
 
-type CertificatesAction = IndexActionResponse | FetchCertificateTypeActionResponse | DeleteCertificateActionResponse;
+type CertificatesAction = IndexActionResponse | DeleteCertificateActionResponse;
 
 export function certificates(state: CertificatesState = initialState, action: CertificatesAction): CertificatesState {
     switch (action.type) {
@@ -55,32 +59,6 @@ export function certificates(state: CertificatesState = initialState, action: Ce
                 recordCount: action.payload.meta.count
             };
 
-        case actions.CERTTYPE_REQUEST:
-            return {
-                ...state,
-                loading: true
-            };
-
-        case actions.CERTTYPE_FAILURE:
-            return {
-                ...state,
-                loading: false,
-                error: true,
-                errorDetail: action.payload
-            };
-
-        case actions.CERTTYPE_SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                error: false,
-                errorDetail: null,
-                byType: {
-                    ...state.byType,
-                    [action.payload.data.attributes.purpose]: action.payload
-                }
-            };
-
         case actions.DELETE_REQUEST:
             return {
                 ...state,
@@ -97,8 +75,12 @@ export function certificates(state: CertificatesState = initialState, action: Ce
 
         case actions.DELETE_SUCCESS:
             return state;
+        
 
         default:
-            return state
+            return {
+                ...state,
+                push: push(action, state.push)
+            }
     }
 }

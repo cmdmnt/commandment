@@ -15,7 +15,7 @@ export interface RootState {
 }
 
 
-export const rootReducer = combineReducers({
+export const rootReducer = combineReducers<RootState>({
     router: routerReducer,
     form: formReducer,
     assistant,

@@ -3,7 +3,8 @@ import { connect, Dispatch } from 'react-redux';
 import {RouteComponentProps} from 'react-router';
 import {
     IndexActionRequest, index,
-    FetchCertificateTypeActionRequest, fetchCertificatesForType, DeleteCertificateActionRequest, remove
+    FetchCertificateTypeActionRequest, fetchCertificatesForType, DeleteCertificateActionRequest, remove,
+    fetchPushCertificates, FetchPushCertificatesActionRequest
 } from "../../actions/certificates";
 import {bindActionCreators} from "redux";
 import {CertificateDetail} from '../../components/CertificateDetail';
@@ -17,7 +18,7 @@ interface SSLPageState {
 interface SSLPageDispatchProps {
     index: IndexActionRequest;
     remove: DeleteCertificateActionRequest;
-    fetchCertificatesForType: FetchCertificateTypeActionRequest;
+    fetchPushCertificates: FetchPushCertificatesActionRequest;
 }
 
 interface SSLPageProps extends SSLPageState, SSLPageDispatchProps, RouteComponentProps<any> {
@@ -31,7 +32,7 @@ interface SSLPageProps extends SSLPageState, SSLPageDispatchProps, RouteComponen
     (dispatch: Dispatch<any>): SSLPageDispatchProps => {
         return bindActionCreators({
             index,
-            fetchCertificatesForType,
+            fetchPushCertificates,
             remove
         }, dispatch);
     }
@@ -39,9 +40,7 @@ interface SSLPageProps extends SSLPageState, SSLPageDispatchProps, RouteComponen
 export class SSLPage extends React.Component<SSLPageProps, undefined> {
 
     componentWillMount() {
-        this.props.fetchCertificatesForType('mdm.pushcert');
-        this.props.fetchCertificatesForType('mdm.webcrt');
-        this.props.fetchCertificatesForType('mdm.cacrt');
+        this.props.fetchPushCertificates();
     }
 
     handleDeleteCertificate = (certificateId: number): void => {

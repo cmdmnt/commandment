@@ -40,9 +40,8 @@ def from_database_or_create():
 
         db_cert = ca.certificate.model()
         db_pk = dbmodels.RSAPrivateKey(pem_data=ca.private_key.pem_key)
-
-        db_pk.certificate = db_cert
-
+        db_cert.rsa_private_key = db_pk
+        
         db.session.add(db_cert)
         db.session.add(db_pk)
 
@@ -65,7 +64,7 @@ class CertificateAuthority(object):
     """
 
     default_subject = x509.Name([
-        x509.NameAttribute(NameOID.COMMON_NAME, u'commandment.dev'),
+        x509.NameAttribute(NameOID.COMMON_NAME, u'COMMANDMENT-CA'),
         x509.NameAttribute(NameOID.ORGANIZATION_NAME, u'commandment'),
         x509.NameAttribute(NameOID.EMAIL_ADDRESS, u'mosen@noreply.users.github.com'),
         x509.NameAttribute(NameOID.COUNTRY_NAME, u'US')
@@ -162,7 +161,7 @@ def get_or_generate_web_certificate(cn: str) -> (str, str, str):
         result = db.session.query(dbmodels.SSLCertificate).one()
 
         # TODO: return chain!
-        return (result.pem_data, result.private_key.pem_data, mdm_ca.certificate.pem_data)
+        return (result.pem_data, result.rsa_private_key.pem_data, mdm_ca.certificate.pem_data)
     except NoResultFound:
         web_pk = rsa.generate_private_key(
             public_exponent=65537,

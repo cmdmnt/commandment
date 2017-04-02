@@ -73,8 +73,8 @@ export class CertificatesPage extends React.Component<CertificatesPageProps, Cer
                         >
                             <RowDefinition>
                                 <ColumnDefinition id="id" />
-                                <ColumnDefinition title="Type" id="attributes.purpose" />
-                                <ColumnDefinition title="Subject" id="attributes.subject" />
+                                <ColumnDefinition title="Type" id="attributes.type" />
+                                <ColumnDefinition title="Common Name" id="attributes.x509_cn" />
                             </RowDefinition>
                         </Griddle>
                     </div>

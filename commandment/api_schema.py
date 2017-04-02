@@ -43,8 +43,8 @@ class PrivateKeySchema(Schema):
 class CertificateSchema(Schema):
     """marshmallow-jsonapi schema for Certificate objects."""
     id = fields.Int(dump_only=True)
-    purpose = fields.Str(attribute='cert_type')
-    subject = fields.Str(dump_only=True)
+    type = fields.Str(attribute='type')
+    x509_cn = fields.Str(dump_only=True)
     not_before = fields.DateTime(dump_only=True)
     not_after = fields.DateTime(dump_only=True)
     # fingerprint = fields.Str(dump_only=True)

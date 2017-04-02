@@ -23,9 +23,9 @@ class RSAPrivateKey(object):
             self._key = pk
         elif model is not None:
             self._model = model
-            if self._model.pem_key is not None:
+            if self._model.pem_data is not None:
                 self._key = serialization.load_pem_private_key(
-                    self._model.pem_key,
+                    self._model.pem_data,
                     password=password,
                     backend=default_backend()
                 )
