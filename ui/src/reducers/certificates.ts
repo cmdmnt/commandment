@@ -1,12 +1,16 @@
 import {combineReducers} from 'redux';
 import * as actions from '../actions/certificates';
 import {
-    DeleteCertificateActionRequest, DeleteCertificateActionResponse,
-    FetchCertificateTypeActionResponse, FetchPushCertificatesActionResponse,
+    DeleteCertificateActionResponse,
     IndexActionResponse
 } from "../actions/certificates";
-import {PushState} from "./certificates/push";
-import {push} from './certificates/push';
+import {FetchPushCertificatesActionResponse} from '../actions/certificates/push';
+
+// Sub reducers
+import {PushState, push} from "./certificates/push";
+import {SSLState, ssl} from './certificates/ssl';
+import {CAState, ca} from "./certificates/ca";
+
 
 
 export interface CertificatesState {
@@ -19,7 +23,9 @@ export interface CertificatesState {
     pageSize: number;
     recordCount?: number;
     byType?: { [propName: string]: JSONAPIDetailResponse<Certificate> };
-    push?: PushState
+    push?: PushState;
+    ssl?: SSLState;
+    ca?: CAState;
 }
 
 const initialState: CertificatesState = {
@@ -80,7 +86,9 @@ export function certificates(state: CertificatesState = initialState, action: Ce
         default:
             return {
                 ...state,
-                push: push(action, state.push)
+                push: push(state.push, action),
+                ssl: ssl(state.ssl, action),
+                ca: ca(state.ca, action),
             }
     }
 }

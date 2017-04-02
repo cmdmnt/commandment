@@ -3,22 +3,28 @@ import { connect, Dispatch } from 'react-redux';
 import {RouteComponentProps} from 'react-router';
 import {
     IndexActionRequest, index,
-    FetchCertificateTypeActionRequest, fetchCertificatesForType, DeleteCertificateActionRequest, remove,
-    fetchPushCertificates, FetchPushCertificatesActionRequest
+    DeleteCertificateActionRequest, remove
 } from "../../actions/certificates";
+import * as pushActions from '../../actions/certificates/push';
+import * as sslActions from '../../actions/certificates/ssl';
 import {bindActionCreators} from "redux";
 import {CertificateDetail} from '../../components/CertificateDetail';
 import * as Upload from 'rc-upload';
+import {PushState} from "../../reducers/certificates/push";
+import {SSLState} from "../../reducers/certificates/ssl";
+
 
 
 interface SSLPageState {
-    byType?: {[propName: string]: JSONAPIDetailResponse<Certificate>};
+    push: PushState;
+    ssl: SSLState;
 }
 
 interface SSLPageDispatchProps {
     index: IndexActionRequest;
     remove: DeleteCertificateActionRequest;
-    fetchPushCertificates: FetchPushCertificatesActionRequest;
+    fetchPushCertificates: pushActions.FetchPushCertificatesActionRequest;
+    fetchSSLCertificates: sslActions.FetchSSLCertificatesActionRequest;
 }
 
 interface SSLPageProps extends SSLPageState, SSLPageDispatchProps, RouteComponentProps<any> {
@@ -27,12 +33,14 @@ interface SSLPageProps extends SSLPageState, SSLPageDispatchProps, RouteComponen
 
 @connect<SSLPageState, SSLPageDispatchProps, SSLPageProps>(
     (state: any, ownProps?: any): SSLPageState => { return {
-        byType: state.certificates.byType || null
+        push: state.certificates.push,
+        ssl: state.certificates.ssl
     } },
     (dispatch: Dispatch<any>): SSLPageDispatchProps => {
         return bindActionCreators({
             index,
-            fetchPushCertificates,
+            fetchPushCertificates: pushActions.fetchPushCertificates,
+            fetchSSLCertificates: sslActions.fetchSSLCertificates,
             remove
         }, dispatch);
     }
@@ -41,30 +49,31 @@ export class SSLPage extends React.Component<SSLPageProps, undefined> {
 
     componentWillMount() {
         this.props.fetchPushCertificates();
+        this.props.fetchSSLCertificates();
     }
 
     handleDeleteCertificate = (certificateId: number): void => {
         this.props.remove(certificateId);
     };
 
+    handleDownloadCertificate = (certificateId: number): void => {
+        window.location.href = `/api/v1/certificates/${certificateId}/download`;
+    };
+
     render(): JSX.Element {
         const {
-            byType
+            push,
+            ssl
         } = this.props;
 
         let pushCertificate;
-        if (byType.hasOwnProperty('mdm.pushcert')) {
-            pushCertificate = byType['mdm.pushcert'];
+        if (push && push.items) {
+            pushCertificate = push.items.data[0];
         }
 
         let sslCertificate;
-        if (byType.hasOwnProperty('mdm.webcrt')) {
-            sslCertificate = byType['mdm.webcrt'];
-        }
-
-        let scepCACertificate;
-        if (byType.hasOwnProperty('mdm.cacrt')) {
-            scepCACertificate = byType['mdm.cacrt'];
+        if (ssl && ssl.items) {
+            sslCertificate = ssl.items.data[0];
         }
 
         return (
@@ -76,7 +85,7 @@ export class SSLPage extends React.Component<SSLPageProps, undefined> {
                 </div>
                 <div className='row'>
                     <div className='column'>
-                        <CertificateDetail certificate={pushCertificate} title="Push Certificate" onClickDelete={this.handleDeleteCertificate}>
+                        <CertificateDetail certificate={pushCertificate} title="Push Certificate" onClickDelete={this.handleDeleteCertificate} onClickDownload={this.handleDownloadCertificate}>
                             <button className='button button-outline'>
                                 <i className='fa fa-plus' /> Generate Request
                             </button>
@@ -89,13 +98,11 @@ export class SSLPage extends React.Component<SSLPageProps, undefined> {
                                 <i className='fa fa-refresh' /> Replace
                             </button>
                             </Upload>
-                            <button className='button button-outline'>
-                                <i className='fa fa-download' /> Download
-                            </button>
+
                         </CertificateDetail>
                     </div>
                     <div className='column'>
-                        <CertificateDetail certificate={sslCertificate} title="SSL Certificate" onClickDelete={this.handleDeleteCertificate}>
+                        <CertificateDetail certificate={sslCertificate} title="SSL Certificate" onClickDelete={this.handleDeleteCertificate} onClickDownload={this.handleDownloadCertificate}>
                             <button className='button button-outline'>
                                 <i className='fa fa-plus' /> Generate Request
                             </button>
@@ -114,7 +121,7 @@ export class SSLPage extends React.Component<SSLPageProps, undefined> {
                         </CertificateDetail>
                     </div>
                     <div className='column'>
-                        <CertificateDetail certificate={scepCACertificate} title="SCEP CA Certificate" onClickDelete={this.handleDeleteCertificate}>
+                        <CertificateDetail certificate={} title="SCEP CA Certificate" onClickDelete={this.handleDeleteCertificate} onClickDownload={this.handleDownloadCertificate}>
                             <Upload
                                 name='file'
                                 accept='application/x-pem-file'

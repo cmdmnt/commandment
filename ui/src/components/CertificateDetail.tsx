@@ -5,15 +5,21 @@ import * as moment from 'moment';
 import './CertificateDetail.scss';
 
 interface CertificateDetailProps {
-    certificate: JSONAPIDetailResponse<Certificate>;
+    certificate: JSONAPIObject<Certificate>;
     title: string;
     onClickDelete: (certificateId: number) => void;
+    onClickDownload: (certificateId: number) => void;
 }
 
 export class CertificateDetail extends React.Component<CertificateDetailProps, undefined> {
 
     handleClickDelete = (event: any): void => {
-        this.props.onClickDelete(this.props.certificate.data.id);
+        this.props.onClickDelete(this.props.certificate.id);
+    };
+
+    handleClickDownload = (event: any): void => {
+        event.preventDefault();
+        this.props.onClickDownload(this.props.certificate.id);
     };
 
     render() {
@@ -27,8 +33,8 @@ export class CertificateDetail extends React.Component<CertificateDetailProps, u
         let icon;
         let isValid = false;
 
-        if (certificate) {
-            const { subject, not_before, not_after } = this.props.certificate.data.attributes;
+        if (certificate && certificate.attributes) {
+            const { x509_cn, not_before, not_after } = certificate.attributes;
 
             const nowutc = moment().utc();
             
@@ -41,8 +47,8 @@ export class CertificateDetail extends React.Component<CertificateDetailProps, u
 
             content = (
                 <dl>
-                    <dt>Subject</dt>
-                    <dd>{subject}</dd>
+                    <dt>Common Name</dt>
+                    <dd>{x509_cn}</dd>
 
                     <dt>From</dt>
                     <dd>{not_before_moment.fromNow()}</dd>
@@ -58,8 +64,11 @@ export class CertificateDetail extends React.Component<CertificateDetailProps, u
 
         return (
             <div className='CertificateDetail paper padded'>
-                <h3 className='centered'>{icon} {title}</h3>
-                <button className='button' onClick={this.handleClickDelete}>Delete</button>
+                <button className='button button-outline float-right' onClick={this.handleClickDownload}>
+                    <i className='fa fa-download' />
+                </button>
+                <h3>{title}</h3>
+
                 {content}
                 {children}
             </div>

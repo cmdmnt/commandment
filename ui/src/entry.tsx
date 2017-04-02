@@ -15,6 +15,7 @@ import '../sass/app.scss';
 import {SSLPage} from "./containers/config/SSLPage";
 import {MDMPage} from "./containers/config/MDMPage";
 import {CertificatesPage} from './containers/CertificatesPage';
+import {InternalCAPage} from './containers/config/InternalCAPage';
 
 const initialState: RootState = {};
 
@@ -30,6 +31,7 @@ render(
                 <App>
                     <Route path='/config/assistant' component={AssistantPage} />
                     <Route path='/config/scep' component={SCEPPage} />
+                    <Route path='/config/ca' component={InternalCAPage} />
                     <Route path='/config/ssl' component={SSLPage} />
                     <Route path='/config/mdm' component={MDMPage} />
                     <Route path='/certificates' component={CertificatesPage} />
