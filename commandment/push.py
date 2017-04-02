@@ -7,15 +7,7 @@ Attributes:
 """
 
 import apns2
-import os
-import tempfile
-import atexit
 import flask
-from .database import db_session
-from .models import MDMConfig, Certificate as DBCertificate, PushCertificate as DBPushCertificate, Device, RSAPrivateKey as DBPrivateKey, QueuedCommand
-from .pki.models import Certificate, RSAPrivateKey
-import random
-import time
 try:
     from ssl import SSLError
 except ImportError:
@@ -26,20 +18,21 @@ def push_init():
     """
     Instantiate APNS2Client(s) from push certificate(s) stored within the database.
     """
-    db_push_cert = db_session.query(DBPushCertificate).one()
-    db_push_key = db_push_cert.rsa_private_key
-
-    cert = Certificate(model=db_push_cert)
-    pk = RSAPrivateKey(model=db_push_key)
-
-    cert_handle, cert_file = tempfile.mkstemp()
-    pkey_handle, pkey_file = tempfile.mkstemp()
-    atexit.register(os.remove, pkey_file)
-    atexit.register(os.remove, cert_file)
-    os.write(cert_handle, cert.pem_data)
-    os.write(pkey_handle, pk.pem_key)
-    os.close(cert_handle)
-    os.close(pkey_handle)
+    # db_push_cert = db_session.query(DBPushCertificate).one()
+    # db_push_key = db_push_cert.rsa_private_key
+    #
+    # cert = Certificate(model=db_push_cert)
+    # pk = RSAPrivateKey(model=db_push_key)
+    #
+    # cert_handle, cert_file = tempfile.mkstemp()
+    # pkey_handle, pkey_file = tempfile.mkstemp()
+    # atexit.register(os.remove, pkey_file)
+    # atexit.register(os.remove, cert_file)
+    # os.write(cert_handle, cert.pem_data)
+    # os.write(pkey_handle, pk.pem_key)
+    # os.close(cert_handle)
+    # os.close(pkey_handle)
+    cert_file = flask.current_app.config['PUSH_CERTIFICATE']
 
     flask.g.apns = apns2.APNSClient(mode='prod', client_cert=cert_file)
 

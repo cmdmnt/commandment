@@ -5,11 +5,12 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 from flask import Blueprint, render_template, make_response, request, abort
 from flask import current_app, send_file, g
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives import hashes
+from .pki.models import Certificate
 from .pki.ca import get_ca
 from .database import db_session, NoResultFound, or_, and_
 from .models import MDMConfig, Certificate as DBCertificate, Device, RSAPrivateKey as DBPrivateKey, QueuedCommand
-from .models import App, MDMGroup, app_group_assoc, SCEPConfig
+from .models import App, MDMGroup, app_group_assoc, SCEPConfig, Organization, SSLCertificate
 from .profiles import Profile
 from .profiles.cert import PEMCertificatePayload, PKCS12CertificatePayload, SCEPPayload
 from .profiles.mdm import MDMPayload
@@ -47,81 +48,61 @@ def enroll():
     """Generate an enrollment profile."""
     mdm_ca = get_ca()
 
-    config = db_session.query(MDMConfig).first()
+    org = db_session.query(Organization).first()
 
-    if not config:
+    if os.path.exists(current_app.config['PUSH_CERTIFICATE']):
+        with open(current_app.config['PUSH_CERTIFICATE'], 'rb') as fd:
+            push_cert = Certificate('mdm.pushcert')
+            push_cert.pem_data = fd.read()
+    else:
+        abort(500, 'No push certificate available')
+
+    if not org:
         abort(500, 'No MDM configuration present; cannot generate enrollment profile')
 
-    if not config.prefix or not config.prefix.strip():
+    if not org.payload_prefix:
         abort(500, 'MDM configuration has no profile prefix')
 
-    profile = Profile(config.prefix + '.enroll', PayloadDisplayName=config.mdm_name)
+    profile = Profile(org.payload_prefix + '.enroll', PayloadDisplayName=org.name)
 
-    # print(mdm_ca.get_cacert().to_pem())
-    ca_cert_payload = PEMCertificatePayload(config.prefix + '.mdm-ca', str(mdm_ca.pem_certificate).strip(),
+    ca_cert_payload = PEMCertificatePayload(org.payload_prefix + '.mdm-ca', str(mdm_ca.certificate.pem_data).strip(),
                                             PayloadDisplayName='MDM CA Certificate')
 
     profile.append_payload(ca_cert_payload)
 
     # find and include all mdm.webcrt's
-    q = db_session.query(DBCertificate).filter(DBCertificate.cert_type == 'mdm.webcrt')
+    q = db_session.query(SSLCertificate).first()
     for i, cert in enumerate(q):
-        print(cert.pem_certificate)
-        new_webcrt_profile = PEMCertificatePayload(config.prefix + '.webcrt.%d' % i, str(cert.pem_certificate).strip(),
+        new_webcrt_profile = PEMCertificatePayload(org.payload_prefix + '.webcrt.%d' % i, str(cert.pem_data).strip(),
                                                    PayloadDisplayName='Web Server Certificate')
         profile.append_payload(new_webcrt_profile)
 
-    # NOTE: any device requesting non-SCEP enrollment will be generating new
-    # CA-signed certificates. may want to gate the enrollment page by password
-    # or other authentication
-    if config.device_identity_method == 'provide':
-        # make new device privkey, certificate then CA sign and persist
-        # certificate finally return new Identity object
+    scep_payload = SCEPPayload(
+        org.payload_prefix + '.mdm-scep',
+        'http://localhost/scep',  # config.scep_url,
+        PayloadContent=dict(
+            Keysize=2048,
+            Challenge='sekret',
+            CAFingerprint=plistlib.Data(mdm_ca.certificate.fingerprint(hashes.SHA1()).decode('hex')),
+            Subject=[
+                [ ['CN', '%HardwareUUID%'] ]
+            ]
+        ),
+        PayloadDisplayName='MDM SCEP')
+    profile.append_payload(scep_payload)
+    cert_uuid = scep_payload.get_uuid()
+    # else:
+    #     abort(500, 'Invalid device identity method')
 
-        new_dev_ident, db_dev_cert = mdm_ca.gen_new_device_identity()
-
-        # random password for PKCS12 payload
-        p12pw = urandom(20).encode('hex')
-
-        # generate PCKS12 profile payload
-        new_dev_ident_payload = PKCS12CertificatePayload(
-            config.prefix + '.id-cert',
-            new_dev_ident.to_pkcs12(p12pw),
-            p12pw,
-            PayloadDisplayName='Device Identity Certificate')
-
-        profile.append_payload(new_dev_ident_payload)
-        cert_uuid = new_dev_ident_payload.get_uuid()
-    elif config.device_identity_method == 'ourscep':
-        # SCEP is preferred
-        scep_config = db_session.query(SCEPConfig).one()
-
-        scep_payload = SCEPPayload(
-            config.prefix + '.mdm-scep',
-            config.scep_url,
-            PayloadContent=dict(
-                Keysize=2048,
-                Challenge=scep_config.challenge,
-                CAFingerprint=plistlib.Data(mdm_ca.certificate.fingerprint(hashes.SHA1()).decode('hex'))
-                #Subject=
-                # CAFingerprint=plistlib.Data(mdm_ca.get_cacert().get_m2_cert().get_fingerprint('sha1').decode('hex')),
-                # Subject=[
-                #     [ ['CN', 'MDM Enrollment'] ],
-                # ],
-            ),
-            PayloadDisplayName='MDM SCEP')
-        profile.append_payload(scep_payload)
-        cert_uuid = scep_payload.get_uuid()
-    else:
-        abort(500, 'Invalid device identity method')
+    from .profiles.mdm import MDM_AR__ALL
 
     new_mdm_payload = MDMPayload(
-        config.prefix + '.mdm',
+        org.payload_prefix + '.mdm',
         cert_uuid,
-        config.topic,  # APNs push topic
-        config.mdm_url,
-        config.access_rights,
-        CheckInURL=config.checkin_url,
+        push_cert.topic,  # APNs push topic
+        'https://localhost:5443/mdm',
+        MDM_AR__ALL,
+        CheckInURL='https://localhost:5443/checkin',
         # we can validate MDM device client certs provided via SSL/TLS.
         # however this requires an SSL framework that is able to do that.
         # alternatively we may optionally have the client digitally sign the
