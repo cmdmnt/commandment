@@ -164,3 +164,18 @@ Go to the Devices list. Click the "[ View Device ]" link for your newly enrolled
 If all worked then the iOS device you enrolled should have it's iTunes icon removed from it's home screen. You should be able to unassign the device from the group to put it back.
 
 *Currently only device group memebership triggers profile updates, further functionality is coming.*
+
+## Additional configuration
+
+You may optionally further configure Commandment using a configuration file:
+
+1. Create a configuration file with the same syntax and values as `commandment/default_values.py`.
+2. Specify the full path to it in the environment variable `COMMANDMENT_SETTINGS`
+3. Run `run_server.py` with that environment variable in its environment
+
+Example:
+
+    echo "ADMIN_PASSWORD = 'hunter2'" > local_settings.py
+	COMMANDMENT_SETTINGS=$(pwd)/local_settings.py python2 ./runserver.py 
+
+It is recommended to at least specify an admin password, if your Commandment server is publicly accessible from the Internet.

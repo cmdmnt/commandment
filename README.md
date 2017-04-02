@@ -37,7 +37,6 @@ Please report any issues, bugs, suggestions, feedback, etc. to the [issue tracke
 
 Much of this is planned to be addressed or implemented, but noting it here so folks aren't surprised when they notice the (sometimes gaping) holes.
 
-* No authentication for the admin pages (yet)
 * No database "migrations" support. Any change to database schema (and there will be many) will likely **require deleting the database** and re-creating. This means re-enrollment of any previously enrolled devices.
 * The current profile editing UI is hard-coded to, yes, one single key in one single payload in one profile. Need to massively expand support for Profile editing and profile upload.
 * Support for some very basic MDM operations is simply lacking right now like locking, wiping/erasing, etc.

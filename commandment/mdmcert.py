@@ -17,6 +17,7 @@ from base64 import b64encode
 import urllib2
 from M2Crypto import BIO, SMIME, X509, m2
 import datetime
+from .auth import require_auth
 
 MDMCERT_REQ_URL = 'https://mdmcert.download/api/v1/signrequest'
 
@@ -136,3 +137,7 @@ def upload_cert():
 
 
     return 'no matching CSR found'
+
+@admin_mdmcert_app.before_request
+def auth_check():
+    return require_auth()

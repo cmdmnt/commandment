@@ -27,6 +27,7 @@ from .utils.dep_utils import initial_fetch, mdm_profile, assign_devices
 import datetime
 from urlparse import urlparse
 from base64 import b64encode
+from .auth import require_auth
 
 class FixedLocationResponse(Response):
     # override Werkzeug default behaviour of "fixing up" once-non-compliant
@@ -888,3 +889,7 @@ def dep_test1(dep_id):
 
     return 'initial_fetch complete'
     # return '<pre>%s</pre>' % str(mdm_profile(mdm))
+
+@admin_app.before_request
+def auth_check():
+    return require_auth()
