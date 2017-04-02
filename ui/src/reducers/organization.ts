@@ -13,21 +13,23 @@ const initialState: OrganizationState = {
     error: false
 };
 
-export function config(state: OrganizationState = initialState, action: actions.PostActionResponse): OrganizationState {
+export type OrganizationAction = actions.IndexActionResponse | actions.PostActionResponse;
+
+export function organization(state: OrganizationState = initialState, action: OrganizationAction): OrganizationState {
     switch (action.type) {
-        case POST_REQUEST:
+        case actions.POST_REQUEST:
             return {
                 ...state,
                 loading: true
             };
-        case POST_FAILURE:
+        case actions.POST_FAILURE:
             return {
                 ...state,
                 loading: false,
                 error: true,
                 errorDetail: action.payload
             };
-        case POST_SUCCESS:
+        case actions.POST_SUCCESS:
             return {
                 ...state,
                 loading: false,

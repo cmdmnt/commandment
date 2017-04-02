@@ -5,6 +5,7 @@ import { reducer as formReducer, FormStateMap } from 'redux-form';
 import {certificates, CertificatesState} from './certificates';
 import {assistant, AssistantState} from './assistant';
 import {config, ConfigState} from './config';
+import {organization, OrganizationState} from './organization';
 
 export interface RootState {
     router?: RouterState;
@@ -12,6 +13,7 @@ export interface RootState {
     certificates?: CertificatesState;
     assistant?: AssistantState;
     config?: ConfigState;
+    organization?: OrganizationState;
 }
 
 
@@ -20,7 +22,8 @@ export const rootReducer = combineReducers<RootState>({
     form: formReducer,
     assistant,
     certificates,
-    config
+    config,
+    organization
 });
 
 export default rootReducer;

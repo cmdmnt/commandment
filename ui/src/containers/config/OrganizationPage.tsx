@@ -11,7 +11,8 @@ interface OrganizationPageState {
 }
 
 interface OrganizationPageDispatchProps {
-
+    index: actions.IndexActionRequest;
+    post: actions.PostActionRequest;
 }
 
 interface OrganizationPageProps extends OrganizationPageState, OrganizationPageDispatchProps, RouteComponentProps<any> {
@@ -24,17 +25,19 @@ interface OrganizationPageProps extends OrganizationPageState, OrganizationPageD
     } },
     (dispatch: Dispatch<any>): OrganizationPageDispatchProps => {
         return bindActionCreators({
+            index: actions.index,
+            post: actions.post
         }, dispatch);
     }
 )
 export class OrganizationPage extends React.Component<OrganizationPageProps, undefined> {
 
     componentWillMount() {
-
+        this.props.index();
     }
 
     handleSubmit = (values: FormData): void => {
-
+        this.props.post(values);
     };
 
     render(): JSX.Element {

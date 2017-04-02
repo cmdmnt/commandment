@@ -1,96 +1,19 @@
 import io
 from flask import Blueprint, send_file
-from flask_rest_jsonapi import Api, ResourceDetail, ResourceList
-from .models import db, Device, Certificate, CertificateSigningRequest, RSAPrivateKey, PushCertificate, CACertificate, \
-    SSLCertificate, Organization
-from .api_schema import DeviceSchema, CertificateSchema, CertificateSigningRequestSchema, PrivateKeySchema, OrganizationSchema
+from flask_rest_jsonapi import Api
+from .models import db, Certificate
+from .resources import CertificatesList, CertificateDetail, CertificateSigningRequestList, \
+    CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
+    CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, OrganizationList, \
+    OrganizationDetail
 
 api_app = Blueprint('api_app', __name__)
-
-
-class DeviceList(ResourceList):
-    schema = DeviceSchema
-    data_layer = {'session': db.session, 'model': Device}
-
-
-class DeviceDetail(ResourceDetail):
-    schema = DeviceSchema
-    data_layer = {'session': db.session, 'model': Device}
-
-
-class CertificatesList(ResourceList):
-    schema = CertificateSchema
-    data_layer = {'session': db.session, 'model': Certificate}
-
-
-class CertificateDetail(ResourceDetail):
-    schema = CertificateSchema
-    data_layer = {'session': db.session, 'model': Certificate}
-
-
-class CertificateTypeDetail(ResourceDetail):
-    schema = CertificateSchema
-    data_layer = {'session': db.session, 'model': Certificate, 'url_field': 'purpose', 'id_field': 'cert_type'}
-
-
-class PrivateKeyDetail(ResourceDetail):
-    schema = PrivateKeySchema
-    data_layer = {'session': db.session, 'model': Certificate}
-
-
-class CertificateSigningRequestList(ResourceList):
-    schema = CertificateSigningRequestSchema
-    data_layer = {
-        'session': db.session,
-        'model': CertificateSigningRequest,
-    }
-
-
-class CertificateSigningRequestDetail(ResourceDetail):
-    schema = CertificateSigningRequestSchema
-    data_layer = {
-        'session': db.session,
-        'model': CertificateSigningRequest
-    }
-
-
-class PushCertificateList(ResourceList):
-    schema = CertificateSchema
-    data_layer = {
-        'session': db.session,
-        'model': PushCertificate
-    }
-
-
-class CACertificateList(ResourceList):
-    schema = CertificateSchema
-    data_layer = {
-        'session': db.session,
-        'model': CACertificate
-    }
-
-
-class SSLCertificatesList(ResourceList):
-    schema = CertificateSchema
-    data_layer = {
-        'session': db.session,
-        'model': SSLCertificate
-    }
-
-
-class OrganizationList(ResourceList):
-    schema = OrganizationSchema
-    data_layer = {
-        'session': db.session,
-        'model': Organization
-    }
 
 api = Api(api_app)
 
 # Certificates
 api.route(CertificatesList, 'certificates_list', '/v1/certificates/')
 api.route(CertificateDetail, 'certificate_detail', '/v1/certificates/<int:certificate_id>')
-api.route(CertificateTypeDetail, 'certificate_type_detail', '/v1/certificates/type/<string:purpose>')
 
 api.route(CertificateSigningRequestList, 'certificate_signing_request_list', '/v1/certificate_signing_requests')
 api.route(CertificateSigningRequestDetail, 'certificate_signing_request_detail',
@@ -124,4 +47,6 @@ def download_certificate(certificate_id: int):
 api.route(DeviceList, 'device_list', '/v1/devices')
 api.route(DeviceDetail, 'device_detail', '/v1/devices/<int:device_id>')
 
+# Organizations
 api.route(OrganizationList, 'organizations_list', '/v1/organizations')
+api.route(OrganizationDetail, 'organization_detail', '/v1/organizations/<int:organization_id>')

@@ -56,6 +56,7 @@ export class OrganizationForm extends React.Component<OrganizationFormProps, und
                         <option value='AU'>Australia</option>
                     </Field>
                 </fieldset>
+                <input className="button-primary" type="submit" value="Save"/>
             </form>
         )
     }
