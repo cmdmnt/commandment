@@ -106,6 +106,7 @@ class CertificateSigningRequest(object):
 
 
 
+
 class Certificate(object):
 
     def __init__(self, type: str, model: dbmodels.Certificate = None, certificate: x509.Certificate = None):
@@ -136,12 +137,20 @@ class Certificate(object):
     def topic(self) -> str:
         subject = self._certificate.subject
         user_id = subject.get_attributes_for_oid(NameOID.USER_ID)
-        return user_id.value
+        if len(user_id) > 0:
+            return user_id[0].value
+        else:
+            return ''
 
     @property
     def common_name(self) -> str:
         cn = self._certificate.subject.get_attributes_for_oid(NameOID.COMMON_NAME)
         return cn.value
+
+    @property
+    def fingerprint(self):
+        """SHA-1 Fingerprint"""
+        return self._certificate.fingerprint(hashes.SHA1())
 
     def model(self):
         if self._model is not None:

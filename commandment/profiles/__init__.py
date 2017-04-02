@@ -200,7 +200,7 @@ class Profile(Payload):
         Uses plistlib to generate a serialized Apple Property List XML
         representation of payload data.
         '''
-        return plistlib.writePlistToString(self.generate_dict())
+        return plistlib.dumps(self.generate_dict())
 
     @classmethod
     def from_plist(cls, plist):

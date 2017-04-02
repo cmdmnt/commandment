@@ -18,8 +18,7 @@ from commandment.models import db
 def server():
     app = create_app()
 
-    if os.environ.get('COMMANDMENT_SETTINGS'):
-        app.config.from_envvar('COMMANDMENT_SETTINGS')
+
 
     config_engine(app.config['SQLALCHEMY_DATABASE_URI'], app.config['SQLALCHEMY_DATABASE_ECHO'])
 

@@ -2,6 +2,7 @@
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
+import os
 from flask import Flask, render_template
 
 from .mdm import mdm_app
@@ -20,6 +21,9 @@ def create_app() -> Flask:
     """
     app = Flask(__name__)
     app.config.from_object('commandment.default_settings')
+    if os.environ.get('COMMANDMENT_SETTINGS'):
+        app.config.from_envvar('COMMANDMENT_SETTINGS')
+
     db.init_app(app)
     db.create_all(app=app)
 

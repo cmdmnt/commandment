@@ -6,6 +6,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 from flask import Blueprint, render_template, make_response, request, abort
 from flask import current_app, send_file, g
 from cryptography.hazmat.primitives import hashes
+import codecs
 from .pki.models import Certificate
 from .pki.ca import get_ca
 from .database import db_session, NoResultFound, or_, and_
@@ -49,13 +50,14 @@ def enroll():
     mdm_ca = get_ca()
 
     org = db_session.query(Organization).first()
+    push_path = os.path.join(os.path.dirname(current_app.root_path), current_app.config['PUSH_CERTIFICATE'])
 
-    if os.path.exists(current_app.config['PUSH_CERTIFICATE']):
-        with open(current_app.config['PUSH_CERTIFICATE'], 'rb') as fd:
+    if os.path.exists(push_path):
+        with open(push_path, 'rb') as fd:
             push_cert = Certificate('mdm.pushcert')
             push_cert.pem_data = fd.read()
     else:
-        abort(500, 'No push certificate available')
+        abort(500, 'No push certificate available at: {}'.format(push_path))
 
     if not org:
         abort(500, 'No MDM configuration present; cannot generate enrollment profile')
@@ -65,17 +67,20 @@ def enroll():
 
     profile = Profile(org.payload_prefix + '.enroll', PayloadDisplayName=org.name)
 
-    ca_cert_payload = PEMCertificatePayload(org.payload_prefix + '.mdm-ca', str(mdm_ca.certificate.pem_data).strip(),
+    ca_cert_payload = PEMCertificatePayload(org.payload_prefix + '.mdm-ca', mdm_ca.certificate.pem_data,
                                             PayloadDisplayName='MDM CA Certificate')
 
     profile.append_payload(ca_cert_payload)
 
     # find and include all mdm.webcrt's
-    q = db_session.query(SSLCertificate).first()
-    for i, cert in enumerate(q):
-        new_webcrt_profile = PEMCertificatePayload(org.payload_prefix + '.webcrt.%d' % i, str(cert.pem_data).strip(),
-                                                   PayloadDisplayName='Web Server Certificate')
-        profile.append_payload(new_webcrt_profile)
+    # q = db_session.query(SSLCertificate).first()
+    # for i, cert in enumerate(q):
+    #     new_webcrt_profile = PEMCertificatePayload(org.payload_prefix + '.webcrt.%d' % i, str(cert.pem_data).strip(),
+    #                                                PayloadDisplayName='Web Server Certificate')
+    #     profile.append_payload(new_webcrt_profile)
+
+    hexlify = codecs.getencoder('hex')
+    ca_fingerprint = hexlify(mdm_ca.certificate.fingerprint)
 
     scep_payload = SCEPPayload(
         org.payload_prefix + '.mdm-scep',
@@ -83,9 +88,9 @@ def enroll():
         PayloadContent=dict(
             Keysize=2048,
             Challenge='sekret',
-            CAFingerprint=plistlib.Data(mdm_ca.certificate.fingerprint(hashes.SHA1()).decode('hex')),
+            #CAFingerprint=plistlib.Data(ca_fingerprint),
             Subject=[
-                [ ['CN', '%HardwareUUID%'] ]
+                [['CN', '%HardwareUUID%']]
             ]
         ),
         PayloadDisplayName='MDM SCEP')
