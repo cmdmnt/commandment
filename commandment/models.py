@@ -390,3 +390,19 @@ class User(db.Model):
     name = Column(String)
     fullname = Column(String)
     password = Column(String)
+
+
+class Organization(db.Model):
+    __tablename__ = 'organizations'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    payload_prefix = Column(String)
+
+    # http://www.ietf.org/rfc/rfc5280.txt
+    # maximum string lengths are well defined by this RFC and this schema follows those recommendations
+    # this x.509 name is used in the subject of the internal CA and issued certificates
+    x509_ou = Column(String(32))
+    x509_o = Column(String(64))
+    x509_st = Column(String(128))
+    x509_c = Column(String(2))

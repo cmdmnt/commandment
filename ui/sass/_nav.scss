@@ -57,6 +57,7 @@ nav ul:after {
 
 // submenu
 nav ul ul {
+  z-index: 99;
   background-color: #9b4dca;
   position: absolute;
   //top: 100%;

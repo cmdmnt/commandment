@@ -62,10 +62,14 @@ export class CAConfigurationForm extends React.Component<CAConfigurationFormProp
                         </div>
                     </div>
 
-
-
-                    <label htmlFor='scepSubject'>Request Subject</label>
-                    <Field id='scepSubject' name='scep_subject' component='input' type='text' placeholder='O=Commandment/OU=IT/CN=%HardwareUUID%'/>
+                    <label htmlFor='scepSubject'>SCEP Client Certificate Name</label>
+                    <Field name='scepSubject' component='select' id='scepSubject'>
+                        <option value='%HardwareUUID%'>%HardwareUUID% - The hardware UDID</option>
+                        <option value='%HostName%'>%HostName% - The local hostname eg. (joe.local)</option>
+                        <option value='%LocalHostName%'>%LocalHostName% - The hostname without the .local suffix</option>
+                        <option value='%MACAddress%'>%MACAddress% - Active ethernet interface MAC address</option>
+                        <option value='%SerialNumber%'>%SerialNumber% - Serial number of the device</option>
+                    </Field>
 
                     <input className="button-primary" type="submit" value="Save"/>
                 </fieldset>
