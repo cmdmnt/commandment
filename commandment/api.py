@@ -2,8 +2,8 @@ import io
 from flask import Blueprint, send_file
 from flask_rest_jsonapi import Api, ResourceDetail, ResourceList
 from .models import db, Device, Certificate, CertificateSigningRequest, RSAPrivateKey, PushCertificate, CACertificate, \
-    SSLCertificate
-from .api_schema import DeviceSchema, CertificateSchema, CertificateSigningRequestSchema, PrivateKeySchema
+    SSLCertificate, Organization
+from .api_schema import DeviceSchema, CertificateSchema, CertificateSigningRequestSchema, PrivateKeySchema, OrganizationSchema
 
 api_app = Blueprint('api_app', __name__)
 
@@ -78,6 +78,13 @@ class SSLCertificatesList(ResourceList):
     }
 
 
+class OrganizationList(ResourceList):
+    schema = OrganizationSchema
+    data_layer = {
+        'session': db.session,
+        'model': Organization
+    }
+
 api = Api(api_app)
 
 # Certificates
@@ -116,3 +123,5 @@ def download_certificate(certificate_id: int):
 # Devices
 api.route(DeviceList, 'device_list', '/v1/devices')
 api.route(DeviceDetail, 'device_detail', '/v1/devices/<int:device_id>')
+
+api.route(OrganizationList, 'organizations_list', '/v1/organizations')

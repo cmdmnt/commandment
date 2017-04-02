@@ -80,3 +80,20 @@ class CertificateSigningRequestSchema(Schema):
         self_view = 'api_app.certificate_signing_request_detail'
         self_view_kwargs = {'certificate_signing_request_id': '<id>'}
         self_view_many = 'api_app.certificate_signing_request_list'
+
+
+class OrganizationSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+    payload_prefix = fields.Str()
+
+    x509_ou = fields.Str()
+    x509_o = fields.Str()
+    x509_st = fields.Str()
+    x509_c = fields.Str()
+
+    class Meta:
+        type_ = 'organizations'
+        self_view = 'api_app.organization_detail'
+        self_view_kwargs = {'organization_id': '<id>'}
+        self_view_many = 'api_app.organizations_list'
