@@ -17,6 +17,7 @@ class DeviceSchema(Schema):
     serial_number = fields.Str()
 
     awaiting_configuration = fields.Bool()
+    last_seen = fields.DateTime()
 
     # private
     # push_magic = fields.Str()
@@ -32,15 +33,15 @@ class DeviceSchema(Schema):
     #     related_view_kwargs={'certificate_id': '<id>'},
     # )
 
-    # commands = Relationship(
-    #     self_view='api_app.device_commands',
-    #     self_view_kwargs={'id': '<id>'},
-    #     related_view='api_app.commands_list',
-    #     related_view_kwargs={'command_id': '<id>'},
-    #     many=True,
-    #     schema='CommandSchema',
-    #     type_='commands'
-    # )
+    commands = Relationship(
+        self_view='api_app.commands_list',
+        self_view_kwargs={'device_id': '<id>'},
+        related_view='api_app.command_detail',
+        related_view_kwargs={'command_id': '<id>'},
+        many=True,
+        schema='CommandSchema',
+        type_='commands'
+    )
 
     class Meta:
         type_ = 'devices'

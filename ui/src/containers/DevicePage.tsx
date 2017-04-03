@@ -1,15 +1,16 @@
 import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
-import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
 
 import {bindActionCreators} from "redux";
 import * as actions from '../actions/devices';
 import {RootState} from "../reducers/index";
 import {RouteComponentProps} from "react-router";
 import {ReadActionRequest} from "../actions/devices";
+import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
+import {DeviceState} from "../reducers/device";
 
 interface ReduxStateProps {
-    device: JSONAPIObject<Device>;
+    device: DeviceState;
 }
 
 interface ReduxDispatchProps {
@@ -21,7 +22,6 @@ interface RouteParameters {
 }
 
 interface DevicePageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteParameters> {
-    componentWillMount: () => void;
 }
 
 interface DevicePageState {
@@ -41,7 +41,7 @@ interface DevicePageState {
 export class DevicePage extends React.Component<DevicePageProps, DevicePageState> {
 
     componentDidMount(): void {
-        this.props.read(this.props.match.params.id);
+        this.props.read(this.props.match.params.id, ['commands']);
     }
 
     render(): JSX.Element {
@@ -51,7 +51,7 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
 
         return (
             <div className='DevicePage top-margin container'>
-                READ
+                {device && <MacOSDeviceDetail device={device} />}
             </div>
         );
     }

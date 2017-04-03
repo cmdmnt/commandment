@@ -70,9 +70,15 @@ export interface ReadActionResponse {
 }
 
 export const read: ReadActionRequest = (id: number, include?: Array<string>) => {
+
+    let inclusions = '';
+    if (include && include.length) {
+        inclusions = 'include=' + include.join(',')
+    }
+
     return {
         [CALL_API]: {
-            endpoint: `/api/v1/devices/${id}`,
+            endpoint: `/api/v1/devices/${id}?${inclusions}`,
             method: 'GET',
             types: [
                 READ_REQUEST,

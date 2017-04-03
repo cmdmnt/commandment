@@ -9,13 +9,15 @@ from flask_sqlalchemy import SQLAlchemy
 
 import datetime
 from enum import Enum
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum as DBEnum, text
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum as DBEnum, text, \
+    BigInteger, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
 from .profiles.mdm import MDM_AR__ALL
 from .dbtypes import GUID
+import uuid
 
 db = SQLAlchemy()
 
@@ -157,7 +159,8 @@ class Device(db.Model):
     id = Column(Integer, primary_key=True)
     udid = Column(String, index=True, nullable=True)
     topic = Column(String, nullable=True)
-    #  is_enrolled = Column(Boolean, default=True)
+    last_seen = Column(DateTime, nullable=True)
+    is_enrolled = Column(Boolean, default=False)
 
     # DeviceInformation that is optionally given in `Authenticate` message for a device
     build_version = Column(String)
@@ -187,6 +190,40 @@ class Device(db.Model):
     def __repr__(self):
         return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
 
+
+
+class InstalledApplication(db.Model):
+    __tablename__ = 'installed_applications'
+
+    id = Column(Integer, primary_key=True)
+    device_udid = Column(GUID, index=True, nullable=False)
+
+    # Many of these can be empty, so there is no valid composite key
+    bundle_identifier = Column(String, index=True)
+    version = Column(String, index=True)
+    short_version = Column(String)
+    name = Column(String)
+    bundle_size = Column(BigInteger)
+    dynamic_size = Column(BigInteger)
+    is_validated = Column(Boolean)
+
+
+class InstalledCertificate(db.Model):
+    __tablename__ = 'installed_certificates'
+
+    id = Column(Integer, primary_key=True)
+    device_udid = Column(GUID, index=True, nullable=False)
+
+    x509_cn = Column(String)
+    is_identity = Column(Boolean)
+    pem_data = Column(Text, nullable=False)
+    # SHA-256 hash of DER-encoded certificate
+    fingerprint = Column(String(64), nullable=False, index=True)
+
+# class InstalledProfile(db.Model):
+#     __tablename__ = 'installed_profiles'
+#
+#
 
 class Command(db.Model):
     __tablename__ = 'commands'
@@ -233,38 +270,38 @@ class Command(db.Model):
         return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
 
 
-class Profile(db.Model):
-    __tablename__ = 'profile'
-
-    id = Column(Integer, primary_key=True)
-    identifier = Column(String, index=True, unique=True,
-                        nullable=False)  # duplicated from within profile_data for searching
-    uuid = Column(String(36), index=True, unique=True,
-                  nullable=False)  # duplicated from within profile_data for searching
-    profile_data = Column(Text, nullable=False)  # serialized XML (or signed, encrypted) profile data
-
-    def __repr__(self):
-        return '<Profile ID=%r UUID=%r>' % (self.id, self.uuid)
-
-
-device_group_assoc = db.Table('device_group', db.Model.metadata,
-                              Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-                              Column('device_id', Integer, ForeignKey('devices.id')),
-                              )
-
-profile_group_assoc = db.Table('profile_group', db.Model.metadata,
-                               Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-                               Column('profile_id', Integer, ForeignKey('profile.id')),
-                               )
-
-app_group_assoc = db.Table('app_group', db.Model.metadata,
-                           Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-                           Column('app_id', Integer, ForeignKey('app.id')),
-                           # install_early is just a colloqualism to mean 'install as early as
-                           # possible.' initiallly this is in support for installing apps out of the
-                           # gate for DEP
-                           Column('install_early', Boolean),
-                           )
+# class Profile(db.Model):
+#     __tablename__ = 'profile'
+#
+#     id = Column(Integer, primary_key=True)
+#     identifier = Column(String, index=True, unique=True,
+#                         nullable=False)  # duplicated from within profile_data for searching
+#     uuid = Column(String(36), index=True, unique=True,
+#                   nullable=False)  # duplicated from within profile_data for searching
+#     profile_data = Column(Text, nullable=False)  # serialized XML (or signed, encrypted) profile data
+#
+#     def __repr__(self):
+#         return '<Profile ID=%r UUID=%r>' % (self.id, self.uuid)
+#
+#
+# device_group_assoc = db.Table('device_group', db.Model.metadata,
+#                               Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
+#                               Column('device_id', Integer, ForeignKey('devices.id')),
+#                               )
+#
+# profile_group_assoc = db.Table('profile_group', db.Model.metadata,
+#                                Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
+#                                Column('profile_id', Integer, ForeignKey('profile.id')),
+#                                )
+#
+# app_group_assoc = db.Table('app_group', db.Model.metadata,
+#                            Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
+#                            Column('app_id', Integer, ForeignKey('app.id')),
+#                            # install_early is just a colloqualism to mean 'install as early as
+#                            # possible.' initiallly this is in support for installing apps out of the
+#                            # gate for DEP
+#                            Column('install_early', Boolean),
+#                            )
 
 
 class MDMGroup(db.Model):
@@ -274,9 +311,9 @@ class MDMGroup(db.Model):
     group_name = Column(String, nullable=False)
     description = Column(String, nullable=True)
 
-    devices = relationship('Device', secondary=device_group_assoc, backref='mdm_groups')
-    profiles = relationship('Profile', secondary=profile_group_assoc, backref='mdm_groups')
-    apps = relationship('App', secondary=app_group_assoc, backref='mdm_groups')
+    # devices = relationship('Device', secondary=device_group_assoc, backref='mdm_groups')
+    # profiles = relationship('Profile', secondary=profile_group_assoc, backref='mdm_groups')
+    # apps = relationship('App', secondary=app_group_assoc, backref='mdm_groups')
 
     def __repr__(self):
         return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
@@ -425,3 +462,57 @@ class Organization(db.Model):
     x509_o = Column(String(64))
     x509_st = Column(String(128))
     x509_c = Column(String(2))
+
+payload_dependencies = Table('payload_dependencies', db.metadata,
+    Column('payload_uuid', GUID, ForeignKey('payloads.uuid')),
+    Column('depends_on_payload_uuid', GUID, ForeignKey('payloads.uuid')),
+)
+
+
+class Payload(db.Model):
+    """Configuration Profile Payload"""
+    __tablename__ = 'payloads'
+
+    id = Column(Integer, primary_key=True)
+    type = Column(String, index=True, nullable=False)
+    uuid = Column(GUID, index=True)
+    display_name = Column(String, nullable=False)
+    description = Column(Text)
+    organization = Column(String)
+
+    # Dependencies should be tracked in cases where the payload refers to another required payload.
+    # eg. a reference to certificate payload in an 802.1x configuration.
+    # depends_on = relationship("Payload",
+    #                           secondary=payload_dependencies,
+    #                           backref="dependents")
+
+
+class PayloadScope(Enum):
+    User = 'User'
+    System = 'System'
+
+profile_payloads = Table('profile_payloads', db.metadata,
+                         Column('profile_id', Integer, ForeignKey('profiles.id')),
+                         Column('payload_id', Integer, ForeignKey('payloads.id')))
+
+
+class Profile(db.Model):
+    __tablename__ = 'profiles'
+
+    id = Column(Integer, primary_key=True)
+    description = Column(Text)
+    display_name = Column(String, nullable=False)
+    expiration_date = Column(DateTime)  # Only for old style OTA
+    identifier = Column(String, nullable=False)
+    organization = Column(String)
+    uuid = Column(GUID, index=True)
+    removal_disallowed = Column(Boolean)
+    version = Column(Integer, default=1)
+    scope = Column(DBEnum(PayloadScope), default=PayloadScope.User)
+    removal_date = Column(DateTime)
+    duration_until_removal = Column(BigInteger)
+    consent_en = Column(Text)
+
+    payloads = relationship('Payload',
+                            secondary=profile_payloads,
+                            backref='profiles')

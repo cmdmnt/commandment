@@ -48,6 +48,7 @@ declare interface JSONAPIObject<TObject> {
     id: string|number;
     type: string;
     attributes: TObject;
+    relationships: Array<any>;
     links?: {
         self?: string;
     }
