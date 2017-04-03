@@ -6,27 +6,67 @@ class DeviceSchema(Schema):
     """marshmallow-jsonapi schema for Device objects."""
     id = fields.Int(dump_only=True)
     udid = fields.Str(dump_only=True)
-    push_magic = fields.Str()
-    token = fields.Str()
-    unlock_token = fields.Str()
     topic = fields.Str()
+
+    build_version = fields.Str()
+    device_name = fields.Str()
+    model = fields.Str()
+    model_name = fields.Str()
+    os_version = fields.Str()
+    product_name = fields.Str()
     serial_number = fields.Str()
+
+    awaiting_configuration = fields.Bool()
+
+    # private
+    # push_magic = fields.Str()
+    # token = fields.Str()
+    # unlock_token = fields.Str()
 
     # TODO: Relationship to dep_config
 
-    certificate = Relationship(
-        self_view='api_app.device_certificate',
-        self_view_kwargs={'certificate_id': '<id>'},
-        related_view='api_app.certificate_detail',
-        related_view_kwargs={'certificate_id': '<id>'},
-    )
+    # certificate = Relationship(
+    #     self_view='api_app.device_certificate',
+    #     self_view_kwargs={'certificate_id': '<id>'},
+    #     related_view='api_app.certificate_detail',
+    #     related_view_kwargs={'certificate_id': '<id>'},
+    # )
+
+    # commands = Relationship(
+    #     self_view='api_app.device_commands',
+    #     self_view_kwargs={'id': '<id>'},
+    #     related_view='api_app.commands_list',
+    #     related_view_kwargs={'command_id': '<id>'},
+    #     many=True,
+    #     schema='CommandSchema',
+    #     type_='commands'
+    # )
 
     class Meta:
         type_ = 'devices'
         self_view = 'api_app.device_detail'
-        self_view_kwargs = {'device_id': '<id>'}
+        self_view_kwargs = {'id': '<id>'}
         self_view_many = 'api_app.devices_list'
         strict = True
+
+
+class CommandSchema(Schema):
+    id = fields.Int(dump_only=True)
+    uuid = fields.Str(dump_only=True)
+    queued_status = fields.Str()
+    queued_at = fields.DateTime()
+    sent_at = fields.DateTime()
+    acknowledged_at = fields.DateTime()
+    after = fields.DateTime()
+    ttl = fields.Int()
+
+    class Meta:
+        type_ = 'commands'
+        self_view = 'api_app.command_detail'
+        self_view_kwargs = {'command_id': '<id>'}
+        self_view_many = 'api_app.commands_list'
+        strict = True
+
 
 
 class PrivateKeySchema(Schema):

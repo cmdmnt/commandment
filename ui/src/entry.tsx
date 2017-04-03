@@ -17,6 +17,8 @@ import {MDMPage} from "./containers/config/MDMPage";
 import {CertificatesPage} from './containers/CertificatesPage';
 import {InternalCAPage} from './containers/config/InternalCAPage';
 import {OrganizationPage} from './containers/config/OrganizationPage';
+import {DevicesPage} from "./containers/DevicesPage";
+import {DevicePage} from "./containers/DevicePage";
 
 const initialState: RootState = {};
 
@@ -37,6 +39,8 @@ render(
                     <Route path='/config/mdm' component={MDMPage} />
                     <Route path='/config/organization' component={OrganizationPage} />
                     <Route path='/certificates' component={CertificatesPage} />
+                    <Route path='/devices' exact component={DevicesPage} />
+                    <Route path='/devices/:id' component={DevicePage} />
                 </App>
             </AppContainer>
         </ConnectedRouter>

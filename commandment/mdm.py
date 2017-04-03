@@ -7,7 +7,7 @@ from flask import Blueprint, make_response, abort
 from flask import current_app, send_file, g
 import base64
 from .database import db_session, NoResultFound, or_, and_
-from .models import MDMConfig, Certificate as DBCertificate, Device, RSAPrivateKey as DBPrivateKey, QueuedCommand
+from .models import MDMConfig, Certificate as DBCertificate, Device, RSAPrivateKey as DBPrivateKey, Command
 from .models import App, MDMGroup, app_group_assoc, Organization, SSLCertificate
 from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
 from .mdmcmds import InstallProfile, AppInstall

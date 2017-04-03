@@ -1,4 +1,16 @@
 
+declare interface Device {
+    udid: string;
+    build_version: string;
+    device_name: string;
+    model: string;
+    model_name: string;
+    os_version: string;
+    product_name: string;
+    serial_number: string;
+    awaiting_configuration: boolean;
+}
+
 declare interface Organization {
     name: string;
     payload_prefix: string;

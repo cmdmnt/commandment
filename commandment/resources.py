@@ -1,7 +1,7 @@
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
-    CertificateSigningRequestSchema, OrganizationSchema
+    CertificateSigningRequestSchema, OrganizationSchema, CommandSchema
 from .models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
-    SSLCertificate, Organization
+    SSLCertificate, Organization, Command
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList
 
@@ -89,4 +89,20 @@ class OrganizationDetail(ResourceDetail):
     data_layer = {
         'session': db.session,
         'model': Organization
+    }
+
+
+class CommandsList(ResourceList):
+    schema = CommandSchema
+    data_layer = {
+        'session': db.session,
+        'model': Command
+    }
+
+
+class CommandDetail(ResourceDetail):
+    schema = CommandSchema
+    data_layer = {
+        'session': db.session,
+        'model': Command
     }

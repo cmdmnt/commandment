@@ -21,19 +21,20 @@ nav ul {
   list-style: none;
   position: relative;
   display: flex;
-  padding: 1rem 0;  // same as milligram body padding
+  //padding: 1rem 0;  // same as milligram body padding
 
   li {
     float: left;
     margin: 0;  // cancel out the milligram default margin
 
     a {
-      padding: 0 2rem;
+      padding: 1rem 2rem;
       display: block;
     }
 
     span { // if not using a link
-      padding: 0 2rem;
+      display: inline-block;
+      padding: 1rem 2rem;
     }
   }
 
@@ -60,7 +61,7 @@ nav ul ul {
   z-index: 99;
   background-color: #9b4dca;
   position: absolute;
-  //top: 100%;
+  top: 100%;
 
   display: none;
   padding: 0;

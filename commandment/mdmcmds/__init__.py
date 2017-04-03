@@ -5,7 +5,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 from uuid import uuid4
 from ..database import db_session
-from ..models import QueuedCommand, Profile as DBProfile, MDMConfig
+from ..models import Command, Profile as DBProfile, MDMConfig
 from ..profiles import Profile
 import json
 import plistlib # needed for Data() wrapper

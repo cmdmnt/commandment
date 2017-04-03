@@ -9,13 +9,13 @@ from flask_sqlalchemy import SQLAlchemy
 
 import datetime
 from enum import Enum
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum as DBEnum, text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
 from .profiles.mdm import MDM_AR__ALL
-from .types import GUID
+from .dbtypes import GUID
 
 db = SQLAlchemy()
 
@@ -26,6 +26,16 @@ class CertificateType(Enum):
     CA = 'mdm.cacert'
     DEVICE = 'mdm.device'
 
+
+class CommandStatus(Enum):
+    """CommandStatus describes all the possible states of a command in the device command queue."""
+
+    Queued = 'Q'  # Command has been created but has not been sent.
+    Sent = 'S'  # Command has been sent to the device, but no response has returned.
+    Acknowledged = 'A'  # Response has been returned from the device.
+    Invalid = 'I'  # The command that we sent was invalid, unable to be processed.
+    NotNow = 'N'  # The device is busy, set command.after to now + backoff time delta
+    Expired = 'E'  # The command TTL reached zero and this command is considered dead.
 
 CERT_TYPES = {
     'mdm.pushcert': {
@@ -178,37 +188,33 @@ class Device(db.Model):
         return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
 
 
-class QueuedCommand(db.Model):
-    __tablename__ = 'queued_command'
+class Command(db.Model):
+    __tablename__ = 'commands'
 
     id = Column(Integer, primary_key=True)
 
     command_class = Column(String, nullable=False)  # string representation of our local command handler
     # request_type = Column(String, index=True, nullable=False) # actual command name
-    uuid = Column(String(36), index=True, unique=True, nullable=False)
+    uuid = Column(GUID, index=True, unique=True, nullable=False)
     input_data = Column(MutableDict.as_mutable(JSONEncodedDict),
                         nullable=True)  # JSON add'l data as input to command builder
-    queued_status = Column(String(1), index=True, nullable=False, default='Q')  # 'Q' = Queued, 'S' = Sent
-    result = Column(String, index=True, nullable=True)  # Status key of MDM command result submission
+    queued_status = Column(String(1), index=True, nullable=False, default=CommandStatus.Queued)
 
-    # queued_stamp
-    # sent_stamp
-    # result_stamp
+    queued_at = Column(DateTime, default=datetime.datetime.utcnow(), server_default=text('CURRENT_TIMESTAMP'))
+    sent_at = Column(DateTime, nullable=True)
+    acknowledged_at = Column(DateTime, nullable=True)
 
-    device_id = Column(ForeignKey('devices.id'), nullable=False)
-    device = relationship('Device', backref='queued_command')
+    # command must only be sent after this date
+    after = Column(DateTime, nullable=True)
 
-    def set_sent(self):
-        self.queued_status = 'S'
+    # number of retries remaining until dead
+    ttl = Column(Integer, nullable=False, default=5)
 
-    def set_processing(self):
-        self.queued_status = 'P'
+    device_id = Column(ForeignKey('devices.id'), nullable=True)
+    device = relationship('Device', backref='commands')
 
-    def set_invalid(self):
-        self.queued_status = 'X'
-
-    def set_responded(self):
-        self.queued_status = 'R'
+    # device_user_id = Column(ForeignKey('device_users.id'), nullable=True)
+    # device_user = relationship('DeviceUser', backref='commands')
 
     @classmethod
     def find_by_uuid(cls, uuid):
@@ -219,18 +225,13 @@ class QueuedCommand(db.Model):
         # d == d AND (q_status == Q OR (q_status == R AND result == 'NotNow'))
         return cls.query.filter(
             and_(cls.device == device,
-                 or_(cls.queued_status == 'Q',
-                     and_(cls.queued_status == 'R',
+                 or_(cls.status == 'Q',
+                     and_(cls.status == 'R',
                           cls.result == 'NotNow')))).order_by(cls.id).first()
 
     def __repr__(self):
-        return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.queued_status)
+        return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
 
-
-# profile_device_assoc = Table('profile_device', Base.metadata,
-#   Column('device_id', Integer, ForeignKey('device.id')),
-#   Column('profile_id', Integer, ForeignKey('profile.id')),
-# )
 
 class Profile(db.Model):
     __tablename__ = 'profile'
@@ -247,23 +248,23 @@ class Profile(db.Model):
 
 
 device_group_assoc = db.Table('device_group', db.Model.metadata,
-                           Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-                           Column('device_id', Integer, ForeignKey('devices.id')),
-                           )
+                              Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
+                              Column('device_id', Integer, ForeignKey('devices.id')),
+                              )
 
 profile_group_assoc = db.Table('profile_group', db.Model.metadata,
-                            Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-                            Column('profile_id', Integer, ForeignKey('profile.id')),
-                            )
+                               Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
+                               Column('profile_id', Integer, ForeignKey('profile.id')),
+                               )
 
 app_group_assoc = db.Table('app_group', db.Model.metadata,
-                        Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-                        Column('app_id', Integer, ForeignKey('app.id')),
-                        # install_early is just a colloqualism to mean 'install as early as
-                        # possible.' initiallly this is in support for installing apps out of the
-                        # gate for DEP
-                        Column('install_early', Boolean),
-                        )
+                           Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
+                           Column('app_id', Integer, ForeignKey('app.id')),
+                           # install_early is just a colloqualism to mean 'install as early as
+                           # possible.' initiallly this is in support for installing apps out of the
+                           # gate for DEP
+                           Column('install_early', Boolean),
+                           )
 
 
 class MDMGroup(db.Model):
@@ -305,7 +306,7 @@ class MDMConfig(db.Model):
 
     # note: we default to 'provide' here despite its lower security because
     # it requires no other dependencies, i.e. a better user experience
-    device_identity_method = Column(Enum('ourscep', 'scep', 'provide'), default='provide', nullable=False)
+    device_identity_method = Column(DBEnum('ourscep', 'scep', 'provide'), default='provide', nullable=False)
     scep_url = Column(String, nullable=True)
     scep_challenge = Column(String, nullable=True)
 
@@ -316,8 +317,6 @@ class MDMConfig(db.Model):
             return self.mdm_url[:-4]
         else:
             return ''
-
-
 
 
 class App(db.Model):
@@ -410,6 +409,7 @@ class DeviceUser(db.Model):
     udid = Column(String(64))
     long_name = Column(String)
     short_name = Column(String)
+
 
 class Organization(db.Model):
     __tablename__ = 'organizations'
