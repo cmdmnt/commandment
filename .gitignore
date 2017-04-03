@@ -148,3 +148,4 @@ commandment/apps
 
 # Flask settings.cfg
 settings.cfg
+scep_settings.cfg

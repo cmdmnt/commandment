@@ -15,6 +15,7 @@ from sqlalchemy.ext.mutable import MutableDict
 from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
 from .profiles.mdm import MDM_AR__ALL
+from .types import GUID
 
 db = SQLAlchemy()
 
@@ -399,6 +400,16 @@ class User(db.Model):
     fullname = Column(String)
     password = Column(String)
 
+
+class DeviceUser(db.Model):
+    __tablename__ = 'device_users'
+
+    id = Column(Integer, primary_key=True)
+
+    user_id = Column(String(64))
+    udid = Column(String(64))
+    long_name = Column(String)
+    short_name = Column(String)
 
 class Organization(db.Model):
     __tablename__ = 'organizations'

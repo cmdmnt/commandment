@@ -4,41 +4,30 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 from flask import request, Response, abort
 from scep import app
-from sqlalchemy.orm.exc import NoResultFound
-from .models import db, SCEPConfig
-import codecs
-from base64 import b64decode, b64encode
+from base64 import b64decode
+from scep.ca import get_ca
+from cryptography.hazmat.primitives.serialization import Encoding
+from scep.message import degenerate_pkcs7_der, SCEPMessage, PKCSReq
 
 FORCE_DEGENERATE_FOR_SINGLE_CERT = False
 CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
-
-
-def init_scep_record(challenge: str = ''):
-    try:
-        db.session.query(SCEPConfig).one()
-    except NoResultFound:
-        scep_config = SCEPConfig()
-        if challenge:
-            scep_config.challenge = challenge
-        db.session.add(scep_config)
-        db.session.commit()
 
 @app.route('/cgi-bin/pkiclient.exe', methods=['GET', 'POST'])
 @app.route('/scep', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST'])
 def scep():
     op = request.args.get('operation')
-    #mdm_ca = get_ca()
-    scep_config = db.session.query(SCEPConfig).one()
+    mdm_ca = get_ca()
 
     if op == 'GetCACert':
-        certs = [mdm_ca.get_cacert()._m2_x509()]
+        certs = [mdm_ca.certificate]
 
         if len(certs) == 1 and not FORCE_DEGENERATE_FOR_SINGLE_CERT:
-            return Response(certs[0].as_der(), mimetype='application/x-x509-ca-cert')
+            return Response(certs[0].public_bytes(Encoding.DER), mimetype='application/x-x509-ca-cert')
         elif len(certs):
-            p7_degenerate = degenerate_pkcs7_der(certs)
-            return Response(p7_degenerate, mimetype='application/x-x509-ca-ra-cert')
+            raise ValueError('cryptography cannot produce degenerate pkcs7 certs')
+            # p7_degenerate = degenerate_pkcs7_der(certs)
+            # return Response(p7_degenerate, mimetype='application/x-x509-ca-ra-cert')
     elif op == 'GetCACaps':
         return '\n'.join(CACAPS)
     elif op == 'PKIOperation':
@@ -57,10 +46,12 @@ def scep():
         pki_msg = SCEPMessage.from_pkcs7_der(msg)
 
         if pki_msg.message_type == PKCSReq.message_type:
-            current_app.logger.debug('received PKCSReq SCEP message')
+            app.logger.debug('received PKCSReq SCEP message')
 
-            m2_evp_cakey = mdm_ca.get_private_key()._new_evp()
-            m2_x509_cacert = mdm_ca.get_cacert()._m2_x509()
+            cakey = mdm_ca.private_key
+            cacert = mdm_ca.certificate
+            # m2_evp_cakey = mdm_ca.get_private_key()._new_evp()
+            # m2_x509_cacert = mdm_ca.get_cacert()._m2_x509()
 
             der_req = pki_msg.get_decrypted_envelope_data(
                 m2_x509_cacert,
@@ -95,7 +86,7 @@ def scep():
 
             return Response(rpl_msg.to_pkcs7_der(), mimetype='application/x-pki-message')
         else:
-            current_app.logger.error('unhandled SCEP message type: %d', pki_msg.message_type)
+            app.logger.error('unhandled SCEP message type: %d', pki_msg.message_type)
             return ''
     else:
         abort(404, 'unknown SCEP operation')
