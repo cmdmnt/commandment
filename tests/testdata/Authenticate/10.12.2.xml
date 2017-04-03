@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+        "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>BuildVersion</key>
+        <string>16C67</string>
+        <key>Challenge</key>
+        <data>YXBwbGU=</data>
+        <key>DeviceName</key>
+        <string>commandment</string>
+        <key>MessageType</key>
+        <string>Authenticate</string>
+        <key>Model</key>
+        <string>iMac17,1</string>
+        <key>ModelName</key>
+        <string>iMac</string>
+        <key>OSVersion</key>
+        <string>10.12.2</string>
+        <key>ProductName</key>
+        <string>iMac17,1</string>
+        <key>SerialNumber</key>
+        <string>000000000000</string>
+        <key>Topic</key>
+        <string>com.apple.mgmt.commandment.dev</string>
+        <key>UDID</key>
+        <string>E3568F17-92ED-450A-8904-C3BF4CB7E9A5</string>
+    </dict>
+</plist>

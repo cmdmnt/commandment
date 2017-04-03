@@ -18,8 +18,6 @@ from commandment.models import db
 def server():
     app = create_app()
 
-
-
     config_engine(app.config['SQLALCHEMY_DATABASE_URI'], app.config['SQLALCHEMY_DATABASE_ECHO'])
 
     with app.app_context():

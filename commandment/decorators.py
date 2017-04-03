@@ -63,6 +63,8 @@ def parse_plist_input_data(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         try:
+            if current_app.debug:
+                current_app.logger.debug(request.data)
             g.plist_data = plistlib.loads(request.data)
         except:
             current_app.logger.info('could not parse property list input data')

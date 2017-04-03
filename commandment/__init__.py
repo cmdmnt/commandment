@@ -10,6 +10,7 @@ from .admin import admin_app
 from .mdmcert import admin_mdmcert_app
 from .api import api_app
 from .api_push import api_push_app
+from .enroll import enroll_app
 from .models import db
 
 
@@ -27,6 +28,7 @@ def create_app() -> Flask:
     db.init_app(app)
     db.create_all(app=app)
 
+    app.register_blueprint(enroll_app)
     app.register_blueprint(mdm_app)
     app.register_blueprint(admin_app)
     app.register_blueprint(admin_mdmcert_app, url_prefix='/admin/mdmcert')

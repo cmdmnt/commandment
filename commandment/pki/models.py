@@ -21,6 +21,7 @@ class RSAPrivateKey(object):
     def __init__(self, model: dbmodels.RSAPrivateKey = None, pk: rsa.RSAPrivateKey = None, password: str = None):
         if pk is not None:
             self._key = pk
+            self._model = None
         elif model is not None:
             self._model = model
             if self._model.pem_data is not None:
@@ -57,6 +58,29 @@ class RSAPrivateKey(object):
             encryption_algorithm=serialization.NoEncryption(),
         )
         return pem
+
+    @property
+    def raw(self) -> rsa.RSAPrivateKey:
+        return self._key
+
+    def model(self):
+        """Get or generate an SQLAlchemy model.
+
+        If a model was supplied to the constructor of this private key object, then the original will be returned with
+        updated attributes.
+        If this object only contains a private key, then a new model is created.
+
+        Returns:
+            dbmodels.RSAPrivateKey
+        """
+        if self._model is not None:
+            self._model.pem_data = self.pem_key
+            return self._model
+        else:
+            pk = dbmodels.RSAPrivateKey()
+            pk.pem_data = self.pem_key
+
+            return pk
 
 
 class CertificateSigningRequest(object):
@@ -134,6 +158,10 @@ class Certificate(object):
         self._certificate = x509.load_pem_x509_certificate(pem_data, default_backend())
 
     @property
+    def subject(self) -> x509.Name:
+        return self._certificate.subject
+
+    @property
     def topic(self) -> str:
         subject = self._certificate.subject
         user_id = subject.get_attributes_for_oid(NameOID.USER_ID)
@@ -153,6 +181,11 @@ class Certificate(object):
         return self._certificate.fingerprint(hashes.SHA1())
 
     def model(self):
+        """Get or generate an SQLAlchemy model.
+
+        If a model was supplied to the constructor of this certificate object, then the original will be returned.
+        If this object only contains a certificate, then a new model is created.
+        """
         if self._model is not None:
             return self._model
         else:

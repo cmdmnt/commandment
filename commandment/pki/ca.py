@@ -30,7 +30,7 @@ def from_database_or_create():
         A new (or existing) certificate authority.
     """
     try:
-        db_cert = db.session.query(dbmodels.CACertificate).one()
+        db_cert = db.session.query(dbmodels.CACertificate).filter(dbmodels.CACertificate.type == 'mdm.cacert').one()
         db_pk = db_cert.rsa_private_key
         private_key, cert = models.RSAPrivateKey(model=db_pk), models.Certificate('mdm.cacert', model=db_cert)
         ca = CertificateAuthority(cert, private_key)
@@ -132,6 +132,41 @@ class CertificateAuthority(object):
         """Retrieve the CA Private Key"""
         return self._private_key
 
+    def generate(self, type: str, subject: x509.Name) -> (models.RSAPrivateKey, models.Certificate):
+        """Generate a new private key and certificate with the given subject, and sign it with this CA.
+
+        Args:
+            type: Certificate type i.e `mdm.webcrt` or `mdm.cacert`
+            subject: x509.Name the subject of the certificate being generated.
+        Returns:
+            (models.RSAPrivateKey, models.Certificate)
+        """
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=2048,
+            backend=default_backend(),
+        )
+        pk_model = models.RSAPrivateKey(pk=private_key)
+
+        certificate = x509.CertificateBuilder().subject_name(
+            subject
+        ).issuer_name(
+            self.certificate.subject
+        ).public_key(
+            private_key.public_key()
+        ).serial_number(
+            x509.random_serial_number()
+        ).not_valid_before(
+            datetime.datetime.utcnow()
+        ).not_valid_after(
+            datetime.datetime.utcnow() + datetime.timedelta(days=365)
+        ).sign(self.private_key.raw, hashes.SHA256(), default_backend())
+
+        cert_model = models.Certificate(type=type, certificate=certificate)
+
+        return pk_model, cert_model
+
+
     def sign(self, csr: models.CertificateSigningRequest) -> models.Certificate:
         """Sign a certificate signing request.
 
@@ -158,30 +193,23 @@ class CertificateAuthority(object):
 def get_or_generate_web_certificate(cn: str) -> (str, str, str):
     mdm_ca = get_ca()
     try:
-        result = db.session.query(dbmodels.SSLCertificate).one()
+        result = db.session.query(dbmodels.SSLCertificate).filter(dbmodels.SSLCertificate.type == 'mdm.webcrt').one()
 
         # TODO: return chain!
         return (result.pem_data, result.rsa_private_key.pem_data, mdm_ca.certificate.pem_data)
     except NoResultFound:
-        web_pk = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=2048,
-            backend=default_backend(),
-        )
-        web_req = x509.CertificateSigningRequestBuilder().subject_name(x509.Name([
-            x509.NameAttribute(NameOID.COMMON_NAME, 'commandment.dev')
-        ])).sign(web_pk, hashes.SHA256(), default_backend())
+        pk, cert = mdm_ca.generate('mdm.webcrt', x509.Name([
+            x509.NameAttribute(NameOID.COMMON_NAME, cn),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, 'commandment')
+        ]))
 
-        web_crt = mdm_ca.sign(web_req)
-
-        db_cert = dbmodels.Certificate.from_crypto(web_crt, 'mdm.webcrt')
-        db_pk = dbmodels.RSAPrivateKey.from_crypto(web_pk)
-
+        db_pk = pk.model()
+        db_cert = cert.model()
         db.session.add(db_cert)
         db.session.add(db_pk)
 
-        db_pk.certificates.append(db_cert)
+        db_cert.rsa_private_key = db_pk
 
         db.session.commit()
 
-        return (db_cert.pem_certificate, db_pk.pem_key, mdm_ca.export_ca_certificate())
+        return db_cert.pem_data, db_pk.pem_data, mdm_ca.certificate.pem_data

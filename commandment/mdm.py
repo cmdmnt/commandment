@@ -3,151 +3,29 @@ Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 
-from flask import Blueprint, render_template, make_response, request, abort
+from flask import Blueprint, make_response, abort
 from flask import current_app, send_file, g
-from cryptography.hazmat.primitives import hashes
-import codecs
-from .pki.models import Certificate
-from .pki.ca import get_ca
+import base64
 from .database import db_session, NoResultFound, or_, and_
 from .models import MDMConfig, Certificate as DBCertificate, Device, RSAPrivateKey as DBPrivateKey, QueuedCommand
 from .models import App, MDMGroup, app_group_assoc, SCEPConfig, Organization, SSLCertificate
-from .profiles import Profile
-from .profiles.cert import PEMCertificatePayload, PKCS12CertificatePayload, SCEPPayload
-from .profiles.mdm import MDMPayload
 from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
 from .mdmcmds import InstallProfile, AppInstall
-from .mdmcmds.dep import DeviceConfigured
 from .decorators import device_cert_check, parse_plist_input_data
 from os import urandom
 import plistlib
 from .push import push_to_device
 import os
 
-PROFILE_CONTENT_TYPE = 'application/x-apple-aspen-config'
+
 TRUST_DEV_PROVIDED_CERT = True
 
 mdm_app = Blueprint('mdm_app', __name__)
 
 
-@mdm_app.route('/enroll/')
-def index():
-    """Show the enrollment page"""
-    return render_template('enroll.html')
-
-
-def base64_to_pem(crypto_type, b64_text, width=76):
-    lines = ''
-    for pos in range(0, len(b64_text), width):
-        lines += b64_text[pos:pos + width] + '\n'
-
-    return '-----BEGIN %s-----\n%s-----END %s-----' % (crypto_type, lines, crypto_type)
-
-
-@mdm_app.route('/enroll/profile', methods=['GET', 'POST'])
-def enroll():
-    """Generate an enrollment profile."""
-    mdm_ca = get_ca()
-
-    org = db_session.query(Organization).first()
-    push_path = os.path.join(os.path.dirname(current_app.root_path), current_app.config['PUSH_CERTIFICATE'])
-
-    if os.path.exists(push_path):
-        with open(push_path, 'rb') as fd:
-            push_cert = Certificate('mdm.pushcert')
-            push_cert.pem_data = fd.read()
-    else:
-        abort(500, 'No push certificate available at: {}'.format(push_path))
-
-    if not org:
-        abort(500, 'No MDM configuration present; cannot generate enrollment profile')
-
-    if not org.payload_prefix:
-        abort(500, 'MDM configuration has no profile prefix')
-
-    profile = Profile(org.payload_prefix + '.enroll', PayloadDisplayName=org.name)
-
-    ca_cert_payload = PEMCertificatePayload(org.payload_prefix + '.mdm-ca', mdm_ca.certificate.pem_data,
-                                            PayloadDisplayName='MDM CA Certificate')
-
-    profile.append_payload(ca_cert_payload)
-
-    # find and include all mdm.webcrt's
-    # q = db_session.query(SSLCertificate).first()
-    # for i, cert in enumerate(q):
-    #     new_webcrt_profile = PEMCertificatePayload(org.payload_prefix + '.webcrt.%d' % i, str(cert.pem_data).strip(),
-    #                                                PayloadDisplayName='Web Server Certificate')
-    #     profile.append_payload(new_webcrt_profile)
-
-    hexlify = codecs.getencoder('hex')
-    ca_fingerprint = hexlify(mdm_ca.certificate.fingerprint)
-
-    scep_payload = SCEPPayload(
-        org.payload_prefix + '.mdm-scep',
-        'http://localhost/scep',  # config.scep_url,
-        PayloadContent=dict(
-            Keysize=2048,
-            Challenge='sekret',
-            #CAFingerprint=plistlib.Data(ca_fingerprint),
-            Subject=[
-                [['CN', '%HardwareUUID%']]
-            ]
-        ),
-        PayloadDisplayName='MDM SCEP')
-    profile.append_payload(scep_payload)
-    cert_uuid = scep_payload.get_uuid()
-    # else:
-    #     abort(500, 'Invalid device identity method')
-
-    from .profiles.mdm import MDM_AR__ALL
-
-    new_mdm_payload = MDMPayload(
-        org.payload_prefix + '.mdm',
-        cert_uuid,
-        push_cert.topic,  # APNs push topic
-        'https://localhost:5443/mdm',
-        MDM_AR__ALL,
-        CheckInURL='https://localhost:5443/checkin',
-        # we can validate MDM device client certs provided via SSL/TLS.
-        # however this requires an SSL framework that is able to do that.
-        # alternatively we may optionally have the client digitally sign the
-        # MDM messages in an HTTP header. this method is most portable across
-        # web servers so we'll default to using that method. note it comes
-        # with the disadvantage of adding something like 2KB to every MDM
-        # request
-        SignMessage=True,
-        CheckOutWhenRemoved=True,
-        ServerCapabilities=['com.apple.mdm.per-user-connections'],
-        # per-network user & mobile account authentication (OS X extensions)
-        PayloadDisplayName='Device Configuration and Management')
-
-    profile.append_payload(new_mdm_payload)
-
-    resp = make_response(profile.generate_plist())
-    resp.headers['Content-Type'] = PROFILE_CONTENT_TYPE
-    return resp
-
-
-def device_first_post_enroll(device, awaiting=False):
-    print('enroll:', 'UpdateInventoryDevInfoCommand')
-    db_session.add(UpdateInventoryDevInfoCommand.new_queued_command(device))
-
-    # install all group profiles
-    for group in device.mdm_groups:
-        for profile in group.profiles:
-            db_session.add(InstallProfile.new_queued_command(device, {'id': profile.id}))
-
-    if awaiting:
-        # in DEP Await state, send DeviceConfigured to proceed with setup
-        db_session.add(DeviceConfigured.new_queued_command(device))
-
-    db_session.commit()
-
-    push_to_device(device)
-
+#@device_cert_check(no_device_okay=True)
 
 @mdm_app.route("/checkin", methods=['PUT'])
-@device_cert_check(no_device_okay=True)
 @parse_plist_input_data
 def checkin():
     """MDM checkin endpoint."""
@@ -162,31 +40,20 @@ def checkin():
         # TODO: check to make sure device == UDID == cert, etc.
         try:
             device = db_session.query(Device).filter(Device.udid == resp['UDID']).one()
-            if device.certificate and g.device_cert != device.certificate:
-                # TODO: test if current certificate is in use by another device
-                # if not then assume it's probably okay to use, otherwise
-                # throw an error?
-                if TRUST_DEV_PROVIDED_CERT:
-                    # this is /probably/ okay because our @device_cert_check
-                    # decorator makes sure that the cert originated in our DB
-                    # however shenanegans could be going on where two devices
-                    # try to enroll using the same-cert profile, so best to block
-                    # here
-                    print('WARNING: device provided identity cert does not' \
-                          ' match issued cert! (possibly a re-enrollment?)')
-                    db_session.delete(device.certificate)
-                else:
-                    raise Exception('device provided identity cert does not' \
-                                    ' match issued cert! (possibly a re-enrollment?)')
         except NoResultFound:
             # no device found, let's make a new one!
             device = Device()
             db_session.add(device)
 
             device.udid = resp['UDID']
-
-        if 'Topic' in resp:
-            device.topic = resp['Topic']
+            device.build_version = resp.get('BuildVersion')
+            device.device_name = resp.get('DeviceName')
+            device.model = resp.get('Model')
+            device.model_name = resp.get('ModelName')
+            device.os_version = resp.get('OSVersion')
+            device.product_name = resp.get('ProductName')
+            device.serial_number = resp.get('SerialNumber')
+            device.topic = resp.get('Topic')
 
         # remove the previous device token (in the case of a re-enrollment) to
         # tell the difference between a periodic TokenUpdate and the first
@@ -195,7 +62,7 @@ def checkin():
         device.first_user_message_seen = False
 
         # TODO: we're essentially trusting the device to give the correct security infomration here
-        device.certificate = g.device_cert
+        #device.certificate = g.device_cert
 
         db_session.commit()
 
@@ -223,7 +90,7 @@ def checkin():
         first_token_update = False if device.token else True
 
         if 'Token' in resp:
-            device.token = resp['Token'].data.encode('base64')
+            device.token = base64.b64encode(resp['Token'])
         else:
             current_app.logger.error('TokenUpdate message missing Token')
             abort(400, 'invalid data supplied')
@@ -234,10 +101,11 @@ def checkin():
         db_session.commit()
 
         if first_token_update:
+            pass
             # the first TokenUpdate implies successful MDM profile install.
             # kick off our first-device commands, noting any DEP Await state
-            current_app.logger.info('sending initial post-enrollment MDM command(s) to device=%d', g.device.id)
-            device_first_post_enroll(g.device, awaiting=resp.get('AwaitingConfiguration', False))
+            #current_app.logger.info('sending initial post-enrollment MDM command(s) to device=%d', g.device.id)
+            #device_first_post_enroll(g.device, awaiting=resp.get('AwaitingConfiguration', False))
 
         return 'OK'
     elif resp['MessageType'] == 'UserAuthenticate':
@@ -275,6 +143,10 @@ def checkin():
             return resp
 
             # respond with an AuthToken for the user, all future MDM commands will include this coming from the user
+    elif resp['MessageType'] == 'CheckOut':
+        print(print_resp)
+        current_app.logger.warn('CheckOut not yet implemented, skipping')
+        # TODO: Topic, UDID - set enrolled to false but keep history
     else:
         print('Unknown message type', resp['MessageType'])
         print(print_resp)

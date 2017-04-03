@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+        "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>MessageType</key>
+        <string>TokenUpdate</string>
+        <key>NotOnConsole</key>
+        <false/>
+        <key>PushMagic</key>
+        <string>B81B1FEC-09C6-4EC2-871C-E521EC971B38</string>
+        <key>Token</key>
+        <data>MDAyMDEwNTItQTJEMC00MDNELUI4NTctNzJGOTEzRjVCQ0NECg==</data>
+        <key>Topic</key>
+        <string>com.apple.mgmt.commandment.dev</string>
+        <key>UDID</key>
+        <string>E3568F17-92ED-450A-8904-C3BF4CB7E9A5</string>
+        <key>UserID</key>
+        <string>A522C2FB-D0BA-487E-BBC6-BE0DB2DC7883</string>
+        <key>UserLongName</key>
+        <string>Commando Joe</string>
+        <key>UserShortName</key>
+        <string>cjoe</string>
+    </dict>
+</plist>

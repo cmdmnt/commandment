@@ -142,15 +142,28 @@ class Device(db.Model):
     """An enrolled device."""
     __tablename__ = 'devices'
 
+    # Common attributes
     id = Column(Integer, primary_key=True)
-
     udid = Column(String, index=True, nullable=True)
+    topic = Column(String, nullable=True)
+    #  is_enrolled = Column(Boolean, default=True)
+
+    # DeviceInformation that is optionally given in `Authenticate` message for a device
+    build_version = Column(String)
+    device_name = Column(String)
+    model = Column(String)
+    model_name = Column(String)
+    os_version = Column(String)
+    product_name = Column(String)
+    serial_number = Column(String(64), index=True, nullable=True)
+
+    # TokenUpdate
+    awaiting_configuration = Column(Boolean, default=False)
     push_magic = Column(String, nullable=True)
     token = Column(String, nullable=True)  # stored as b64-encoded raw data
-    unlock_token = Column(String(), nullable=True)
-    topic = Column(String, nullable=True)
 
-    serial_number = Column(String(64), index=True, nullable=True)
+    # DEP
+    unlock_token = Column(String(), nullable=True)
     dep_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
     dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
     dep_config = relationship('DEPConfig', backref='devices')
