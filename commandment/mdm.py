@@ -28,7 +28,18 @@ mdm_app = Blueprint('mdm_app', __name__)
 @mdm_app.route("/checkin", methods=['PUT'])
 @parse_plist_input_data
 def checkin():
-    """MDM checkin endpoint."""
+    """MDM checkin endpoint.
+
+    Handles the `Authenticate`, `TokenUpdate`, `UserAuthenticate`, `CheckOut` messages.
+
+    The body of the reply is ignored.
+
+    :reqheader Content-Type: application/x-apple-aspen-mdm; charset=UTF-8
+    :reqheader Mdm-Signature: BASE64-encoded CMS Detached Signature of the message. (if `SignMessage` was true)
+    :resheader Content-Type: application/xml; charset=UTF-8
+    :status 200: Success
+    :status 401: Failure
+    """
     resp = g.plist_data
     print_resp = resp.copy()
 
@@ -182,7 +193,18 @@ def device_first_user_message(device):
 @mdm_app.route("/mdm", methods=['PUT'])
 @parse_plist_input_data
 def mdm():
-    """MDM connection endpoint."""
+    """MDM connection endpoint.
+
+    This endpoint delivers and handles incoming command responses.
+    Such as: `Idle`, `NotNow`, `Acknowledged`.
+
+    :reqheader Content-Type: application/x-apple-aspen-mdm; charset=UTF-8
+    :reqheader Mdm-Signature: BASE64-encoded CMS Detached Signature of the message. (if `SignMessage` was true)
+    :resheader Content-Type: application/xml; charset=UTF-8
+    :status 200: With an empty body, no commands remaining, or plist contents of next command.
+    :status 400: Invalid data submitted
+    :status 410: User channel capability not available.
+    """
     if g.device.udid != g.plist_data['UDID']:
         # see note in device_cert_check() about old device cert sometimes
         # being provided
@@ -216,7 +238,7 @@ def mdm():
             abort(400, 'invalid input data')
 
         try:
-            command = QueuedCommand.find_by_uuid(g.plist_data['CommandUUID'])
+            command = Command.find_by_uuid(g.plist_data['CommandUUID'])
 
             # update the status of this command and commit
             command.result = status
@@ -248,7 +270,7 @@ def mdm():
         return ''
 
     while True:
-        command = QueuedCommand.get_next_device_command(g.device)
+        command = Command.get_next_device_command(g.device)
 
         if not command:
             break

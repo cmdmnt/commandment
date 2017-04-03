@@ -3,9 +3,10 @@ Devices
 
 .. http:get:: /api/v1/devices
 
-   Enrolled devices
+   Get information about a device
 
    :reqheader Accept: application/vnd.api+json
+   :resheader Content-Type: application/vnd.api+json
 
 .. http:post:: /api/v1/devices
 
@@ -19,3 +20,6 @@ Devices
 
    Delete an enrolled device
 
+.. http:get:: /api/v1/devices/(int:device_id)/commands
+
+   Get MDM commands associated with this device.

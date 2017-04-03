@@ -67,5 +67,5 @@ JSON-API Endpoints
 Other Endpoints
 ---------------
 
-.. autoflask:: commandment.app:create_app()
+.. autoflask:: commandment:create_app()
     :blueprints: api_app

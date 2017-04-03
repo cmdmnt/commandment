@@ -1,8 +1,8 @@
-SCEPConfig
+PrivateKey
 ==========
 
 .. py:currentmodule:: commandment.models
-.. autoclass:: SCEPConfig
+.. autoclass:: RSAPrivateKey
     :members:
 
 

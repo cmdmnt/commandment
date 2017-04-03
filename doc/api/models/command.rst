@@ -1,7 +1,7 @@
-QueuedCommand
-=============
+Command
+=======
 
 .. py:currentmodule:: commandment.models
-.. autoclass:: QueuedCommand
+.. autoclass:: Command
     :members:
 

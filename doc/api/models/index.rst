@@ -13,7 +13,6 @@ ORM (SQLAlchemy) Models
     internal_ca.rst
     mdm_config.rst
     mdm_group.rst
-    private_key.rst
+    rsa_private_key.rst
     profile.rst
-    queued_command.rst
-    scep_config.rst
+    command.rst
