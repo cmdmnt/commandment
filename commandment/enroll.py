@@ -32,7 +32,7 @@ def enroll():
     """Generate an enrollment profile."""
     mdm_ca = get_ca()
 
-    org = db.query(Organization).first()
+    org = db.session.query(Organization).first()
     push_path = os.path.join(os.path.dirname(current_app.root_path), current_app.config['PUSH_CERTIFICATE'])
 
     if os.path.exists(push_path):

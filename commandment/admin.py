@@ -12,7 +12,7 @@ from cryptography.hazmat.backends import default_backend
 from .database import db_session, and_, or_, update, insert, delete
 from .models import CERT_TYPES, profile_group_assoc, device_group_assoc, Device, app_group_assoc
 from .models import Certificate as DBCertificate, RSAPrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig
-from .models import App, DEPConfig, DEPProfile, SCEPConfig
+from .models import App, DEPConfig, DEPProfile
 from .profiles.restrictions import RestrictionsPayload
 from .profiles import Profile
 from .mdmcmds import InstallProfile, RemoveProfile, AppInstall

@@ -2,36 +2,34 @@
 Copyright (c) 2016 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
-
-from flask import Blueprint, request, Response, abort, current_app
-from .message import *
-from os import urandom
-from ..pki.ca import get_ca
-from ..database import db_session, NoResultFound
-from ..models import SCEPConfig
-from binascii import hexlify
-from base64 import b64decode
+from flask import request, Response, abort
+from scep import app
+from sqlalchemy.orm.exc import NoResultFound
+from .models import db, SCEPConfig
+import codecs
+from base64 import b64decode, b64encode
 
 FORCE_DEGENERATE_FOR_SINGLE_CERT = False
 CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
 
-scep_app = Blueprint('scep_app', __name__)
 
-def init_scep_record():
+def init_scep_record(challenge: str = ''):
     try:
-        db_session.query(SCEPConfig).one()
+        db.session.query(SCEPConfig).one()
     except NoResultFound:
-        scep_config = SCEPConfig(challenge=hexlify(urandom(32)))
-        db_session.add(scep_config)
-        db_session.commit()
+        scep_config = SCEPConfig()
+        if challenge:
+            scep_config.challenge = challenge
+        db.session.add(scep_config)
+        db.session.commit()
 
-@scep_app.route('/cgi-bin/pkiclient.exe', methods=['GET', 'POST'])
-@scep_app.route('/scep', methods=['GET', 'POST'])
-@scep_app.route('/', methods=['GET', 'POST'])
+@app.route('/cgi-bin/pkiclient.exe', methods=['GET', 'POST'])
+@app.route('/scep', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def scep():
     op = request.args.get('operation')
-    mdm_ca = get_ca()
-    scep_config = db_session.query(SCEPConfig).one()
+    #mdm_ca = get_ca()
+    scep_config = db.session.query(SCEPConfig).one()
 
     if op == 'GetCACert':
         certs = [mdm_ca.get_cacert()._m2_x509()]

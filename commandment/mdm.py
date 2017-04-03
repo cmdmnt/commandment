@@ -8,7 +8,7 @@ from flask import current_app, send_file, g
 import base64
 from .database import db_session, NoResultFound, or_, and_
 from .models import MDMConfig, Certificate as DBCertificate, Device, RSAPrivateKey as DBPrivateKey, QueuedCommand
-from .models import App, MDMGroup, app_group_assoc, SCEPConfig, Organization, SSLCertificate
+from .models import App, MDMGroup, app_group_assoc, Organization, SSLCertificate
 from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
 from .mdmcmds import InstallProfile, AppInstall
 from .decorators import device_cert_check, parse_plist_input_data

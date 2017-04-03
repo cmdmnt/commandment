@@ -317,11 +317,6 @@ class MDMConfig(db.Model):
             return ''
 
 
-class SCEPConfig(db.Model):
-    __tablename__ = 'scep_config'
-
-    id = Column(Integer, primary_key=True)
-    challenge = Column(String, nullable=False)
 
 
 class App(db.Model):
