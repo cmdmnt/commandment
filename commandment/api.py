@@ -1,7 +1,6 @@
 import io
-from flask import Blueprint, send_file, current_app, abort
+from flask import Blueprint, send_file, current_app, abort, jsonify
 from flask_rest_jsonapi import Api
-from .models import db, Certificate, RSAPrivateKey
 from .resources import CertificatesList, CertificateDetail, CertificateSigningRequestList, \
     CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
     CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, OrganizationList, \
@@ -32,48 +31,6 @@ api.route(CommandsList, 'commands_list', '/v1/commands', '/v1/devices/<int:devic
 api.route(CommandDetail, 'command_detail', '/v1/commands/<int:command_id>')
 
 # Organizations
-api.route(OrganizationList, 'organizations_list', '/v1/organizations/')
-api.route(OrganizationDetail, 'organization_detail', '/v1/organizations/<int:organization_id>')
-
-
-# Non JSON-API routes
-@api_app.route('/v1/certificates/<int:certificate_id>/download')
-def download_certificate(certificate_id: int):
-    """Download a certificate in PEM format
-
-    :reqheader Accept: application/x-pem-file
-    :reqheader Accept: application/x-x509-user-cert
-    :reqheader Accept: application/x-x509-ca-cert
-    :resheader Content-Type: application/x-pem-file
-    :resheader Content-Type: application/x-x509-user-cert
-    :resheader Content-Type: application/x-x509-ca-cert
-    :statuscode 200: OK
-    :statuscode 404: There is no certificate configured
-    :statuscode 400: Can't produce requested encoding
-    """
-    c = db.session.query(Certificate).filter(Certificate.id == certificate_id).one()
-    bio = io.BytesIO(c.pem_data)
-
-    return send_file(bio, 'application/x-pem-file', True, 'certificate.pem')
-
-
-@api_app.route('/v1/rsa_private_keys/<int:rsa_private_key_id>/download')
-def download_key(rsa_private_key_id: int):
-    """Download an RSA private key in PEM or DER format
-
-    :reqheader Accept: application/x-pem-file
-    :reqheader Accept: application/pkcs8
-    :resheader Content-Type: application/x-pem-file
-    :resheader Content-Type: application/pkcs8
-    :statuscode 200: OK
-    :statuscode 404: Not found
-    :statuscode 400: Can't produce requested encoding
-    """
-    if not current_app.debug:
-        abort(500, 'Not supported in this mode')
-
-    c = db.session.query(RSAPrivateKey).filter(RSAPrivateKey.id == rsa_private_key_id).one()
-    bio = io.BytesIO(c.pem_data)
-
-    return send_file(bio, 'application/x-pem-file', True, 'rsa_private_key.pem')
+# api.route(OrganizationList, 'organizations_list', '/v1/organizations')
+# api.route(OrganizationDetail, 'organization_detail', '/v1/organizations/<int:organization_id>')
 

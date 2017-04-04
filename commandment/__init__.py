@@ -10,6 +10,7 @@ from .admin import admin_app
 from .mdmcert import admin_mdmcert_app
 from .api import api_app
 from .api_push import api_push_app
+from .api_flat import flat_api
 from .enroll import enroll_app
 from .models import db
 
@@ -34,6 +35,7 @@ def create_app() -> Flask:
     app.register_blueprint(admin_mdmcert_app, url_prefix='/admin/mdmcert')
     app.register_blueprint(api_app, url_prefix='/api')
     app.register_blueprint(api_push_app, url_prefix='/api')
+    app.register_blueprint(flat_api, url_prefix='/api')
 
     # SPA history fallback handler
     @app.errorhandler(404)

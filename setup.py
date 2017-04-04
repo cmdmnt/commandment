@@ -21,7 +21,7 @@ setup(
         'Flask',
         'Flask-REST-JSONAPI>=0.11',
         'Flask-Cors>=3.0',
-        'Flask-RESTful',
+        'flask-marshmallow>=0.7.0',
         'Flask-OAuthlib',
         'Flask-JWT',
         'oauthlib',

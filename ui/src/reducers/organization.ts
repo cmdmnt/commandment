@@ -1,7 +1,7 @@
 import * as actions from '../actions/organization';
 
 export interface OrganizationState {
-    organization?: any;
+    organization?: Organization;
     loading: boolean;
     error: boolean;
     errorDetail?: any

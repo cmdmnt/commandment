@@ -1,5 +1,6 @@
 from marshmallow_jsonapi import fields
 from marshmallow_jsonapi.flask import Relationship, Schema
+from marshmallow import Schema as FlatSchema
 
 
 class DeviceSchema(Schema):
@@ -138,3 +139,13 @@ class OrganizationSchema(Schema):
         self_view = 'api_app.organization_detail'
         self_view_kwargs = {'organization_id': '<id>'}
         self_view_many = 'api_app.organizations_list'
+
+
+class OrganizationFlatSchema(FlatSchema):
+    name = fields.Str(required=True)
+    payload_prefix = fields.Str(required=True)
+
+    x509_ou = fields.Str()
+    x509_o = fields.Str()
+    x509_st = fields.Str()
+    x509_c = fields.Str()

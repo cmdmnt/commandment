@@ -54,7 +54,10 @@ export class OrganizationPage extends React.Component<OrganizationPageProps, und
                 </div>
                 <div className='row'>
                     <div className='column'>
-                        <OrganizationForm onSubmit={this.handleSubmit} />
+                        <OrganizationForm
+                            initialValues={}
+                            onSubmit={this.handleSubmit}
+                        />
                     </div>
                 </div>
             </div>

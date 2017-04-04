@@ -22,7 +22,10 @@ interface OrganizationFormProps extends FormProps<FormData, any, any> {
 export class OrganizationForm extends React.Component<OrganizationFormProps, undefined> {
     render() {
         const {
-            handleSubmit
+            handleSubmit,
+            pristine,
+            reset,
+            submitting
         } = this.props;
 
         return (
@@ -30,11 +33,11 @@ export class OrganizationForm extends React.Component<OrganizationFormProps, und
                 <fieldset>
                     <h4>General Information</h4>
                     <label htmlFor='name'>Name</label>
-                    <Field name='name' component='input' type='text' placeholder='Acme Inc.' id='name' />
+                    <Field name='name' component='input' type='text' placeholder='Acme Inc.' id='name' required />
                     <span>The name of your organization</span>
 
                     <label htmlFor='payload_prefix'>Prefix</label>
-                    <Field name='payload_prefix' component='input' type='text' placeholder='com.acme' id='payload_prefix' />
+                    <Field name='payload_prefix' component='input' type='text' placeholder='com.acme' id='payload_prefix' required />
                     <span>The prefix is the reverse style DNS name of your organization which will uniquely identify profiles</span>
                 </fieldset>
                 <fieldset>
@@ -42,10 +45,10 @@ export class OrganizationForm extends React.Component<OrganizationFormProps, und
                     <p>These details will be shown on any certificates issued by the MDM</p>
 
                     <label htmlFor='x509_ou'>Organization Unit or Department</label>
-                    <Field name='x509_ou' component='input' type='text' id='x509_ou' maxLength={32} />
+                    <Field name='x509_ou' component='input' type='text' id='x509_ou' placeholder='IT' maxLength={32} />
 
                     <label htmlFor='x509_o'>Organization Name</label>
-                    <Field name='x509_o' component='input' type='text' id='x509_o' maxLength={64} />
+                    <Field name='x509_o' component='input' type='text' id='x509_o' placeholder='Acme' maxLength={64} />
 
                     <label htmlFor='x509_st'>State or Province</label>
                     <Field name='x509_st' component='input' type='text' id='x509_st' maxLength={128} />
@@ -56,7 +59,10 @@ export class OrganizationForm extends React.Component<OrganizationFormProps, und
                         <option value='AU'>Australia</option>
                     </Field>
                 </fieldset>
-                <input className="button-primary" type="submit" value="Save"/>
+                <button type='submit' disabled={pristine || submitting} className="button-primary">Save</button>
+                <button type='button' disabled={pristine || submitting} className='button-outline' onClick={reset}>
+                    Undo Changes
+                </button>
             </form>
         )
     }
