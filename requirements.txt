@@ -25,6 +25,7 @@ idna==2.5
 imagesize==0.7.1
 itsdangerous==0.24
 Jinja2==2.9.5
+M2Crypto==0.26.0
 MarkupSafe==1.0
 marshmallow==2.13.1
 marshmallow-jsonapi==0.11.0
@@ -53,5 +54,6 @@ sphinx-rtd-theme==0.2.4
 sphinxcontrib-httpdomain==1.5.0
 sphinxcontrib-napoleon==0.6.1
 SQLAlchemy==1.1.6
+typing==3.6.1
 ujson==1.35
 Werkzeug==0.12.1

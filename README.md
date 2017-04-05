@@ -1,8 +1,7 @@
 # coMmanDMent Open Source MDM
 
-Commandment is an Open Source Apple MDM server with support for managing iOS and macOS devices implemented in Python. The source code is available under an [MIT license](LICENSE.txt).
-
-![Screenshot](http://i.imgur.com/Wfx4aaJ.png)
+Commandment is an Open Source Apple MDM server with support for managing iOS and macOS devices implemented in Python. 
+The source code is available under an [MIT license](LICENSE.txt).
 
 ## Architecture
 
@@ -12,11 +11,10 @@ Commandment is an Open Source Apple MDM server with support for managing iOS and
 
 ## Requirements
 
-* DNS name for server
 * Apple MDM Push Certificate and private key (in PEM format)
   * Obtain a free Push Certificate from [https://mdmcert.download](https://mdmcert.download)
   * Alternatively requires an Apple Enterprise Developer account (US$300/year)
-* [Python](https://www.python.org/) 2.7+
+* [Python](https://www.python.org/) 3.6+
 * Major Python dependencies:
   * [M2Crypto](https://gitlab.com/m2crypto/m2crypto)
   * [pyOpenSSL](https://github.com/pyca/pyopenssl)

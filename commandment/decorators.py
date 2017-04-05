@@ -3,8 +3,12 @@ from flask import request, abort, current_app, g
 from cryptography import x509
 from cryptography.exceptions import UnsupportedAlgorithm
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization, hashes
+from M2Crypto import BIO, SMIME, X509
 import plistlib
 from asn1crypto import cms
+from .models import db, DeviceIdentityCertificate
+from sqlalchemy.orm.exc import NoResultFound
 
 
 def verify_mdm_signature(mdm_sig: str, req_data):
@@ -14,40 +18,36 @@ def verify_mdm_signature(mdm_sig: str, req_data):
         mdm_sig: Signature PEM data
         req_data: Request body content
     """
-    sd = cms.SignedData.load(mdm_sig)
-    certs = sd.certificates
+    p7_bio = BIO.MemoryBuffer(str(mdm_sig))
+    p7 = SMIME.load_pkcs7_bio(p7_bio)
 
+    p7_signers = p7.get0_signers(X509.X509_Stack())
 
-#
-#     p7_bio = BIO.MemoryBuffer(str(mdm_sig))
-#     p7 = SMIME.load_pkcs7_bio(p7_bio)
-#
-#     p7_signers = p7.get0_signers(X509.X509_Stack())
-#
-#     mdm_ca = get_ca()
-#
-#     # can probably directly use m2 certificate here
-#     ca_x509_bio = BIO.MemoryBuffer(mdm_ca.get_cacert().to_pem())
-#     ca_x509 = X509.load_cert_bio(ca_x509_bio)
-#
-#     cert_store = X509.X509_Store()
-#     cert_store.add_x509(ca_x509)
-#
-#     signer = SMIME.SMIME()
-#     signer.set_x509_store(cert_store)
-#     signer.set_x509_stack(p7_signers)
-#
-#     # NOTE: may need to do something special if we can't cleanly convert
-#     # to string from Unicode. must be byte-accurate as the signature won't
-#     # match otherwise
-#     data_bio = BIO.MemoryBuffer(req_data)
-#
-#     # will raise an exception if verification fails
-#     # if no CA certificate we get an:
-#     #   PKCS7_Error: certificate verify error
-#     signer.verify(p7, data_bio)
-#
-#     return p7_signers[0].as_pem()
+    mdm_ca = get_ca()
+
+    # can probably directly use m2 certificate here
+    ca_x509_bio = BIO.MemoryBuffer(mdm_ca.get_cacert().to_pem())
+    ca_x509 = X509.load_cert_bio(ca_x509_bio)
+
+    cert_store = X509.X509_Store()
+    cert_store.add_x509(ca_x509)
+
+    signer = SMIME.SMIME()
+    signer.set_x509_store(cert_store)
+    signer.set_x509_stack(p7_signers)
+
+    # NOTE: may need to do something special if we can't cleanly convert
+    # to string from Unicode. must be byte-accurate as the signature won't
+    # match otherwise
+    data_bio = BIO.MemoryBuffer(req_data)
+
+    # will raise an exception if verification fails
+    # if no CA certificate we get an:
+    #   PKCS7_Error: certificate verify error
+    signer.verify(p7, data_bio)
+
+    return p7_signers[0].as_pem()
+
 
 def base64_to_pem(crypto_type, b64_text, width=76):
     lines = ''
@@ -56,9 +56,19 @@ def base64_to_pem(crypto_type, b64_text, width=76):
 
     return '-----BEGIN %s-----\n%s-----END %s-----' % (crypto_type, lines, crypto_type)
 
+
 def device_cert_check(no_device_okay=False):
-    """Performs a set of checks on a request to make sure it came from a
-    legitimately enrolled device in this MDM system"""
+    """Perform checks on the device certificate (if provided) or ``Mdm-Signature`` header (if proxied through HTTPS).
+
+    The device model corresponding to the supplied certificate is attached to the **g** variable as **g.device**.
+
+    Args:
+          no_device_okay (bool): If the provided certificate does not match any in the database, this request will be
+            allowed to pass through if True.
+
+    :status 400: If no match was found for the supplied certificate and no_device_okay was False.
+    :status 500: If multiple matches were found for the suppied certificate.
+    """
 
     def decorator(f):
         @wraps(f)
@@ -68,14 +78,16 @@ def device_cert_check(no_device_okay=False):
             # (e.g. request.headers['X-Ssl-Client-Cert'].replace('\n ', '\n') for
             # nginx)
             pkcs7_pem_sig = base64_to_pem('PKCS7', request.headers['Mdm-Signature'])
-            #device_supplied_cert = verify_mdm_signature(pkcs7_pem_sig, request.data)
-            #
-            # try:
-            #     dev_cert_fprint = Certificate.from_pem(device_supplied_cert).get_fingerprint()
-            #     g.device_cert = db_session.query(DBCertificate).filter(DBCertificate.fingerprint == dev_cert_fprint).one()
-            # except NoResultFound:
-            #     current_app.logger.info('supplied device certificate not found; returning invalid')
-            #     abort(400, 'certificate invalid')
+            device_supplied_cert = verify_mdm_signature(pkcs7_pem_sig, request.data)
+
+            try:
+                device_cert = x509.load_pem_x509_certificate(device_supplied_cert, default_backend())
+                device_fingerprint = device_cert.fingerprint(hashes.SHA1())
+                g.device_cert = db.session.query(DeviceIdentityCertificate).filter(
+                    DeviceIdentityCertificate.fingerprint == device_fingerprint).one()
+            except NoResultFound:
+                current_app.logger.info('supplied device certificate not found; returning invalid')
+                abort(400, 'certificate invalid')
 
             # get a list of the devices that correspond to this certificate
             cert_devices = g.device_cert.devices
@@ -108,7 +120,12 @@ def device_cert_check(no_device_okay=False):
 
 
 def parse_plist_input_data(f):
-    """Parses plist data as HTTP input from request"""
+    """Parses plist data as HTTP input from request.
+
+    The unserialized data is attached to the global **g** object as **g.plist_data**.
+
+    :status 400: If invalid plist data was supplied in the request.
+    """
 
     @wraps(f)
     def decorator(*args, **kwargs):
