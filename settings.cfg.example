@@ -12,6 +12,8 @@ APP_UPLOAD_ROOT = 'apps'
 SCEP_PORT = 5080
 PORT = 5443
 
-PUSH_CERTIFICATE = './push.cer'
-PUSH_CERTIFICATE_KEY = './push.key'
+# This is expected to include the pub and private keypair.
+# You may export pkcs12 using this command:
+# openssl pkcs12 -in push.p12 -out push.pem -nodes -clcerts
+PUSH_CERTIFICATE = './push.pem'
 

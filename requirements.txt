@@ -16,6 +16,7 @@ Flask-JWT==0.3.2
 flask-marshmallow==0.7.0
 Flask-OAuthlib==0.9.3
 Flask-REST-JSONAPI==0.11.4
+Flask-RESTful==0.3.5
 Flask-SQLAlchemy==2.2
 h2==2.6.1
 hpack==2.3.0
@@ -31,6 +32,7 @@ marshmallow==2.13.1
 marshmallow-jsonapi==0.11.0
 mock==2.0.0
 oauthlib==2.0.2
+oscrypto==0.18.0
 packaging==16.8
 passlib==1.7.1
 pbr==2.0.0
@@ -43,6 +45,7 @@ pyOpenSSL==16.2.0
 pyparsing==2.2.0
 pyRFC3339==1.0
 pytest==3.0.7
+pytest-runner==2.11.1
 python-dateutil==2.6.0
 pytz==2016.10
 requests==2.13.0

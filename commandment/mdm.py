@@ -7,7 +7,7 @@ from flask import Blueprint, make_response, abort
 from flask import current_app, send_file, g
 import base64
 from .database import db_session, NoResultFound, or_, and_
-from .models import MDMConfig, Certificate as DBCertificate, Device, RSAPrivateKey as DBPrivateKey, Command
+from .models import db, MDMConfig, Certificate as DBCertificate, Device, RSAPrivateKey as DBPrivateKey, Command
 from .models import App, MDMGroup, Organization, SSLCertificate
 from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
 from .mdmcmds import InstallProfile, AppInstall
@@ -101,7 +101,7 @@ def checkin():
         first_token_update = False if device.token else True
 
         if 'Token' in resp:
-            device.token = base64.b64encode(resp['Token'])
+            device.token = resp['Token']
         else:
             current_app.logger.error('TokenUpdate message missing Token')
             abort(400, 'invalid data supplied')
@@ -205,11 +205,14 @@ def mdm():
     :status 400: Invalid data submitted
     :status 410: User channel capability not available.
     """
-    if g.device.udid != g.plist_data['UDID']:
-        # see note in device_cert_check() about old device cert sometimes
-        # being provided
-        current_app.logger.info('provided UDID does not match device UDID')
-        abort(400, 'invalid input data')
+    # TODO: proper identity verification, for now just matching on UDID
+    device = db.session.query(Device).filter(Device.udid == g.plist_data['UDID']).one()
+
+    # if g.device.udid != g.plist_data['UDID']:
+    #     # see note in device_cert_check() about old device cert sometimes
+    #     # being provided
+    #     current_app.logger.info('provided UDID does not match device UDID')
+    #     abort(400, 'invalid input data')
 
     if 'UserID' in g.plist_data:
         # Note that with DEP this is an opportune time to queue up an 
@@ -217,17 +220,17 @@ def mdm():
         # MDM command. this is becasue DEP appears to only allow apps to be
         # installed while a user is logged in. note also the undocumented
         # NotOnConsole key to (possibly) indicate that this is a UI login?
-        device_first_user_message(g.device)
+        device_first_user_message(device)
         current_app.logger.warn('per-user MDM command not yet supported')
         return ''
 
     if 'Status' not in g.plist_data:
-        current_app.logger.error('invalid MDM request (no Status provided) from device id %d' % g.device.id)
+        current_app.logger.error('invalid MDM request (no Status provided) from device id %d' % device.id)
         abort(400, 'invalid input data')
     else:
         status = g.plist_data['Status']
 
-    current_app.logger.info('device id=%d udid=%s processing status=%s', g.device.id, g.device.udid, status)
+    current_app.logger.info('device id=%d udid=%s processing status=%s', device.id, device.udid, status)
 
     print(g.plist_data)
 
@@ -254,7 +257,7 @@ def mdm():
                 current_app.logger.info('no matching QueuedMDMCommand class for %s', command.command_class)
             else:
                 # instantiate it
-                mdm_command = cmd_class.from_queued_command(g.device, command)
+                mdm_command = cmd_class.from_queued_command(device, command)
 
                 # the individual commands will need to be aware of and handle
                 # any Acknowledged/Error/CommandFormatError/Idle/NotNow
@@ -270,7 +273,7 @@ def mdm():
         return ''
 
     while True:
-        command = Command.get_next_device_command(g.device)
+        command = Command.get_next_device_command(device)
 
         if not command:
             break
@@ -291,13 +294,13 @@ def mdm():
             continue
 
         # instantiate it
-        mdm_command = cmd_class.from_queued_command(g.device, command)
+        mdm_command = cmd_class.from_queued_command(device, command)
 
         # get command dictionary representation (e.g. the full command to send)
         output_dict = mdm_command.generate_dict()
 
         current_app.logger.info('sending %s MDM command class=%s to device=%d', mdm_command.request_type,
-                                command.command_class, g.device.id)
+                                command.command_class, device.id)
 
         # convert to plist and send
         resp = make_response(plistlib.writePlistToString(output_dict))
@@ -309,7 +312,7 @@ def mdm():
 
         return resp
 
-    current_app.logger.info('no further MDM commands for device=%d', g.device.id)
+    current_app.logger.info('no further MDM commands for device=%d', device.id)
     # return empty response as we have no further work
     return ''
 

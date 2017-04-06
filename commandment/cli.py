@@ -12,8 +12,6 @@ from commandment import create_app
 from commandment.database import config_engine, init_db
 from commandment.pki.ca import get_or_generate_web_certificate
 from commandment.runner import start_runner, stop_runner
-from commandment.push import push_init
-from commandment.models import db
 
 def server():
     app = create_app()
@@ -52,10 +50,15 @@ def server():
     # avoid extraneous threads being created.
 
     # TODO: re-enable runner after python3 rewrite
+
+    # with app.app_context():
+    #     apns = get_apns()
+    #
+    #
     # if not app.config.get('DEBUG') or werkzeug.serving.is_running_from_reloader():
     #     start_runner()
     #     atexit.register(stop_runner)
-    #     push_init()
+
 
     app.run(
         host='0.0.0.0',

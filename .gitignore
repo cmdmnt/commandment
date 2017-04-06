@@ -149,3 +149,9 @@ commandment/apps
 # Flask settings.cfg
 settings.cfg
 scep_settings.cfg
+
+# dont ever commit certs
+*.pem
+*.p12
+*.cer
+*.crt

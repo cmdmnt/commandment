@@ -13,11 +13,15 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean
     BigInteger, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.ext.hybrid import hybrid_property
 from .mutablelist import MutableList
 from .database import JSONEncodedDict, Base, or_, and_
 from .profiles.mdm import MDM_AR__ALL
 from .dbtypes import GUID
 import uuid
+import base64
+import codecs
+from binascii import hexlify
 
 db = SQLAlchemy()
 
@@ -152,7 +156,16 @@ class InternalCA(db.Model):
 
 
 class Device(db.Model):
-    """An enrolled device."""
+    """An enrolled device.
+    
+    Attributes:
+          id:
+          udid: Unique Device Identifier
+          topic: The APNS topic the device is listening on.
+          last_seen: When the device last contacted the MDM.
+          is_enrolled: Whether the MDM should consider this device enrolled.
+          
+    """
     __tablename__ = 'devices'
 
     # Common attributes
@@ -171,10 +184,37 @@ class Device(db.Model):
     product_name = Column(String)
     serial_number = Column(String(64), index=True, nullable=True)
 
-    # TokenUpdate
+    # APNS / TokenUpdate
     awaiting_configuration = Column(Boolean, default=False)
     push_magic = Column(String, nullable=True)
-    token = Column(String, nullable=True)  # stored as b64-encoded raw data
+
+    # The APNS device token is stored in base64 format. Descriptors are added to handle this encoding and decoding
+    # to bytes automatically.
+    _token = Column(String, nullable=True)
+
+    @hybrid_property
+    def token(self):
+        return self._token if self._token is None else base64.b64decode(self._token)
+
+    @token.setter
+    def token(self, value):
+        self._token = base64.b64encode(value) if value is not None else None
+
+    @property
+    def hex_token(self):
+        if self._token is None:
+            return self._token
+        else:
+            return hexlify(self.token).decode('utf8')
+
+    # if null there are no outstanding push notifications. If this contains anything then dont attempt to deliver
+    # another APNS push.
+    last_push_at = Column(DateTime, nullable=True)
+    last_apns_id = Column(Integer, nullable=True)
+
+    # if the time delta between last_push_at and last_seen is >= several days to a week,
+    # this should count as a failed push, and potentially declare the device as dead.
+    failed_push_count = Column(Integer, default=0, nullable=False)
 
     # DEP
     unlock_token = Column(String(), nullable=True)

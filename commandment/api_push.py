@@ -1,20 +1,39 @@
-from flask import Blueprint, request, abort, send_file, current_app
+from datetime import datetime
+from flask import Blueprint, request, abort, send_file, current_app, jsonify
 from sqlalchemy.orm.exc import NoResultFound
 
-from .database import db_session
-from .models import Device, Certificate, RSAPrivateKey
+from .models import db, Device, Certificate, RSAPrivateKey
 from .pki import serialization
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
+from .push import push_to_device
+from .schema import PushResponseFlatSchema
 
 api_push_app = Blueprint('api_push_app', __name__)
 
 
-# @api_push_app.route('/v1/devices/<int:device_id>/push', methods=['POST'])
-# def push(device_id: int):
-#     """Send a (Blank) push to the specified device by its ID"""
-#     device = db_session.query(Device).filter(Device.id == device_id).one()
-#     push_to_device(device)
+@api_push_app.route('/v1/devices/<int:device_id>/push', methods=['POST', 'GET'])
+def push(device_id: int):
+    """Send a (Blank) push notification to the specified device by its Commandment ID.
+    
+    This causes the device to check back with the MDM for pending commands.
+    """
+    device = db.session.query(Device).filter(Device.id == device_id).one()
+    if device.token is None or device.push_magic is None:
+        abort(400, 'Cannot request push on a device that has no device token or push magic')
+
+    response = push_to_device(device)
+    current_app.logger.info(response)
+    device.last_push_at = datetime.utcnow()
+    if response.status_code == 200:
+        device.last_apns_id = response.apns_id
+        
+    db.session.commit()
+    push_res_schema = PushResponseFlatSchema()
+    result = push_res_schema.dumps(response)
+
+    return result
+    
 
 @api_push_app.route('/v1/push/certificate/public', methods=['POST'])
 def upload_push_certificate_public():

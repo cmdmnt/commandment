@@ -149,3 +149,11 @@ class OrganizationFlatSchema(FlatSchema):
     x509_o = fields.Str()
     x509_st = fields.Str()
     x509_c = fields.Str()
+
+
+class PushResponseFlatSchema(FlatSchema):
+    apns_id = fields.Integer()
+    status_code = fields.Integer()
+    reason = fields.Str()
+    timestamp = fields.DateTime()
+

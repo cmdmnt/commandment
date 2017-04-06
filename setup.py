@@ -27,6 +27,7 @@ setup(
         'M2Crypto>=0.26.0',
         'oauthlib',
         'passlib',
+        'oscrypto>=0.18.0',
         'SQLAlchemy>=1.1.6',
         'acme>=0.12.0'
     ],
