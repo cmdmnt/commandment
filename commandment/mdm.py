@@ -97,7 +97,7 @@ def token_update(plist_data):
         abort(400, 'invalid data supplied')
 
     if 'UnlockToken' in plist_data:
-        device.unlock_token = plist_data['UnlockToken'].data.encode('base64')
+        device.unlock_token = plist_data['UnlockToken']
 
     db_session.commit()
 

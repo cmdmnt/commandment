@@ -24,6 +24,7 @@ import uuid
 import base64
 import codecs
 from binascii import hexlify
+from biplist import Data as NSData
 
 db = SQLAlchemy()
 
@@ -106,7 +107,8 @@ class Certificate(db.Model):
 
     __mapper_args__ = {
         'polymorphic_on': type,
-        'polymorphic_identity': 'certificate'
+        'polymorphic_identity': 'certificates',
+        'with_polymorphic': '*',
     }
 
 
@@ -130,15 +132,21 @@ class CertificateSigningRequest(Certificate):
 
 
 class SSLCertificate(Certificate):
-    __mapper_args__ = {'polymorphic_identity': 'mdm.webcrt'}
+    __mapper_args__ = {
+        'polymorphic_identity': 'mdm.webcrt'
+    }
 
 
 class PushCertificate(Certificate):
-    __mapper_args__ = {'polymorphic_identity': 'mdm.pushcert'}
+    __mapper_args__ = {
+        'polymorphic_identity': 'mdm.pushcert'
+    }
 
 
 class CACertificate(Certificate):
-    __mapper_args__ = {'polymorphic_identity': 'mdm.cacert'}
+    __mapper_args__ = {
+        'polymorphic_identity': 'mdm.cacert'
+    }
 
 
 class DeviceIdentityCertificate(Certificate):
@@ -185,7 +193,6 @@ class Device(db.Model):
           token (str): The hex string representing the Device Token, required to push with APNS.
           last_push_at (datetime.datetime): The datetime when the last push was sent to APNS for this device.
           last_apns_id (str): The UUID of the last apns command sent.
-          failed_push_count (int): Number of failed pushes TODO: might delete this.
           certificate_id (int): The ID of the certificate issued to this device, from the certificates table. NOTE: this
             will be NULL if the certificate was issued using an external service.
             
@@ -226,6 +233,7 @@ class Device(db.Model):
 
     @property
     def hex_token(self):
+        """Retrieve the device token in hex encoding, necessary for the APNS2 client."""
         if self._token is None:
             return self._token
         else:
@@ -241,7 +249,19 @@ class Device(db.Model):
     failed_push_count = Column(Integer, default=0, nullable=False)
 
     # DEP
-    unlock_token = Column(String(), nullable=True)
+    _unlock_token = Column(String(), name='unlock_token', nullable=True)
+    
+    @property
+    def unlock_token(self):
+        return self._unlock_token
+
+    @unlock_token.setter
+    def unlock_token(self, value):
+        if isinstance(value, NSData):
+            self._unlock_token = NSData.encode('base64')
+        else:
+            self._unlock_token = value
+
     dep_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
     dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
     dep_config = relationship('DEPConfig', backref='devices')
@@ -289,6 +309,17 @@ class InstalledCertificate(db.Model):
 #
 #
 
+class CommandSequence(db.Model):
+    """A command sequence represents a series of commands where all members must succeed in order for the sequence to
+    succeed. I.E a single failure or timeout in the sequence stops the delivery of every other member.
+
+    :table: command_sequences
+    """
+    __tablename__ = 'command_sequences'
+
+    id = Column(Integer, primary_key=True)
+    
+
 class Command(db.Model):
     """The command model represents a single MDM command that should be, has been, or has failed to be delivered to
     a single enrolled device.
@@ -319,7 +350,7 @@ class Command(db.Model):
     uuid = Column(GUID, index=True, unique=True, nullable=False)
     input_data = Column(MutableDict.as_mutable(JSONEncodedDict),
                         nullable=True)  # JSON add'l data as input to command builder
-    queued_status = Column(String(1), index=True, nullable=False, default=CommandStatus.Queued)
+    status = Column(String(1), index=True, nullable=False, default=CommandStatus.Queued.value)
 
     queued_at = Column(DateTime, default=datetime.datetime.utcnow(), server_default=text('CURRENT_TIMESTAMP'))
     sent_at = Column(DateTime, nullable=True)
@@ -354,8 +385,8 @@ class Command(db.Model):
         # d == d AND (q_status == Q OR (q_status == R AND result == 'NotNow'))
         return cls.query.filter(
             and_(cls.device == device,
-                 or_(cls.queued_status == CommandStatus.Queued.value,
-                     and_(cls.queued_status == CommandStatus.NotNow.value)))).order_by(cls.id).first()
+                 or_(cls.status == CommandStatus.Queued.value,
+                     and_(cls.status == CommandStatus.NotNow.value)))).order_by(cls.id).first()
 
     def __repr__(self):
         return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
