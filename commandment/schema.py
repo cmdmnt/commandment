@@ -62,6 +62,16 @@ class CommandSchema(Schema):
     after = fields.DateTime()
     ttl = fields.Int()
 
+    device = Relationship(
+        self_view='api_app.devices_list',
+        self_view_kwargs={'command_id': '<id>'},
+        related_view='api_app.device_detail',
+        related_url_kwargs={'device_id': '<id>'},
+        many=False,
+        schema='DeviceSchema',
+        type_='devices'
+    )
+
     class Meta:
         type_ = 'commands'
         self_view = 'api_app.command_detail'

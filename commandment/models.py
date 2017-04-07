@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 """
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 Attributes:
+    db (SQLAlchemy): A reference to flask SQLAlchemy extensions db instance.
     CERT_TYPES (dict): A dictionary keyed by the usage of the certificate: APNS, SSL, CA, or device identity.
 """
 from flask_sqlalchemy import SQLAlchemy
@@ -35,13 +37,20 @@ class CertificateType(Enum):
 
 class CommandStatus(Enum):
     """CommandStatus describes all the possible states of a command in the device command queue."""
+    #: str: Command has been created but has not been sent.
+    Queued = 'Q'
+    #: str: Command has been sent to the device, but no response has returned.
+    Sent = 'S'
+    #: str: Response has been returned from the device. This is considered completed
+    Acknowledged = 'A'
+    #: str: The command that we sent was invalid, unable to be processed.
+    Invalid = 'I'
+    #: str: The device is busy, this command cannot be processed right now.
+    NotNow = 'N'
+    #  str: This command is considered dead because it timed out, the device timed out, or was orphaned by a
+    #  removed device.
+    Expired = 'E'
 
-    Queued = 'Q'  # Command has been created but has not been sent.
-    Sent = 'S'  # Command has been sent to the device, but no response has returned.
-    Acknowledged = 'A'  # Response has been returned from the device.
-    Invalid = 'I'  # The command that we sent was invalid, unable to be processed.
-    NotNow = 'N'  # The device is busy, set command.after to now + backoff time delta
-    Expired = 'E'  # The command TTL reached zero and this command is considered dead.
 
 CERT_TYPES = {
     'mdm.pushcert': {
@@ -159,12 +168,27 @@ class Device(db.Model):
     """An enrolled device.
     
     Attributes:
-          id:
-          udid: Unique Device Identifier
-          topic: The APNS topic the device is listening on.
-          last_seen: When the device last contacted the MDM.
-          is_enrolled: Whether the MDM should consider this device enrolled.
-          
+          id (int):
+          udid (str): Unique Device Identifier
+          topic (str): The APNS topic the device is listening on.
+          last_seen (datetime.datetime): When the device last contacted the MDM.
+          is_enrolled (bool): Whether the MDM should consider this device enrolled.
+          build_version (str): DeviceInformation BuildVersion
+          device_name (str): Name of the device
+          model (str): Name of the hardware model
+          model_name (str): Longer name of the hardware model
+          os_version (str): The operating system version number.
+          product_name (str): The base product name of the hardware
+          serial_number (str): The hardware serial number
+          awaiting_configuration (bool): True if device is waiting at Setup Assistant
+          push_magic (str): The UUID that establishes a unique relationship between the device and the MDM.
+          token (str): The hex string representing the Device Token, required to push with APNS.
+          last_push_at (datetime.datetime): The datetime when the last push was sent to APNS for this device.
+          last_apns_id (str): The UUID of the last apns command sent.
+          failed_push_count (int): Number of failed pushes TODO: might delete this.
+          certificate_id (int): The ID of the certificate issued to this device, from the certificates table. NOTE: this
+            will be NULL if the certificate was issued using an external service.
+            
     """
     __tablename__ = 'devices'
 
@@ -231,7 +255,6 @@ class Device(db.Model):
         return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
 
 
-
 class InstalledApplication(db.Model):
     __tablename__ = 'installed_applications'
 
@@ -260,12 +283,33 @@ class InstalledCertificate(db.Model):
     # SHA-256 hash of DER-encoded certificate
     fingerprint = Column(String(64), nullable=False, index=True)
 
+
 # class InstalledProfile(db.Model):
 #     __tablename__ = 'installed_profiles'
 #
 #
 
 class Command(db.Model):
+    """The command model represents a single MDM command that should be, has been, or has failed to be delivered to
+    a single enrolled device.
+    
+    :table: commands
+    
+    Attributes:
+        id (int): ID
+        command_class (str): String representation of the class that will handle the response from this command.
+        uuid (GUID): Globally unique command UUID
+        input_data (str): The parameters that were used when generating the command, serialized into JSON.
+        queued_status (CommandStatus): The status of the command.
+        queued_at (datetime.datetime): The datetime (utc) of when the command was created.
+        sent_at (datetime.datetime): The datetime (utc) of when the command was delivered to the client.
+        acknowledged_at (datetime.datetime): The datetime (utc) of when the Acknowledged, Error or NotNow response was
+            returned.
+        after (datetime.datetime): If not null, the command must not be sent until this datetime is in the past.
+        ttl (int): The number of retries remaining until the command will be dead/expired.
+        device_id (int): The device ID on the devices table.
+        device (Device): The instance of the related device.
+    """
     __tablename__ = 'commands'
 
     id = Column(Integer, primary_key=True)
@@ -295,6 +339,14 @@ class Command(db.Model):
 
     @classmethod
     def find_by_uuid(cls, uuid):
+        """Find and return an instance of the Command model matching the given UUID string.
+        
+        Args:
+              uuid (str): The command UUID
+              
+        Returns:
+              Command: Instance of the command, if any
+        """
         return cls.query.filter(cls.uuid == uuid).one()
 
     @classmethod
@@ -302,9 +354,8 @@ class Command(db.Model):
         # d == d AND (q_status == Q OR (q_status == R AND result == 'NotNow'))
         return cls.query.filter(
             and_(cls.device == device,
-                 or_(cls.status == 'Q',
-                     and_(cls.status == 'R',
-                          cls.result == 'NotNow')))).order_by(cls.id).first()
+                 or_(cls.queued_status == CommandStatus.Queued.value,
+                     and_(cls.queued_status == CommandStatus.NotNow.value)))).order_by(cls.id).first()
 
     def __repr__(self):
         return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
@@ -503,10 +554,11 @@ class Organization(db.Model):
     x509_st = Column(String(128))
     x509_c = Column(String(2))
 
+
 payload_dependencies = Table('payload_dependencies', db.metadata,
-    Column('payload_uuid', GUID, ForeignKey('payloads.uuid')),
-    Column('depends_on_payload_uuid', GUID, ForeignKey('payloads.uuid')),
-)
+                             Column('payload_uuid', GUID, ForeignKey('payloads.uuid')),
+                             Column('depends_on_payload_uuid', GUID, ForeignKey('payloads.uuid')),
+                             )
 
 
 class Payload(db.Model):
@@ -530,6 +582,7 @@ class Payload(db.Model):
 class PayloadScope(Enum):
     User = 'User'
     System = 'System'
+
 
 profile_payloads = Table('profile_payloads', db.metadata,
                          Column('profile_id', Integer, ForeignKey('profiles.id')),

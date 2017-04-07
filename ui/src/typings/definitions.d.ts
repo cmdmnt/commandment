@@ -1,4 +1,20 @@
 
+
+
+declare interface Command {
+    id?: number;
+    command_class?: string;
+    uuid?: string;
+    input_data?: string;
+    queued_status: string;
+    queued_at?: Date;
+    sent_at?: Date;
+    acknowledged_at?: Date;
+    after?: Date;
+    ttl: number;
+}
+
+
 declare interface Device {
     udid: string;
     build_version: string;

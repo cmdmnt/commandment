@@ -6,26 +6,143 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 from flask import Blueprint, make_response, abort
 from flask import current_app, send_file, g
 import base64
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from .database import db_session, NoResultFound, or_, and_
 from .models import db, MDMConfig, Certificate as DBCertificate, Device, RSAPrivateKey as DBPrivateKey, Command
 from .models import App, MDMGroup, Organization, SSLCertificate
 from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
 from .mdmcmds import InstallProfile, AppInstall
 from .decorators import device_cert_check, parse_plist_input_data
+from .routers import CommandRouter, PlistRouter
 from os import urandom
 import plistlib
 from .push import push_to_device
 import os
+from datetime import datetime
 
 
 TRUST_DEV_PROVIDED_CERT = True
 
 mdm_app = Blueprint('mdm_app', __name__)
 
+plr = PlistRouter(mdm_app, '/checkin')
+
+
+@plr.route('MessageType', 'Authenticate')
+def authenticate(plist_data):
+    """Handle the `Authenticate` message.
+    
+    This will be the first message sent to the MDM upon enrollment, but you cannot consider the device to be enrolled
+    at this stage.
+    """
+    # TODO: check to make sure device == UDID == cert, etc.
+    try:
+        device = db_session.query(Device).filter(Device.udid == plist_data['UDID']).one()
+    except NoResultFound:
+        # no device found, let's make a new one!
+        device = Device()
+        db_session.add(device)
+
+        device.udid = plist_data['UDID']
+        device.build_version = plist_data.get('BuildVersion')
+        device.device_name = plist_data.get('DeviceName')
+        device.model = plist_data.get('Model')
+        device.model_name = plist_data.get('ModelName')
+        device.os_version = plist_data.get('OSVersion')
+        device.product_name = plist_data.get('ProductName')
+        device.serial_number = plist_data.get('SerialNumber')
+        device.topic = plist_data.get('Topic')
+
+    # remove the previous device token (in the case of a re-enrollment) to
+    # tell the difference between a periodic TokenUpdate and the first
+    # post-enrollment TokenUpdate
+    device.token = None
+    device.first_user_message_seen = False
+
+    # TODO: we're essentially trusting the device to give the correct security infomration here
+    #device.certificate = g.device_cert
+
+    db_session.commit()
+
+    return 'OK'
+
+
+@plr.route('MessageType', 'TokenUpdate')
+def token_update(plist_data):
+    current_app.logger.info('TokenUpdate received')
+
+    # TODO: a TokenUpdate can either be for a device or a user (per OS X extensions)
+    if 'UserID' in plist_data:
+        current_app.logger.warn('per-user TokenUpdate not yet implemented, skipping')
+        return 'OK'
+
+    # TODO: check to make sure device == UDID == cert, etc.
+    device = db_session.query(Device).filter(Device.udid == plist_data['UDID']).one()
+
+    if not device.token:
+        device.is_enrolled = True
+
+    # device.certificate = g.device_cert
+
+    if 'PushMagic' in plist_data:
+        device.push_magic = plist_data['PushMagic']
+
+    if 'Topic' in plist_data:
+        device.topic = plist_data['Topic']
+
+    if 'Token' in plist_data:
+        device.token = plist_data['Token']
+    else:
+        current_app.logger.error('TokenUpdate message missing Token')
+        abort(400, 'invalid data supplied')
+
+    if 'UnlockToken' in plist_data:
+        device.unlock_token = plist_data['UnlockToken'].data.encode('base64')
+
+    db_session.commit()
+
+
+@plr.route('MessageType', 'UserAuthenticate')
+def user_authenticate(plist_data):
+    abort(410, 'per-user authentication not yet supported')
+
+
+@plr.route('MessageType', 'CheckOut')
+def check_out(plist_data):
+    """Handle the `CheckOut` message.
+    
+    Todo:
+        - Handle CheckOuts for the user channel.
+    """
+    device_udid = plist_data['UDID']
+    try:
+        d = db.session.query(Device).filter(Device.udid == device_udid).one()
+    except NoResultFound:
+        current_app.logger.warning('Attempted to unenroll device with UDID: {}, but none was found'.format(device_udid))
+        return abort(404, 'No matching device found')
+
+    except MultipleResultsFound:
+        current_app.logger.warning(
+            'Attempted to unenroll device with UDID: {}, but there were multiple, check your database'.format(device_udid))
+        return abort(500, 'Too many devices matching')
+
+    d.last_seen = datetime.utcnow()
+    d.is_enrolled = False
+
+    # Make sure we cant even accidentally push to an invalid relationship
+    d.token = None
+    d.push_magic = None
+
+    db.session.commit()
+    current_app.logger.debug('Device has been unenrolled, UDID: {}'.format(device_udid))
+
+    return 'OK'
+
+
 
 #@device_cert_check(no_device_okay=True)
 
-@mdm_app.route("/checkin", methods=['PUT'])
+@mdm_app.route("/checkinz", methods=['PUT'])
 @parse_plist_input_data
 def checkin():
     """MDM checkin endpoint.
@@ -376,3 +493,17 @@ def app_download(app_id: int, filename: str):
     app = app_q.one()
 
     return send_file(os.path.join(current_app.config['APP_UPLOAD_ROOT'], app.path_format()))
+
+#
+# cr = CommandRouter(mdm_app, '/mdm')
+#
+# @cr.route('ProfileList')
+# def profile_list(request: Command, response: dict):
+#     """Acknowledge a response to a ProfileList command.
+#
+#     Args:
+#           request (Command): The ProfileList command that was issued
+#           response (dict): The parsed plist data that was returned by the mdm client.
+#     """
+#     pass
+

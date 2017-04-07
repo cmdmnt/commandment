@@ -5,3 +5,6 @@ Command
 .. autoclass:: Command
     :members:
 
+.. autoclass:: CommandStatus
+    :members:
+
