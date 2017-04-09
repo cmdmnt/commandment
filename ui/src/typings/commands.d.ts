@@ -74,6 +74,29 @@ declare namespace MDM {
         ChangeManagementState?: 'Managed';
     }
 
+    export interface ApplyRedemptionCode extends Command {
+        Identifier: string;
+        RedemptionCode: string;
+    }
+
+    export interface ManagedApplicationList extends Command {
+        Identifiers?: Array<string>;
+    }
+
+    export interface RemoveApplication extends Command {
+        Identifier: string;
+    }
+
+    export interface InviteToProgram extends Command {
+        ProgramID: 'com.apple.cloudvpp';
+        InvitationURL: string;
+    }
+
+    export interface ValidateApplications extends Command {
+        Identifiers?: Array<string>;
+    }
+    
+
     
 }
 

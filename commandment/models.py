@@ -392,40 +392,6 @@ class Command(db.Model):
         return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
 
 
-# class Profile(db.Model):
-#     __tablename__ = 'profile'
-#
-#     id = Column(Integer, primary_key=True)
-#     identifier = Column(String, index=True, unique=True,
-#                         nullable=False)  # duplicated from within profile_data for searching
-#     uuid = Column(String(36), index=True, unique=True,
-#                   nullable=False)  # duplicated from within profile_data for searching
-#     profile_data = Column(Text, nullable=False)  # serialized XML (or signed, encrypted) profile data
-#
-#     def __repr__(self):
-#         return '<Profile ID=%r UUID=%r>' % (self.id, self.uuid)
-#
-#
-# device_group_assoc = db.Table('device_group', db.Model.metadata,
-#                               Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-#                               Column('device_id', Integer, ForeignKey('devices.id')),
-#                               )
-#
-# profile_group_assoc = db.Table('profile_group', db.Model.metadata,
-#                                Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-#                                Column('profile_id', Integer, ForeignKey('profile.id')),
-#                                )
-#
-# app_group_assoc = db.Table('app_group', db.Model.metadata,
-#                            Column('mdm_group_id', Integer, ForeignKey('mdm_group.id')),
-#                            Column('app_id', Integer, ForeignKey('app.id')),
-#                            # install_early is just a colloqualism to mean 'install as early as
-#                            # possible.' initiallly this is in support for installing apps out of the
-#                            # gate for DEP
-#                            Column('install_early', Boolean),
-#                            )
-
-
 class MDMGroup(db.Model):
     __tablename__ = 'mdm_group'
 
@@ -632,7 +598,7 @@ class Profile(db.Model):
     uuid = Column(GUID, index=True)
     removal_disallowed = Column(Boolean)
     version = Column(Integer, default=1)
-    scope = Column(DBEnum(PayloadScope), default=PayloadScope.User)
+    scope = Column(DBEnum(PayloadScope), default=PayloadScope.User.value)
     removal_date = Column(DateTime)
     duration_until_removal = Column(BigInteger)
     consent_en = Column(Text)

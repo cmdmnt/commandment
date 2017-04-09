@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-'''
+"""
 Copyright (c) 2016 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+"""
 
 from flask import Flask
 from commandment.scep.glue import init_libcrypto, get_libcrypto
