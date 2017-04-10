@@ -6,6 +6,7 @@ apns2-client==0.5.3
 asn1crypto==0.22.0
 Babel==2.4.0
 biplist==1.0.1
+blinker==1.4
 cffi==1.10.0
 click==6.7
 cryptography==1.8.1
@@ -30,6 +31,7 @@ M2Crypto==0.26.0
 MarkupSafe==1.0
 marshmallow==2.13.1
 marshmallow-jsonapi==0.11.0
+marshmallow-sqlalchemy==0.13.0
 mock==2.0.0
 oauthlib==2.0.2
 oscrypto==0.18.0

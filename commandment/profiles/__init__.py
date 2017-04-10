@@ -1,27 +1,52 @@
-'''
+"""
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+"""
 
 '''Support for Apple Configuration Profiles and Payloads'''
 
 import plistlib
 from uuid import uuid4
+import collections
+
 
 class PayloadInvalid(Exception):
     # base class for invalid Payloads
     pass
 
+
 class PayloadKeyRequired(PayloadInvalid):
     # missing required Payload keys
     pass
+
 
 class PayloadValueError(PayloadInvalid):
     # Payload keys are not correct value or format
     pass
 
-class Payload(object):
-    '''Apple Configuration Profile Payload base class'''
+
+PAYLOADS = {}
+
+
+class PayloadClass(type):
+    """The PayloadClass Metaclass registers all created instances of Payload derived classes."""
+
+    @classmethod
+    def __prepare__(metacls, name, bases):
+        return collections.OrderedDict()
+
+    def __new__(cls, name, bases, namespace, **kwds):
+        ns = dict(namespace)
+        klass = type.__new__(cls, name, bases, dict(namespace))
+        if 'payload_type' in ns:
+            PAYLOADS[ns['payload_type']] = klass
+
+        return klass
+
+
+class Payload(metaclass=PayloadClass):
+    """Apple Configuration Profile Payload base class"""
+
     def __init__(self, payload_type, identifier, uuid=None, version=1, **kwargs):
         # required keys (in all payload & profile types)
         new_payload_dict = {
@@ -37,13 +62,13 @@ class Payload(object):
         self.set_payload(new_payload_dict)
 
     def generate_dict(self):
-        '''Assemble a dictionary of this Payload data'''
+        """Assemble a dictionary of this Payload data"""
         # avoid modifying our actual payload by using a shallow copy
         return self.payload.copy()
 
     def set_payload(self, payload_dict):
-        '''Set the internal payload dictionary and check that this payload
-        is valid by having all required keys and reasonable values.'''
+        """Set the internal payload dictionary and check that this payload
+        is valid by having all required keys and reasonable values."""
         if 'PayloadIdentifier' not in payload_dict:
             raise PayloadKeyRequired('payload identifier is required')
 
@@ -79,7 +104,7 @@ class Payload(object):
 
     @classmethod
     def from_dict(cls, payload_dict):
-        '''Re-create object from dictionary'''
+        """Re-create object from dictionary"""
         if 'PayloadType' not in payload_dict:
             raise KeyError('Payload MUST contain PayloadType key')
 
@@ -94,7 +119,7 @@ class Payload(object):
         return pld
 
     def get_uuid(self):
-        '''Returns PayloadUUID key from payload'''
+        """Returns PayloadUUID key from payload"""
         return self.payload['PayloadUUID']
 
     def set_uuid(self, uuid=None):
@@ -107,12 +132,17 @@ class Payload(object):
     def __repr__(self):
         if self.__class__.__name__ != Payload.__name__:
             # only show PayloadType if we're using this base class
-            return '<%s ID=%r UUID=%r>' % (self.__class__.__name__, self.payload['PayloadIdentifier'], self.payload['PayloadUUID'])
+            return '<%s ID=%r UUID=%r>' % (
+                type(self).__name__, self.payload['PayloadIdentifier'], self.payload['PayloadUUID']
+            )
         else:
-            return '<%s Type=%r ID=%r UUID=%r>' % (self.__class__.__name__, self.payload['PayloadType'], self.payload['PayloadIdentifier'], self.payload['PayloadUUID'])
+            return '<%s Type=%r ID=%r UUID=%r>' % (
+                type(self).__name__, self.payload['PayloadType'], self.payload['PayloadIdentifier'],
+                self.payload['PayloadUUID'])
+
 
 def find_payload_class(payload_type):
-    '''Iterate through inherited classes to find a matching class name'''
+    """Iterate through inherited classes to find a matching class name"""
     subclasses = set()
     work = [Payload]
     while work:
@@ -129,17 +159,18 @@ def find_payload_class(payload_type):
 
 
 class Profile(Payload):
-    '''Apple Configuration Profile'''
+    """Apple Configuration Profile"""
+
     def __init__(self, identifier, uuid=None, version=1, **kwargs):
         Payload.__init__(self, 'Configuration', identifier, uuid, version, **kwargs)
         self.payloads = []
 
     def append_payload(self, payload):
-        '''Add a Payload to this Profile
+        """Add a Payload to this Profile
 
         A Profile uses the PayloadContent key to place the aggregated Payloads
         into. Thus a Profile cannot separately set a PayloadContent key. An
-        exception will be raised if this has been done.'''
+        exception will be raised if this has been done."""
 
         if 'PayloadContent' in list(self.payload.keys()):
             raise Exception('PayloadContent already exists on Profile payload')
@@ -150,11 +181,11 @@ class Profile(Payload):
         self.payloads.remove(payload)
 
     def generate_dict(self):
-        '''Assemble the profile dictionary including each added Payload
+        """Assemble the profile dictionary including each added Payload
 
         A Profile uses the PayloadContent key to place the aggregated Payloads
         into. Thus a Profile cannot separately set a PayloadContent key. An
-        exception will be raised if this has been done.'''
+        exception will be raised if this has been done."""
 
         if 'PayloadContent' in list(self.payload.keys()):
             raise Exception('PayloadContent already exists on Profile payload')
@@ -170,8 +201,8 @@ class Profile(Payload):
         return dict_copy
 
     @classmethod
-    def from_dict(cls, payload_dict):
-        '''Re-create object from dictionary'''
+    def from_dict(cls, payload_dict: dict):
+        """Re-create object from dictionary"""
 
         prof = Profile.__new__(Profile)
         prof.payloads = []
@@ -194,18 +225,19 @@ class Profile(Payload):
 
         return prof
 
-    def generate_plist(self):
-        '''Generate Apple Property List XML of payload data
+    def generate_plist(self) -> str:
+        """Generate Apple Property List XML of payload data
 
         Uses plistlib to generate a serialized Apple Property List XML
         representation of payload data.
-        '''
+        """
         return plistlib.dumps(self.generate_dict())
 
     @classmethod
     def from_plist(cls, plist):
-        '''Parse Apple Property List XML into dictionary to re-create object'''
-        return cls.from_dict(plistlib.readPlistFromString(plist))
+        """Parse Apple Property List XML into dictionary to re-create object"""
+        return cls.from_dict(plistlib.loads(plist))
 
     def __repr__(self):
-        return '<%s ID=%r UUID=%r Payloads=%d>' % (self.__class__.__name__, self.payload['PayloadIdentifier'], self.payload['PayloadUUID'], len(self.payloads))
+        return '<%s ID=%r UUID=%r Payloads=%d>' % (
+            self.__class__.__name__, self.payload['PayloadIdentifier'], self.payload['PayloadUUID'], len(self.payloads))

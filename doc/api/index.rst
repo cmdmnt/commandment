@@ -9,5 +9,7 @@ API Documentation
 
     models/index.rst
 
+    profiles/index.rst
+
     push.rst
     runner.rst

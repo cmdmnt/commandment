@@ -16,6 +16,7 @@ setup(
     keywords='MDM',
     install_requires=[
         'apns2-client>=0.5.3',
+        'blinker>=1.4',
         'biplist>=1.0.1',
         'cryptography>=1.8.1',
         'Flask',

@@ -19,7 +19,7 @@ import plistlib
 from .push import push_to_device
 import os
 from datetime import datetime
-
+from .signals import device_enrolled
 
 TRUST_DEV_PROVIDED_CERT = True
 
@@ -81,6 +81,7 @@ def token_update(plist_data):
 
     if not device.token:
         device.is_enrolled = True
+        device_enrolled.send(device)
 
     # device.certificate = g.device_cert
 

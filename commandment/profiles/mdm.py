@@ -1,7 +1,7 @@
-'''
+"""
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+"""
 
 from . import Payload
 
@@ -21,19 +21,20 @@ MDM_AR__ALLOW_SETTINGS_MANIP = 2048
 MDM_AR__ALLOW_APP_MGMT = 4096
 
 MDM_AR__ALL = \
-            MDM_AR__ALLOW_INSPECT_CONFIG_PROF | \
-            MDM_AR__ALLOW_INST_REM_CONFIG_PROF | \
-            MDM_AR__ALLOW_DEVICE_LOCK | \
-            MDM_AR__ALLOW_DEVICE_ERASE | \
-            MDM_AR__ALLOW_DEVICE_QUERY | \
-            MDM_AR__ALLOW_NETWORK_QUERY | \
-            MDM_AR__ALLOW_INSPECT_PROV_PROF | \
-            MDM_AR__ALLOW_INST_REM_PROV_PROF | \
-            MDM_AR__ALLOW_INSPECT_APPS | \
-            MDM_AR__ALLOW_RESTRICTION_QUERY | \
-            MDM_AR__ALLOW_SECURITY_QUERY | \
-            MDM_AR__ALLOW_SETTINGS_MANIP | \
-            MDM_AR__ALLOW_APP_MGMT
+    MDM_AR__ALLOW_INSPECT_CONFIG_PROF | \
+    MDM_AR__ALLOW_INST_REM_CONFIG_PROF | \
+    MDM_AR__ALLOW_DEVICE_LOCK | \
+    MDM_AR__ALLOW_DEVICE_ERASE | \
+    MDM_AR__ALLOW_DEVICE_QUERY | \
+    MDM_AR__ALLOW_NETWORK_QUERY | \
+    MDM_AR__ALLOW_INSPECT_PROV_PROF | \
+    MDM_AR__ALLOW_INST_REM_PROV_PROF | \
+    MDM_AR__ALLOW_INSPECT_APPS | \
+    MDM_AR__ALLOW_RESTRICTION_QUERY | \
+    MDM_AR__ALLOW_SECURITY_QUERY | \
+    MDM_AR__ALLOW_SETTINGS_MANIP | \
+    MDM_AR__ALLOW_APP_MGMT
+
 
 class MDMPayload(Payload):
     payload_type = 'com.apple.mdm'
