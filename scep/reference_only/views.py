@@ -1,20 +1,16 @@
-from os import urandom
-from flask import Flask, abort, request, Response
-from .ca import CertificateAuthority, ca_from_storage, get_ca
+"""
+Copyright (c) 2016 Jesse Peterson
+Licensed under the MIT license. See the included LICENSE.txt file for details.
+"""
+from flask import request, Response, abort
+from scep import app
 from base64 import b64decode
+from scep.ca import get_ca
 from cryptography.hazmat.primitives.serialization import Encoding
-from cryptography import x509
-from cryptography.hazmat.backends import default_backend
-from .message import SCEPMessage
+from scep.message import degenerate_pkcs7_der, SCEPMessage, PKCSReq
 
 FORCE_DEGENERATE_FOR_SINGLE_CERT = False
 CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
-
-app = Flask(__name__)
-app.config.from_object('scep.default_settings')
-app.config.from_envvar('SCEP_SETTINGS')
-
-ca = ca_from_storage(app.config['CA_ROOT'])
 
 @app.route('/cgi-bin/pkiclient.exe', methods=['GET', 'POST'])
 @app.route('/scep', methods=['GET', 'POST'])
@@ -49,17 +45,19 @@ def scep():
 
         pki_msg = SCEPMessage.from_pkcs7_der(msg)
 
-        if pki_msg.message_type == 'pkcs_req':
+        if pki_msg.message_type == PKCSReq.message_type:
             app.logger.debug('received PKCSReq SCEP message')
 
             cakey = mdm_ca.private_key
             cacert = mdm_ca.certificate
+            # m2_evp_cakey = mdm_ca.get_private_key()._new_evp()
+            # m2_x509_cacert = mdm_ca.get_cacert()._m2_x509()
 
             der_req = pki_msg.get_decrypted_envelope_data(
-                cacert,
-                cakey)
+                m2_x509_cacert,
+                m2_evp_cakey)
 
-            cert_req = x509.load_der_x509_csr(der_req, backend=default_backend())
+            cert_req = CertificateRequest.from_der(der_req)
 
             rpl_msg = CertRep()
             rpl_msg.transaction_id = pki_msg.transaction_id
@@ -92,4 +90,3 @@ def scep():
             return ''
     else:
         abort(404, 'unknown SCEP operation')
-

@@ -5,9 +5,6 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 
 from flask import Flask
-from commandment.scep.glue import init_libcrypto, get_libcrypto
-from commandment.scep.message import SCEPAttribute
-from commandment.scep.app import scep_app, init_scep_record
 from commandment.database import config_engine, init_db
 
 import os
@@ -45,9 +42,6 @@ if __name__ == '__main__':
     if os.environ.get('COMMANDMENT_SETTINGS'):
         app.config.from_envvar('COMMANDMENT_SETTINGS')
 
-    init_libcrypto(app.config.get('LIBCRYPTO_PATH'))
-
-    SCEPAttribute.openssl_init()
 
     config_engine(app.config['DATABASE_URI'], app.config['DATABASE_ECHO'])
 

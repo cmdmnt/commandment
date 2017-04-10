@@ -100,6 +100,7 @@ def token_update(plist_data):
         device.unlock_token = plist_data['UnlockToken']
 
     db_session.commit()
+    return 'OK'
 
 
 @plr.route('MessageType', 'UserAuthenticate')

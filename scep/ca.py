@@ -26,7 +26,7 @@ class CertificateAuthority(object):
     """
 
     default_subject = x509.Name([
-        x509.NameAttribute(NameOID.COMMON_NAME, u'COMMANDMENT-CA'),
+        x509.NameAttribute(NameOID.COMMON_NAME, u'COMMANDMENT-SCEP-CA'),
         x509.NameAttribute(NameOID.ORGANIZATION_NAME, u'commandment'),
         x509.NameAttribute(NameOID.EMAIL_ADDRESS, u'mosen@noreply.users.github.com'),
         x509.NameAttribute(NameOID.COUNTRY_NAME, u'US')
@@ -45,30 +45,48 @@ class CertificateAuthority(object):
         Returns:
             Instance of CertificateAuthority
         """
-        private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=key_size,
-            backend=default_backend(),
-        )
+        key_path = os.path.join(path, 'ca', 'ca.key')
 
-        certificate = x509.CertificateBuilder().subject_name(
-            subject
-        ).issuer_name(
-            subject
-        ).public_key(
-            private_key.public_key()
-        ).serial_number(
-            x509.random_serial_number()
-        ).not_valid_before(
-            datetime.datetime.utcnow()
-        ).not_valid_after(
-            datetime.datetime.utcnow() + datetime.timedelta(days=365)
-        ).add_extension(
-            x509.BasicConstraints(ca=True, path_length=None),
-            True
-        ).sign(private_key, hashes.SHA256(), default_backend())
+        if os.path.exists(key_path):
+            with open(key_path, 'rb') as key_file:
+                private_key = serialization.load_der_private_key(
+                    data=key_file.read(),
+                    password=None,
+                    backend=default_backend()
+                )
+        else:
+            private_key = rsa.generate_private_key(
+                public_exponent=65537,
+                key_size=key_size,
+                backend=default_backend(),
+            )
 
-        ca = cls(certificate, private_key)
+        cert_path = os.path.join(path, 'ca', 'ca.cer')
+        if os.path.exists(cert_path):
+            with open(cert_path, 'rb') as cert_file:
+                certificate = x509.load_der_x509_certificate(
+                    data=cert_file.read(),
+                    backend=default_backend()
+                )
+        else:
+            certificate = x509.CertificateBuilder().subject_name(
+                subject
+            ).issuer_name(
+                subject
+            ).public_key(
+                private_key.public_key()
+            ).serial_number(
+                x509.random_serial_number()
+            ).not_valid_before(
+                datetime.datetime.utcnow()
+            ).not_valid_after(
+                datetime.datetime.utcnow() + datetime.timedelta(days=365)
+            ).add_extension(
+                x509.BasicConstraints(ca=True, path_length=None),
+                True
+            ).sign(private_key, hashes.SHA256(), default_backend())
+
+        ca = cls(path, certificate, private_key)
         return ca
 
     def __init__(self, path: str, certificate: x509.Certificate, private_key: rsa.RSAPrivateKeyWithSerialization, password=None):
@@ -140,14 +158,15 @@ class CertificateAuthority(object):
         return cert
 
 
-def from_storage(path: str) -> CertificateAuthority:
+def ca_from_storage(path: str) -> CertificateAuthority:
     """Create a new CertificateAuthority at the given path."""
     if not os.path.exists(path):
         os.mkdir(path)
 
     for d in STORAGE_DIRS:
-        if not os.path.exists(d):
-            os.mkdir(os.path.join(path, d))
+        abspath = os.path.join(path, d)
+        if not os.path.exists(abspath):
+            os.mkdir(abspath)
 
     ca = CertificateAuthority.create(path)
     return ca
@@ -156,5 +175,5 @@ def from_storage(path: str) -> CertificateAuthority:
 def get_ca() -> CertificateAuthority:
     ca = getattr(g, '_mdm_ca', None)
     if ca is None:
-        ca = g._mdm_ca = from_storage(current_app.config['CA_ROOT'])
+        ca = g._mdm_ca = ca_from_storage(current_app.config['CA_ROOT'])
     return ca
