@@ -8,7 +8,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 import plistlib
 from uuid import uuid4
 import collections
-
+from enum import Enum
 
 class PayloadInvalid(Exception):
     # base class for invalid Payloads
@@ -24,6 +24,16 @@ class PayloadValueError(PayloadInvalid):
     # Payload keys are not correct value or format
     pass
 
+
+class DeviceAttributes(Enum):
+    """This enumeration describes all of the device attributes available to OTA profile enrolment."""
+    UDID = 'UDID'
+    VERSION = 'VERSION'
+    PRODUCT = 'PRODUCT'
+    SERIAL = 'SERIAL'
+    MEID = 'MEID'
+    IMEI = 'IMEI'
+    
 
 PAYLOADS = {}
 
@@ -141,25 +151,10 @@ class Payload(metaclass=PayloadClass):
                 self.payload['PayloadUUID'])
 
 
-def find_payload_class(payload_type):
-    """Iterate through inherited classes to find a matching class name"""
-    subclasses = set()
-    work = [Payload]
-    while work:
-        parent_subclass = work.pop()
-        for child_subclass in parent_subclass.__subclasses__():
-            if child_subclass not in subclasses:
-                if hasattr(child_subclass, 'payload_type') and child_subclass.payload_type == payload_type:
-                    return child_subclass
-
-                subclasses.add(child_subclass)
-                work.append(child_subclass)
-
-    return None
-
-
 class Profile(Payload):
     """Apple Configuration Profile"""
+
+    payload_type = 'Configuration'
 
     def __init__(self, identifier, uuid=None, version=1, **kwargs):
         Payload.__init__(self, 'Configuration', identifier, uuid, version, **kwargs)
@@ -241,3 +236,4 @@ class Profile(Payload):
     def __repr__(self):
         return '<%s ID=%r UUID=%r Payloads=%d>' % (
             self.__class__.__name__, self.payload['PayloadIdentifier'], self.payload['PayloadUUID'], len(self.payloads))
+

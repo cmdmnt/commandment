@@ -3,7 +3,8 @@ Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 
-from . import Payload
+from typing import Set
+from . import Payload, DeviceAttributes
 
 # MDM Access Rights (AR)
 MDM_AR__ALLOW_INSPECT_CONFIG_PROF = 1
@@ -54,3 +55,17 @@ class MDMPayload(Payload):
         #   CheckInURL
         #   CheckOutWhenRemoved [iOS 5+, OS X 10.9+, unconditional on OS X 10.8]
         #   UseDevelopmentAPNS
+
+
+class ProfileServicePayload(Payload):
+    payload_type = 'Profile Service'
+
+    def __init__(self, identifier: str, device_attributes: Set[DeviceAttributes], challenge: str = None, **kwargs):
+        super(ProfileServicePayload, self).__init__(self.payload_type, identifier, **kwargs)
+
+        self.payload['URL'] = 'https://commandment.dev:5443/ota/profile'
+        self.payload['DeviceAttributes'] = device_attributes
+
+        if challenge is not None:
+            self.payload['Challenge'] = challenge
+
