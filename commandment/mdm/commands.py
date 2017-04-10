@@ -293,3 +293,83 @@ class InstallApplication(Command):
         self._attrs = {}
         self._attrs.update(kwargs)
 
+
+class RestartDevice(Command):
+    request_type = 'RestartDevice'
+    require_access = {AccessRights.DeviceLockPasscodeRemoval}
+    require_platforms = {Platform.iOS: '>=10.3'}
+
+
+class ShutdownDevice(Command):
+    request_type = 'ShutdownDevice'
+    require_access = {AccessRights.DeviceLockPasscodeRemoval}
+    require_platforms = {Platform.iOS: '>=10.3'}
+
+
+class ClearPasscode(Command):
+    request_type = 'ClearPasscode'
+    require_access = {AccessRights.DeviceLockPasscodeRemoval}
+    require_platforms = {Platform.iOS: '*'}
+
+
+class EraseDevice(Command):
+    request_type = 'EraseDevice'
+    require_access = {AccessRights.DeviceErase}
+    require_platforms = {Platform.iOS: '*', Platform.macOS: '>=10.8'}
+
+
+class RequestMirroring(Command):
+    request_type = 'RequestMirroring'
+    require_platforms = {Platform.iOS: '>=7', Platform.macOS: '>=10.10'}
+
+
+class StopMirroring(Command):
+    request_type = 'StopMirroring'
+    require_platforms = {Platform.iOS: '>=7', Platform.macOS: '>=10.10'}
+    require_supervised = True
+
+
+class Restrictions(Command):
+    request_type = 'Restrictions'
+    require_access = {AccessRights.RestrictionQueries, AccessRights.ProfileInspection}
+
+
+class UsersList(Command):
+    request_type = 'UsersList'
+    require_platforms = {Platform.iOS: '>=9.3'}
+
+
+class LogOutUser(Command):
+    request_type = 'LogOutUser'
+    require_platforms = {Platform.iOS: '>=9.3'}
+
+
+class DeleteUser(Command):
+    request_type = 'DeleteUser'
+    require_platforms = {Platform.iOS: '>=9.3'}
+
+
+class EnableLostMode(Command):
+    request_type = 'EnableLostMode'
+    require_platforms = {Platform.iOS: '>=9.3'}
+    require_supervised = True
+
+
+class DisableLostMode(Command):
+    request_type = 'DisableLostMode'
+    require_platforms = {Platform.iOS: '>=9.3'}
+    require_supervised = True
+
+
+class DeviceLocation(Command):
+    request_type = 'DeviceLocation'
+    require_platforms = {Platform.iOS: '>=9.3'}
+    require_supervised = True
+
+
+class PlayLostModeSound(Command):
+    request_type = 'PlayLostModeSound'
+    require_platforms = {Platform.iOS: '>=10.3'}
+    require_supervised = True
+
+
