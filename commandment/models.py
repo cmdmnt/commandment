@@ -330,7 +330,7 @@ class Command(db.Model):
         id (int): ID
         command_class (str): String representation of the class that will handle the response from this command.
         uuid (GUID): Globally unique command UUID
-        input_data (str): The parameters that were used when generating the command, serialized into JSON.
+        parameters (str): The parameters that were used when generating the command, serialized into JSON.
         queued_status (CommandStatus): The status of the command.
         queued_at (datetime.datetime): The datetime (utc) of when the command was created.
         sent_at (datetime.datetime): The datetime (utc) of when the command was delivered to the client.
@@ -348,7 +348,7 @@ class Command(db.Model):
     command_class = Column(String, nullable=False)  # string representation of our local command handler
     # request_type = Column(String, index=True, nullable=False) # actual command name
     uuid = Column(GUID, index=True, unique=True, nullable=False)
-    input_data = Column(MutableDict.as_mutable(JSONEncodedDict),
+    parameters = Column(MutableDict.as_mutable(JSONEncodedDict),
                         nullable=True)  # JSON add'l data as input to command builder
     status = Column(String(1), index=True, nullable=False, default=CommandStatus.Queued.value)
 
@@ -391,58 +391,58 @@ class Command(db.Model):
     def __repr__(self):
         return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
 
-
-class MDMGroup(db.Model):
-    __tablename__ = 'mdm_group'
-
-    id = Column(Integer, primary_key=True)
-    group_name = Column(String, nullable=False)
-    description = Column(String, nullable=True)
-
-    # devices = relationship('Device', secondary=device_group_assoc, backref='mdm_groups')
-    # profiles = relationship('Profile', secondary=profile_group_assoc, backref='mdm_groups')
-    # apps = relationship('App', secondary=app_group_assoc, backref='mdm_groups')
-
-    def __repr__(self):
-        return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
-
-
-class MDMConfig(db.Model):
-    __tablename__ = 'mdm_config'
-
-    id = Column(Integer, primary_key=True)
-
-    prefix = Column(String, nullable=False, unique=True)
-    addl_config = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-    topic = Column(String, nullable=False)  # APNs Push Topic
-    access_rights = Column(Integer, default=MDM_AR__ALL, nullable=False)
-
-    mdm_url = Column(String, nullable=False)
-    checkin_url = Column(String, nullable=False)
-
-    mdm_name = Column(String, nullable=False)
-    description = Column(String, nullable=True)
-
-    ca_cert_id = Column(ForeignKey('certificates.id'))
-    ca_cert = relationship('Certificate', foreign_keys=[ca_cert_id])  # , backref='ca_cert_mdm_config'
-
-    push_cert_id = Column(ForeignKey('certificates.id'), nullable=False)
-    push_cert = relationship('Certificate', foreign_keys=[push_cert_id])  # , backref='push_cert_mdm_config'
-
-    # note: we default to 'provide' here despite its lower security because
-    # it requires no other dependencies, i.e. a better user experience
-    device_identity_method = Column(DBEnum('ourscep', 'scep', 'provide'), default='provide', nullable=False)
-    scep_url = Column(String, nullable=True)
-    scep_challenge = Column(String, nullable=True)
-
-    def base_url(self):
-        # yuck, since we don't actually save the base URL in our MDMConfig we'll
-        # have to compute it from the MDM URL by stripping off the trailing "/mdm"
-        if self.mdm_url[-4:] == '/mdm':
-            return self.mdm_url[:-4]
-        else:
-            return ''
-
+#
+# class MDMGroup(db.Model):
+#     __tablename__ = 'mdm_group'
+#
+#     id = Column(Integer, primary_key=True)
+#     group_name = Column(String, nullable=False)
+#     description = Column(String, nullable=True)
+#
+#     # devices = relationship('Device', secondary=device_group_assoc, backref='mdm_groups')
+#     # profiles = relationship('Profile', secondary=profile_group_assoc, backref='mdm_groups')
+#     # apps = relationship('App', secondary=app_group_assoc, backref='mdm_groups')
+#
+#     def __repr__(self):
+#         return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
+#
+#
+# class MDMConfig(db.Model):
+#     __tablename__ = 'mdm_config'
+#
+#     id = Column(Integer, primary_key=True)
+#
+#     prefix = Column(String, nullable=False, unique=True)
+#     addl_config = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
+#     topic = Column(String, nullable=False)  # APNs Push Topic
+#     access_rights = Column(Integer, default=MDM_AR__ALL, nullable=False)
+#
+#     mdm_url = Column(String, nullable=False)
+#     checkin_url = Column(String, nullable=False)
+#
+#     mdm_name = Column(String, nullable=False)
+#     description = Column(String, nullable=True)
+#
+#     ca_cert_id = Column(ForeignKey('certificates.id'))
+#     ca_cert = relationship('Certificate', foreign_keys=[ca_cert_id])  # , backref='ca_cert_mdm_config'
+#
+#     push_cert_id = Column(ForeignKey('certificates.id'), nullable=False)
+#     push_cert = relationship('Certificate', foreign_keys=[push_cert_id])  # , backref='push_cert_mdm_config'
+#
+#     # note: we default to 'provide' here despite its lower security because
+#     # it requires no other dependencies, i.e. a better user experience
+#     device_identity_method = Column(DBEnum('ourscep', 'scep', 'provide'), default='provide', nullable=False)
+#     scep_url = Column(String, nullable=True)
+#     scep_challenge = Column(String, nullable=True)
+#
+#     def base_url(self):
+#         # yuck, since we don't actually save the base URL in our MDMConfig we'll
+#         # have to compute it from the MDM URL by stripping off the trailing "/mdm"
+#         if self.mdm_url[-4:] == '/mdm':
+#             return self.mdm_url[:-4]
+#         else:
+#             return ''
+#
 
 class App(db.Model):
     __tablename__ = 'app'
