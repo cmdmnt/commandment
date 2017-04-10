@@ -59,21 +59,6 @@ class QueuedMDMCommand(object):
         raise NotImplementedError
 
 
-def find_mdm_command_class(command_name):
-    '''Iterate through inherited classes to find a matching class name'''
-    subclasses = set()
-    work = [QueuedMDMCommand]
-    while work:
-        parent_subclass = work.pop()
-        for child_subclass in parent_subclass.__subclasses__():
-            if child_subclass not in subclasses:
-                if child_subclass.__name__ == command_name:
-                    return child_subclass
-
-                subclasses.add(child_subclass)
-                work.append(child_subclass)
-
-    return None
 
 QUERIES_ALL = [
     'UDID',

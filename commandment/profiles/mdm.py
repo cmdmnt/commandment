@@ -6,6 +6,9 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 from typing import Set
 from . import Payload, DeviceAttributes
 
+
+
+
 # MDM Access Rights (AR)
 MDM_AR__ALLOW_INSPECT_CONFIG_PROF = 1
 MDM_AR__ALLOW_INST_REM_CONFIG_PROF = 2
