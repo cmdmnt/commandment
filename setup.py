@@ -25,7 +25,6 @@ setup(
         'flask-marshmallow>=0.7.0',
         'Flask-OAuthlib',
         'Flask-JWT',
-        'M2Crypto>=0.26.0',
         'oauthlib',
         'passlib',
         'oscrypto>=0.18.0',
