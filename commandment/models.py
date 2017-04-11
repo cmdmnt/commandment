@@ -512,14 +512,26 @@ class User(db.Model):
 
 
 class DeviceUser(db.Model):
+    """
+    This model represents a managed user from the standpoint of the MDM.
+    It exists to support the macOS user channel extension.
+
+    :table: device_users
+
+    Attributes:
+          user_id (GUID): Local user's GUID, or network user's GUID from Open Directory Record.
+    """
     __tablename__ = 'device_users'
 
     id = Column(Integer, primary_key=True)
 
-    user_id = Column(String(64))
-    udid = Column(String(64))
+    udid = Column(GUID, nullable=False)
+    user_id = Column(GUID, nullable=False)
     long_name = Column(String)
     short_name = Column(String)
+    need_sync_response = Column(Boolean)  # This is kind of transitive but added anyway.
+    user_configuration = Column(Boolean)
+    
 
 
 class Organization(db.Model):
