@@ -531,7 +531,8 @@ class DeviceUser(db.Model):
     short_name = Column(String)
     need_sync_response = Column(Boolean)  # This is kind of transitive but added anyway.
     user_configuration = Column(Boolean)
-    
+    digest_challenge = Column(String)
+    auth_token = Column(String)
 
 
 class Organization(db.Model):

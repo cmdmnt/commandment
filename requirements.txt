@@ -52,6 +52,7 @@ python-dateutil==2.6.0
 pytz==2016.10
 requests==2.13.0
 requests-oauthlib==0.8.0
+semver==2.7.6
 six==1.10.0
 snowballstemmer==1.2.1
 Sphinx==1.5.3

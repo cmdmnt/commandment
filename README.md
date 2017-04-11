@@ -1,4 +1,4 @@
-# coMmanDMent Open Source MDM
+# Commandment Open Source MDM
 
 Commandment is an Open Source Apple MDM server with support for managing iOS and macOS devices implemented in Python. 
 The source code is available under an [MIT license](LICENSE.txt).
@@ -16,8 +16,6 @@ The source code is available under an [MIT license](LICENSE.txt).
   * Alternatively requires an Apple Enterprise Developer account (US$300/year)
 * [Python](https://www.python.org/) 3.6+
 * Major Python dependencies:
-  * [M2Crypto](https://gitlab.com/m2crypto/m2crypto)
-  * [pyOpenSSL](https://github.com/pyca/pyopenssl)
   * [Flask](http://flask.pocoo.org/)
   * [SQLAlchemy](http://www.sqlalchemy.org/)
   * [and more..](requirements.txt)
@@ -29,7 +27,7 @@ Please read the [INSTALL file](INSTALL.md).
 
 ## Bugs, issues, etc.
 
-Please report any issues, bugs, suggestions, feedback, etc. to the [issue tracker](https://github.com/jessepeterson/commandment/issues) of this project.
+Please report any issues, bugs, suggestions, feedback, etc. to the [issue tracker](https://github.com/mosen/commandment/issues) of this project.
 
 ## Known issues and limitations (I.e. the TODO list)
 
