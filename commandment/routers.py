@@ -1,46 +1,31 @@
-from flask import app, Blueprint, request, abort
+from typing import Union
+from flask import Flask, app, Blueprint, request, abort
 from functools import wraps
 import biplist
-from .models import db, Command, CommandStatus
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from .models import db, Device
+from .mdm import commands
 
 
 class CommandRouter(object):
-    """Command router routes mdm client requests by the type of command that is being responded to.
+    """The command router passes off commands to handlers which are registered by RequestType.
     
-    It sets up a view function on the specified route, usually the MDM endpoint, and responds to PUT requests.
-    If the request content isn't plist, you will receive a HTTP Status 400 Bad Request.
+    When a reply is received from a device in relation to a specific CommandUUID, the router attempts to find a handler
+     that was registered for the RequestType associated with that command. The handler is then called with the specific
+     instance of the command that generated the response, and an instance of the device that is making the request to
+     the MDM endpoint.
     
     Args:
           app (app): The flask application or blueprint instance
-          url (str): The HTTP(S) route that will be used as the endpoint for this plist router.
     """
-    def __init__(self, app: app, url: str):
+    def __init__(self, app: Union[Flask, Blueprint]):
         self._app = app
-        app.add_url_rule(url, view_func=self.view, methods=['PUT'])
-        self.request_types = {}
+        self._handlers = {}
 
-    def view(self):
-        try:
-            plist_data = biplist.readPlistFromString(request.data)
-        except biplist.NotBinaryPlistException:
-            abort(400, 'The request body does not contain a plist as expected')
-        except biplist.InvalidPlistException:
-            abort(400, 'The request body does not contain a valid plist')
-
-        if 'CommandUUID' not in plist_data:
-            abort(400, 'The request body does not contain a Command UUID to process')
-
-        try:
-            command = db.session.query(Command).filter(Command.uuid == plist_data['CommandUUID']).one()
-        except NoResultFound:
-            abort(400, 'The device responded with a command UUID that does not exist')
-        except MultipleResultsFound:
-            abort(500, 'There were multiple matching commands, this should never happen')
-
-        if command.command_class in self.request_types:
-            for handler in self.request_types[command.command_class]:  # just return first handler for now
-                return handler(command, plist_data)
+    def handle(self, command: commands.Command, device: Device, response: dict):
+        if command.request_type in self._handlers:
+            return self._handlers[command.request_type](command, device, response)
+        else:
+            return None
 
     def route(self, request_type: str):
         """
@@ -51,14 +36,10 @@ class CommandRouter(object):
         :param request_type: 
         :return: 
         """
-
-        if request_type not in self.request_types:
-            self.request_types[request_type] = []
-
-        handlers = self.request_types[request_type]
+        handlers = self._handlers
 
         def decorator(f):
-            handlers.append(f)
+            handlers[request_type] = f
 
             @wraps(f)
             def wrapped(*args, **kwargs):

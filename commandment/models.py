@@ -12,13 +12,13 @@ from flask_sqlalchemy import SQLAlchemy
 import datetime
 from enum import Enum
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum as DBEnum, text, \
-    BigInteger, and_, or_
+    BigInteger, and_, or_, LargeBinary
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.hybrid import hybrid_property
 from .mutablelist import MutableList
 from .dbtypes import GUID, JSONEncodedDict
-from .mdm import CommandStatus
+from .mdm import CommandStatus, Platform, commands
 import base64
 from binascii import hexlify
 from biplist import Data as NSData
@@ -198,6 +198,16 @@ class Device(db.Model):
     product_name = Column(String)
     serial_number = Column(String(64), index=True, nullable=True)
 
+    # DeviceInformation extracted from replies
+    hostname = Column(String, nullable=True)
+    local_hostname = Column(String, nullable=True)
+
+    available_device_capacity = Column(BigInteger, nullable=True)
+    device_capacity = Column(BigInteger, nullable=True)
+
+    wifi_mac = Column(String, nullable=True)
+    bluetooth_mac = Column(String, nullable=True)
+
     # APNS / TokenUpdate
     awaiting_configuration = Column(Boolean, default=False)
     push_magic = Column(String, nullable=True)
@@ -233,7 +243,18 @@ class Device(db.Model):
 
     # DEP
     _unlock_token = Column(String(), name='unlock_token', nullable=True)
-    
+
+    dep_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
+    dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
+    dep_config = relationship('DEPConfig', backref='devices')
+    info_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
+    first_user_message_seen = Column(Boolean, nullable=False, default=False)
+
+    certificate_id = Column(Integer, ForeignKey('certificates.id'))
+    certificate = relationship('Certificate', backref='devices')
+
+    #installed_applications = relationship('InstalledApplication', backref='device')
+
     @property
     def unlock_token(self):
         return self._unlock_token
@@ -245,24 +266,33 @@ class Device(db.Model):
         else:
             self._unlock_token = value
 
-    dep_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-    dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
-    dep_config = relationship('DEPConfig', backref='devices')
-    info_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-    first_user_message_seen = Column(Boolean, nullable=False, default=False)
-
-    certificate_id = Column(Integer, ForeignKey('certificates.id'))
-    certificate = relationship('Certificate', backref='devices')
+    @property
+    def platform(self) -> Platform:
+        if self.model_name in ['iMac']:  # TODO: obviously not sufficient
+            return Platform.macOS
+        else:
+            return Platform.iOS
 
     def __repr__(self):
         return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
 
 
 class InstalledApplication(db.Model):
+    """This model represents a single application that was returned as part of an ``InstalledApplicationList`` query.
+    
+    It is impossible to create a composite key to uniquely identify each row, therefore every time the device reports
+    back we need to wipe all rows associated with a single device. The reason why a composite key won't work here is
+    that macOS will often report the binary name and no identifier, version, or size (and sometimes iOS can do the
+    inverse of that).
+    
+    :table: installed_applications
+    """
     __tablename__ = 'installed_applications'
 
     id = Column(Integer, primary_key=True)
     device_udid = Column(GUID, index=True, nullable=False)
+    device_id = Column(ForeignKey('devices.id'), nullable=True)
+    device = relationship('Device', backref='installed_applications')
 
     # Many of these can be empty, so there is no valid composite key
     bundle_identifier = Column(String, index=True)
@@ -275,14 +305,25 @@ class InstalledApplication(db.Model):
 
 
 class InstalledCertificate(db.Model):
+    """This model represents a single installed certificate on an enrolled device as returned by the ``CertificateList``
+    query.
+    
+    The response will usually include both certificates managed by profiles and certificates that were installed
+    outside of a profile.
+    
+    :table: installed_certificates
+    """
     __tablename__ = 'installed_certificates'
 
     id = Column(Integer, primary_key=True)
     device_udid = Column(GUID, index=True, nullable=False)
+    device_id = Column(ForeignKey('devices.id'), nullable=True)
+    device = relationship('Device', backref='installed_certificates')
 
     x509_cn = Column(String)
     is_identity = Column(Boolean)
-    pem_data = Column(Text, nullable=False)
+    der_data = Column(LargeBinary, nullable=False)
+    
     # SHA-256 hash of DER-encoded certificate
     fingerprint = Column(String(64), nullable=False, index=True)
 
@@ -311,11 +352,12 @@ class Command(db.Model):
     
     Attributes:
         id (int): ID
-        command_class (str): String representation of the class that will handle the response from this command.
+        request_type (str): The command RequestType attribute
         uuid (GUID): Globally unique command UUID
-        parameters (str): The parameters that were used when generating the command, serialized into JSON.
-        queued_status (CommandStatus): The status of the command.
-        queued_at (datetime.datetime): The datetime (utc) of when the command was created.
+        parameters (str): The parameters that were used when generating the command, serialized into JSON. Omitting the
+            RequestType and CommandUUID attributes.
+        status (CommandStatus): The status of the command.
+        queued_at (datetime.datetime): The datetime (utc) of when the command was created. Defaults to UTC now
         sent_at (datetime.datetime): The datetime (utc) of when the command was delivered to the client.
         acknowledged_at (datetime.datetime): The datetime (utc) of when the Acknowledged, Error or NotNow response was
             returned.
@@ -328,7 +370,7 @@ class Command(db.Model):
 
     id = Column(Integer, primary_key=True)
 
-    command_class = Column(String, nullable=False)  # string representation of our local command handler
+    request_type = Column(String, nullable=False)  # string representation of our local command handler
     # request_type = Column(String, index=True, nullable=False) # actual command name
     uuid = Column(GUID, index=True, unique=True, nullable=False)
     parameters = Column(MutableDict.as_mutable(JSONEncodedDict),
@@ -350,6 +392,14 @@ class Command(db.Model):
 
     # device_user_id = Column(ForeignKey('device_users.id'), nullable=True)
     # device_user = relationship('DeviceUser', backref='commands')
+    @classmethod
+    def from_model(cls, cmd: commands.Command):
+        c = cls()
+        c.request_type = cmd.request_type
+        c.uuid = cmd.uuid
+        c.parameters = cmd.parameters
+
+        return c
 
     @classmethod
     def find_by_uuid(cls, uuid):
@@ -366,66 +416,13 @@ class Command(db.Model):
     @classmethod
     def get_next_device_command(cls, device):
         # d == d AND (q_status == Q OR (q_status == R AND result == 'NotNow'))
-        return cls.query.filter(
-            and_(cls.device == device,
-                 or_(cls.status == CommandStatus.Queued.value,
-                     and_(cls.status == CommandStatus.NotNow.value)))).order_by(cls.id).first()
+        return cls.query.filter(and_(
+                cls.device == device,
+                cls.status == CommandStatus.Queued.value)).order_by(cls.id).first()
 
     def __repr__(self):
         return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
 
-#
-# class MDMGroup(db.Model):
-#     __tablename__ = 'mdm_group'
-#
-#     id = Column(Integer, primary_key=True)
-#     group_name = Column(String, nullable=False)
-#     description = Column(String, nullable=True)
-#
-#     # devices = relationship('Device', secondary=device_group_assoc, backref='mdm_groups')
-#     # profiles = relationship('Profile', secondary=profile_group_assoc, backref='mdm_groups')
-#     # apps = relationship('App', secondary=app_group_assoc, backref='mdm_groups')
-#
-#     def __repr__(self):
-#         return '<MDMGroup ID=%r Name=%r>' % (self.id, self.group_name)
-#
-#
-# class MDMConfig(db.Model):
-#     __tablename__ = 'mdm_config'
-#
-#     id = Column(Integer, primary_key=True)
-#
-#     prefix = Column(String, nullable=False, unique=True)
-#     addl_config = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-#     topic = Column(String, nullable=False)  # APNs Push Topic
-#     access_rights = Column(Integer, default=MDM_AR__ALL, nullable=False)
-#
-#     mdm_url = Column(String, nullable=False)
-#     checkin_url = Column(String, nullable=False)
-#
-#     mdm_name = Column(String, nullable=False)
-#     description = Column(String, nullable=True)
-#
-#     ca_cert_id = Column(ForeignKey('certificates.id'))
-#     ca_cert = relationship('Certificate', foreign_keys=[ca_cert_id])  # , backref='ca_cert_mdm_config'
-#
-#     push_cert_id = Column(ForeignKey('certificates.id'), nullable=False)
-#     push_cert = relationship('Certificate', foreign_keys=[push_cert_id])  # , backref='push_cert_mdm_config'
-#
-#     # note: we default to 'provide' here despite its lower security because
-#     # it requires no other dependencies, i.e. a better user experience
-#     device_identity_method = Column(DBEnum('ourscep', 'scep', 'provide'), default='provide', nullable=False)
-#     scep_url = Column(String, nullable=True)
-#     scep_challenge = Column(String, nullable=True)
-#
-#     def base_url(self):
-#         # yuck, since we don't actually save the base URL in our MDMConfig we'll
-#         # have to compute it from the MDM URL by stripping off the trailing "/mdm"
-#         if self.mdm_url[-4:] == '/mdm':
-#             return self.mdm_url[:-4]
-#         else:
-#             return ''
-#
 
 class App(db.Model):
     __tablename__ = 'app'

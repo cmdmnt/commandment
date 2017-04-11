@@ -71,7 +71,7 @@ def upload_push_certificate_public():
     
 
     try:
-        c = db_session.query(Certificate).filter(Certificate.cert_type == 'mdm.pushcert').one()
+        c = db.session.query(Certificate).filter(Certificate.cert_type == 'mdm.pushcert').one()
     except NoResultFound:
         c = Certificate(cert_type='mdm.pushcert')
 
@@ -81,8 +81,8 @@ def upload_push_certificate_public():
     c.fingerprint = crypto_cert.fingerprint(hashes.SHA256())
     c.pem_certificate = serialization.to_pem(crypto_cert)
 
-    db_session.add(c)
-    db_session.commit()
+    db.session.add(c)
+    db.session.commit()
 
     return 'Success', 204, None
 
@@ -113,8 +113,8 @@ def upload_push_certificate_private():
             pem_key=serialization.rsa_to_pem(crypto_key)
         )
 
-    db_session.add(pk)
-    db_session.commit()
+    db.session.add(pk)
+    db.session.commit()
 
     return None, 204, None
 
@@ -136,7 +136,7 @@ def upload_push_certificate_private():
 #     :statuscode 404: There is no certificate configured
 #     :statuscode 400: Can't produce requested encoding
 #     """
-#     c = db_session.query(Certificate).filter(Certificate.cert_type == 'mdm.pushcert').first()
+#     c = db.session.query(Certificate).filter(Certificate.cert_type == 'mdm.pushcert').first()
 #
 #     if request.headers['Accept'] == 'application/x-pem-file':
 #         bio = io.BytesIO(c.pem_certificate)

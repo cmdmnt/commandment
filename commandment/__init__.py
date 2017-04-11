@@ -27,6 +27,8 @@ def create_app() -> Flask:
     if os.environ.get('COMMANDMENT_SETTINGS'):
         app.config.from_envvar('COMMANDMENT_SETTINGS')
 
+    app.config['SQLALCHEMY_ECHO'] = True
+
     db.init_app(app)
     db.create_all(app=app)
 

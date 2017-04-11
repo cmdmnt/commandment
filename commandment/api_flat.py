@@ -5,7 +5,8 @@ import io
 from flask import Blueprint, send_file, abort, current_app, jsonify
 from flask_marshmallow import Marshmallow
 from sqlalchemy.orm.exc import NoResultFound
-from .models import db, Certificate, RSAPrivateKey, Organization
+from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command
+from .mdm import commands
 from .schema import OrganizationFlatSchema
 
 flat_api = Blueprint('flat_api', __name__)
@@ -70,3 +71,35 @@ def download_key(rsa_private_key_id: int):
 
     return send_file(bio, 'application/x-pem-file', True, 'rsa_private_key.pem')
 
+
+@flat_api.route('/v1/devices/inventory/<int:device_id>')
+def device_inventory(device_id: int):
+    """Tell a device to produce a full inventory immediately.
+    
+    This is mostly for testing right now.
+    
+    :statuscode 200: OK
+    """
+    d = db.session.query(Device).filter(Device.id == device_id).one()
+
+    # DeviceInformation
+    di = commands.DeviceInformation.for_platform(d.platform, d.os_version)
+    db_command = Command.from_model(di)
+    db_command.device = d
+    db.session.add(db_command)
+
+    # InstalledApplicationList
+    # ial = commands.InstalledApplicationList()
+    # db_command_ial = Command.from_model(ial)
+    # db_command_ial.device = d
+    # db.session.add(db_command_ial)
+
+    # CertificateList
+    cl = commands.CertificateList()
+    dbc = Command.from_model(cl)
+    dbc.device = d
+    db.session.add(dbc)
+
+    db.session.commit()
+
+    return 'OK'

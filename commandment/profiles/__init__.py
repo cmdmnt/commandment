@@ -2,13 +2,11 @@
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
-
-'''Support for Apple Configuration Profiles and Payloads'''
-
 import plistlib
 from uuid import uuid4
 import collections
 from enum import Enum
+
 
 class PayloadInvalid(Exception):
     # base class for invalid Payloads

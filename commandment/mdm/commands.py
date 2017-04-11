@@ -1,6 +1,6 @@
 from enum import Enum
 from uuid import uuid4
-from typing import Set
+from typing import Set, List
 import semver
 from . import AccessRights, Platform
 
@@ -8,21 +8,66 @@ from . import AccessRights, Platform
 class CommandRegistry(type):
     command_classes = {}
 
-    def __new__(cls, *args, **kwargs):
-        klass = cls(*args, **kwargs)
-        if 'request_type' in kwargs.get('namespace'):
-            CommandRegistry.command_classes[kwargs['namespace']['request_type']] = cls
+    def __new__(cls, name, bases, namespace, **kwds):
+        ns = dict(namespace)
+        klass = type.__new__(cls, name, bases, ns)
+        if 'request_type' in ns:
+            CommandRegistry.command_classes[ns['request_type']] = klass
             
         return klass
 
 
 class Command(metaclass=CommandRegistry):
 
+    request_type = None
+
     def __init__(self, uuid=None):
         if uuid is None:
             uuid = uuid4()
 
         self._uuid = uuid
+        self._attrs = {}
+
+    @property
+    def uuid(self):
+        return self._uuid
+
+    @property
+    def parameters(self):
+        return self._attrs
+
+    @classmethod
+    def new_request_type(cls, request_type: str, parameters: dict, uuid: str = None):
+        """Factory method for instantiating a command based on its class attribute ``request_type``.
+        
+        Additionally, the dict given in parameters will be applied to the command instance.
+        
+        Args:
+              request_type (str): The command request type, as defined in the class attribute ``request_type``.
+              parameters (dict): The parameters of this command instance.
+              uuid (str): The command UUID. Optional, will be generated if omitted.
+        Raises:
+              ValueError if there is no command matching the request type given.
+        Returns:
+              Command class that corresponds to the request type given. Inherits from Command.
+        """
+        if request_type in CommandRegistry.command_classes:
+            klass = CommandRegistry.command_classes[request_type]
+            return klass(uuid, **parameters)
+        else:
+            raise ValueError('No such RequestType registered: {}'.format(request_type))
+
+    def to_dict(self) -> dict:
+        """Convert the command into a dict that will be serializable by plistlib.
+        
+        This default implementation will work for command types that have no parameters.
+        """
+        command = {'RequestType': type(self).request_type}
+
+        return {
+            'CommandUUID': str(self._uuid),
+            'Command': command,
+        }
 
 
 class DeviceInformation(Command):
@@ -93,7 +138,10 @@ class DeviceInformation(Command):
         SubscriberMNC = 'SubscriberMNC'
         CurrentMCC = 'CurrentMCC'
         CurrentMNC = 'CurrentMNC'
-        
+
+        # Maybe undocumented
+        CurrentConsoleManagedUser = 'CurrentConsoleManagedUser'
+
     Requirements = {
         'Languages': [
             (Platform.iOS, '>=7'),
@@ -204,25 +252,40 @@ class DeviceInformation(Command):
               DeviceInformation instance with supported queries.
         """
 
-        def supported(query: cls.Queries) -> bool:
-            if query.value not in cls.Requirements:
+        def supported(query) -> bool:
+            if query not in cls.Requirements:
                 return True
 
-            platforms = cls.Requirements[query.value]
+            platforms = cls.Requirements[query]
             for req_platform, req_min_version in platforms:
                 if req_platform != platform:
                     continue
 
-                return semver.match(min_os_version, req_min_version)
+                return True  # semver only takes maj.min.patch
+                #return semver.match(min_os_version, req_min_version)
                 
             return False
             
         if queries is None:
-            supported_queries = filter(supported, [q for q in cls.Queries])
+            supported_queries = filter(supported, [q.value for q in cls.Queries])
         else:
             supported_queries = filter(supported, queries)
 
-        return cls(Queries=supported_queries)
+        return cls(Queries=list(supported_queries))
+
+    @property
+    def queries(self) -> Set[str]:
+        return self._attrs.get('Queries')
+
+    def to_dict(self) -> dict:
+        """Convert the command into a dict that will be serializable by plistlib."""
+        return {
+            'CommandUUID': str(self._uuid),
+            'Command': {
+                'RequestType': type(self).request_type,
+                'Queries': self._attrs.get('Queries', None),
+            }
+        }
 
 
 class SecurityInfo(Command):
@@ -279,6 +342,8 @@ class CertificateList(Command):
         self._attrs = kwargs
 
 
+
+
 class InstalledApplicationList(Command):
     request_type = 'InstalledApplicationList'
     require_access = {}
@@ -294,6 +359,14 @@ class InstalledApplicationList(Command):
     def identifiers(self):
         return self._attrs['Identifiers'] if 'Identifiers' in self._attrs else None
 
+    def to_dict(self) -> dict:
+        """Convert the command into a dict that will be serializable by plistlib."""
+        command = {'RequestType': type(self).request_type}  # .update(self._attrs)
+
+        return {
+            'CommandUUID': str(self._uuid),
+            'Command': command,
+        }
 
 class InstallApplication(Command):
     request_type = 'InstallApplication'

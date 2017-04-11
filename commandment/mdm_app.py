@@ -7,9 +7,10 @@ from flask import Blueprint, make_response, abort
 from flask import current_app, send_file, g
 import base64
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from .models import db, Device, Command
+from .models import db, Device, Command as DBCommand
 from .models import App, Organization, SSLCertificate
 from .mdm import CommandStatus
+from .mdm.commands import Command
 from .decorators import device_cert_check, parse_plist_input_data
 from .routers import CommandRouter, PlistRouter
 from os import urandom
@@ -24,6 +25,8 @@ TRUST_DEV_PROVIDED_CERT = True
 mdm_app = Blueprint('mdm_app', __name__)
 
 plr = PlistRouter(mdm_app, '/checkin')
+command_router = CommandRouter(mdm_app)
+from .mdm import handlers
 
 
 @plr.route('MessageType', 'Authenticate')
@@ -139,155 +142,6 @@ def check_out(plist_data):
     return 'OK'
 
 
-
-#@device_cert_check(no_device_okay=True)
-
-# @mdm_app.route("/checkinz", methods=['PUT'])
-# @parse_plist_input_data
-# def checkin():
-#     """MDM checkin endpoint.
-#
-#     Handles the `Authenticate`, `TokenUpdate`, `UserAuthenticate`, `CheckOut` messages.
-#
-#     The body of the reply is ignored.
-#
-#     :reqheader Content-Type: application/x-apple-aspen-mdm; charset=UTF-8
-#     :reqheader Mdm-Signature: BASE64-encoded CMS Detached Signature of the message. (if `SignMessage` was true)
-#     :resheader Content-Type: application/xml; charset=UTF-8
-#     :status 200: Success
-#     :status 401: Failure
-#     """
-#     resp = g.plist_data
-#     print_resp = resp.copy()
-#
-#     if 'UnlockToken' in print_resp:
-#         # hide the unlocktoken since it's pretty large
-#         print_resp['UnlockToken'] = '[Hiding Unlock Token]'
-#
-#     if resp['MessageType'] == 'Authenticate':
-#         # TODO: check to make sure device == UDID == cert, etc.
-#         try:
-#             device = db.session.query(Device).filter(Device.udid == resp['UDID']).one()
-#         except NoResultFound:
-#             # no device found, let's make a new one!
-#             device = Device()
-#             db.session.add(device)
-#
-#             device.udid = resp['UDID']
-#             device.build_version = resp.get('BuildVersion')
-#             device.device_name = resp.get('DeviceName')
-#             device.model = resp.get('Model')
-#             device.model_name = resp.get('ModelName')
-#             device.os_version = resp.get('OSVersion')
-#             device.product_name = resp.get('ProductName')
-#             device.serial_number = resp.get('SerialNumber')
-#             device.topic = resp.get('Topic')
-#
-#         # remove the previous device token (in the case of a re-enrollment) to
-#         # tell the difference between a periodic TokenUpdate and the first
-#         # post-enrollment TokenUpdate
-#         device.token = None
-#         device.first_user_message_seen = False
-#
-#         # TODO: we're essentially trusting the device to give the correct security infomration here
-#         #device.certificate = g.device_cert
-#
-#         db.session.commit()
-#
-#         return 'OK'
-#     elif resp['MessageType'] == 'TokenUpdate':
-#         current_app.logger.info('TokenUpdate received')
-#         print(print_resp)
-#
-#         # TODO: a TokenUpdate can either be for a device or a user (per OS X extensions)
-#         if 'UserID' in resp:
-#             current_app.logger.warn('per-user TokenUpdate not yet implemented, skipping')
-#             return 'OK'
-#
-#         # TODO: check to make sure device == UDID == cert, etc.
-#         device = db.session.query(Device).filter(Device.udid == resp['UDID']).one()
-#
-#         # device.certificate = g.device_cert
-#
-#         if 'PushMagic' in resp:
-#             device.push_magic = resp['PushMagic']
-#
-#         if 'Topic' in resp:
-#             device.topic = resp['Topic']
-#
-#         first_token_update = False if device.token else True
-#
-#         if 'Token' in resp:
-#             device.token = resp['Token']
-#         else:
-#             current_app.logger.error('TokenUpdate message missing Token')
-#             abort(400, 'invalid data supplied')
-#
-#         if 'UnlockToken' in resp:
-#             device.unlock_token = resp['UnlockToken'].data.encode('base64')
-#
-#         db_session.commit()
-#
-#         if first_token_update:
-#             pass
-#             # the first TokenUpdate implies successful MDM profile install.
-#             # kick off our first-device commands, noting any DEP Await state
-#             #current_app.logger.info('sending initial post-enrollment MDM command(s) to device=%d', g.device.id)
-#             #device_first_post_enroll(g.device, awaiting=resp.get('AwaitingConfiguration', False))
-#
-#         return 'OK'
-#     elif resp['MessageType'] == 'UserAuthenticate':
-#         print(print_resp)
-#         current_app.logger.warn('per-user authentication not yet implemented, skipping')
-#         abort(410, 'per-user authentication not yet supported')
-#         # TODO: we can theoretically do a digest authentication on the actual
-#         # end-user's password supplied at the login screen. this will depend
-#         # depend heavily on any given user's backend. Perhaps provide some
-#         # functionality of auth plugins against AD, OD, etc.
-#         if 'DigestResponse' not in resp:
-#             print('no DigestResponse, generating')
-#             config = db_session.query(MDMConfig).one()
-#
-#             # no digest necessary and thus no AuthToken necessary for this OS X user
-#             # digdict = {'DigestChallenge': ''}
-#
-#             digdict = {
-#                 'DigestChallenge': 'Digest nonce="%s",realm="%s"' % (urandom(20).encode('base64'), config.prefix)}
-#
-#             print(digdict)
-#
-#             resp = make_response(plistlib.writePlistToString(digdict))
-#             resp.headers['Content-Type'] = 'application/xml'
-#             return resp
-#         else:
-#             print('DigestResponse!')
-#             print(print_resp)
-#
-#             tokdict = {'AuthToken': urandom(20).encode('hex')}
-#             print(tokdict)
-#
-#             resp = make_response(plistlib.writePlistToString(tokdict))
-#             resp.headers['Content-Type'] = 'application/xml'
-#             return resp
-#
-#             # respond with an AuthToken for the user, all future MDM commands will include this coming from the user
-#     elif resp['MessageType'] == 'CheckOut':
-#         print(print_resp)
-#         current_app.logger.warn('CheckOut not yet implemented, skipping')
-#         # TODO: Topic, UDID - set enrolled to false but keep history
-#     else:
-#         print('Unknown message type', resp['MessageType'])
-#         print(print_resp)
-#
-#     # a best-effort notification to the MDM system the MDM profile has been removed
-#     # only sent CheckOutWhenRemoved
-#     # elif resp['MessageType'] == 'CheckOut':
-#
-#     print('Invalid message type')
-#     abort(500, 'Invalid message type')
-
-
-
 #@device_cert_check()
 @mdm_app.route("/mdm", methods=['PUT'])
 @parse_plist_input_data
@@ -329,6 +183,7 @@ def mdm():
         status = g.plist_data['Status']
 
     current_app.logger.info('device id=%d udid=%s processing status=%s', device.id, device.udid, status)
+    device.last_seen = datetime.utcnow()
 
     print(g.plist_data)
 
@@ -339,7 +194,7 @@ def mdm():
             abort(400, 'invalid input data')
 
         try:
-            command = Command.find_by_uuid(g.plist_data['CommandUUID'])
+            command = DBCommand.find_by_uuid(g.plist_data['CommandUUID'])
 
             # update the status of this command and commit
             if status == 'Acknowledged':
@@ -352,22 +207,13 @@ def mdm():
             command.acknowledged_at = datetime.utcnow()
             db.session.commit()
 
-            # find the MDM class that this QueuedCommand was generated from
-            cmd_class = find_mdm_command_class(command.command_class)
+            # Re-hydrate the command class based on the persisted model containing the request type and the parameters
+            # that were given to generate the command
+            cmd = Command.new_request_type(command.request_type, command.parameters, command.uuid)
 
-            if not cmd_class:
-                command.set_invalid()
-                db_session.commit()
-                current_app.logger.info('no matching QueuedMDMCommand class for %s', command.command_class)
-            else:
-                # instantiate it
-                mdm_command = cmd_class.from_queued_command(device, command)
-
-                # the individual commands will need to be aware of and handle
-                # any Acknowledged/Error/CommandFormatError/Idle/NotNow
-                # differences. except for the NotNow status any and all
-                # handling is up the specific command class
-                mdm_command.process_response_dict(g.plist_data)
+            # TODO: route the response to the correct handler
+            current_app.logger.debug('Routing command handler')
+            command_router.handle(cmd, device, g.plist_data)
 
         except NoResultFound:
             current_app.logger.info('no record of command uuid=%s', g.plist_data['CommandUUID'])
@@ -377,7 +223,7 @@ def mdm():
         return ''
 
     while True:
-        command = Command.get_next_device_command(device)
+        command = DBCommand.get_next_device_command(device)
 
         if not command:
             break
@@ -385,34 +231,29 @@ def mdm():
         # mark this command as being in process right away to (try) to avoid
         # any race conditions with mutliple MDM commands from the same device
         # at a time
-        command.set_processing()
-        db_session.commit()
 
-        # find the MDM class that this QueuedCommand was generated from
-        cmd_class = find_mdm_command_class(command.command_class)
+        #command.set_processing()
+        #db.session.commit()
 
-        if not cmd_class:
-            command.set_invalid()
-            db_session.commit()
-            current_app.logger.info('no matching QueuedMDMCommand class for %s', command.command_class)
-            continue
+        # Re-hydrate the command class based on the persisted model containing the request type and the parameters
+        # that were given to generate the command
+        cmd = Command.new_request_type(command.request_type, command.parameters, command.uuid)
 
-        # instantiate it
-        mdm_command = cmd_class.from_queued_command(device, command)
 
         # get command dictionary representation (e.g. the full command to send)
-        output_dict = mdm_command.generate_dict()
+        output_dict = cmd.to_dict()
 
-        current_app.logger.info('sending %s MDM command class=%s to device=%d', mdm_command.request_type,
-                                command.command_class, device.id)
+        current_app.logger.info('sending %s MDM command class=%s to device=%d', cmd.request_type,
+                                command.request_type, device.id)
 
         # convert to plist and send
-        resp = make_response(plistlib.writePlistToString(output_dict))
+        resp = make_response(plistlib.dumps(output_dict))
         resp.headers['Content-Type'] = 'application/xml'
 
         # finally set as sent
-        command.set_sent()
-        db_session.commit()
+        command.status = CommandStatus.Sent.value
+        command.sent_at = datetime.utcnow()
+        db.session.commit()
 
         return resp
 
@@ -421,65 +262,50 @@ def mdm():
     return ''
 
 
-@mdm_app.route('/send_dev_info/<int:dev_id>')
-def send_dev_info(dev_id: int):
-    """Queue a ``DeviceInformation`` command for the specified commandment device ID."""
-    device = db_session.query(Device).filter(Device.id == dev_id).one()
-
-    new_qc = UpdateInventoryDevInfoCommand.new_queued_command(device)
-    db_session.add(new_qc)
-
-    db_session.commit()
-
-    push_to_device(device)
-
-    return 'OK'
-
-
-@mdm_app.route("/app/<int:app_id>/manifest")
-def app_manifest(app_id: int):
-    """Retrieve an application manifest for the specified application ID."""
-    app_q = db_session.query(App).filter(App.id == app_id)
-    app = app_q.one()
-
-    config = db_session.query(MDMConfig).one()
-
-    asset = {
-        'kind': 'software-package',
-        'md5-size': app.md5_chunk_size,
-        'md5s': app.md5_chunk_hashes.split(':'),
-        'url': '%s/app/%d/download/%s' % (config.base_url(), app_id, app.filename),
-    }
-
-    metadata = {'kind': 'software', 'title': app.filename, 'sizeInBytes': app.filesize}
-
-    pkgs_ids = app.pkg_ids_json
-    pkgs_bundles = [{'bundle-identifier': i[0], 'bundle-version': i[1]} for i in pkgs_ids]
-
-    # if subtitle:
-    #     metadata['subtitle'] = subtitle
-
-    metadata.update(pkgs_bundles[0])
-
-    if len(pkgs_bundles) > 1:
-        metadata['items'] = pkgs_bundles
-
-    download = {'assets': [asset, ], 'metadata': metadata}
-
-    manifest = {'items': [download]}
-
-    resp = make_response(plistlib.writePlistToString(manifest))
-    resp.headers['Content-Type'] = 'application/xml'
-    return resp
-
-
-@mdm_app.route("/app/<int:app_id>/download/<filename>")
-def app_download(app_id: int, filename: str):
-    """Download a file corresponding to the specified application ID."""
-    app_q = db_session.query(App).filter(App.id == app_id)
-    app = app_q.one()
-
-    return send_file(os.path.join(current_app.config['APP_UPLOAD_ROOT'], app.path_format()))
+# @mdm_app.route("/app/<int:app_id>/manifest")
+# def app_manifest(app_id: int):
+#     """Retrieve an application manifest for the specified application ID."""
+#     app_q = db_session.query(App).filter(App.id == app_id)
+#     app = app_q.one()
+#
+#     config = db_session.query(MDMConfig).one()
+#
+#     asset = {
+#         'kind': 'software-package',
+#         'md5-size': app.md5_chunk_size,
+#         'md5s': app.md5_chunk_hashes.split(':'),
+#         'url': '%s/app/%d/download/%s' % (config.base_url(), app_id, app.filename),
+#     }
+#
+#     metadata = {'kind': 'software', 'title': app.filename, 'sizeInBytes': app.filesize}
+#
+#     pkgs_ids = app.pkg_ids_json
+#     pkgs_bundles = [{'bundle-identifier': i[0], 'bundle-version': i[1]} for i in pkgs_ids]
+#
+#     # if subtitle:
+#     #     metadata['subtitle'] = subtitle
+#
+#     metadata.update(pkgs_bundles[0])
+#
+#     if len(pkgs_bundles) > 1:
+#         metadata['items'] = pkgs_bundles
+#
+#     download = {'assets': [asset, ], 'metadata': metadata}
+#
+#     manifest = {'items': [download]}
+#
+#     resp = make_response(plistlib.writePlistToString(manifest))
+#     resp.headers['Content-Type'] = 'application/xml'
+#     return resp
+#
+#
+# @mdm_app.route("/app/<int:app_id>/download/<filename>")
+# def app_download(app_id: int, filename: str):
+#     """Download a file corresponding to the specified application ID."""
+#     app_q = db_session.query(App).filter(App.id == app_id)
+#     app = app_q.one()
+#
+#     return send_file(os.path.join(current_app.config['APP_UPLOAD_ROOT'], app.path_format()))
 
 #
 # cr = CommandRouter(mdm_app, '/mdm')
