@@ -1,7 +1,7 @@
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
-    CertificateSigningRequestSchema, OrganizationSchema, CommandSchema
+    CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, InstalledApplicationSchema
 from .models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
-    SSLCertificate, Organization, Command
+    SSLCertificate, Organization, Command, InstalledApplication
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList
 
@@ -13,7 +13,11 @@ class DeviceList(ResourceList):
 
 class DeviceDetail(ResourceDetail):
     schema = DeviceSchema
-    data_layer = {'session': db.session, 'model': Device}
+    data_layer = {
+        'session': db.session, 
+        'model': Device,
+        'url_field': 'device_id'
+    }
 
 
 class CertificatesList(ResourceList):
@@ -105,4 +109,12 @@ class CommandDetail(ResourceDetail):
     data_layer = {
         'session': db.session,
         'model': Command
+    }
+
+
+class InstalledApplicationList(ResourceList):
+    schema = InstalledApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': InstalledApplication
     }

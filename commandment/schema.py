@@ -19,6 +19,12 @@ class DeviceSchema(Schema):
 
     awaiting_configuration = fields.Bool()
     last_seen = fields.DateTime()
+    hostname = fields.Str()
+    local_hostname = fields.Str()
+    available_device_capacity = fields.Int()
+    device_capacity = fields.Int()
+    wifi_mac = fields.Str()
+    bluetooth_mac = fields.Str()
 
     # private
     # push_magic = fields.Str()
@@ -35,8 +41,6 @@ class DeviceSchema(Schema):
     # )
 
     commands = Relationship(
-        self_view='api_app.commands_list',
-        self_view_kwargs={'device_id': '<id>'},
         related_view='api_app.command_detail',
         related_view_kwargs={'command_id': '<id>'},
         many=True,
@@ -47,7 +51,7 @@ class DeviceSchema(Schema):
     class Meta:
         type_ = 'devices'
         self_view = 'api_app.device_detail'
-        self_view_kwargs = {'id': '<id>'}
+        self_view_kwargs = {'device_id': '<id>'}
         self_view_many = 'api_app.devices_list'
         strict = True
 
@@ -55,22 +59,22 @@ class DeviceSchema(Schema):
 class CommandSchema(Schema):
     id = fields.Int(dump_only=True)
     uuid = fields.Str(dump_only=True)
-    queued_status = fields.Str()
+    request_type = fields.Str()
+    status = fields.Str()
     queued_at = fields.DateTime()
     sent_at = fields.DateTime()
     acknowledged_at = fields.DateTime()
     after = fields.DateTime()
     ttl = fields.Int()
 
-    device = Relationship(
-        self_view='api_app.devices_list',
-        self_view_kwargs={'command_id': '<id>'},
-        related_view='api_app.device_detail',
-        related_url_kwargs={'device_id': '<id>'},
-        many=False,
-        schema='DeviceSchema',
-        type_='devices'
-    )
+
+    # device = Relationship(
+    #     related_view='api_app.device_detail',
+    #     related_url_kwargs={'device_id': '<id>'},
+    #     many=False,
+    #     schema='DeviceSchema',
+    #     type_='devices'
+    # )
 
     class Meta:
         type_ = 'commands'
@@ -79,6 +83,28 @@ class CommandSchema(Schema):
         self_view_many = 'api_app.commands_list'
         strict = True
 
+
+class InstalledApplicationSchema(Schema):
+    id = fields.Int(dump_only=True)
+    bundle_identifier = fields.Str(dump_only=True)
+    name = fields.Str(dump_only=True)
+    short_version = fields.Str(dump_only=True)
+    version = fields.Str(dump_only=True)
+    bundle_size = fields.Int(dump_only=True)
+    dynamic_size = fields.Int(dump_only=True)
+    is_validated = fields.Bool(dump_only=True)
+
+    device = Relationship(
+        related_view='api_app.device_detail',
+        related_view_kwargs={'device_id': '<id>'},
+        type_='devices',
+    )
+
+    class Meta:
+        type_ = 'installed_applications'
+        self_view = 'api_app.installed_application_detail'
+        self_view_kwargs = {'installed_application_id': '<id>'}
+        strict = True
 
 
 class PrivateKeySchema(Schema):
