@@ -5,7 +5,7 @@ import io
 from flask import Blueprint, send_file, abort, current_app, jsonify
 from flask_marshmallow import Marshmallow
 from sqlalchemy.orm.exc import NoResultFound
-from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command
+from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
 from .mdm import commands
 from .schema import OrganizationFlatSchema
 
@@ -70,6 +70,22 @@ def download_key(rsa_private_key_id: int):
     bio = io.BytesIO(c.pem_data)
 
     return send_file(bio, 'application/x-pem-file', True, 'rsa_private_key.pem')
+
+
+@flat_api.route('/v1/installed_certificates/<int:installed_certificate_id>/download')
+def download_installed_certificate(installed_certificate_id: int):
+    """Download an installed X.509 certificate as DER encoded
+
+    :reqheader Accept: application/x-x509-ca-cert
+    :resheader Content-Type: application/x-x509-ca-cert
+    :statuscode 200: OK
+    :statuscode 404: Not found
+    :statuscode 400: Can't produce requested encoding
+    """
+    c = db.session.query(InstalledCertificate).filter(InstalledCertificate.id == installed_certificate_id).one()
+    bio = io.BytesIO(c.der_data)
+
+    return send_file(bio, 'application/x-x509-ca-cert', True, 'certificate.crt')
 
 
 @flat_api.route('/v1/devices/inventory/<int:device_id>')

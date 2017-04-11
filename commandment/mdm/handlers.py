@@ -6,6 +6,7 @@ from .util import queryresponses_to_query_set
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
+from binascii import hexlify
 
 Queries = DeviceInformation.Queries
 
@@ -16,10 +17,10 @@ def ack_device_information(request: DeviceInformation, device: Device, response:
     qs = queryresponses_to_query_set(responses)
 
     if Queries.AvailableDeviceCapacity in qs:
-        device.available_device_capacity = int(qs[Queries.AvailableDeviceCapacity])
+        device.available_device_capacity = qs[Queries.AvailableDeviceCapacity]
 
     if Queries.DeviceCapacity in qs:
-        device.device_capacity = int(qs[Queries.DeviceCapacity])
+        device.device_capacity = qs[Queries.DeviceCapacity]
 
     if Queries.LocalHostName in qs:
         device.local_hostname = qs[Queries.LocalHostName]
@@ -54,6 +55,9 @@ def ack_certificate_list(request: CertificateList, device: Device, response: dic
         db.session.delete(c)
 
     certificates = response['CertificateList']
+    current_app.logger.debug(
+        'Received CertificatesList response containing {} certificate(s)'.format(len(certificates)))
+
     for cert in certificates:
         ic = InstalledCertificate()
         ic.device = device
@@ -63,7 +67,7 @@ def ack_certificate_list(request: CertificateList, device: Device, response: dic
 
         der_data = cert['Data']
         certificate = x509.load_der_x509_certificate(der_data, default_backend())
-        ic.fingerprint = certificate.fingerprint(hashes.SHA256())  # TODO: hexlify?
+        ic.fingerprint_sha256 = hexlify(certificate.fingerprint(hashes.SHA256()))  # TODO: hexlify?
         ic.der_data = der_data
 
         db.session.add(ic)
@@ -73,7 +77,14 @@ def ack_certificate_list(request: CertificateList, device: Device, response: dic
 
 @command_router.route('InstalledApplicationList')
 def ack_installed_app_list(request: InstalledApplicationList, device: Device, response: dict):
+    for a in device.installed_applications:
+        db.session.delete(a)
+
     applications = response['InstalledApplicationList']
+    current_app.logger.debug(
+        'Received InstalledApplicationList response containing {} application(s)'.format(len(applications))
+    )
+
     for app in applications:
         dba = InstalledApplication()
         dba.device = device

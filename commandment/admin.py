@@ -9,7 +9,7 @@ from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 
-from .models import CERT_TYPES, Device
+from .models import CertificateType, Device
 from .models import Certificate as DBCertificate, RSAPrivateKey as DBPrivateKey, Profile as DBProfile
 from .models import App
 from .profiles.restrictions import RestrictionsPayload
@@ -42,82 +42,6 @@ admin_app = Blueprint('admin_app', __name__)
 @admin_app.route('/')
 def index():
     return render_template('index.html')
-
-
-@admin_app.route('/certificates/add/<certtype>', methods=['GET', 'POST'])
-def admin_certificates_add(certtype: str):
-    """Add a new certificate with the usage indicated by ``certtype``,
-    send the certificate as PEM in the content body."""
-    if certtype not in list(CERT_TYPES.keys()):
-        return 'Invalid certificate type'
-    if request.method == 'POST':
-        if not request.form.get('certificate'):
-            return 'No certificate supplied!'
-
-        cert = x509.load_pem_x509_certificate(request.form.get('certificate'), default_backend())
-        if cert is None:
-            return 'Invalid X509 Certificate'
-
-        if CERT_TYPES[certtype]['pkey_required'] and not request.form.get('privatekey'):
-            return 'No private key supplied (required)'
-
-        pkey = serialization.load_pem_private_key(
-            request.form.get('privatekey'),
-            password=None,
-            backend=default_backend()
-        )
-
-        # if pkey:
-        #     if not cert.belongs_to_private_key(pkey):
-        #         return 'Private key does not match certificate (RSA modulus mismatch)'
-
-        # save our newly uploaded certificates
-        dbc = DBCertificate.from_x509(cert, certtype)
-
-        db_session.add(dbc)
-
-        # save private key if we have one
-        if pkey:
-            dbk = DBPrivateKey()
-            dbk.pem_key = str(request.form.get('privatekey'))
-            db_session.add(dbk)
-
-            dbk.certificates.append(dbc)
-
-        db_session.commit()
-
-        return redirect('/admin/certificates', Response=FixedLocationResponse)
-    else:
-        return render_template('admin/certificates/add.html', certtype=CERT_TYPES[certtype]['title'])
-
-
-@admin_app.route('/groups', methods=['GET', 'POST'])
-def admin_groups():
-    """Create or list MDM groups"""
-    if request.method == 'POST':
-        db_grp = MDMGroup()
-        db_grp.group_name = request.form['group_name']
-        db_grp.description = request.form['description']
-        db_session.add(db_grp)
-        db_session.commit()
-
-        return redirect('/admin/groups', Response=FixedLocationResponse)
-
-    groups = db_session.query(MDMGroup)
-
-    return render_template('admin/groups.html', groups=groups)
-
-
-@admin_app.route('/groups/remove/<int:group_id>')
-def admin_groups_remove(group_id: int):
-    """Delete a group by ID
-
-    Arguments:
-        group_id (int): The group identifier
-    """
-    q = db_session.query(MDMGroup).filter(MDMGroup.id == group_id).delete(synchronize_session=False)
-    db_session.commit()
-    return redirect('/admin/groups', Response=FixedLocationResponse)
 
 
 @admin_app.route('/profiles')
