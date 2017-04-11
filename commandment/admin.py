@@ -9,10 +9,9 @@ from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 
-from .database import db_session, and_, or_, update, insert, delete
 from .models import CERT_TYPES, Device
-from .models import Certificate as DBCertificate, RSAPrivateKey as DBPrivateKey, MDMGroup, Profile as DBProfile, MDMConfig
-from .models import App, DEPConfig, DEPProfile
+from .models import Certificate as DBCertificate, RSAPrivateKey as DBPrivateKey, Profile as DBProfile
+from .models import App
 from .profiles.restrictions import RestrictionsPayload
 from .profiles import Profile
 from .mdmcmds import InstallProfile, RemoveProfile, AppInstall

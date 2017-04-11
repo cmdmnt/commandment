@@ -5,8 +5,8 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 import datetime
 from .dep import DEP, DEP4xxError
-from ..database import db_session, or_, and_, NoResultFound
-from ..models import DEPConfig, DEPProfile, Device
+
+from ..models import DEPConfig, Device
 import uuid
 import collections
 

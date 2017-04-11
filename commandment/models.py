@@ -12,17 +12,14 @@ from flask_sqlalchemy import SQLAlchemy
 import datetime
 from enum import Enum
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum as DBEnum, text, \
-    BigInteger, Float
+    BigInteger, and_, or_
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.hybrid import hybrid_property
 from .mutablelist import MutableList
-from .database import JSONEncodedDict, Base, or_, and_
-from .profiles.mdm import MDM_AR__ALL
-from .dbtypes import GUID
-import uuid
+from .dbtypes import GUID, JSONEncodedDict
+from .mdm import CommandStatus
 import base64
-import codecs
 from binascii import hexlify
 from biplist import Data as NSData
 
@@ -36,21 +33,7 @@ class CertificateType(Enum):
     DEVICE = 'mdm.device'
 
 
-class CommandStatus(Enum):
-    """CommandStatus describes all the possible states of a command in the device command queue."""
-    #: str: Command has been created but has not been sent.
-    Queued = 'Q'
-    #: str: Command has been sent to the device, but no response has returned.
-    Sent = 'S'
-    #: str: Response has been returned from the device. This is considered completed
-    Acknowledged = 'A'
-    #: str: The command that we sent was invalid, unable to be processed.
-    Invalid = 'I'
-    #: str: The device is busy, this command cannot be processed right now.
-    NotNow = 'N'
-    #  str: This command is considered dead because it timed out, the device timed out, or was orphaned by a
-    #  removed device.
-    Expired = 'E'
+
 
 
 CERT_TYPES = {
@@ -495,25 +478,25 @@ class DEPConfig(db.Model):
         else:
             return ''
 
-
-class DEPProfile(db.Model):
-    __tablename__ = 'dep_profile'
-
-    id = Column(Integer, primary_key=True)
-
-    mdm_config_id = Column(ForeignKey('mdm_config.id'), nullable=False)
-    mdm_config = relationship('MDMConfig', backref='dep_profiles')
-
-    dep_config_id = Column(ForeignKey('dep_config.id'), nullable=False)
-    dep_config = relationship('DEPConfig', backref='dep_profiles')
-
-    # DEP-assigned UUID for this DEP profile
-    uuid = Column(String(36), index=True, nullable=True)  # should be unique but it's assigned to us so can't be null
-
-    profile_data = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=False)
-
-    def profile_name(self):
-        return self.profile_data['profile_name']
+#
+# class DEPProfile(db.Model):
+#     __tablename__ = 'dep_profile'
+#
+#     id = Column(Integer, primary_key=True)
+#
+#     mdm_config_id = Column(ForeignKey('mdm_config.id'), nullable=False)
+#     mdm_config = relationship('MDMConfig', backref='dep_profiles')
+#
+#     dep_config_id = Column(ForeignKey('dep_config.id'), nullable=False)
+#     dep_config = relationship('DEPConfig', backref='dep_profiles')
+#
+#     # DEP-assigned UUID for this DEP profile
+#     uuid = Column(String(36), index=True, nullable=True)  # should be unique but it's assigned to us so can't be null
+#
+#     profile_data = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=False)
+#
+#     def profile_name(self):
+#         return self.profile_data['profile_name']
 
 
 class User(db.Model):

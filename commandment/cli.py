@@ -9,14 +9,11 @@ import tempfile
 import atexit
 import werkzeug.serving
 from commandment import create_app
-from commandment.database import config_engine, init_db
 from commandment.pki.ca import get_or_generate_web_certificate
 from commandment.runner import start_runner, stop_runner
 
 def server():
     app = create_app()
-
-    config_engine(app.config['SQLALCHEMY_DATABASE_URI'], app.config['SQLALCHEMY_DATABASE_ECHO'])
 
     with app.app_context():
         web_crt_pem, web_key_pem, web_ca_pem = get_or_generate_web_certificate(app.config['DEV_WEB_CERT_CN'])

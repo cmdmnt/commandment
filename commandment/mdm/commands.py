@@ -5,7 +5,18 @@ import semver
 from . import AccessRights, Platform
 
 
-class Command(object):
+class CommandRegistry(type):
+    command_classes = {}
+
+    def __new__(cls, *args, **kwargs):
+        klass = cls(*args, **kwargs)
+        if 'request_type' in kwargs.get('namespace'):
+            CommandRegistry.command_classes[kwargs['namespace']['request_type']] = cls
+            
+        return klass
+
+
+class Command(metaclass=CommandRegistry):
 
     def __init__(self, uuid=None):
         if uuid is None:

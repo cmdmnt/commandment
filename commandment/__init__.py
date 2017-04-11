@@ -5,7 +5,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 import os
 from flask import Flask, render_template
 
-from .mdm import mdm_app
+from .mdm_app import mdm_app
 from .admin import admin_app
 from .mdmcert import admin_mdmcert_app
 from .api import api_app

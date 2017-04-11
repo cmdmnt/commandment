@@ -30,7 +30,8 @@ setup(
         'passlib',
         'oscrypto>=0.18.0',
         'SQLAlchemy>=1.1.6',
-        'acme>=0.12.0'
+        'acme>=0.12.0',
+        'semver=>=2.7.6'
     ],
     python_requires='>=3.5',
     tests_require=[

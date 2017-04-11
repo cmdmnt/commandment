@@ -7,11 +7,9 @@ from flask import Blueprint, make_response, abort
 from flask import current_app, send_file, g
 import base64
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from .database import db_session, NoResultFound, or_, and_
-from .models import db, MDMConfig, Certificate as DBCertificate, Device, RSAPrivateKey as DBPrivateKey, Command
-from .models import App, MDMGroup, Organization, SSLCertificate
-from .mdmcmds import UpdateInventoryDevInfoCommand, find_mdm_command_class
-from .mdmcmds import InstallProfile, AppInstall
+from .models import db, Device, Command
+from .models import App, Organization, SSLCertificate
+from .mdm import CommandStatus
 from .decorators import device_cert_check, parse_plist_input_data
 from .routers import CommandRouter, PlistRouter
 from os import urandom
@@ -37,11 +35,11 @@ def authenticate(plist_data):
     """
     # TODO: check to make sure device == UDID == cert, etc.
     try:
-        device = db_session.query(Device).filter(Device.udid == plist_data['UDID']).one()
+        device = db.session.query(Device).filter(Device.udid == plist_data['UDID']).one()
     except NoResultFound:
         # no device found, let's make a new one!
         device = Device()
-        db_session.add(device)
+        db.session.add(device)
 
         device.udid = plist_data['UDID']
         device.build_version = plist_data.get('BuildVersion')
@@ -62,7 +60,7 @@ def authenticate(plist_data):
     # TODO: we're essentially trusting the device to give the correct security infomration here
     #device.certificate = g.device_cert
 
-    db_session.commit()
+    db.session.commit()
 
     return 'OK'
 
@@ -77,7 +75,7 @@ def token_update(plist_data):
         return 'OK'
 
     # TODO: check to make sure device == UDID == cert, etc.
-    device = db_session.query(Device).filter(Device.udid == plist_data['UDID']).one()
+    device = db.session.query(Device).filter(Device.udid == plist_data['UDID']).one()
 
     if not device.token:
         device.is_enrolled = True
@@ -100,7 +98,7 @@ def token_update(plist_data):
     if 'UnlockToken' in plist_data:
         device.unlock_token = plist_data['UnlockToken']
 
-    db_session.commit()
+    db.session.commit()
     return 'OK'
 
 
@@ -144,168 +142,150 @@ def check_out(plist_data):
 
 #@device_cert_check(no_device_okay=True)
 
-@mdm_app.route("/checkinz", methods=['PUT'])
-@parse_plist_input_data
-def checkin():
-    """MDM checkin endpoint.
+# @mdm_app.route("/checkinz", methods=['PUT'])
+# @parse_plist_input_data
+# def checkin():
+#     """MDM checkin endpoint.
+#
+#     Handles the `Authenticate`, `TokenUpdate`, `UserAuthenticate`, `CheckOut` messages.
+#
+#     The body of the reply is ignored.
+#
+#     :reqheader Content-Type: application/x-apple-aspen-mdm; charset=UTF-8
+#     :reqheader Mdm-Signature: BASE64-encoded CMS Detached Signature of the message. (if `SignMessage` was true)
+#     :resheader Content-Type: application/xml; charset=UTF-8
+#     :status 200: Success
+#     :status 401: Failure
+#     """
+#     resp = g.plist_data
+#     print_resp = resp.copy()
+#
+#     if 'UnlockToken' in print_resp:
+#         # hide the unlocktoken since it's pretty large
+#         print_resp['UnlockToken'] = '[Hiding Unlock Token]'
+#
+#     if resp['MessageType'] == 'Authenticate':
+#         # TODO: check to make sure device == UDID == cert, etc.
+#         try:
+#             device = db.session.query(Device).filter(Device.udid == resp['UDID']).one()
+#         except NoResultFound:
+#             # no device found, let's make a new one!
+#             device = Device()
+#             db.session.add(device)
+#
+#             device.udid = resp['UDID']
+#             device.build_version = resp.get('BuildVersion')
+#             device.device_name = resp.get('DeviceName')
+#             device.model = resp.get('Model')
+#             device.model_name = resp.get('ModelName')
+#             device.os_version = resp.get('OSVersion')
+#             device.product_name = resp.get('ProductName')
+#             device.serial_number = resp.get('SerialNumber')
+#             device.topic = resp.get('Topic')
+#
+#         # remove the previous device token (in the case of a re-enrollment) to
+#         # tell the difference between a periodic TokenUpdate and the first
+#         # post-enrollment TokenUpdate
+#         device.token = None
+#         device.first_user_message_seen = False
+#
+#         # TODO: we're essentially trusting the device to give the correct security infomration here
+#         #device.certificate = g.device_cert
+#
+#         db.session.commit()
+#
+#         return 'OK'
+#     elif resp['MessageType'] == 'TokenUpdate':
+#         current_app.logger.info('TokenUpdate received')
+#         print(print_resp)
+#
+#         # TODO: a TokenUpdate can either be for a device or a user (per OS X extensions)
+#         if 'UserID' in resp:
+#             current_app.logger.warn('per-user TokenUpdate not yet implemented, skipping')
+#             return 'OK'
+#
+#         # TODO: check to make sure device == UDID == cert, etc.
+#         device = db.session.query(Device).filter(Device.udid == resp['UDID']).one()
+#
+#         # device.certificate = g.device_cert
+#
+#         if 'PushMagic' in resp:
+#             device.push_magic = resp['PushMagic']
+#
+#         if 'Topic' in resp:
+#             device.topic = resp['Topic']
+#
+#         first_token_update = False if device.token else True
+#
+#         if 'Token' in resp:
+#             device.token = resp['Token']
+#         else:
+#             current_app.logger.error('TokenUpdate message missing Token')
+#             abort(400, 'invalid data supplied')
+#
+#         if 'UnlockToken' in resp:
+#             device.unlock_token = resp['UnlockToken'].data.encode('base64')
+#
+#         db_session.commit()
+#
+#         if first_token_update:
+#             pass
+#             # the first TokenUpdate implies successful MDM profile install.
+#             # kick off our first-device commands, noting any DEP Await state
+#             #current_app.logger.info('sending initial post-enrollment MDM command(s) to device=%d', g.device.id)
+#             #device_first_post_enroll(g.device, awaiting=resp.get('AwaitingConfiguration', False))
+#
+#         return 'OK'
+#     elif resp['MessageType'] == 'UserAuthenticate':
+#         print(print_resp)
+#         current_app.logger.warn('per-user authentication not yet implemented, skipping')
+#         abort(410, 'per-user authentication not yet supported')
+#         # TODO: we can theoretically do a digest authentication on the actual
+#         # end-user's password supplied at the login screen. this will depend
+#         # depend heavily on any given user's backend. Perhaps provide some
+#         # functionality of auth plugins against AD, OD, etc.
+#         if 'DigestResponse' not in resp:
+#             print('no DigestResponse, generating')
+#             config = db_session.query(MDMConfig).one()
+#
+#             # no digest necessary and thus no AuthToken necessary for this OS X user
+#             # digdict = {'DigestChallenge': ''}
+#
+#             digdict = {
+#                 'DigestChallenge': 'Digest nonce="%s",realm="%s"' % (urandom(20).encode('base64'), config.prefix)}
+#
+#             print(digdict)
+#
+#             resp = make_response(plistlib.writePlistToString(digdict))
+#             resp.headers['Content-Type'] = 'application/xml'
+#             return resp
+#         else:
+#             print('DigestResponse!')
+#             print(print_resp)
+#
+#             tokdict = {'AuthToken': urandom(20).encode('hex')}
+#             print(tokdict)
+#
+#             resp = make_response(plistlib.writePlistToString(tokdict))
+#             resp.headers['Content-Type'] = 'application/xml'
+#             return resp
+#
+#             # respond with an AuthToken for the user, all future MDM commands will include this coming from the user
+#     elif resp['MessageType'] == 'CheckOut':
+#         print(print_resp)
+#         current_app.logger.warn('CheckOut not yet implemented, skipping')
+#         # TODO: Topic, UDID - set enrolled to false but keep history
+#     else:
+#         print('Unknown message type', resp['MessageType'])
+#         print(print_resp)
+#
+#     # a best-effort notification to the MDM system the MDM profile has been removed
+#     # only sent CheckOutWhenRemoved
+#     # elif resp['MessageType'] == 'CheckOut':
+#
+#     print('Invalid message type')
+#     abort(500, 'Invalid message type')
 
-    Handles the `Authenticate`, `TokenUpdate`, `UserAuthenticate`, `CheckOut` messages.
-
-    The body of the reply is ignored.
-
-    :reqheader Content-Type: application/x-apple-aspen-mdm; charset=UTF-8
-    :reqheader Mdm-Signature: BASE64-encoded CMS Detached Signature of the message. (if `SignMessage` was true)
-    :resheader Content-Type: application/xml; charset=UTF-8
-    :status 200: Success
-    :status 401: Failure
-    """
-    resp = g.plist_data
-    print_resp = resp.copy()
-
-    if 'UnlockToken' in print_resp:
-        # hide the unlocktoken since it's pretty large
-        print_resp['UnlockToken'] = '[Hiding Unlock Token]'
-
-    if resp['MessageType'] == 'Authenticate':
-        # TODO: check to make sure device == UDID == cert, etc.
-        try:
-            device = db_session.query(Device).filter(Device.udid == resp['UDID']).one()
-        except NoResultFound:
-            # no device found, let's make a new one!
-            device = Device()
-            db_session.add(device)
-
-            device.udid = resp['UDID']
-            device.build_version = resp.get('BuildVersion')
-            device.device_name = resp.get('DeviceName')
-            device.model = resp.get('Model')
-            device.model_name = resp.get('ModelName')
-            device.os_version = resp.get('OSVersion')
-            device.product_name = resp.get('ProductName')
-            device.serial_number = resp.get('SerialNumber')
-            device.topic = resp.get('Topic')
-
-        # remove the previous device token (in the case of a re-enrollment) to
-        # tell the difference between a periodic TokenUpdate and the first
-        # post-enrollment TokenUpdate
-        device.token = None
-        device.first_user_message_seen = False
-
-        # TODO: we're essentially trusting the device to give the correct security infomration here
-        #device.certificate = g.device_cert
-
-        db_session.commit()
-
-        return 'OK'
-    elif resp['MessageType'] == 'TokenUpdate':
-        current_app.logger.info('TokenUpdate received')
-        print(print_resp)
-
-        # TODO: a TokenUpdate can either be for a device or a user (per OS X extensions)
-        if 'UserID' in resp:
-            current_app.logger.warn('per-user TokenUpdate not yet implemented, skipping')
-            return 'OK'
-
-        # TODO: check to make sure device == UDID == cert, etc.
-        device = db_session.query(Device).filter(Device.udid == resp['UDID']).one()
-
-        # device.certificate = g.device_cert
-
-        if 'PushMagic' in resp:
-            device.push_magic = resp['PushMagic']
-
-        if 'Topic' in resp:
-            device.topic = resp['Topic']
-
-        first_token_update = False if device.token else True
-
-        if 'Token' in resp:
-            device.token = resp['Token']
-        else:
-            current_app.logger.error('TokenUpdate message missing Token')
-            abort(400, 'invalid data supplied')
-
-        if 'UnlockToken' in resp:
-            device.unlock_token = resp['UnlockToken'].data.encode('base64')
-
-        db_session.commit()
-
-        if first_token_update:
-            pass
-            # the first TokenUpdate implies successful MDM profile install.
-            # kick off our first-device commands, noting any DEP Await state
-            #current_app.logger.info('sending initial post-enrollment MDM command(s) to device=%d', g.device.id)
-            #device_first_post_enroll(g.device, awaiting=resp.get('AwaitingConfiguration', False))
-
-        return 'OK'
-    elif resp['MessageType'] == 'UserAuthenticate':
-        print(print_resp)
-        current_app.logger.warn('per-user authentication not yet implemented, skipping')
-        abort(410, 'per-user authentication not yet supported')
-        # TODO: we can theoretically do a digest authentication on the actual
-        # end-user's password supplied at the login screen. this will depend
-        # depend heavily on any given user's backend. Perhaps provide some
-        # functionality of auth plugins against AD, OD, etc.
-        if 'DigestResponse' not in resp:
-            print('no DigestResponse, generating')
-            config = db_session.query(MDMConfig).one()
-
-            # no digest necessary and thus no AuthToken necessary for this OS X user
-            # digdict = {'DigestChallenge': ''}
-
-            digdict = {
-                'DigestChallenge': 'Digest nonce="%s",realm="%s"' % (urandom(20).encode('base64'), config.prefix)}
-
-            print(digdict)
-
-            resp = make_response(plistlib.writePlistToString(digdict))
-            resp.headers['Content-Type'] = 'application/xml'
-            return resp
-        else:
-            print('DigestResponse!')
-            print(print_resp)
-
-            tokdict = {'AuthToken': urandom(20).encode('hex')}
-            print(tokdict)
-
-            resp = make_response(plistlib.writePlistToString(tokdict))
-            resp.headers['Content-Type'] = 'application/xml'
-            return resp
-
-            # respond with an AuthToken for the user, all future MDM commands will include this coming from the user
-    elif resp['MessageType'] == 'CheckOut':
-        print(print_resp)
-        current_app.logger.warn('CheckOut not yet implemented, skipping')
-        # TODO: Topic, UDID - set enrolled to false but keep history
-    else:
-        print('Unknown message type', resp['MessageType'])
-        print(print_resp)
-
-    # a best-effort notification to the MDM system the MDM profile has been removed
-    # only sent CheckOutWhenRemoved
-    # elif resp['MessageType'] == 'CheckOut':
-
-    print('Invalid message type')
-    abort(500, 'Invalid message type')
-
-
-def device_first_user_message(device):
-    '''Queue the MDM commands appropriate for a first-user-message seen
-    event. Currently used to inititate DEP app installations.'''
-
-    device.first_user_message_seen = True
-
-    for group in device.mdm_groups:
-        app_q = db_session.query(App).join(app_group_assoc, and_(app_group_assoc.c.mdm_group_id == group.id,
-                                                                 app_group_assoc.c.app_id == App.id)).filter(
-            app_group_assoc.c.install_early == True)
-
-        for app in app_q:
-            db_session.add(AppInstall.new_queued_command(device, {'id': app.id}))
-
-    db_session.commit()
-
-    push_to_device(device)
 
 
 #@device_cert_check()
@@ -339,7 +319,6 @@ def mdm():
         # MDM command. this is becasue DEP appears to only allow apps to be
         # installed while a user is logged in. note also the undocumented
         # NotOnConsole key to (possibly) indicate that this is a UI login?
-        device_first_user_message(device)
         current_app.logger.warn('per-user MDM command not yet supported')
         return ''
 
@@ -363,9 +342,15 @@ def mdm():
             command = Command.find_by_uuid(g.plist_data['CommandUUID'])
 
             # update the status of this command and commit
-            command.result = status
-            command.set_responded()
-            db_session.commit()
+            if status == 'Acknowledged':
+                command.status = CommandStatus.Acknowledged.value
+            elif status == 'NotNow':
+                command.status = CommandStatus.NotNow.value
+            else:
+                current_app.logger.warning('unrecognised command status: {}'.format(status))
+
+            command.acknowledged_at = datetime.utcnow()
+            db.session.commit()
 
             # find the MDM class that this QueuedCommand was generated from
             cmd_class = find_mdm_command_class(command.command_class)

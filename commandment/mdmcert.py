@@ -9,7 +9,7 @@ from flask import redirect
 from .models import (Certificate as DBCertificate,
                      RSAPrivateKey as DBPrivateKey,
                      CertificateSigningRequest as DBCertificateRequest)
-from .database import db_session
+
 import json
 from base64 import b64encode
 import urllib.request, urllib.error, urllib.parse
