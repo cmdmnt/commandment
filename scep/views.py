@@ -7,6 +7,7 @@ from scep import app
 from base64 import b64decode
 from scep.ca import get_ca
 from cryptography.hazmat.primitives.serialization import Encoding
+from cryptography import x509
 from scep.message import degenerate_pkcs7_der, SCEPMessage, PKCSReq
 
 FORCE_DEGENERATE_FOR_SINGLE_CERT = False
@@ -54,10 +55,10 @@ def scep():
             # m2_x509_cacert = mdm_ca.get_cacert()._m2_x509()
 
             der_req = pki_msg.get_decrypted_envelope_data(
-                m2_x509_cacert,
-                m2_evp_cakey)
+                cacert,
+                cakey)
 
-            cert_req = CertificateRequest.from_der(der_req)
+            #cert_req = x509.load_der_x509_csr()
 
             rpl_msg = CertRep()
             rpl_msg.transaction_id = pki_msg.transaction_id

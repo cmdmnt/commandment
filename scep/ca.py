@@ -13,9 +13,10 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 STORAGE_DIRS = [
-    'ca',
-    'requests',
-    'certificates'
+    'certs',
+    'crl',
+    'newcerts',
+    'private'
 ]
 
 
@@ -33,23 +34,24 @@ class CertificateAuthority(object):
     ])
 
     @classmethod
-    def create(cls, path: str, subject: x509.Name = default_subject, key_size: int = 2048):
-        """Create a new Certificate Authority.
+    def load_or_create(cls, path: str, subject: x509.Name = default_subject, key_size: int = 2048):
+        """Load or create a certificate authority at path
 
         Generates a new private key and self-signs a CA certificate.
 
         Args:
-            subject: cryptography.x509.Name The certificate subject to use
-            key_size: The RSA private key size integer, default is 2048.
+            path (str): The base path where the CA will be stored.
+            subject (cryptography.x509.Name): The subject of the CA
+            key_size (int): The RSA private key size integer, default is 2048.
 
         Returns:
             Instance of CertificateAuthority
         """
-        key_path = os.path.join(path, 'ca', 'ca.key')
+        key_path = os.path.join(path, 'private', 'ca.key.pem')
 
         if os.path.exists(key_path):
             with open(key_path, 'rb') as key_file:
-                private_key = serialization.load_der_private_key(
+                private_key = serialization.load_pem_private_key(
                     data=key_file.read(),
                     password=None,
                     backend=default_backend()
@@ -61,7 +63,7 @@ class CertificateAuthority(object):
                 backend=default_backend(),
             )
 
-        cert_path = os.path.join(path, 'ca', 'ca.cer')
+        cert_path = os.path.join(path, 'certs', 'ca.cer')
         if os.path.exists(cert_path):
             with open(cert_path, 'rb') as cert_file:
                 certificate = x509.load_der_x509_certificate(
@@ -104,6 +106,10 @@ class CertificateAuthority(object):
         self._persist_ca(self._certificate, self._private_key, password)
 
     @property
+    def path(self):
+        return self._path
+
+    @property
     def certificate(self) -> x509.Certificate:
         """Retrieve the CA Certificate"""
         return self._certificate
@@ -115,30 +121,28 @@ class CertificateAuthority(object):
 
     def _persist_ca(self, certificate: x509.Certificate, private_key: rsa.RSAPrivateKeyWithSerialization, password=None):
         """Persist the CA key pair to storage."""
-        with open(os.path.join(self._path, 'ca', 'ca.cer'), 'wb') as fd:
+        with open(os.path.join(self._path, 'certs', 'ca.cer'), 'wb') as fd:
             cert_bytes = certificate.public_bytes(serialization.Encoding.DER)
             fd.write(cert_bytes)
 
-        with open(os.path.join(self._path, 'ca', 'ca.key'), 'wb') as fd:
+        with open(os.path.join(self._path, 'private', 'ca.key.pem'), 'wb') as fd:
             if password:
                 enc = serialization.BestAvailableEncryption(password)
             else:
                 enc = serialization.NoEncryption()
 
             key_bytes = private_key.private_bytes(
-                encoding=serialization.Encoding.DER,
+                encoding=serialization.Encoding.PEM,
                 format=serialization.PrivateFormat.PKCS8,
                 encryption_algorithm=enc
             )
             fd.write(key_bytes)
 
-        # TODO: serial
-
     def sign(self, csr: x509.CertificateSigningRequest) -> x509.Certificate:
         """Sign a certificate signing request.
 
         Args:
-            csr: The certificate signing request
+            csr (x509.CertificateSigningRequest): The certificate signing request
         Returns:
             Instance of x509.Certificate
         """
@@ -153,6 +157,8 @@ class CertificateAuthority(object):
             datetime.datetime.utcnow() + datetime.timedelta(days=30)
         ).serial_number(x509.random_serial_number()).public_key(
             csr.public_key()
+        ).extensions(
+            
         ).sign(self.private_key, hashes.SHA256(), default_backend())
 
         return cert
@@ -168,7 +174,7 @@ def ca_from_storage(path: str) -> CertificateAuthority:
         if not os.path.exists(abspath):
             os.mkdir(abspath)
 
-    ca = CertificateAuthority.create(path)
+    ca = CertificateAuthority.load_or_create(path)
     return ca
 
 

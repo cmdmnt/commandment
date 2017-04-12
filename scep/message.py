@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 import os
 from asn1crypto.core import Integer, PrintableString
 from asn1crypto.cms import CMSAttribute, ContentInfo, EnvelopedData, EncapsulatedContentInfo
@@ -15,6 +15,33 @@ CMSAttribute._fields = [
     ('values', None),
 ]
 
+
+class PKCS7Degenerate(object):
+
+    def __init__(self, *certs: List[x509.Certificate]):
+        """Create a pkcs#7 degenerate using supplied certificates"""
+        
+
+class PKIMessage(object):
+
+    def __init__(self, cinfo: ContentInfo = None):
+        if cinfo is not None:
+            # assert content type is SignedData
+            self._signed_data = cinfo['content']
+            self._signer_infos = self._signed_data['signer_infos']
+            self._certificates = self._signed_data['certificates']
+
+    def verify_signers(self):
+        for signer in self._signer_infos:
+            pass # get digest, digest algorithm, decrypt and compare
+    
+    def signed_attributes(self):
+        """Retrieve signed attributes from SignedData if possible.
+
+        Todo:
+            - Assumes there is only one signer
+        """
+        return self._signer_infos[0]['signed_attrs']
 
 class SCEPMessage(object):
 
