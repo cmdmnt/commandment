@@ -6,7 +6,7 @@ from cryptography.hazmat.primitives.serialization import Encoding
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from asn1crypto.csr import CertificationRequestInfo
-from asn1crypto.cms import ContentInfo
+from asn1crypto.cms import ContentInfo, ContentType
 from .message import SCEPMessage, MessageType, SignedDataBuilder, PKIStatus, FailInfo
 
 FORCE_DEGENERATE_FOR_SINGLE_CERT = False
@@ -89,7 +89,7 @@ def scep():
             # CA should persist all signed certs itself
             new_cert = mdm_ca.sign(cert_req)
 
-            reply = SignedDataBuilder(cacert).message_type(
+            reply = SignedDataBuilder(cacert, cakey).message_type(
                 MessageType.CertRep
             ).transaction_id(
                 req.transaction_id
@@ -104,9 +104,12 @@ def scep():
             ).signed_data()
 
             reply_ci = ContentInfo({
-                'content_type': 'signed_data',
+                'content_type': ContentType('signed_data'),
                 'content': reply,
             })
+
+            with open('/tmp/reply.bin', 'wb') as fd:
+                fd.write(reply_ci.dump())
 
             return Response(reply_ci.dump(), mimetype='application/x-pki-message')
         else:
