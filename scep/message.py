@@ -1,14 +1,19 @@
 from typing import Union, List
 import os
+from .ca import CertificateAuthority
 from asn1crypto.core import Integer, PrintableString
-from asn1crypto.cms import CMSAttribute, ContentInfo, EnvelopedData, EncapsulatedContentInfo
+from asn1crypto.cms import CMSAttribute, ContentInfo, EnvelopedData, EncapsulatedContentInfo, SignedData, SignerInfos, \
+    SignerInfo, CMSAttributes, SignerIdentifier, IssuerAndSerialNumber, Integer, OctetString, CertificateSet, \
+    CertificateChoices, ContentType, ParsableOctetString, CMSVersion
+from oscrypto.keys import parse_certificate
 from commandment.scep import asn1
 from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import rsa, padding as asympad
-from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.ciphers.algorithms import TripleDES
 from cryptography.hazmat.primitives.ciphers import Cipher, modes
 from cryptography.hazmat.backends import default_backend
+from enum import Enum, IntEnum
 
 CMSAttribute._fields = [
     ('type', asn1.SCEPCMSAttributeType),
@@ -16,63 +21,268 @@ CMSAttribute._fields = [
 ]
 
 
-class PKCS7Degenerate(object):
+class MessageType(Enum):
+    """The SCEP Message Type.
+    
+    This is encoded as PrintableString so this enum also uses strings.
+    
+    See Also:
+        - `SCEP RFC <https://datatracker.ietf.org/doc/draft-gutmann-scep/?include_text=1>`_ Section 3.2.1.2.
+    """
+    CertRep = '3'
+    """Response to certificate or CRL request"""
 
-    def __init__(self, *certs: List[x509.Certificate]):
-        """Create a pkcs#7 degenerate using supplied certificates"""
+    RenewalReq = '17'
+    """PKCS #10 certificate request for renewal of
+      an existing certificate."""
+
+    UpdateReq = '18'
+    """PKCS #10 certificate request for update of a
+      certificate issued by a different CA."""
+
+    PKCSReq = '19'
+    """PKCS #10 certificate request."""
+
+    CertPoll = '20'
+    """Certificate polling in manual enrolment."""
+
+    GetCert = '21'
+    """Retrieve a certificate."""
+
+    GetCRL = '22'
+    """Retrieve a CRL."""
+
+
+class PKIStatus(Enum):
+    """The SCEP PKI Status
+    
+    Decimal value as printableString
+    
+    See Also:
+        - SCEP RFC Section 3.2.1.3.
+    """
+    SUCCESS = '0'
+    FAILURE = '2'
+    PENDING = '3'
+
+
+class FailInfo(Enum):
+    """SCEP Failure Information"""
+    BadAlg = '0'
+    """Unrecognized or unsupported algorithm."""
+
+    BadMessageCheck = '1'
+    """Integrity check (meaning signature
+      verification of the CMS message) failed."""
+
+    BadRequest = '2'
+    """Transaction not permitted or supported."""
+
+    BadTime = '3'
+    """The signingTime attribute from the CMS
+      authenticatedAttributes was not sufficiently close to the system
+      time (this failure code is present for legacy reasons and is
+      unlikely to be encountered in practice)."""
+
+    BadCertId = '4'
+    """No certificate could be identified matching the
+      provided criteria."""
+
+
+class SignedDataBuilder(object):
+    """The SignedDataBuilder builds SignedData objects in the style of cryptography.x509s fluent builder interfaces."""
+
+    def __init__(self, *signers: List[x509.Certificate]):
+        # Default is the degenerate case which you can override as part of the build
+        encap_content_info = EncapsulatedContentInfo({
+            'content_type': ContentType('data'),
+        })
+        
+        # self._result = SignedData({
+        #     'version': 'v1',
+        # #    'encap_content_info': encap_content_info,
+        #     'signer_infos': None,
+        # })
+        self._signers = []
+        self._primary_signer = None
+        self._cms_attributes = []
+        self._certificates = None
+        self.add_signer(signers[0])
+
+    def certificates(self, *certificates: List[x509.Certificate]):
+        """Add certificates to be attached to the certificates field."""
+        certset = CertificateSet()
+
+        for cert in certificates:
+            # Serialize and load to avoid constructing asn1crypto.Certificate ourselves (yuck)
+            derp = cert.public_bytes(serialization.Encoding.DER)
+            asn1cert = parse_certificate(derp)
+            choice = CertificateChoices('certificate', asn1cert)
+            certset.append(choice)
+
+        self._certificates = certset
+
+        return self
+
+    def add_signer(self, certificate: x509.Certificate):
+        """Add a signer using their certificate to SignerInfos"""
+        derp = certificate.public_bytes(serialization.Encoding.DER)
+        asn1cert = parse_certificate(derp)
+
+        # Signer Identifier
+        ias = IssuerAndSerialNumber({'issuer': asn1cert.issuer, 'serial_number': asn1cert.serial_number})
+        sid = SignerIdentifier('issuer_and_serial_number', ias)
+
+        self._signers.append({'sid': sid, 'certificate': certificate})
+        self._primary_signer = {
+            'sid': sid,
+            'certificate': certificate,
+        }
+
+        return self
+
+    def message_type(self, type: MessageType):
+        """Set the SCEP Message Type Attribute"""
+        attr = CMSAttribute({
+            'type': 'message_type',
+            'values': [PrintableString(type.value)],
+        })
+        self._cms_attributes.append(attr)
+
+        return self
+
+    def pki_status(self, status: PKIStatus, failure_info: FailInfo = None):
+        """Set the PKI status of the operation."""
+        attr = CMSAttribute({
+            'type': 'pki_status',
+            'values': [PrintableString(status.value)],
+        })
+        self._cms_attributes.append(attr)
+
+        if status == PKIStatus.FAILURE:
+            if failure_info is None:
+                raise ValueError('You cannot specify failure without failure info')
+
+            fail_attr = CMSAttribute({
+                'type': 'fail_info',
+                'values': [PrintableString(failure_info.value)],
+            })
+            self._cms_attributes.append(fail_attr)
+
+        return self
+
+    def sender_nonce(self, nonce: Union[bytes, OctetString]):
+        """Add a sender nonce"""
+        if isinstance(nonce, bytes):
+            nonce = OctetString(nonce)
+
+        attr = CMSAttribute({
+            'type': 'sender_nonce',
+            'values': [nonce],
+        })
+
+        self._cms_attributes.append(attr)
+        return self
+
+    def recipient_nonce(self, nonce: Union[bytes, OctetString]):
+        """Add a recipient nonce"""
+        if isinstance(nonce, bytes):
+            nonce = OctetString(nonce)
+
+        attr = CMSAttribute({
+            'type': 'recipient_nonce',
+            'values': [nonce],
+        })
+
+        self._cms_attributes.append(attr)
+        return self
+
+    def transaction_id(self, trans_id: Union[str, PrintableString]):
+        """Add a transaction id"""
+        if isinstance(trans_id, str):
+            trans_id = PrintableString(trans_id)
+
+        attr = CMSAttribute({
+            'type': 'transaction_id',
+            'values': [trans_id]
+        })
+
+        self._cms_attributes.append(attr)
+        return self
+
+    def _build_cmsattributes(self) -> CMSAttributes:
+        return CMSAttributes(value=self._cms_attributes)
+
+    def _build_signerinfo(self) -> SignerInfo:
+        return SignerInfo({
+            'version': 'v1',
+            'sid': self._primary_signer['sid'],
+            'signed_attrs': self._build_cmsattributes(),
+        })
+
+    def _build_signerinfos(self) -> SignerInfos:
+        return SignerInfos([self._build_signerinfo()])
+
+    def signed_data(self) -> SignedData:
+        """Sign and return the SignedData structure."""
+        signer_infos = self._build_signerinfos()
+        certificates = self._certificates
+
+        sd = SignedData({
+            'version': CMSVersion(1),
+            'certificates': certificates,
+            'signer_infos': signer_infos,
+        })
+
+        sd.debug()
+
+        return sd
         
 
-class PKIMessage(object):
-
-    def __init__(self, cinfo: ContentInfo = None):
-        if cinfo is not None:
-            # assert content type is SignedData
-            self._signed_data = cinfo['content']
-            self._signer_infos = self._signed_data['signer_infos']
-            self._certificates = self._signed_data['certificates']
-
-    def verify_signers(self):
-        for signer in self._signer_infos:
-            pass # get digest, digest algorithm, decrypt and compare
-    
-    def signed_attributes(self):
-        """Retrieve signed attributes from SignedData if possible.
-
-        Todo:
-            - Assumes there is only one signer
-        """
-        return self._signer_infos[0]['signed_attrs']
 
 class SCEPMessage(object):
 
-    def __init__(self, content: ContentInfo):
-        self._content_info = content
-        self._transaction_id = None
-        self._message_type = None
-        self._sender_nonce = None
-        self._recipient_nonce = None
+    @classmethod
+    def parse(cls, raw: bytes):
+        msg = cls()
+
+        cinfo = ContentInfo.load(raw)
+        msg._signer_info = cinfo['content']['signer_infos'][0]
+        msg._signed_data = cinfo['content']['encap_content_info']['content']
 
         # Signed Attrs always have the 'Any' type so should be parsed
-        for cmsattr in self._content_info['content']['signer_infos'][0]['signed_attrs']:
+        for cmsattr in cinfo['content']['signer_infos'][0]['signed_attrs']:
             name = asn1.SCEPCMSAttributeType.map(cmsattr['type'].native)
 
             if name == 'transaction_id':
-                self._transaction_id = cmsattr['values'][0].native
+                msg._transaction_id = cmsattr['values'][0].native
             elif name == 'message_type':
-                self._message_type = asn1.SCEP_MESSAGE_TYPES[cmsattr['values'][0].native]
+                msg._message_type = MessageType(cmsattr['values'][0].native)
             elif name == 'sender_nonce':
-                self._sender_nonce = cmsattr['values'][0].native
+                msg._sender_nonce = cmsattr['values'][0].native
             elif name == 'recipient_nonce':
-                self._recipient_nonce = cmsattr['values'][0].native
+                msg._recipient_nonce = cmsattr['values'][0].native
             elif name == 'pki_status':
-                self._pki_status = cmsattr['values'][0].native
-        
+                msg._pki_status = cmsattr['values'][0].native
+
+        return msg
+
+    def __init__(self, message_type: MessageType = MessageType.CertRep, transaction_id=None, sender_nonce=None,
+                 recipient_nonce=None):
+        self._transaction_id = transaction_id
+        self._message_type = message_type
+        self._sender_nonce = sender_nonce
+        self._recipient_nonce = recipient_nonce
+        self._pki_status = None
+        self._signer_info = None
+        self._signed_data = None
+
     @property
     def transaction_id(self) -> str:
         return self._transaction_id
 
     @property
-    def message_type(self) -> str:
+    def message_type(self) -> MessageType:
         return self._message_type
 
     @property
@@ -88,15 +298,25 @@ class SCEPMessage(object):
         return self._pki_status
 
     @property
-    def encap_content_info(self) -> ContentInfo:
-        content = self._content_info['content']  # SignedData
-        encapsulated_content_info = content['encap_content_info']['content']
-        return ContentInfo.load(encapsulated_content_info.native)
+    def signer(self):
+        sid = self._signer_info['sid']
+        if isinstance(sid.chosen, IssuerAndSerialNumber):
+            issuer = sid.chosen['issuer'].human_friendly
+            serial = sid.chosen['serial_number'].native
 
-    @classmethod
-    def from_pkcs7_der(cls, msg: bytes):
-        asn_data = ContentInfo.load(msg)
-        return cls(asn_data)
+            return issuer, serial
+
+    @property
+    def encap_content_info(self) -> ContentInfo:
+        return ContentInfo.load(self._signed_data.native)
+
+    @property
+    def signed_data(self) -> SignedData:
+        return self._signed_data
+
+    @signed_data.setter
+    def signed_data(self, value: SignedData):
+        self._signed_data = value
 
     def get_decrypted_envelope_data(self, certificate: x509.Certificate, key: rsa.RSAPrivateKey) -> bytes:
         """Decrypt the encrypted envelope data:
@@ -132,3 +352,6 @@ class SCEPMessage(object):
 
         return decryptor.update(encrypted_content_bytes) + decryptor.finalize()
 
+    def build(self, degenerate: bool = True) -> ContentInfo:
+        """Build and return the asn1crypto ContentInfo structure."""
+        pass

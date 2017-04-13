@@ -1,11 +1,13 @@
 from os import urandom
 from flask import Flask, abort, request, Response
 from .ca import CertificateAuthority, ca_from_storage, get_ca
-from base64 import b64decode
+from base64 import b64decode, b64encode
 from cryptography.hazmat.primitives.serialization import Encoding
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
-from .message import SCEPMessage
+from asn1crypto.csr import CertificationRequestInfo
+from asn1crypto.cms import ContentInfo
+from .message import SCEPMessage, MessageType, SignedDataBuilder, PKIStatus, FailInfo
 
 FORCE_DEGENERATE_FOR_SINGLE_CERT = False
 CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
@@ -47,48 +49,68 @@ def scep():
             else:
                 msg = request.data
 
-        pki_msg = SCEPMessage.from_pkcs7_der(msg)
+        req = SCEPMessage.parse(msg)
+        app.logger.debug('Received SCEPMessage, details follow')
+        print("{:<20}: {}".format('Transaction ID', req.transaction_id))
+        print("{:<20}: {}".format('Message Type', req.message_type))
+        print("{:<20}: {}".format('PKI Status', req.pki_status))
+        if req.sender_nonce is not None:
+            print("{:<20}: {}".format('Sender Nonce', b64encode(req.sender_nonce)))
+        if req.recipient_nonce is not None:
+            print("{:<20}: {}".format('Recipient Nonce', b64encode(req.recipient_nonce)))
+        
+        x509name, serial = req.signer
+        print("{:<20}: {}".format('Issuer X.509 Name', x509name))
+        print("{:<20}: {}".format('Issuer S/N', serial))
 
-        if pki_msg.message_type == 'pkcs_req':
+        if req.message_type == MessageType.PKCSReq:
             app.logger.debug('received PKCSReq SCEP message')
 
             cakey = mdm_ca.private_key
             cacert = mdm_ca.certificate
 
-            der_req = pki_msg.get_decrypted_envelope_data(
+            der_req = req.get_decrypted_envelope_data(
                 cacert,
-                cakey)
+                cakey,
+            )
 
             cert_req = x509.load_der_x509_csr(der_req, backend=default_backend())
+            req_info_bytes = cert_req.tbs_certrequest_bytes
 
-            rpl_msg = CertRep()
-            rpl_msg.transaction_id = pki_msg.transaction_id
-            rpl_msg.recipient_nonce = pki_msg.sender_nonce
-            rpl_msg.sender_nonce = urandom(16)
+            # Check the challenge password
+            req_info = CertificationRequestInfo.load(req_info_bytes)
+            for attr in req_info['attributes']:
+                if attr['type'].native == 'challenge_password':
+                    assert len(attr['values']) == 1
+                    challenge_password = attr['values'][0].native
+                    print("{:<20}: {}".format('Challenge Password', challenge_password))
+                    break  # TODO: if challenge password fails send pkcs#7 with pki status failure
 
-            rpl_msg.signing_cert = m2_x509_cacert
-            rpl_msg.signing_pkey = m2_evp_cakey
+            # CA should persist all signed certs itself
+            new_cert = mdm_ca.sign(cert_req)
 
-            if get_challenge_password(cert_req._m2_req()) != scep_config.challenge:
-                current_app.logger.error('failed challenge')
+            reply = SignedDataBuilder(cacert).message_type(
+                MessageType.CertRep
+            ).transaction_id(
+                req.transaction_id
+            ).pki_status(
+                PKIStatus.SUCCESS
+            ).recipient_nonce(
+                req.sender_nonce
+            ).sender_nonce(
+                urandom(16)
+            ).certificates(
+                new_cert
+            ).signed_data()
 
-                rpl_msg.pki_status = PKI_STATUS_FAILURE
+            reply_ci = ContentInfo({
+                'content_type': 'signed_data',
+                'content': reply,
+            })
 
-                return Response(rpl_msg.to_pkcs7_der(), mimetype='application/x-pki-message')
-
-            # sign request and save to DB
-            new_cert, db_new_cert = mdm_ca.sign_new_device_req(cert_req)
-
-            new_cert_degen = degenerate_pkcs7_der([new_cert._m2_x509()])
-            rpl_msg.signedcontent = new_cert_degen
-
-            rpl_msg.encrypt_envelope_data(pki_msg.signing_cert)
-
-            rpl_msg.pki_status = PKI_STATUS_SUCCESS
-
-            return Response(rpl_msg.to_pkcs7_der(), mimetype='application/x-pki-message')
+            return Response(reply_ci.dump(), mimetype='application/x-pki-message')
         else:
-            app.logger.error('unhandled SCEP message type: %d', pki_msg.message_type)
+            app.logger.error('unhandled SCEP message type: %d', req.message_type)
             return ''
     else:
         abort(404, 'unknown SCEP operation')

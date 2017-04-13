@@ -12,6 +12,9 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 
+from asn1crypto.cms import SignerIdentifier, IssuerAndSerialNumber
+from oscrypto.asymmetric import load_certificate, load_private_key, generate_pair, Certificate
+
 STORAGE_DIRS = [
     'certs',
     'crl',
@@ -48,6 +51,7 @@ class CertificateAuthority(object):
             Instance of CertificateAuthority
         """
         key_path = os.path.join(path, 'private', 'ca.key.pem')
+        cert_path = os.path.join(path, 'certs', 'ca.cer')
 
         if os.path.exists(key_path):
             with open(key_path, 'rb') as key_file:
@@ -63,7 +67,6 @@ class CertificateAuthority(object):
                 backend=default_backend(),
             )
 
-        cert_path = os.path.join(path, 'certs', 'ca.cer')
         if os.path.exists(cert_path):
             with open(cert_path, 'rb') as cert_file:
                 certificate = x509.load_der_x509_certificate(
@@ -138,6 +141,15 @@ class CertificateAuthority(object):
             )
             fd.write(key_bytes)
 
+    def signer_identifier(self) -> SignerIdentifier:
+        """Get the identity of this CA instance as a SignerIdentifier structure for CMS."""
+        ias = IssuerAndSerialNumber()
+        #ias['issuer'] = self.certificate.issuer  # probably wont work, need to get the asn1crypto type
+        ias['serial_number'] = self.certificate.serial_number
+        sid = SignerIdentifier('issuer_and_serial_number', ias)
+
+        return sid
+
     def sign(self, csr: x509.CertificateSigningRequest) -> x509.Certificate:
         """Sign a certificate signing request.
 
@@ -157,8 +169,6 @@ class CertificateAuthority(object):
             datetime.datetime.utcnow() + datetime.timedelta(days=30)
         ).serial_number(x509.random_serial_number()).public_key(
             csr.public_key()
-        ).extensions(
-            
         ).sign(self.private_key, hashes.SHA256(), default_backend())
 
         return cert
