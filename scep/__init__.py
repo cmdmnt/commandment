@@ -8,7 +8,7 @@ from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from asn1crypto.csr import CertificationRequestInfo
 from asn1crypto.cms import ContentInfo, ContentType
-from .message import SCEPMessage, MessageType, SignedDataBuilder, PKIStatus, FailInfo
+from .message import SCEPMessage, MessageType, PKIMessageBuilder, PKIStatus, FailInfo, create_degenerate_certificate
 
 FORCE_DEGENERATE_FOR_SINGLE_CERT = False
 CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
@@ -118,7 +118,7 @@ def scep():
             # CA should persist all signed certs itself
             new_cert = mdm_ca.sign(cert_req)
 
-            reply = SignedDataBuilder(cacert, cakey).message_type(
+            reply = PKIMessageBuilder(cacert, cakey).message_type(
                 MessageType.CertRep
             ).transaction_id(
                 req.transaction_id
@@ -126,22 +126,38 @@ def scep():
                 PKIStatus.SUCCESS
             ).recipient_nonce(
                 req.sender_nonce
-            ).sender_nonce(
-                urandom(16)
+            # ).sender_nonce(
+            #     urandom(16)
+            ).add_recipient(
+                cert_req
+            ).issued(
+                new_cert
+            ).encrypt(
+                create_degenerate_certificate(new_cert).dump()
             ).certificates(
-                new_cert,
                 cacert
-            ).signed_data()
+            ).finalize()
 
-            reply_ci = ContentInfo({
-                'content_type': ContentType('signed_data'),
-                'content': reply,
-            })
+            res = SCEPMessage.parse(reply.dump())
+            app.logger.debug('Reply with CertRep, details follow')
+            print("{:<20}: {}".format('Transaction ID', res.transaction_id))
+            print("{:<20}: {}".format('Message Type', res.message_type))
+            print("{:<20}: {}".format('PKI Status', res.pki_status))
+            if res.sender_nonce is not None:
+                print("{:<20}: {}".format('Sender Nonce', b64encode(res.sender_nonce)))
+            if res.recipient_nonce is not None:
+                print("{:<20}: {}".format('Recipient Nonce', b64encode(res.recipient_nonce)))
+
+            x509name, serial = res.signer
+            print("{:<20}: {}".format('Issuer X.509 Name', x509name))
+            print("{:<20}: {}".format('Issuer S/N', serial))
+
+                        
 
             with open('/tmp/reply.bin', 'wb') as fd:
-                fd.write(reply_ci.dump())
+                fd.write(reply.dump())
 
-            return Response(reply_ci.dump(), mimetype='application/x-pki-message')
+            return Response(reply.dump(), mimetype='application/x-pki-message')
         else:
             app.logger.error('unhandled SCEP message type: %d', req.message_type)
             return ''
