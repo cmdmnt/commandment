@@ -4,12 +4,14 @@ from .ca import CertificateAuthority
 from asn1crypto.core import Integer, PrintableString
 from asn1crypto.cms import CMSAttribute, ContentInfo, EnvelopedData, EncapsulatedContentInfo, SignedData, SignerInfos, \
     SignerInfo, CMSAttributes, SignerIdentifier, IssuerAndSerialNumber, Integer, OctetString, CertificateSet, \
-    CertificateChoices, ContentType, ParsableOctetString, CMSVersion
-from asn1crypto.algos import DigestAlgorithm, SignedDigestAlgorithm, SignedDigestAlgorithmId, DigestAlgorithmId
+    CertificateChoices, ContentType, ParsableOctetString, CMSVersion, DigestAlgorithms
+from asn1crypto.algos import DigestAlgorithm, SignedDigestAlgorithm, SignedDigestAlgorithmId, DigestAlgorithmId, \
+    DigestInfo
 from oscrypto.keys import parse_certificate
 from commandment.scep import asn1
 from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import rsa, padding as asympad
+from cryptography.hazmat.primitives.padding import PKCS7
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.ciphers.algorithms import TripleDES
 from cryptography.hazmat.primitives.ciphers import Cipher, modes
@@ -91,19 +93,17 @@ class FailInfo(Enum):
 
 
 class SignedDataBuilder(object):
-    """The SignedDataBuilder builds SignedData objects in the style of cryptography.x509s fluent builder interfaces."""
+    """The SignedDataBuilder builds SignedData objects in the style of cryptography.x509s fluent builder interfaces.
+
+    Attributes:
+          _signers: List of signers to create signatures and populate signerinfos.
+          _primary_signer: This is the only signer that counts right now.
+          _primary_signer_key (rsa.RSAPrivateKey): Signer private key
+          _cms_attributes: List of CMSAttribute
+          _certificates: List of Certificates
+    """
 
     def __init__(self, signer_cert: x509.Certificate, signer_key: rsa.RSAPrivateKeyWithSerialization):
-        # Default is the degenerate case which you can override as part of the build
-        encap_content_info = EncapsulatedContentInfo({
-            'content_type': ContentType('data'),
-        })
-        
-        # self._result = SignedData({
-        #     'version': 'v1',
-        # #    'encap_content_info': encap_content_info,
-        #     'signer_infos': None,
-        # })
         self._signers = []
         self._primary_signer = None
         self._primary_signer_key = None
@@ -113,7 +113,13 @@ class SignedDataBuilder(object):
         self.add_signer(signer_cert, signer_key)
 
     def certificates(self, *certificates: List[x509.Certificate]):
-        """Add certificates to be attached to the certificates field."""
+        """Add certificates to be attached to the certificates field.
+
+        Args:
+              certificates: variadic argument of x509.Certificate
+        Returns:
+              SignedDataBuilder: This instance
+        """
         certset = CertificateSet()
 
         for cert in certificates:
@@ -220,31 +226,38 @@ class SignedDataBuilder(object):
     def _build_signerinfo(self) -> SignerInfo:
         # Get CMSAttributes
         unsigned_attrs = self._build_cmsattributes()
+        # Calculate Digest
+        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        digest.update(unsigned_attrs.dump())
+        d = digest.finalize()
+        # Make DigestInfo from result
+        da_id = DigestAlgorithmId('sha256')
+        da = DigestAlgorithm({'algorithm': da_id})
+        di = DigestInfo({
+            'digest_algorithm': da,
+            'digest': d,
+        })
 
-        # Get the RSA key to sign attributes
+        # Get the RSA key to sign the digestinfo
         pk = self._primary_signer_key
         signer = pk.signer(
             asympad.PKCS1v15(),
             hashes.SHA256()
         )
 
-        signer.update(unsigned_attrs.dump())
+        signer.update(di.dump())
         signature = signer.finalize()
 
-        da_id = DigestAlgorithmId('sha256')
-        da = DigestAlgorithm({'algorithm': da_id})
-
-        #digest_alg = DigestAlgorithm({'algorithm': DigestAlgorithmId('sha256')})
         sda_id = SignedDigestAlgorithmId('sha256_rsa')
         sda = SignedDigestAlgorithm({'algorithm': sda_id})
 
         si = SignerInfo({
-            'version': 'v1',
+            'version': CMSVersion(1),
             'sid': self._primary_signer['sid'],
             'digest_algorithm': da,
-            'signed_attrs': self._build_cmsattributes(),
+            'unsigned_attrs': unsigned_attrs,
             'signature_algorithm': sda,
-            'signature': OctetString(signature)
+            'signature': OctetString(signature),
         })
         return si
 
@@ -256,10 +269,21 @@ class SignedDataBuilder(object):
         signer_infos = self._build_signerinfos()
         certificates = self._certificates
 
+        da_id = DigestAlgorithmId('sha256')
+        da = DigestAlgorithm({'algorithm': da_id})
+        das = DigestAlgorithms([da])
+
+        encap_info = ContentInfo({
+            'content_type': ContentType('data'),
+            'content': b'',
+        })
+
         sd = SignedData({
             'version': CMSVersion(1),
             'certificates': certificates,
             'signer_infos': signer_infos,
+            'digest_algorithms': das,
+            'encap_content_info': encap_info,
         })
 
         sd.debug()

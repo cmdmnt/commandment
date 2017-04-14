@@ -6,6 +6,6 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 DEBUG = True
 
 # Directory where certs, revocation lists, serials etc will be kept
-CA_DIR = /path/to/ca
+CA_ROOT = /path/to/ca
 
 PORT = 5080

@@ -1,5 +1,6 @@
 from os import urandom
-from flask import Flask, abort, request, Response
+from io import StringIO
+from flask import Flask, abort, request, Response, g
 from .ca import CertificateAuthority, ca_from_storage, get_ca
 from base64 import b64decode, b64encode
 from cryptography.hazmat.primitives.serialization import Encoding
@@ -12,18 +13,46 @@ from .message import SCEPMessage, MessageType, SignedDataBuilder, PKIStatus, Fai
 FORCE_DEGENERATE_FOR_SINGLE_CERT = False
 CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
 
+
+class WSGIChunkedBodyCopy(object):
+    '''WSGI wrapper that handles chunked encoding of the request body. Copies
+    de-chunked body to a WSGI environment variable called `body_copy` (so best
+    not to use with large requests lest memory issues crop up.'''
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        wsgi_input = environ.get('wsgi.input')
+        if 'chunked' in environ.get('HTTP_TRANSFER_ENCODING', '') and \
+                        environ.get('CONTENT_LENGTH', '') == '' and \
+                wsgi_input:
+
+            body = b''
+            sz = int(wsgi_input.readline(), 16)
+            while sz > 0:
+                body += wsgi_input.read(sz + 2)[:-2]
+                sz = int(wsgi_input.readline(), 16)
+
+            environ['body_copy'] = body
+            environ['wsgi.input'] = body
+
+        return self.app(environ, start_response)
+
+
 app = Flask(__name__)
 app.config.from_object('scep.default_settings')
 app.config.from_envvar('SCEP_SETTINGS')
+app.wsgi_app = WSGIChunkedBodyCopy(app.wsgi_app)
 
-ca = ca_from_storage(app.config['CA_ROOT'])
+with app.app_context():
+    g.ca = ca_from_storage(app.config['CA_ROOT'])
 
 @app.route('/cgi-bin/pkiclient.exe', methods=['GET', 'POST'])
 @app.route('/scep', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST'])
 def scep():
     op = request.args.get('operation')
-    mdm_ca = get_ca()
+    mdm_ca = ca_from_storage(app.config['CA_ROOT'])
 
     if op == 'GetCACert':
         certs = [mdm_ca.certificate]
@@ -100,6 +129,7 @@ def scep():
             ).sender_nonce(
                 urandom(16)
             ).certificates(
+                cacert,
                 new_cert
             ).signed_data()
 
