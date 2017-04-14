@@ -113,12 +113,14 @@ class SignedDataBuilder(object):
         self.add_signer(signer_cert, signer_key)
 
     def certificates(self, *certificates: List[x509.Certificate]):
-        """Add certificates to be attached to the certificates field.
+        """Add x.509 certificates to be attached to the certificates field.
 
         Args:
               certificates: variadic argument of x509.Certificate
         Returns:
               SignedDataBuilder: This instance
+        See Also:
+              - `pkcs#7 RFC 2315 Section 9.1 <https://tools.ietf.org/html/rfc2315#section-9.1>`_.
         """
         certset = CertificateSet()
 
@@ -134,7 +136,16 @@ class SignedDataBuilder(object):
         return self
 
     def add_signer(self, certificate: x509.Certificate, signer_key: rsa.RSAPrivateKeyWithSerialization):
-        """Add a signer using their certificate to SignerInfos"""
+        """Add a signer to SignerInfos.
+
+        Args:
+              certificate (x509.Certificate): Signer certificate
+              signer_key (rsa.RSAPrivateKeyWithSerialization): Signer RSA private key
+        Returns:
+              SignedDataBuilder: This instance
+        See Also:
+              - `pkcs#7 RFC2315 Section 9.2 <https://tools.ietf.org/html/rfc2315#section-9.2>`_.
+        """
         derp = certificate.public_bytes(serialization.Encoding.DER)
         asn1cert = parse_certificate(derp)
 
@@ -151,18 +162,37 @@ class SignedDataBuilder(object):
 
         return self
 
-    def message_type(self, type: MessageType):
-        """Set the SCEP Message Type Attribute"""
+    def message_type(self, message_type: MessageType):
+        """Set the SCEP Message Type Attribute.
+
+        Args:
+              message_type (MessageType): A valid PKIMessage messageType
+        Returns:
+              SignedDataBuilder: This instance
+        See Also:
+              - `draft-gutmann-scep Section 3.2.1.2.
+                <https://datatracker.ietf.org/doc/draft-gutmann-scep/?include_text=1>`_.
+        """
         attr = CMSAttribute({
             'type': 'message_type',
-            'values': [PrintableString(type.value)],
+            'values': [PrintableString(message_type.value)],
         })
         self._cms_attributes.append(attr)
 
         return self
 
     def pki_status(self, status: PKIStatus, failure_info: FailInfo = None):
-        """Set the PKI status of the operation."""
+        """Set the PKI status of the operation.
+
+        Args:
+              status (PKIStatus): A valid pkiStatus value
+              failure_info (FailInfo): A failure info type, which must be present if PKIStatus is failure.
+        Returns:
+              SignedDataBuilder: This instance
+        See Also:
+              - `draft-gutmann-scep Section 3.2.1.3.
+                <https://datatracker.ietf.org/doc/draft-gutmann-scep/?include_text=1>`_.
+        """
         attr = CMSAttribute({
             'type': 'pki_status',
             'values': [PrintableString(status.value)],
@@ -182,7 +212,16 @@ class SignedDataBuilder(object):
         return self
 
     def sender_nonce(self, nonce: Union[bytes, OctetString]):
-        """Add a sender nonce"""
+        """Add a sender nonce.
+
+        Args:
+              nonce (bytes or OctetString): Sender nonce
+        Returns:
+              SignedDataBuilder: This instance
+        See Also:
+              - `draft-gutmann-scep Section 3.2.1.5.
+                <https://datatracker.ietf.org/doc/draft-gutmann-scep/?include_text=1>`_.
+        """
         if isinstance(nonce, bytes):
             nonce = OctetString(nonce)
 
@@ -195,7 +234,16 @@ class SignedDataBuilder(object):
         return self
 
     def recipient_nonce(self, nonce: Union[bytes, OctetString]):
-        """Add a recipient nonce"""
+        """Add a recipient nonce.
+
+        Args:
+              nonce (bytes or OctetString): Recipient nonce
+        Returns:
+              SignedDataBuilder: This instance
+        See Also:
+              - `draft-gutmann-scep Section 3.2.1.5.
+                <https://datatracker.ietf.org/doc/draft-gutmann-scep/?include_text=1>`_.
+        """
         if isinstance(nonce, bytes):
             nonce = OctetString(nonce)
 
@@ -208,7 +256,16 @@ class SignedDataBuilder(object):
         return self
 
     def transaction_id(self, trans_id: Union[str, PrintableString]):
-        """Add a transaction id"""
+        """Add a transaction ID.
+
+        Args:
+              trans_id (str or PrintableString): Transaction ID.
+        Returns:
+              SignedDataBuilder: This instance
+        See Also:
+              - `draft-gutmann-scep Section 3.2.1.1.
+                <https://datatracker.ietf.org/doc/draft-gutmann-scep/?include_text=1>`_.
+        """
         if isinstance(trans_id, str):
             trans_id = PrintableString(trans_id)
 
@@ -224,6 +281,18 @@ class SignedDataBuilder(object):
         return CMSAttributes(value=self._cms_attributes)
 
     def _build_signerinfo(self) -> SignerInfo:
+        # Add Required CMSAttributes
+        self._cms_attributes.append(CMSAttribute({
+            'type': 'content_type',
+            'values': [ContentType('data')],
+        }))
+
+        # self._cms_attributes.append(CMSAttribute({
+        #     'type': 'message_digest',
+        #     'values': [],
+        # }))
+
+
         # Get CMSAttributes
         unsigned_attrs = self._build_cmsattributes()
         # Calculate Digest
@@ -275,7 +344,6 @@ class SignedDataBuilder(object):
 
         encap_info = ContentInfo({
             'content_type': ContentType('data'),
-            'content': b'',
         })
 
         sd = SignedData({
@@ -403,7 +471,3 @@ class SCEPMessage(object):
         decryptor = cipher.decryptor()
 
         return decryptor.update(encrypted_content_bytes) + decryptor.finalize()
-
-    def build(self, degenerate: bool = True) -> ContentInfo:
-        """Build and return the asn1crypto ContentInfo structure."""
-        pass

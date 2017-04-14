@@ -129,8 +129,8 @@ def scep():
             ).sender_nonce(
                 urandom(16)
             ).certificates(
-                cacert,
-                new_cert
+                new_cert,
+                cacert
             ).signed_data()
 
             reply_ci = ContentInfo({
