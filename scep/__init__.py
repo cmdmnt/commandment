@@ -8,7 +8,9 @@ from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from asn1crypto.csr import CertificationRequestInfo
 from asn1crypto.cms import ContentInfo, ContentType
-from .message import SCEPMessage, MessageType, PKIMessageBuilder, PKIStatus, FailInfo, create_degenerate_certificate
+from .message import SCEPMessage
+from .enums import MessageType, PKIStatus, FailInfo
+from .builders import PKIMessageBuilder, create_degenerate_certificate
 
 FORCE_DEGENERATE_FOR_SINGLE_CERT = False
 CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
