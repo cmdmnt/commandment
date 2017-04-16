@@ -19,6 +19,7 @@ from cryptography.hazmat.primitives.ciphers.algorithms import TripleDES
 from cryptography.hazmat.primitives.ciphers import Cipher, modes
 from cryptography.hazmat.backends import default_backend
 from .enums import MessageType, PKIStatus, FailInfo
+from uuid import uuid4
 
 
 def certificates_from_asn1(cert_set: CertificateSet) -> List[x509.Certificate]:
@@ -200,7 +201,7 @@ class PKIMessageBuilder(object):
 
         return self
 
-    def sender_nonce(self, nonce: Union[bytes, OctetString]):
+    def sender_nonce(self, nonce: Union[bytes, OctetString] = None):
         """Add a sender nonce.
 
         Args:
@@ -213,6 +214,8 @@ class PKIMessageBuilder(object):
         """
         if isinstance(nonce, bytes):
             nonce = OctetString(nonce)
+        elif nonce is None:
+            nonce = OctetString(os.urandom(16))
 
         attr = CMSAttribute({
             'type': 'sender_nonce',
@@ -248,11 +251,11 @@ class PKIMessageBuilder(object):
         self._cms_attributes.append(attr)
         return self
 
-    def transaction_id(self, trans_id: Union[str, PrintableString]):
+    def transaction_id(self, trans_id: Union[str, PrintableString] = None):
         """Add a transaction ID.
 
         Args:
-              trans_id (str or PrintableString): Transaction ID.
+              trans_id (str or PrintableString): Transaction ID. If omitted, one is generated
         Returns:
               PKIMessageBuilder: This instance
         See Also:
@@ -261,6 +264,8 @@ class PKIMessageBuilder(object):
         """
         if isinstance(trans_id, str):
             trans_id = PrintableString(trans_id)
+        elif trans_id is None:
+            trans_id = PrintableString(str(uuid4()))
 
         attr = CMSAttribute({
             'type': 'transaction_id',

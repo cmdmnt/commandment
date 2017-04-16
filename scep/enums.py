@@ -66,3 +66,17 @@ class FailInfo(Enum):
     BadCertId = '4'
     """No certificate could be identified matching the
       provided criteria."""
+
+
+class CACaps(Enum):
+    """CA Capabilities"""
+    AES = 'AES'
+    DES3 = 'DES3'
+    GetNextCACert = 'GetNextCACert'
+    POSTPKIOperation = 'POSTPKIOperation'
+    Renewal = 'Renewal'
+    SHA1 = 'SHA-1'
+    SHA256 = 'SHA-256'
+    SHA512 = 'SHA-512'
+    SCEPStandard = 'SCEPStandard'
+    Update = 'Update'
