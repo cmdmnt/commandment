@@ -48,7 +48,8 @@ setup(
     setup_requires=['pytest-runner'],
     entry_points={
         'console_scripts': [
-            'commandment=commandment.cli:server'
+            'commandment=commandment.cli:server',
+            'scepclient=scep.client:main',
         ]
     },
     zip_safe=False

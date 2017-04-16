@@ -1,4 +1,5 @@
 import argparse
+import logging
 from typing import List, Set
 from ..builders import PKIMessageBuilder
 import requests
@@ -11,17 +12,22 @@ from cryptography.hazmat.backends import default_backend
 
 parser = argparse.ArgumentParser()
 parser.add_argument('url', help='The SCEP server URL')
-parser.add_argument('c', '--challenge', help='SCEP Challenge to send with the signing request')
-parser.add_argument('k', '--private-key', help='PEM formatted RSA private key (will be generated if omitted)')
-parser.add_argument('p', '--password', help='private key password (if required)')
+parser.add_argument('-c', '--challenge', help='SCEP Challenge to send with the signing request')
+parser.add_argument('-k', '--private-key', help='PEM formatted RSA private key (will be generated if omitted)')
+parser.add_argument('-p', '--password', help='private key password (if required)')
+parser.add_argument('-d', '--debug', help='enable debug mode', action='store_const', dest='loglevel',
+                    const=logging.DEBUG, default=logging.WARNING)
+
+logger = logging.getLogger(__name__)
 
 
 def getcacaps(url: str) -> Set[CACaps]:
     """Query the SCEP Service for its capabilities."""
     res = requests.get(url, {'operation': 'GetCACaps'})
-    assert res.status_code == 200
+    if res.status_code != 200:
+        raise ValueError('Got invalid status code for GetCACaps: {}'.format(res.status_code))
     caps = res.text.split("\n")
-    cacaps = {CACaps(cap.trim()) for cap in caps}
+    cacaps = {CACaps(cap.strip()) for cap in caps}
     return cacaps
 
 
@@ -32,11 +38,25 @@ def getcacert(url: str) -> x509.Certificate:
     assert res.headers['content-type'] == 'application/x-x509-ca-cert'  # we dont support RA cert yet
     return x509.load_der_x509_certificate(res.content, default_backend())
 
+
+def pkioperation(url: str, data: bytes):
+    """Perform a PKIOperation using the CMS data given."""
+    res = requests.post('{}?operation=PKIOperation'.format(url), data=data,
+                        headers={'content-type': 'application/x-pki-message'})
+    return res
+
+
 def main():
     args = parser.parse_args()
+    logging.basicConfig(level=args.loglevel)
 
+    logger.info('Request: GetCACaps')
     cacaps = getcacaps(args.url)
+    logger.info(cacaps)
+    logger.info('Request: GetCACert')
     cacert = getcacert(args.url)
+    logger.info('CA Certificate Subject Follows')
+    logger.info(cacert.subject)
 
 
     private_key = None
@@ -53,8 +73,12 @@ def main():
         private_key,
     ).message_type(
         MessageType.PKCSReq
+    ).add_recipient(
+        cacert
     ).encrypt(
-        csr.dump()
+        csr.public_bytes(serialization.Encoding.DER)
     ).transaction_id().sender_nonce()
 
     pkimsg = builder.finalize()
+    res = pkioperation(args.url, data=pkimsg.dump())
+

@@ -1,5 +1,5 @@
 import os
-from typing import List, Union
+from typing import List, Union, Tuple
 from asn1crypto.core import PrintableString
 from asn1crypto import x509 as asn1x509
 from asn1crypto.cms import CMSAttribute, ContentInfo, EnvelopedData, SignedData, SignerInfos, \
@@ -20,6 +20,13 @@ from cryptography.hazmat.primitives.ciphers import Cipher, modes
 from cryptography.hazmat.backends import default_backend
 from .enums import MessageType, PKIStatus, FailInfo
 from uuid import uuid4
+from .asn1 import SCEPCMSAttributeType
+
+
+CMSAttribute._fields = [
+    ('type', SCEPCMSAttributeType),
+    ('values', None),
+]
 
 
 def certificates_from_asn1(cert_set: CertificateSet) -> List[x509.Certificate]:
@@ -75,7 +82,7 @@ class PKIMessageBuilder(object):
           - `<https://tools.ietf.org/html/draft-nourse-scep-23#section-3.1>`_.
     """
 
-    def __init__(self, signer_cert: x509.Certificate, signer_key: rsa.RSAPrivateKeyWithSerialization):
+    def __init__(self, signer_cert: x509.Certificate, signer_key: rsa.RSAPrivateKey):
         self._signers = []
         self._primary_signer = None
         self._primary_signer_key = None
@@ -284,6 +291,15 @@ class PKIMessageBuilder(object):
         return CMSAttributes(value=self._cms_attributes)
 
     def _build_recipient_info(self, symmetric_key: bytes, recipient: x509.Certificate) -> RecipientInfo:
+        """Build an ASN.1 data structure containing the encrypted symmetric key for the encrypted_content.
+
+        Args:
+            symmetric_key (bytes): Typically the randomly generated 3DES key for the encrypted_content.
+            recipient (x509.Certificate): The certificate which will be used to encrypt the symmetric key.
+
+        Returns:
+              RecipientInfo: Instance of ASN.1 data structure with required attributes and encrypted key.
+        """
         encrypted_symkey = recipient.public_key().encrypt(
             symmetric_key,
             asympad.PKCS1v15()
@@ -303,11 +319,11 @@ class PKIMessageBuilder(object):
 
         return ri
 
-    def _build_enveloped_encrypted(self) -> EnvelopedData:
-        """Build the pkcsPKIEnvelope
+    def _encrypt_data(self) -> Tuple[TripleDES, bytes, bytes]:
+        """Build the ciphertext of the ``messageData``.
 
         Returns:
-              EnvelopedData: Encrypted data
+              Tuple of 3DES key, IV, and cipher text encrypted with 3DES
         """
         des_key = TripleDES(os.urandom(24))
         iv = os.urandom(8)
@@ -321,6 +337,18 @@ class PKIMessageBuilder(object):
 
         ciphertext = encryptor.update(padded) + encryptor.finalize()
 
+        return des_key, iv, ciphertext
+
+    def _build_pkcs_pki_envelope(self, ciphertext: bytes, recipient: RecipientInfo) -> EnvelopedData:
+        """Build the pkcsPKIEnvelope
+
+        Args:
+              ciphertext (bytes): The symmetrically encrypted encrypted_content.
+              recipient (RecipientInfo): The asn.1 structure for the recipient including the decryption key.
+
+        Returns:
+              EnvelopedData: Encrypted data
+        """
         eci = EncryptedContentInfo({
             'content_type': ContentType('data'),
             'content_encryption_algorithm': EncryptionAlgorithm({
@@ -329,34 +357,27 @@ class PKIMessageBuilder(object):
             'encrypted_content': ciphertext,
         })
 
-        recipient_info = self._build_recipient_info(des_key.key, self._issued)
-
         ed = EnvelopedData({
             'version': 1,
-            'recipient_infos': RecipientInfos([recipient_info]),
+            'recipient_infos': RecipientInfos([recipient]),
             'encrypted_content_info': eci,
         })
         return ed
 
-    def _build_signerinfo(self, content: bytes) -> SignerInfo:
+    def _build_signerinfo(self, encap_content: bytes, content_digest: bytes) -> SignerInfo:
         """Finalize SignerInfo(s) for each signer.
 
         At the moment only a single signer is supported.
+
+        Args:
+              encap_content (bytes): The OctetString value of SignedData encapContentInfo eContent
+              content_digest (bytes): The sha-256 digest of the encrypted_content
 
         Returns:
             SignerInfo: The signer information with signed authenticated attributes for SCEP.
         See Also:
             `SignerInfo type RFC2315 Section 9.2 <https://tools.ietf.org/html/rfc2315#section-9.2>`_.
         """
-        # Get CMSAttributes
-        signed_attrs = self._build_cmsattributes()
-        # Calculate Digest
-        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-        digest.update(content)
-        digest.update(signed_attrs.dump())
-        d = digest.finalize()
-
-
         # The CMS standard requires that the content-type authenticatedAttribute and the message-digest
         # attribute must be present if any authenticatedAttribute exist at all.
         self._cms_attributes.append(CMSAttribute({
@@ -366,10 +387,17 @@ class PKIMessageBuilder(object):
 
         self._cms_attributes.append(CMSAttribute({
             'type': 'message_digest',
-            'values': [OctetString(d)],
+            'values': [OctetString(content_digest)],
         }))
 
+        # Get CMSAttributes
+        signed_attrs = self._build_cmsattributes()
 
+        # Calculate Digest
+        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        digest.update(encap_content)
+        digest.update(signed_attrs.dump())
+        d = digest.finalize()
 
         # Make DigestInfo from result
         da_id = DigestAlgorithmId('sha256')
@@ -386,7 +414,7 @@ class PKIMessageBuilder(object):
             hashes.SHA256()
         )
 
-        signer.update(di.dump())
+        signer.update(signed_attrs.dump())
         signature = signer.finalize()
 
         sda_id = SignedDigestAlgorithmId('sha256_rsa')
@@ -406,13 +434,13 @@ class PKIMessageBuilder(object):
         })
         return si
 
-    def _build_signerinfos(self, content: bytes) -> SignerInfos:
+    def _build_signerinfos(self, content: bytes, content_digest: bytes) -> SignerInfos:
         """Build all signer infos and return a collection.
 
         Returns:
             SignerInfos: all signers
         """
-        return SignerInfos([self._build_signerinfo(content)])
+        return SignerInfos([self._build_signerinfo(content, content_digest)])
 
     def finalize(self) -> ContentInfo:
         """Build all data structures from the given parameters and return the top level contentInfo.
@@ -420,18 +448,32 @@ class PKIMessageBuilder(object):
         Returns:
               ContentInfo: The PKIMessage
         """
-        encrypted_content = self._build_enveloped_encrypted().dump()
-        signer_infos = self._build_signerinfos(encrypted_content)
+        des_key, iv, encrypted_content = self._encrypt_data()
+
+        # Encapsulate encrypted data
+        recipient_info = self._build_recipient_info(des_key.key, self._recipient)
+        pkcs_pki_envelope = self._build_pkcs_pki_envelope(encrypted_content, recipient_info)
+        encap_info = ContentInfo({
+            'content_type': ContentType('data'),
+            'content': pkcs_pki_envelope.dump(),
+        })
+
+        # Calculate digest on encrypted content + signed_attrs
+        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        digest.update(pkcs_pki_envelope.dump())
+        d = digest.finalize()
+        
+        # Now start building SignedData
+
+        signer_infos = self._build_signerinfos(pkcs_pki_envelope.dump(), d)
+
         certificates = self._certificates
 
         da_id = DigestAlgorithmId('sha256')
         da = DigestAlgorithm({'algorithm': da_id})
         das = DigestAlgorithms([da])
 
-        encap_info = ContentInfo({
-            'content_type': ContentType('data'),
-            'content': encrypted_content,
-        })
+
 
         sd = SignedData({
             'version': 1,
