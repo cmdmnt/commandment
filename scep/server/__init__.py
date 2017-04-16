@@ -116,6 +116,7 @@ def scep():
 
             # CA should persist all signed certs itself
             new_cert = mdm_ca.sign(cert_req)
+            degenerate = create_degenerate_certificate(new_cert)
 
             reply = PKIMessageBuilder(cacert, cakey).message_type(
                 MessageType.CertRep
@@ -130,8 +131,9 @@ def scep():
             ).issued(
                 new_cert
             ).encrypt(
-                create_degenerate_certificate(new_cert).dump()
+                degenerate.dump()
             ).certificates(
+                new_cert,
                 cacert
             ).finalize()
 
@@ -149,7 +151,7 @@ def scep():
             print("{:<20}: {}".format('Issuer X.509 Name', x509name))
             print("{:<20}: {}".format('Issuer S/N', serial))
 
-                        
+            #  print("{:<20}: {}".format('Degenerate Certs', len(degenerate[''])))
 
             with open('/tmp/reply.bin', 'wb') as fd:
                 fd.write(reply.dump())

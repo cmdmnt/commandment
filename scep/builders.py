@@ -40,8 +40,15 @@ def certificates_from_asn1(cert_set: CertificateSet) -> List[x509.Certificate]:
 
     return result
 
+
 def create_degenerate_certificate(certificate: x509.Certificate) -> ContentInfo:
-    """Produce a PKCS#7 Degenerate case with a single certificate."""
+    """Produce a PKCS#7 Degenerate case with a single certificate.
+
+    Args:
+          certificate (x509.Certificate): The certificate to attach to the degenerate pkcs#7 payload.
+    Returns:
+          ContentInfo: The ContentInfo containing a SignedData structure.
+    """
     der_bytes = certificate.public_bytes(
         serialization.Encoding.DER
     )
@@ -54,11 +61,6 @@ def create_degenerate_certificate(certificate: x509.Certificate) -> ContentInfo:
         'version': 1,
         'encap_content_info': empty,
         'certificates': CertificateSet([CertificateChoices('certificate', asn1cert)]),
-        # 'crls': RevocationInfoChoices([
-        #     RevocationInfoChoice(
-        #         'crl', CertificateList([])
-        #     )
-        # ])
     })
 
     return ContentInfo({
@@ -319,8 +321,11 @@ class PKIMessageBuilder(object):
 
         return ri
 
-    def _encrypt_data(self) -> Tuple[TripleDES, bytes, bytes]:
+    def _encrypt_data(self, data: bytes) -> Tuple[TripleDES, bytes, bytes]:
         """Build the ciphertext of the ``messageData``.
+
+        Args:
+              data (bytes): Data to encrypt as the ``messageData`` of the SCEP Request
 
         Returns:
               Tuple of 3DES key, IV, and cipher text encrypted with 3DES
@@ -331,15 +336,14 @@ class PKIMessageBuilder(object):
         encryptor = cipher.encryptor()
 
         padder = PKCS7(TripleDES.block_size).padder()
-        assert len(self._encrypt) == 1  # Only a single item supported
-        padded = padder.update(self._encrypt[0])
+        padded = padder.update(data)
         padded += padder.finalize()
 
         ciphertext = encryptor.update(padded) + encryptor.finalize()
 
         return des_key, iv, ciphertext
 
-    def _build_pkcs_pki_envelope(self, ciphertext: bytes, recipient: RecipientInfo) -> EnvelopedData:
+    def _build_pkcs_pki_envelope(self, ciphertext: bytes, iv: bytes, recipient: RecipientInfo) -> EnvelopedData:
         """Build the pkcsPKIEnvelope
 
         Args:
@@ -353,6 +357,7 @@ class PKIMessageBuilder(object):
             'content_type': ContentType('data'),
             'content_encryption_algorithm': EncryptionAlgorithm({
                 'algorithm': EncryptionAlgorithmId('tripledes_3key'),
+                'parameters': OctetString(iv),
             }),
             'encrypted_content': ciphertext,
         })
@@ -448,11 +453,11 @@ class PKIMessageBuilder(object):
         Returns:
               ContentInfo: The PKIMessage
         """
-        des_key, iv, encrypted_content = self._encrypt_data()
+        des_key, iv, encrypted_content = self._encrypt_data(self._encrypt[0])
 
         # Encapsulate encrypted data
         recipient_info = self._build_recipient_info(des_key.key, self._recipient)
-        pkcs_pki_envelope = self._build_pkcs_pki_envelope(encrypted_content, recipient_info)
+        pkcs_pki_envelope = self._build_pkcs_pki_envelope(encrypted_content, iv, recipient_info)
         encap_info = ContentInfo({
             'content_type': ContentType('data'),
             'content': pkcs_pki_envelope.dump(),
@@ -472,8 +477,6 @@ class PKIMessageBuilder(object):
         da_id = DigestAlgorithmId('sha256')
         da = DigestAlgorithm({'algorithm': da_id})
         das = DigestAlgorithms([da])
-
-
 
         sd = SignedData({
             'version': 1,
