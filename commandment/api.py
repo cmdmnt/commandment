@@ -4,7 +4,8 @@ from flask_rest_jsonapi import Api
 from .resources import CertificatesList, CertificateDetail, CertificateSigningRequestList, \
     CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
     CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, OrganizationList, \
-    OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationList
+    OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationList, ProfilesList, ProfileDetail, \
+    PayloadsList, PayloadDetail
 
 api_app = Blueprint('api_app', __name__)
 api = Api(api_app)
@@ -32,6 +33,13 @@ api.route(CommandDetail, 'command_detail', '/v1/commands/<int:command_id>')
 
 # InstalledApplications
 api.route(InstalledApplicationList, 'installed_applications_list', '/v1/devices/<int:device_id>/installed_applications')
+
+# Profiles
+api.route(ProfilesList, 'profiles_list', '/v1/profiles')
+api.route(ProfileDetail, 'profile_detail', '/v1/profiles/<int:profile_id>')
+api.route(PayloadsList, 'payloads_list', '/v1/payloads')
+api.route(PayloadDetail, 'payload_detail', '/v1/payloads/<int:payload_id>')
+
 
 
 # Organizations

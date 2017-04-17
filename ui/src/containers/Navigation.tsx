@@ -23,6 +23,7 @@ export class Navigation extends React.Component<undefined, undefined> {
                     <li><Link to='/config/mdm'>MDM</Link></li>
                     <li><Link to='/certificates'>Certificates</Link></li>
                     <li><Link to='/devices'>Devices</Link></li>
+                    <li><Link to='/profiles'>Profiles</Link></li>
                 </ul>
             </nav>
         )

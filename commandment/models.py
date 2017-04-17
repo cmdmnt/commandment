@@ -22,6 +22,8 @@ import base64
 from binascii import hexlify
 from biplist import Data as NSData, readPlistFromString
 from uuid import uuid4
+from .profiles.cert import KeyUsage
+from .profiles import PayloadScope
 
 db = SQLAlchemy()
 
@@ -576,6 +578,11 @@ class Payload(db.Model):
     #                           secondary=payload_dependencies,
     #                           backref="dependents")
 
+    __mapper_args__ = {
+        'polymorphic_identity': 'payload',
+        'polymorphic_on': type,
+    }
+
     @classmethod
     def from_dict(cls, data: dict):
         """Create a new payload from its PayloadData dict.
@@ -583,11 +590,59 @@ class Payload(db.Model):
         Returns:
               Payload: An instance of the payload model.
         """
+        if data['PayloadType'] != 'com.apple.security.scep':
+            return None
+
+        return SCEPPayload.from_dict(data)
+        
 
 
-class PayloadScope(Enum):
-    User = 'User'
-    System = 'System'
+class SCEPPayload(Payload):
+    """SCEP Payload ``com.apple.security.scep``"""
+    id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
+    url = Column(String, nullable=False)
+    name = Column(String, nullable=True)
+    subject = Column(String, nullable=False)  # eg. O=x/OU=y/CN=z
+    challenge = Column(String, nullable=True)
+    key_size = Column(Integer, default=2048, nullable=False)
+    ca_fingerprint = Column(LargeBinary, nullable=True)
+    key_type = Column(String, default='RSA', nullable=False)
+    key_usage = Column(DBEnum(KeyUsage), default=KeyUsage.All)
+    subject_alt_name = Column(String, nullable=True)
+    retries = Column(Integer, default=3, nullable=False)
+    retry_delay = Column(Integer, default=10, nullable=False)
+    certificate_renewal_time_interval = Column(Integer, default=14, nullable=False)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'com.apple.security.scep',
+    }
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        pp = cls()
+        pp.uuid = data.get('PayloadUUID', None)
+        pp.display_name = data.get('PayloadDisplayName', None)
+        pp.description = data.get('PayloadDescription', None)
+        pp.organization = data.get('PayloadOrganization', None)
+
+        content = data['PayloadContent']
+
+        pp.url = content.get('URL')
+        pp.name = content.get('Name', None)
+        #pp.subject = '/'.join(data.get('Subject', []))
+        pp.subject = 'NOT=IMPLEMENTED'
+        pp.challenge = content.get('Challenge', None)
+        pp.key_size = content.get('Keysize', None)
+        pp.ca_fingerprint = content.get('CAFingerprint', None)
+        pp.key_type = 'RSA'
+        pp.key_usage = KeyUsage(content.get('KeyUsage', KeyUsage.All.value))
+        pp.retries = content.get('Retries', 3)
+        pp.retry_delay = content.get('RetryDelay', 10)
+        pp.certificate_renewal_time_interval = content.get('CertificateRenewalTimeInterval', 14)
+        # GetCACaps ignored
+
+        return pp
+        
 
 
 profile_payloads = Table('profile_payloads', db.metadata,
@@ -675,6 +730,8 @@ class Profile(db.Model):
 
         if 'PayloadContent' in plist_data:
             for payload_dict in plist_data['PayloadContent']:
-                pass  # TODO: multi table inheritance payloads
+                pl = Payload.from_dict(payload_dict)
+                if pl is not None:
+                    p.payloads.append(pl)
 
         return p

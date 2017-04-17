@@ -133,6 +133,8 @@ def upload_profile():
 
     The returned body contains a json object with the identifier of the newly created profile.
 
+    Note: Does not support ``application/x-www-form-urlencoded``
+
     TODO:
         - Support signed profiles
         - Support encrypted profiles
@@ -164,6 +166,6 @@ def upload_profile():
     db.session.commit()
 
     profile_schema = ProfileSchema()
-    resp = make_response(profile_schema.dump(profile).data, 201)
-    resp.headers['Content-Type'] = 'application/vnd.api+json'
+    model_data = profile_schema.dump(profile).data
+    resp = make_response(jsonify(model_data), 201, {'Content-Type': 'application/vnd.api+json'})
     return resp

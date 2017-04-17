@@ -44,14 +44,14 @@ def index():
     return render_template('index.html')
 
 
-@admin_app.route('/profiles')
+@admin_app.route('/xprofiles')
 def admin_profiles1():
     """Get a list of profiles"""
     profiles = db_session.query(DBProfile)
     return render_template('admin/profiles/index.html', profiles=profiles)
 
 
-@admin_app.route('/profiles/add', methods=['GET', 'POST'])
+@admin_app.route('/xprofiles/add', methods=['GET', 'POST'])
 def admin_profiles_add1():
     """Show the profile add form or post a profile"""
     if request.method == 'POST':
@@ -82,7 +82,7 @@ def admin_profiles_add1():
         return render_template('admin/profiles/add.html')
 
 
-@admin_app.route('/profiles/edit/<int:profile_id>', methods=['GET', 'POST'])
+@admin_app.route('/xprofiles/edit/<int:profile_id>', methods=['GET', 'POST'])
 def admin_profiles_edit1(profile_id: int):
     # db_session
     if request.method == 'POST':
@@ -125,7 +125,7 @@ def admin_profiles_edit1(profile_id: int):
                                groups=group_q)
 
 
-@admin_app.route('/profiles/groupmod/<int:profile_id>', methods=['POST'])
+@admin_app.route('/xprofiles/groupmod/<int:profile_id>', methods=['POST'])
 def admin_profiles_groupmod1(profile_id: int):
     # get device info
     profile = db_session.query(DBProfile).filter(DBProfile.id == profile_id).one()
@@ -147,14 +147,14 @@ def admin_profiles_groupmod1(profile_id: int):
     return redirect('/admin/profiles/edit/%d' % int(profile.id), Response=FixedLocationResponse)
 
 
-@admin_app.route('/profiles/remove/<int:profile_id>')
+@admin_app.route('/xprofiles/remove/<int:profile_id>')
 def admin_profiles_remove1(profile_id: int):
     q = db_session.query(DBProfile).filter(DBProfile.id == profile_id).delete(synchronize_session=False)
     db_session.commit()
     return redirect('/admin/profiles', Response=FixedLocationResponse)
 
 
-@admin_app.route('/profiles/upload/<int:profile_id>', methods=['POST'])
+@admin_app.route('/xprofiles/upload/<int:profile_id>', methods=['POST'])
 def admin_profiles_upload(profile_id: int):
     profile = db_session.query(DBProfile).filter(DBProfile.id == profile_id).one()
 

@@ -5,8 +5,12 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 import plistlib
 from uuid import uuid4
 import collections
-from enum import Enum
+from enum import Enum, IntFlag
 
+
+class PayloadScope(Enum):
+    User = 'User'
+    System = 'System'
 
 class PayloadInvalid(Exception):
     # base class for invalid Payloads

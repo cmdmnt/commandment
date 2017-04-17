@@ -194,6 +194,17 @@ class PushResponseFlatSchema(FlatSchema):
     timestamp = fields.DateTime()
 
 
+class PayloadSchema(Schema):
+    """marshmallow-jsonapi schema for Payload SQLAlchemy models."""
+    id = fields.Int(dump_only=True)
+    type = fields.Str()
+    version = fields.Int()
+    uuid = fields.UUID()
+    display_name = fields.Str()
+    description = fields.Str()
+    organization = fields.Str()
+    
+
 class ProfileSchema(Schema):
     """marshmallow-jsonapi schema for Profile SQLAlchemy models."""
     id = fields.Int(dump_only=True)
