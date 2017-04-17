@@ -2,12 +2,13 @@
 This module contains API endpoints which do not fit with the JSON-API specification.
 """
 import io
-from flask import Blueprint, send_file, abort, current_app, jsonify
+from flask import Blueprint, send_file, abort, current_app, jsonify, request, make_response
 from flask_marshmallow import Marshmallow
 from sqlalchemy.orm.exc import NoResultFound
-from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
+import biplist
+from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate, Profile
 from .mdm import commands
-from .schema import OrganizationFlatSchema
+from .schema import OrganizationFlatSchema, ProfileSchema
 
 flat_api = Blueprint('flat_api', __name__)
 
@@ -119,3 +120,50 @@ def device_inventory(device_id: int):
     db.session.commit()
 
     return 'OK'
+
+
+@flat_api.route('/v1/profiles/upload', methods=['POST'])
+def upload_profile():
+    """Upload a custom profile using multipart/form-data I.E from an upload input.
+
+    The profile will be dissected into its individual payloads to propagate the ``payloads`` table.
+    
+    If the profile is encrypted then the MDM needs to have a private key corresponding to the payload otherwise
+    you will get a 400 bad request return status.
+
+    The returned body contains a json object with the identifier of the newly created profile.
+
+    TODO:
+        - Support signed profiles
+        - Support encrypted profiles
+
+    :reqheader Accept: application/vnd.api+json
+    :reqheader Content-Type: multipart/form-data
+    :resheader Content-Type: application/vnd.api+json
+    :statuscode 201: profile created
+    :statuscode 400: If the request contained malformed or missing payload data.
+    :statuscode 415: If we cannot decrypt the payload(s).
+    :statuscode 500: If something else went wrong with parsing or persisting the payload(s)
+    """
+    if 'file' not in request.files:
+        abort(400, 'no file uploaded in request data')
+
+    f = request.files['file']
+
+    if not f.content_type == 'application/x-apple-aspen-config':
+        abort(400, 'incorrect MIME type in request')
+
+    try:
+        data = f.read()
+
+        profile = Profile.from_bytes(data)
+    except:  # TODO: separate errors for exceptions caught here
+        abort(400, 'cannot parse the supplied profile')
+
+    db.session.add(profile)
+    db.session.commit()
+
+    profile_schema = ProfileSchema()
+    resp = make_response(profile_schema.dump(profile).data, 201)
+    resp.headers['Content-Type'] = 'application/vnd.api+json'
+    return resp

@@ -193,3 +193,31 @@ class PushResponseFlatSchema(FlatSchema):
     reason = fields.Str()
     timestamp = fields.DateTime()
 
+
+class ProfileSchema(Schema):
+    """marshmallow-jsonapi schema for Profile SQLAlchemy models."""
+    id = fields.Int(dump_only=True)
+    description = fields.Str()
+    display_name = fields.Str()
+    expiration_date = fields.DateTime()
+    identifier = fields.Str()
+    organization = fields.Str()
+    uuid = fields.UUID()
+    removal_disallowed = fields.Boolean()
+    version = fields.Int()
+    scope = fields.Str()
+    removal_date = fields.DateTime()
+    duration_until_removal = fields.Int()
+    consent_en = fields.Str()
+
+    payloads = Relationship(
+        related_view='api_app.payload_detail',
+        related_view_kwargs={'payload_id': '<id>'},
+        type_='payloads',
+    )
+
+    class Meta:
+        type_ = 'profiles'
+        self_view = 'api_app.profile_detail'
+        self_view_kwargs = {'profile_id': '<id>'}
+        self_view_many = 'api_app.profiles_list'

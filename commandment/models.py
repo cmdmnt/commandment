@@ -20,7 +20,8 @@ from .dbtypes import GUID, JSONEncodedDict
 from .mdm import CommandStatus, Platform, commands
 import base64
 from binascii import hexlify
-from biplist import Data as NSData
+from biplist import Data as NSData, readPlistFromString
+from uuid import uuid4
 
 db = SQLAlchemy()
 
@@ -563,16 +564,25 @@ class Payload(db.Model):
 
     id = Column(Integer, primary_key=True)
     type = Column(String, index=True, nullable=False)
-    uuid = Column(GUID, index=True)
+    version = Column(Integer, nullable=True)
+    uuid = Column(GUID, index=True, default=uuid4())
     display_name = Column(String, nullable=False)
-    description = Column(Text)
-    organization = Column(String)
+    description = Column(Text, nullable=True)
+    organization = Column(String, nullable=True)
 
     # Dependencies should be tracked in cases where the payload refers to another required payload.
     # eg. a reference to certificate payload in an 802.1x configuration.
     # depends_on = relationship("Payload",
     #                           secondary=payload_dependencies,
     #                           backref="dependents")
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        """Create a new payload from its PayloadData dict.
+
+        Returns:
+              Payload: An instance of the payload model.
+        """
 
 
 class PayloadScope(Enum):
@@ -586,22 +596,85 @@ profile_payloads = Table('profile_payloads', db.metadata,
 
 
 class Profile(db.Model):
+    """Top level profile.
+
+    In Commandment, multiple profiles may have an association with the same payload.
+
+    See Also:
+          - `Configuration Profile Keys
+            <https://developer.apple.com/library/content/featuredarticles/iPhoneConfigurationProfileRef/Introduction/Introduction.html#//apple_ref/doc/uid/TP40010206-CH1-SW7>`_.
+
+    Attributes:
+        
+    """
     __tablename__ = 'profiles'
 
     id = Column(Integer, primary_key=True)
-    description = Column(Text)
-    display_name = Column(String, nullable=False)
-    expiration_date = Column(DateTime)  # Only for old style OTA
+    description = Column(Text, nullable=True)
+    display_name = Column(String, nullable=True)
+    expiration_date = Column(DateTime, nullable=True)  # Only for old style OTA
     identifier = Column(String, nullable=False)
-    organization = Column(String)
-    uuid = Column(GUID, index=True)
-    removal_disallowed = Column(Boolean)
+    organization = Column(String, nullable=True)
+    uuid = Column(GUID, index=True, default=uuid4())
+    removal_disallowed = Column(Boolean, nullable=True)
     version = Column(Integer, default=1)
-    scope = Column(DBEnum(PayloadScope), default=PayloadScope.User.value)
-    removal_date = Column(DateTime)
-    duration_until_removal = Column(BigInteger)
-    consent_en = Column(Text)
+    scope = Column(DBEnum(PayloadScope), default=PayloadScope.User.value, nullable=True)
+    removal_date = Column(DateTime, nullable=True)
+    duration_until_removal = Column(BigInteger, nullable=True)
+    consent_en = Column(Text, nullable=True)
+    is_encrypted = Column(Boolean, default=False)
 
     payloads = relationship('Payload',
                             secondary=profile_payloads,
                             backref='profiles')
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Create an instance of ``Profile`` from a Configuration Profile as bytes.
+
+        Returns:
+              Profile: The configuration profile, with Payload objects created for each payload.
+        """
+        plist_data = readPlistFromString(data)
+        p = cls()
+        if 'PayloadDescription' in plist_data:
+            p.description = plist_data['PayloadDescription']
+
+        if 'PayloadDisplayName' in plist_data:
+            p.display_name = plist_data['PayloadDisplayName']
+
+        if 'PayloadExpirationDate' in plist_data:
+            p.expiration_date = plist_data['PayloadExpirationDate']
+
+        if 'PayloadIdentifier' in plist_data:
+            p.identifier = plist_data['PayloadIdentifier']
+
+        if 'PayloadOrganization' in plist_data:
+            p.organization = plist_data['PayloadOrganization']
+
+        if 'PayloadUUID' in plist_data:
+            p.uuid = plist_data['PayloadUUID']
+
+        if 'PayloadRemovalDisallowed' in plist_data:
+            p.removal_disallowed = plist_data['PayloadRemovalDisallowed']
+
+        if 'PayloadScope' in plist_data:
+            p.scope = PayloadScope(plist_data['PayloadScope']).value
+
+        if 'RemovalDate' in plist_data:
+            p.removal_date = plist_data['PayloadRemovalDate']
+
+        if 'DurationUntilRemoval' in plist_data:
+            p.duration_until_removal = plist_data['DurationUntilRemoval']
+
+        if 'ConsentText' in plist_data and 'en' in plist_data['ConsentText']:
+            p.consent_en = plist_data['ConsentText']['en']
+
+        # TODO: Some profiles can contain keys outside of PayloadData so we will have to calculate the intersection
+        # between the previous attributes and the remainder
+
+        if 'PayloadContent' in plist_data:
+            for payload_dict in plist_data['PayloadContent']:
+                pass  # TODO: multi table inheritance payloads
+
+        return p
