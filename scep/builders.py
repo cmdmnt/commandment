@@ -373,9 +373,15 @@ class PKIMessageBuilder(object):
               ContentInfo: The PKIMessage
         """
         pkcs_pki_envelope = self._pki_envelope
+
+        enveloped_content_info = ContentInfo({
+            'content_type': ContentType('enveloped_data'),
+            'content': pkcs_pki_envelope,
+        })
+
         encap_info = ContentInfo({
             'content_type': ContentType('data'),
-            'content': pkcs_pki_envelope.dump(),
+            'content': enveloped_content_info.dump()
         })
 
         # Calculate digest on encrypted content + signed_attrs

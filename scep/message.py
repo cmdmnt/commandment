@@ -176,10 +176,6 @@ class SCEPMessage(object):
     def signed_data(self, value: SignedData):
         self._signed_data = value
 
-    def verify_signers(self):
-        """Verify the signature provided by each SignerInfo"""
-        
-
     def get_decrypted_envelope_data(self, certificate: x509.Certificate, key: rsa.RSAPrivateKey) -> bytes:
         """Decrypt the encrypted envelope data:
         
@@ -190,6 +186,7 @@ class SCEPMessage(object):
         """
         encap = self.encap_content_info
         ct = encap['content_type'].native
+        print(ct)
         recipient_info = encap['content']['recipient_infos'][0]
 
         encryption_algo = recipient_info.chosen['key_encryption_algorithm'].native
