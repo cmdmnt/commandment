@@ -210,3 +210,27 @@ class SCEPMessage(object):
         decryptor = cipher.decryptor()
 
         return decryptor.update(encrypted_content_bytes) + decryptor.finalize()
+
+    def debug(self):
+        out = "{:<20}: {}\n".format('Transaction ID', self.transaction_id)
+        out += "{:<20}: {}\n".format('Message Type', self.message_type)
+        out += "{:<20}: {}\n".format('PKI Status', self.pki_status)
+
+        if self.sender_nonce is not None:
+            out += "{:<20}: {}\n".format('Sender Nonce', b64encode(self.sender_nonce))
+        if self.recipient_nonce is not None:
+            out += "{:<20}: {}\n".format('Recipient Nonce', b64encode(self.recipient_nonce))
+
+        print(out)
+
+        print('Certificates')
+        print('Includes {} certificate(s)'.format(len(self.certificates)))
+        for c in self.certificates:
+            print(c.subject)
+
+        x509name, serial = self.signer
+        print("{:<20}: {}".format('Issuer X.509 Name', x509name))
+        # print("{:<20}: {}".format('Issuer S/N', serial))
+
+        print(self._signer_info['signature_algorithm'].native)
+        

@@ -118,3 +118,4 @@ def main():
     logger.debug('Transaction ID: %s', cert_rep.transaction_id)
     logger.debug('PKI Status: %s', PKIStatus(cert_rep.pki_status))
 
+    cert_rep.get_decrypted_envelope_data()

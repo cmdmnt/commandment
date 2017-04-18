@@ -5,7 +5,7 @@ from asn1crypto.core import PrintableString, GeneralizedTime
 from asn1crypto import x509 as asn1x509
 from asn1crypto.cms import CMSAttribute, ContentInfo, EnvelopedData, SignedData, SignerInfos, \
     SignerInfo, CMSAttributes, SignerIdentifier, IssuerAndSerialNumber, OctetString, CertificateSet, \
-    CertificateChoices, ContentType, DigestAlgorithms
+    CertificateChoices, ContentType, DigestAlgorithms, CMSVersion
 from asn1crypto.algos import DigestAlgorithm, SignedDigestAlgorithm, SignedDigestAlgorithmId, DigestAlgorithmId, \
     DigestInfo
 
@@ -78,7 +78,7 @@ class Signer(object):
     digest_algorithm_id = DigestAlgorithmId('sha256')
     digest_algorithm = DigestAlgorithm({'algorithm': digest_algorithm_id})
     signed_digest_algorithm_id = SignedDigestAlgorithmId('rsassa_pkcs1v15')  # was: sha256_rsa
-    signed_digest_algorithm = SignedDigestAlgorithm({'algorithm': signed_digest_algorithm_id})
+    signed_digest_algorithm = SignedDigestAlgorithm({'algorithm': signed_digest_algorithm_id, 'parameters': None})
 
     def __init__(self,
                  certificate: x509.Certificate,
@@ -124,6 +124,7 @@ class Signer(object):
             'values': [OctetString(content_digest)],
         }))
 
+        # This refers to whatever the content of EncapsulatedContentInfo is
         self.signed_attributes.insert(0, CMSAttribute({
             'type': 'content_type',
             'values': [content_type],
@@ -131,17 +132,30 @@ class Signer(object):
 
         cms_attributes = CMSAttributes(self.signed_attributes)
 
-        # Calculate Digest on Signed Attributes
-        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        # NOTE: no need to calculate this digest as .signer() does the hashing
+
+        # RFC5652
+        # The message digest is
+        # computed on either the content being signed or the content
+        # together with the signed attributes using the process described in
+        # Section 5.4.
+        # digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+
+        # the initial input is the encapContentInfo eContent OCTET STRING
+        # RFC5652 Section 5.4 - When the field (signed_attrs) is present, however, the result is the message
+        # digest of the complete DER encoding of the SignedAttrs value
+        # contained in the signedAttrs field.
+        # NOTE: it is not clear whether data is included
         #digest.update(data)
-        digest.update(cms_attributes.dump())
-        d = digest.finalize()
+        # digest.update(cms_attributes.dump())
+        # d = digest.finalize()
 
         # Make DigestInfo from result
-        digest_info = DigestInfo({
-            'digest_algorithm': self.digest_algorithm,
-            'digest': d,
-        })
+        # NOTE: It is not clear whether this applies: RFC5652 - Section 5.5.
+        # digest_info = DigestInfo({
+        #     'digest_algorithm': self.digest_algorithm,
+        #     'digest': d,
+        # })
 
         # Get the RSA key to sign the digestinfo
         signer = self.private_key.signer(
@@ -149,13 +163,15 @@ class Signer(object):
             hashes.SHA256()
         )
 
-        # signer.update(d)
-        signer.update(digest_info.dump())
+        # NOTE: this is not the digest `d` above because crypto.io already hashes stuff for us!!
+        signer.update(cms_attributes.dump())
         signature = signer.finalize()
 
         signer_info = SignerInfo({
-            'version': 1,
+            # Version must be 1 if signer uses IssuerAndSerialNumber as sid
+            'version': CMSVersion(1),
             'sid': self.sid,
+            
             'digest_algorithm': self.digest_algorithm,
             'signed_attrs': cms_attributes,
 
@@ -381,24 +397,24 @@ class PKIMessageBuilder(object):
         """
         pkcs_pki_envelope = self._pki_envelope
 
-        enveloped_content_info = ContentInfo({
+        pkienvelope_content_info = ContentInfo({
             'content_type': ContentType('enveloped_data'),
             'content': pkcs_pki_envelope,
         })
 
         encap_info = ContentInfo({
             'content_type': ContentType('data'),
-            'content': enveloped_content_info.dump()
+            'content': pkienvelope_content_info.dump()
         })
 
         # Calculate digest on encrypted content + signed_attrs
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-        digest.update(pkcs_pki_envelope.dump())
+        digest.update(pkienvelope_content_info.dump())
         d = digest.finalize()
         
         # Now start building SignedData
 
-        signer_infos = self._build_signerinfos(pkcs_pki_envelope.dump(), d, self._cms_attributes)
+        signer_infos = self._build_signerinfos(pkienvelope_content_info.dump(), d, self._cms_attributes)
 
         certificates = self._certificates
 

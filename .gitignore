@@ -141,6 +141,7 @@ fabric.properties
 
 # IDEA
 *.iml
+.idea
 
 # commandment
 mdm.db

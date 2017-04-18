@@ -10,7 +10,6 @@ from ..enums import MessageType, PKIStatus, FailInfo
 from ..builders import PKIMessageBuilder, Signer, create_degenerate_certificate
 from ..envelope import PKCSPKIEnvelopeBuilder
 
-FORCE_DEGENERATE_FOR_SINGLE_CERT = False
 CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
 
 
@@ -40,7 +39,7 @@ class WSGIChunkedBodyCopy(object):
 
 
 app = Flask(__name__)
-app.config.from_object('scep.default_settings')
+app.config.from_object('scep.server.default_settings')
 app.config.from_envvar('SCEP_SETTINGS')
 app.wsgi_app = WSGIChunkedBodyCopy(app.wsgi_app)
 
@@ -57,7 +56,7 @@ def scep():
     if op == 'GetCACert':
         certs = [mdm_ca.certificate]
 
-        if len(certs) == 1 and not FORCE_DEGENERATE_FOR_SINGLE_CERT:
+        if len(certs) == 1 and not app.config.get('FORCE_DEGENERATE_FOR_SINGLE_CERT', False):
             return Response(certs[0].public_bytes(Encoding.DER), mimetype='application/x-x509-ca-cert')
         elif len(certs):
             raise ValueError('cryptography cannot produce degenerate pkcs7 certs')
@@ -80,17 +79,7 @@ def scep():
 
         req = SCEPMessage.parse(msg)
         app.logger.debug('Received SCEPMessage, details follow')
-        print("{:<20}: {}".format('Transaction ID', req.transaction_id))
-        print("{:<20}: {}".format('Message Type', req.message_type))
-        print("{:<20}: {}".format('PKI Status', req.pki_status))
-        if req.sender_nonce is not None:
-            print("{:<20}: {}".format('Sender Nonce', b64encode(req.sender_nonce)))
-        if req.recipient_nonce is not None:
-            print("{:<20}: {}".format('Recipient Nonce', b64encode(req.recipient_nonce)))
-        #
-        # x509name, serial = req.signer
-        # print("{:<20}: {}".format('Issuer X.509 Name', x509name))
-        # print("{:<20}: {}".format('Issuer S/N', serial))
+        req.debug()
 
         if req.message_type == MessageType.PKCSReq:
             app.logger.debug('received PKCSReq SCEP message')
@@ -120,7 +109,7 @@ def scep():
             degenerate = create_degenerate_certificate(new_cert)
 
             envelope, _, _ = PKCSPKIEnvelopeBuilder().encrypt(degenerate.dump()).add_recipient(
-                req.certificates[0]).finalize()
+                new_cert).finalize()
             signer = Signer(cacert, cakey)
 
             reply = PKIMessageBuilder().message_type(
@@ -137,19 +126,7 @@ def scep():
 
             res = SCEPMessage.parse(reply.dump())
             app.logger.debug('Reply with CertRep, details follow')
-            print("{:<20}: {}".format('Transaction ID', res.transaction_id))
-            print("{:<20}: {}".format('Message Type', res.message_type))
-            print("{:<20}: {}".format('PKI Status', res.pki_status))
-            if res.sender_nonce is not None:
-                print("{:<20}: {}".format('Sender Nonce', b64encode(res.sender_nonce)))
-            if res.recipient_nonce is not None:
-                print("{:<20}: {}".format('Recipient Nonce', b64encode(res.recipient_nonce)))
-
-            x509name, serial = res.signer
-            print("{:<20}: {}".format('Issuer X.509 Name', x509name))
-            print("{:<20}: {}".format('Issuer S/N', serial))
-
-            #  print("{:<20}: {}".format('Degenerate Certs', len(degenerate[''])))
+            res.debug()
 
             with open('/tmp/reply.bin', 'wb') as fd:
                 fd.write(reply.dump())
