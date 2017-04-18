@@ -115,7 +115,7 @@ class Signer(object):
 
         self.signed_attributes.insert(0, CMSAttribute({
             'type': 'content_type',
-            'values': [ContentType('data')],
+            'values': [content_type],
         }))
 
         cms_attributes = CMSAttributes(self.signed_attributes)
@@ -137,7 +137,7 @@ class Signer(object):
             hashes.SHA256()
         )
 
-        signer.update(cms_attributes.dump())
+        signer.update(digest_info.dump())
         signature = signer.finalize()
 
         signer_info = SignerInfo({
@@ -174,6 +174,7 @@ class PKIMessageBuilder(object):
         self._cms_attributes = []
         self._certificates = None
         self._pki_envelope = None
+        self._certificates = CertificateSet()
 
     def certificates(self, *certificates: List[x509.Certificate]):
         """Add x.509 certificates to be attached to the certificates field.
@@ -185,16 +186,12 @@ class PKIMessageBuilder(object):
         See Also:
               - `pkcs#7 RFC 2315 Section 9.1 <https://tools.ietf.org/html/rfc2315#section-9.1>`_.
         """
-        certset = CertificateSet()
-
         for cert in certificates:
             # Serialize and load to avoid constructing asn1crypto.Certificate ourselves (yuck)
             derp = cert.public_bytes(serialization.Encoding.DER)
             asn1cert = parse_certificate(derp)
             choice = CertificateChoices('certificate', asn1cert)
-            certset.append(choice)
-
-        self._certificates = certset
+            self._certificates.append(choice)
 
         return self
 
@@ -209,6 +206,9 @@ class PKIMessageBuilder(object):
               - `pkcs#7 RFC2315 Section 9.2 <https://tools.ietf.org/html/rfc2315#section-9.2>`_.
         """
         self._signers.append(signer)
+        der_certificate = signer.certificate.public_bytes(serialization.Encoding.DER)
+        asn1_certificate = parse_certificate(der_certificate)
+        self._certificates.append(CertificateChoices('certificate', asn1_certificate))
 
         return self
 

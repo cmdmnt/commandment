@@ -1,13 +1,12 @@
 import argparse
 import logging
-import os
+
 from typing import List, Set
 from ..builders import PKIMessageBuilder, Signer
 from ..envelope import PKCSPKIEnvelopeBuilder
 import requests
 from .request import generate_csr, generate_self_signed
 from cryptography import x509
-from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 from ..enums import MessageType, PKIStatus, FailInfo, CACaps
 from cryptography.hazmat.backends import default_backend
@@ -19,6 +18,7 @@ parser.add_argument('-k', '--private-key', help='PEM formatted RSA private key (
 parser.add_argument('-p', '--password', help='private key password (if required)')
 parser.add_argument('-d', '--debug', help='enable debug mode', action='store_const', dest='loglevel',
                     const=logging.DEBUG, default=logging.WARNING)
+parser.add_argument('--dump-pkcsreq', help='dump PKCSReq.bin to path given')
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +93,12 @@ def main():
     ).transaction_id().sender_nonce()
 
     pki_msg = pki_msg_builder.finalize()
+    
+    if args.dump_pkcsreq:
+        with open(args.dump_pkcsreq, 'wb') as fd:
+            fd.write(pki_msg.dump())
+        logger.info('Dumped PKCSReq data to {}'.format(args.dump_pkcsreq))
+
     res = pkioperation(args.url, data=pki_msg.dump())
 
     logger.info('Response: Status {}'.format(res.status_code))
