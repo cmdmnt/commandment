@@ -107,9 +107,11 @@ def scep():
             # CA should persist all signed certs itself
             new_cert = mdm_ca.sign(cert_req)
             degenerate = create_degenerate_certificate(new_cert)
+            with open('/tmp/degenerate.der', 'wb') as fd:
+                fd.write(degenerate.dump())
 
             envelope, _, _ = PKCSPKIEnvelopeBuilder().encrypt(degenerate.dump()).add_recipient(
-                new_cert).finalize()
+                req.certificates[0]).finalize()
             signer = Signer(cacert, cakey)
 
             reply = PKIMessageBuilder().message_type(

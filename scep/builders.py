@@ -5,7 +5,7 @@ from asn1crypto.core import PrintableString, GeneralizedTime
 from asn1crypto import x509 as asn1x509
 from asn1crypto.cms import CMSAttribute, ContentInfo, EnvelopedData, SignedData, SignerInfos, \
     SignerInfo, CMSAttributes, SignerIdentifier, IssuerAndSerialNumber, OctetString, CertificateSet, \
-    CertificateChoices, ContentType, DigestAlgorithms, CMSVersion
+    CertificateChoices, ContentType, DigestAlgorithms, CMSVersion, RevocationInfoChoices
 from asn1crypto.algos import DigestAlgorithm, SignedDigestAlgorithm, SignedDigestAlgorithmId, DigestAlgorithmId, \
     DigestInfo
 
@@ -53,10 +53,14 @@ def create_degenerate_certificate(certificate: x509.Certificate) -> ContentInfo:
     empty = ContentInfo({
         'content_type': ContentType('data')
     })
+    
     sd = SignedData({
-        'version': 1,
+        'version': CMSVersion(1),
         'encap_content_info': empty,
+        'digest_algorithms': DigestAlgorithms([]),
         'certificates': CertificateSet([CertificateChoices('certificate', asn1cert)]),
+        'signer_infos': SignerInfos([]),
+        'crls': RevocationInfoChoices([]),
     })
 
     return ContentInfo({
@@ -75,7 +79,8 @@ class Signer(object):
           private_key (rsa.RSAPrivateKey): Signers private key
     """
 
-    digest_algorithm_id = DigestAlgorithmId('sha256')
+    digest_algorithm_id = DigestAlgorithmId('sha1')
+    # digest_algorithm_id = DigestAlgorithmId('sha256')
     digest_algorithm = DigestAlgorithm({'algorithm': digest_algorithm_id})
     signed_digest_algorithm_id = SignedDigestAlgorithmId('rsassa_pkcs1v15')  # was: sha256_rsa
     signed_digest_algorithm = SignedDigestAlgorithm({'algorithm': signed_digest_algorithm_id, 'parameters': None})
@@ -160,7 +165,8 @@ class Signer(object):
         # Get the RSA key to sign the digestinfo
         signer = self.private_key.signer(
             asympad.PKCS1v15(),
-            hashes.SHA256()
+            hashes.SHA1()
+            #hashes.SHA256()
         )
 
         # NOTE: this is not the digest `d` above because crypto.io already hashes stuff for us!!
@@ -402,32 +408,41 @@ class PKIMessageBuilder(object):
             'content': pkcs_pki_envelope,
         })
 
+        # NOTE: This might not be needed for the degenerate CertRep
         encap_info = ContentInfo({
             'content_type': ContentType('data'),
             'content': pkienvelope_content_info.dump()
         })
+        # encap_info_degen = ContentInfo({
+        #     'content_type': ContentType('data'),
+        #     'content': pkcs_pki_envelope.dump()
+        # })
 
         # Calculate digest on encrypted content + signed_attrs
-        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        #digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        digest = hashes.Hash(hashes.SHA1(), backend=default_backend())
+        # digest.update(pkcs_pki_envelope.dump())
         digest.update(pkienvelope_content_info.dump())
         d = digest.finalize()
         
         # Now start building SignedData
 
+        # signer_infos = self._build_signerinfos(pkcs_pki_envelope.dump(), d, self._cms_attributes)
         signer_infos = self._build_signerinfos(pkienvelope_content_info.dump(), d, self._cms_attributes)
 
         certificates = self._certificates
 
-        da_id = DigestAlgorithmId('sha256')
+        #da_id = DigestAlgorithmId('sha256')
+        da_id = DigestAlgorithmId('sha1')
         da = DigestAlgorithm({'algorithm': da_id})
         das = DigestAlgorithms([da])
 
         sd = SignedData({
             'version': 1,
-            'certificates': certificates,
+            'certificates': certificates,  
             'signer_infos': signer_infos,
             'digest_algorithms': das,
-            'encap_content_info': encap_info,
+            'encap_content_info': encap_info,  # should point to type data + content contentinfo
         })
 
         ci = ContentInfo({

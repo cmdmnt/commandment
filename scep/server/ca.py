@@ -32,7 +32,6 @@ class CertificateAuthority(object):
     default_subject = x509.Name([
         x509.NameAttribute(NameOID.COMMON_NAME, u'COMMANDMENT-SCEP-CA'),
         x509.NameAttribute(NameOID.ORGANIZATION_NAME, u'commandment'),
-        x509.NameAttribute(NameOID.EMAIL_ADDRESS, u'mosen@noreply.users.github.com'),
         x509.NameAttribute(NameOID.COUNTRY_NAME, u'US')
     ])
 
@@ -88,6 +87,19 @@ class CertificateAuthority(object):
                 datetime.datetime.utcnow() + datetime.timedelta(days=365)
             ).add_extension(
                 x509.BasicConstraints(ca=True, path_length=None),
+                True
+            ).add_extension(
+                x509.KeyUsage(
+                    digital_signature=True,
+                    content_commitment=False,
+                    key_encipherment=True,
+                    data_encipherment=False,
+                    key_agreement=False,
+                    key_cert_sign=False,
+                    crl_sign=False,
+                    encipher_only=False,
+                    decipher_only=False
+                ),
                 True
             ).sign(private_key, hashes.SHA256(), default_backend())
 

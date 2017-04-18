@@ -118,4 +118,20 @@ def main():
     logger.debug('Transaction ID: %s', cert_rep.transaction_id)
     logger.debug('PKI Status: %s', PKIStatus(cert_rep.pki_status))
 
-    cert_rep.get_decrypted_envelope_data()
+    # This should be the PKCS#7 Degenerate
+    decrypted_bytes = cert_rep.get_decrypted_envelope_data(ssc, private_key)
+    degenerate_info = ContentInfo.load(decrypted_bytes)
+    # degenerate_info.debug()
+
+    assert degenerate_info['content_type'].native == 'signed_data'
+    signed_response = degenerate_info['content']
+    certs = signed_response['certificates']
+
+    certs.debug()
+
+    my_cert = certs[0].chosen
+    result = x509.load_der_x509_certificate(my_cert.dump(), default_backend())
+    print(result.subject)
+
+
+

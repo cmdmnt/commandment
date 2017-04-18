@@ -201,7 +201,8 @@ class SCEPMessage(object):
         
         # Now we have the plain key, we can decrypt the encrypted data
         encrypted_contentinfo = encap['content']['encrypted_content_info']
-
+        print('encrypted content type: {}'.format(encrypted_contentinfo['content_type'].native))
+        
         algorithm = encrypted_contentinfo['content_encryption_algorithm']  #: EncryptionAlgorithm
         encrypted_content_bytes = encrypted_contentinfo['encrypted_content'].native
 
