@@ -1,7 +1,9 @@
 import argparse
 import logging
+import os
 from typing import List, Set
-from ..builders import PKIMessageBuilder
+from ..builders import PKIMessageBuilder, Signer
+from ..envelope import PKCSPKIEnvelopeBuilder
 import requests
 from .request import generate_csr, generate_self_signed
 from cryptography import x509
@@ -58,7 +60,6 @@ def main():
     logger.info('CA Certificate Subject Follows')
     logger.info(cacert.subject)
 
-
     private_key = None
     if args.private_key:
         with open(args.private_key, 'rb') as fd:
@@ -66,19 +67,35 @@ def main():
             private_key = serialization.load_pem_private_key(data, backend=default_backend(), password=None)
 
     private_key, csr = generate_csr(private_key)
-    ssc = generate_self_signed(private_key, csr.subject)
+    logger.info('Writing RSA private key to ./scep.key')
+    pem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    with open('scep.key', 'wb') as fd:
+        fd.write(pem)
     
-    builder = PKIMessageBuilder(
-        ssc,
-        private_key,
-    ).message_type(
-        MessageType.PKCSReq
-    ).add_recipient(
-        cacert
-    ).encrypt(
+    ssc = generate_self_signed(private_key, csr.subject)
+
+    envelope, key, iv = PKCSPKIEnvelopeBuilder().encrypt(
         csr.public_bytes(serialization.Encoding.DER)
+    ).add_recipient(cacert).finalize()
+
+    signer = Signer(ssc, private_key)
+
+    pki_msg_builder = PKIMessageBuilder().message_type(
+        MessageType.PKCSReq
+    ).pki_envelope(
+        envelope
+    ).add_signer(
+        signer
     ).transaction_id().sender_nonce()
 
-    pkimsg = builder.finalize()
-    res = pkioperation(args.url, data=pkimsg.dump())
+    pki_msg = pki_msg_builder.finalize()
+    res = pkioperation(args.url, data=pki_msg.dump())
 
+    logger.info('Response: Status {}'.format(res.status_code))
+    if res.status_code != 200:
+        return -1
+    
