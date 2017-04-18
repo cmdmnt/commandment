@@ -102,10 +102,15 @@ class Signer(object):
         sid = SignerIdentifier('issuer_and_serial_number', ias)
         return sid
 
-    def sign(self, data: bytes, content_type: ContentType, content_digest: bytes, cms_attributes: List[CMSAttribute]) -> SignerInfo:
+    def sign(self,
+             data: bytes,
+             content_type: ContentType,
+             content_digest: bytes,
+             cms_attributes: List[CMSAttribute]) -> SignerInfo:
         """Generate a signature encrypted with the signer's private key and return the SignerInfo."""
+        
         # The CMS standard requires that the content-type authenticatedAttribute and the message-digest
-        # attribute must be present if any authenticatedAttribute exist at all.
+        # attribute must be present if any authenticatedAttribute exists at all.
         self.signed_attributes = cms_attributes
 
         self.signed_attributes.insert(0, CMSAttribute({
@@ -120,8 +125,9 @@ class Signer(object):
 
         cms_attributes = CMSAttributes(self.signed_attributes)
 
-        # Calculate Digest
+        # Calculate Digest on Signed Attributes
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        #digest.update(data)
         digest.update(cms_attributes.dump())
         d = digest.finalize()
 
@@ -137,7 +143,7 @@ class Signer(object):
             hashes.SHA256()
         )
 
-        signer.update(digest_info.dump())
+        signer.update(d)
         signature = signer.finalize()
 
         signer_info = SignerInfo({

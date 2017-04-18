@@ -7,7 +7,8 @@ from cryptography.hazmat.backends import default_backend
 from asn1crypto.csr import CertificationRequestInfo
 from ..message import SCEPMessage
 from ..enums import MessageType, PKIStatus, FailInfo
-from ..builders import PKIMessageBuilder, create_degenerate_certificate
+from ..builders import PKIMessageBuilder, Signer, create_degenerate_certificate
+from ..envelope import PKCSPKIEnvelopeBuilder
 
 FORCE_DEGENERATE_FOR_SINGLE_CERT = False
 CACAPS = ('POSTPKIOperation', 'SHA-256', 'AES')
@@ -118,7 +119,11 @@ def scep():
             new_cert = mdm_ca.sign(cert_req)
             degenerate = create_degenerate_certificate(new_cert)
 
-            reply = PKIMessageBuilder(cacert, cakey).message_type(
+            envelope, _, _ = PKCSPKIEnvelopeBuilder().encrypt(degenerate.dump()).add_recipient(
+                req.certificates[0]).finalize()
+            signer = Signer(cacert, cakey)
+
+            reply = PKIMessageBuilder().message_type(
                 MessageType.CertRep
             ).transaction_id(
                 req.transaction_id
@@ -126,16 +131,9 @@ def scep():
                 PKIStatus.SUCCESS
             ).recipient_nonce(
                 req.sender_nonce
-            ).add_recipient(
-                req.certificates[0]
-            ).issued(
-                new_cert
-            ).encrypt(
-                degenerate.dump()
-            ).certificates(
-                new_cert,
-                cacert
-            ).finalize()
+            ).pki_envelope(
+                envelope
+            ).add_signer(signer).finalize()
 
             res = SCEPMessage.parse(reply.dump())
             app.logger.debug('Reply with CertRep, details follow')
