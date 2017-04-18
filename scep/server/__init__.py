@@ -133,7 +133,7 @@ def scep():
                 req.sender_nonce
             ).pki_envelope(
                 envelope
-            ).add_signer(signer).finalize()
+            ).certificates(new_cert).add_signer(signer).finalize()
 
             res = SCEPMessage.parse(reply.dump())
             app.logger.debug('Reply with CertRep, details follow')

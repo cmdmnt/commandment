@@ -1,6 +1,7 @@
 import os
+import datetime
 from typing import List, Union
-from asn1crypto.core import PrintableString
+from asn1crypto.core import PrintableString, GeneralizedTime
 from asn1crypto import x509 as asn1x509
 from asn1crypto.cms import CMSAttribute, ContentInfo, EnvelopedData, SignedData, SignerInfos, \
     SignerInfo, CMSAttributes, SignerIdentifier, IssuerAndSerialNumber, OctetString, CertificateSet, \
@@ -76,7 +77,7 @@ class Signer(object):
 
     digest_algorithm_id = DigestAlgorithmId('sha256')
     digest_algorithm = DigestAlgorithm({'algorithm': digest_algorithm_id})
-    signed_digest_algorithm_id = SignedDigestAlgorithmId('sha256_rsa')
+    signed_digest_algorithm_id = SignedDigestAlgorithmId('rsassa_pkcs1v15')  # was: sha256_rsa
     signed_digest_algorithm = SignedDigestAlgorithm({'algorithm': signed_digest_algorithm_id})
 
     def __init__(self,
@@ -114,6 +115,11 @@ class Signer(object):
         self.signed_attributes = cms_attributes
 
         self.signed_attributes.insert(0, CMSAttribute({
+            'type': 'signing_time',
+            'values': [GeneralizedTime(datetime.datetime.utcnow())]
+        }))
+
+        self.signed_attributes.insert(0, CMSAttribute({
             'type': 'message_digest',
             'values': [OctetString(content_digest)],
         }))
@@ -143,7 +149,8 @@ class Signer(object):
             hashes.SHA256()
         )
 
-        signer.update(d)
+        # signer.update(d)
+        signer.update(digest_info.dump())
         signature = signer.finalize()
 
         signer_info = SignerInfo({

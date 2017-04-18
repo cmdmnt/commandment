@@ -10,6 +10,8 @@ from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 from ..enums import MessageType, PKIStatus, FailInfo, CACaps
 from cryptography.hazmat.backends import default_backend
+from ..message import SCEPMessage
+from asn1crypto.cms import ContentInfo
 
 parser = argparse.ArgumentParser()
 parser.add_argument('url', help='The SCEP server URL')
@@ -104,4 +106,15 @@ def main():
     logger.info('Response: Status {}'.format(res.status_code))
     if res.status_code != 200:
         return -1
-    
+
+    cinfo = ContentInfo.load(res.content)
+    cinfo.debug()
+    cert_rep = SCEPMessage.parse(res.content)
+    with open('certrep.der', 'wb') as fd:
+        fd.write(res.content)
+    logger.info('Dumped CertRep')
+
+    logger.debug('pkiMessage response follows')
+    logger.debug('Transaction ID: %s', cert_rep.transaction_id)
+    logger.debug('PKI Status: %s', PKIStatus(cert_rep.pki_status))
+
