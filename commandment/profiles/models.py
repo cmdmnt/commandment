@@ -13,7 +13,7 @@ from uuid import uuid4
 from .cert import KeyUsage
 from . import PayloadScope
 
-db = SQLAlchemy()
+from ..models import db
 
 payload_dependencies = Table('payload_dependencies', db.metadata,
                              Column('payload_uuid', GUID, ForeignKey('payloads.uuid')),
@@ -216,7 +216,43 @@ class VPNPayload(Payload):
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.vpn.managed',
     }
+
+
+class EmailAccountType(Enum):
+    POP = 'EmailTypePOP'
+    IMAP = 'EmailTypeIMAP'
+
+
+class EmailAuthenticationType(Enum):
+    Password = 'EmailAuthPassword'
+    CRAM_MD5 = 'EmailAuthCRAMMD5'
+    NTLM = 'EmailAuthNTLM'
+    HTTP_MD5 = 'EmailAuthHTTPMD5'
+    ENone = 'EmailAuthNone'
+
+
+class EmailPayload(Payload):
+    """E-mail Payload"""
+    id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
+    email_account_description = Column(String)
+    email_account_name = Column(String)
+    email_account_type = Column(DBEnum(EmailAccountType), nullable=False)
+    email_address = Column(String)
+    incoming_auth = Column(DBEnum(EmailAuthenticationType), nullable=False)
+    incoming_host = Column(String, nullable=False)
+    incoming_port = Column(Integer)
+    incoming_use_ssl = Column(Boolean, default=False)
+    incoming_username = Column(String, nullable=False)
+    incoming_password = Column(String)
+    outgoing_password = Column(String)
+    outgoing_incoming_same = Column(Boolean)
+    outgoing_auth = Column(DBEnum(EmailAuthenticationType), nullable=False)
     
+    
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'com.apple.mail.managed'
+    }
 
 profile_payloads = Table('profile_payloads', db.metadata,
                          Column('profile_id', Integer, ForeignKey('profiles.id')),

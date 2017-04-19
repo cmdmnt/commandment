@@ -34,21 +34,6 @@ _**Note:** while IP address certificates appear to work for MDM on iOS not much 
 
 Instructions for OS X 10.10. These aren't definitive instructions for getting the dependencies installed on OS X. See also [Greg Neagle's post](https://groups.google.com/d/msg/ossmdm/onF7KFWnIa4/LMMRu7OrBiIJ) on getting Project IMAS requirements setup (which are similar to our requirements).
 
-##### Install Homebrew and SWIG
-
-Homebrew is used to install SWIG 3.0.4 which this specific older version is required for the Python M2Crypto dependency. Follow [instructions on installing Homebrew](http://brew.sh/). It may ask you to install Xcode Command Line Tools if you don't already have them or Xcode installed. Do so.
-
-Then install SWIG 3.0.4 from Homebrew. This older 3.0.4 version is required for the M2Crypto dependency:
-
-```bash
-brew install homebrew/versions/swig304
-```
-
-There should be Homebrew bottles for this dependency so it should install pretty quickly. If you already have a newer version of SWIG installed by Homebrew you may need to remove it first (possibly using `--force` if you have things that depend on it):
-
-```bash
-brew uninstall swig
-```
 
 ##### Install & create virtualenv
 

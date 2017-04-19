@@ -553,3 +553,15 @@ class Organization(db.Model):
     x509_st = Column(String(128))
     x509_c = Column(String(2))
 
+
+class AppSourceType(Enum):
+    S3 = 'S3'
+    Munki = 'Munki'
+
+
+class AppSource(db.Model):
+    __tablename__ = 'app_sources'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    source_type = Column(DBEnum(AppSourceType), default=AppSourceType.Munki)
