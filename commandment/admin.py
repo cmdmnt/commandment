@@ -10,7 +10,8 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 
 from .models import CertificateType, Device
-from .models import Certificate as DBCertificate, RSAPrivateKey as DBPrivateKey, Profile as DBProfile
+from .models import Certificate as DBCertificate, RSAPrivateKey as DBPrivateKey
+from .profiles.models import Profile as DBProfile
 from .models import App
 from .profiles.restrictions import RestrictionsPayload
 from .profiles import Profile

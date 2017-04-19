@@ -4,7 +4,8 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 from uuid import uuid4
-from ..models import Command, Profile as DBProfile
+from ..models import Command
+from ..profiles.models import Profile as DBProfile
 from ..profiles import Profile
 import json
 import plistlib # needed for Data() wrapper

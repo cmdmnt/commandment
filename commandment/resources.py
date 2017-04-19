@@ -2,7 +2,8 @@ from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
     CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, InstalledApplicationSchema, ProfileSchema, \
     PayloadSchema
 from .models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
-    SSLCertificate, Organization, Command, InstalledApplication, Profile, Payload
+    SSLCertificate, Organization, Command, InstalledApplication
+from .profiles.models import Profile, Payload
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList
 

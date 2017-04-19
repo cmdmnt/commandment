@@ -6,7 +6,8 @@ from flask import Blueprint, send_file, abort, current_app, jsonify, request, ma
 from flask_marshmallow import Marshmallow
 from sqlalchemy.orm.exc import NoResultFound
 import biplist
-from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate, Profile
+from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
+from .profiles.models import Profile
 from .mdm import commands
 from .schema import OrganizationFlatSchema, ProfileSchema
 

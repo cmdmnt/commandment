@@ -1,5 +1,6 @@
 from flask import current_app
-from ..models import db, Device, Profile, InstalledApplication, InstalledCertificate
+from ..models import db, Device, InstalledApplication, InstalledCertificate
+from ..profiles.models import Profile
 from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList
 from ..mdm_app import command_router
 from .util import queryresponses_to_query_set
