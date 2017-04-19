@@ -156,3 +156,5 @@ scep_settings.cfg
 *.p12
 *.cer
 *.crt
+*.key
+
