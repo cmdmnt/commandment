@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect, Dispatch } from 'react-redux';
 import {RouteComponentProps} from 'react-router';
 import { SCEPConfigurationForm, FormData } from '../../forms/SCEPConfigurationForm';
+import {SCEPPayloadForm} from '../../forms/payloads/SCEPPayloadForm';
 
 
 interface SCEPPageState {
@@ -33,7 +34,11 @@ export class SCEPPage extends React.Component<SCEPPageProps & RouteComponentProp
                 <div className='row'>
                     <div className='column'>
                         <h1>SCEP Configuration</h1>
-                        <SCEPConfigurationForm onSubmit={this.handleSubmit} />
+                        <p>
+                            The SCEP Configuration controls the parameters of certificates issued to devices via your
+                            SCEP service.
+                        </p>
+                        <SCEPPayloadForm onSubmit={this.handleSubmit} />
                     </div>
                 </div>
             </div>

@@ -1,8 +1,7 @@
 """
-Copyright (c) 2015 Jesse Peterson
+Copyright (c) 2015 Jesse Peterson, 2017 Mosen
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
-import os
 from flask import Flask, render_template
 
 from .mdm_app import mdm_app
@@ -24,15 +23,12 @@ def create_app() -> Flask:
     """
     app = Flask(__name__)
     app.config.from_object('commandment.default_settings')
-    if os.environ.get('COMMANDMENT_SETTINGS'):
-        app.config.from_envvar('COMMANDMENT_SETTINGS')
-
-    app.config['SQLALCHEMY_ECHO'] = True
+    app.config.from_envvar('COMMANDMENT_SETTINGS', True)
 
     db.init_app(app)
     db.create_all(app=app)
 
-    app.register_blueprint(enroll_app)
+    app.register_blueprint(enroll_app, url_prefix='/enroll')
     app.register_blueprint(mdm_app)
     app.register_blueprint(admin_app)
     app.register_blueprint(admin_mdmcert_app, url_prefix='/admin/mdmcert')

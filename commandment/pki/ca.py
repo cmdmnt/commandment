@@ -30,7 +30,7 @@ def from_database_or_create():
         A new (or existing) certificate authority.
     """
     try:
-        db_cert = db.session.query(dbmodels.CACertificate).filter(dbmodels.CACertificate.type == 'mdm.cacert').one()
+        db_cert = db.session.query(dbmodels.CACertificate).filter(dbmodels.CACertificate.discriminator == 'mdm.cacert').one()
         db_pk = db_cert.rsa_private_key
         private_key, cert = models.RSAPrivateKey(model=db_pk), models.Certificate('mdm.cacert', model=db_cert)
         ca = CertificateAuthority(cert, private_key)
@@ -193,7 +193,7 @@ class CertificateAuthority(object):
 def get_or_generate_web_certificate(cn: str) -> (str, str, str):
     mdm_ca = get_ca()
     try:
-        result = db.session.query(dbmodels.SSLCertificate).filter(dbmodels.SSLCertificate.type == 'mdm.webcrt').one()
+        result = db.session.query(dbmodels.SSLCertificate).filter(dbmodels.SSLCertificate.discriminator == 'mdm.webcrt').one()
 
         # TODO: return chain!
         return (result.pem_data, result.rsa_private_key.pem_data, mdm_ca.certificate.pem_data)
