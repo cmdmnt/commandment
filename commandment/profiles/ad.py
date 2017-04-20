@@ -33,3 +33,8 @@ class ADPacketEncryptPolicy(Enum):
     Disable = 'disable'
     Require = 'require'
     SSL = 'ssl'
+
+
+class ADCertificateAcquisitionMechanism(Enum):
+    RPC = 'RPC'
+    HTTP = 'HTTP'

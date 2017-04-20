@@ -1,11 +1,13 @@
-from enum import Enum, Flag, auto
-from flask_sqlalchemy import SQLAlchemy
+from enum import Enum
 
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum as DBEnum, text, \
     BigInteger, and_, or_, LargeBinary
 from sqlalchemy.orm import relationship
 
-from commandment.profiles.ad import ADMountStyle, ADNamespace, ADPacketSignPolicy, ADPacketEncryptPolicy
+from commandment.profiles.ad import ADMountStyle, ADNamespace, ADPacketSignPolicy, ADPacketEncryptPolicy, \
+    ADCertificateAcquisitionMechanism
+from commandment.profiles.email import EmailAuthenticationType, EmailAccountType
+from commandment.profiles.vpn import VPNType
 from commandment.profiles.wifi import WIFIEncryptionType, WIFIProxyType
 from ..dbtypes import GUID, JSONEncodedDict
 from biplist import Data as NSData, readPlistFromString
@@ -104,9 +106,6 @@ class SCEPPayload(Payload):
         return pp
 
 
-class ADCertificateAcquisitionMechanism(Enum):
-    RPC = 'RPC'
-    HTTP = 'HTTP'
 
 
 class ADCertPayload(Payload):
@@ -194,15 +193,6 @@ class WIFIPayload(Payload):
     }
 
 
-class VPNType(Enum):
-    L2TP = 'L2TP'
-    PPTP = 'PPTP'
-    IPSec = 'IPSec'
-    IKEv2 = 'IKEv2'
-    AlwaysOn = 'AlwaysOn'
-    VPN = 'VPN'
-
-
 class VPNPayload(Payload):
     """VPN Payload"""
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
@@ -216,20 +206,7 @@ class VPNPayload(Payload):
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.vpn.managed',
     }
-
-
-class EmailAccountType(Enum):
-    POP = 'EmailTypePOP'
-    IMAP = 'EmailTypeIMAP'
-
-
-class EmailAuthenticationType(Enum):
-    Password = 'EmailAuthPassword'
-    CRAM_MD5 = 'EmailAuthCRAMMD5'
-    NTLM = 'EmailAuthNTLM'
-    HTTP_MD5 = 'EmailAuthHTTPMD5'
-    ENone = 'EmailAuthNone'
-
+    
 
 class EmailPayload(Payload):
     """E-mail Payload"""
