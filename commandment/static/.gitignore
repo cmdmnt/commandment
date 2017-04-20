@@ -1,4 +1,4 @@
-bundle.js
+app.js
 *.map
 fonts/*
 css/*
