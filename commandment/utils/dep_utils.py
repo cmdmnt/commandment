@@ -5,8 +5,8 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 import datetime
 from .dep import DEP, DEP4xxError
-from ..database import db_session, or_, and_, NoResultFound
-from ..models import DEPConfig, DEPProfile, Device
+
+from ..models import DEPConfig, Device
 import uuid
 import collections
 
@@ -40,8 +40,8 @@ def add_or_modify_device(dep, device_dict):
 
     db_session.commit()
 
-    print '>>>>> ADD/MODIFY DEP DEVICE:', device_dict.get('serial_number'), device_dict.get('model')
-    print device_dict
+    print('>>>>> ADD/MODIFY DEP DEVICE:', device_dict.get('serial_number'), device_dict.get('model'))
+    print(device_dict)
 
 def dep_configs_needing_updates():
     return db_session.query(DEPConfig).filter(
@@ -65,7 +65,7 @@ def update_dep_configs(dep_configs):
             try:
                 update_fetch(dep_config)
             except ExpiredCursor:
-                print 'WARNING: expired cursor; attempting initial fetch'
+                print('WARNING: expired cursor; attempting initial fetch')
                 initial_fetch(dep_config)
 
 def next_dep_update_datetime():
@@ -199,7 +199,7 @@ def submit_dep_profiles(dep_profiles):
         if 'profile_uuid' in resp:
             dep_profile.uuid = resp['profile_uuid']
             db_session.commit()
-            print 'DEP profile id %d received UUID %s' % (dep_profile.id, dep_profile.uuid)
+            print('DEP profile id %d received UUID %s' % (dep_profile.id, dep_profile.uuid))
 
 def assign_devices(dep_profile, devices):
     dep = dep_profile.dep_config
@@ -229,7 +229,7 @@ def assign_devices(dep_profile, devices):
     # TODO: only update profile_uuid for 'SUCCESSFUL' devices after the request
     # TODO: may not need to update profile_uuid (may get a triggered update on
     # subsequent sync calls?)
-    print resp
+    print(resp)
 
     db_session.commit()
 

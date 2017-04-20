@@ -1,0 +1,47 @@
+@import '~normalize.css';
+@import '~milligram-scss';
+@import '~font-awesome/scss/font-awesome';
+@import 'upload';
+@import 'nav';
+
+.top-margin {
+  margin-top: 2rem;
+}
+
+/* intended to be used where a button must appear next to an input with a label on top */
+.form-field-button {
+  margin-top: 1.9rem;
+}
+
+.paper {
+  box-shadow: rgba(0, 0, 0, 0.117647) 0 1px 6px, rgba(0, 0, 0, 0.117647) 0 1px 4px;
+}
+
+.centered {
+  text-align: center;
+}
+
+.padded {
+  padding: 1.6rem;
+}
+
+.padded-sides {
+  padding: 0 1.6rem;
+}
+
+.reversed {
+  background-color: #9b4dca;
+  color: white;
+}
+
+.title {
+  font-size: 2.4rem;
+}
+
+.text-middle {
+  vertical-align: middle;
+}
+
+.warning {
+  color: red;
+}

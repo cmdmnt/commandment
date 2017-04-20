@@ -1,0 +1,19 @@
+# http://flask-sqlalchemy.pocoo.org/2.1/config/
+SQLALCHEMY_DATABASE_URI = 'sqlite:///mdm.db'
+SQLALCHEMY_DATABASE_ECHO = True
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+DEBUG = True
+
+DEV_WEB_CERT_CN = 'mymdm.example.com'
+
+APP_UPLOAD_ROOT = 'apps'
+
+SCEP_PORT = 5080
+PORT = 5443
+
+# This is expected to include the pub and private keypair.
+# You may export pkcs12 using this command:
+# openssl pkcs12 -in push.p12 -out push.pem -nodes -clcerts
+PUSH_CERTIFICATE = './push.pem'
+

@@ -5,122 +5,211 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 '''Commandment MDM Certificate Authority'''
 
-from flask import g
-from ..database import db_session, NoResultFound
-from ..models import (Certificate as DBCertificate,
-                      PrivateKey as DBPrivateKey,
-                      InternalCA)
-from .x509 import *
+from flask import g, current_app
+from ..models import db
+from sqlalchemy.orm.exc import NoResultFound
+import commandment.pki.models as models
+import commandment.models as dbmodels
+import datetime
+from cryptography import x509
+from cryptography.x509.oid import NameOID
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
 
-try:
-    from M2Crypto.m2 import NID_userId
-except ImportError:
-    # does not have an alias in M2Crypto, so just use the OpenSSL definition
-    NID_userId = 458 # from OpenSSL obj_mac.h
 
 MDM_CA_CN = 'MDM CA'
 MDM_DEVICE_CN = 'MDM Device'
 
+
+def from_database_or_create():
+    """Create a new CertificateAuthority from the keypair in the database,
+    or generate new ones if they do not exist.
+
+    Returns:
+        A new (or existing) certificate authority.
+    """
+    try:
+        db_cert = db.session.query(dbmodels.CACertificate).filter(dbmodels.CACertificate.discriminator == 'mdm.cacert').one()
+        db_pk = db_cert.rsa_private_key
+        private_key, cert = models.RSAPrivateKey(model=db_pk), models.Certificate('mdm.cacert', model=db_cert)
+        ca = CertificateAuthority(cert, private_key)
+
+    except NoResultFound:
+        ca = CertificateAuthority.create()
+
+        db_cert = ca.certificate.model()
+        db_pk = dbmodels.RSAPrivateKey(pem_data=ca.private_key.pem_key)
+        db_cert.rsa_private_key = db_pk
+        
+        db.session.add(db_cert)
+        db.session.add(db_pk)
+
+        db.session.commit()
+
+    return ca
+
+
 def get_ca():
     ca = getattr(g, '_mdm_ca', None)
     if ca is None:
-        ca = g._mdm_ca = CA()
+        ca = g._mdm_ca = from_database_or_create()
     return ca
 
-class CA(object):
-    def __init__(self):
-        try:
-            db_cert, db_pk = db_session.query(DBCertificate, DBPrivateKey)\
-                .join(DBCertificate, DBPrivateKey.certificates)\
-                .filter(DBCertificate.cert_type == 'mdm.cacert')\
-                .one()
-            self.ca_identity = CAIdentity(db_pk.to_x509(), db_cert.to_x509(cert_type=CACertificate))
-        except NoResultFound:
-            self.ca_identity = SelfSignedCAIdentity(CN=MDM_CA_CN)
 
-            db_cert = DBCertificate.from_x509(self.ca_identity.get_cert(), 'mdm.cacert')
-            db_pk = DBPrivateKey.from_x509(self.ca_identity.get_private_key())
+class CertificateAuthority(object):
+    """The CertificateAuthority Class implements a basic Cert Authority.
+    
+    It is recommended to use an external CA if possible.
+    """
 
-            db_pk.certificates.append(db_cert)
+    default_subject = x509.Name([
+        x509.NameAttribute(NameOID.COMMON_NAME, u'COMMANDMENT-CA'),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, u'commandment'),
+        x509.NameAttribute(NameOID.EMAIL_ADDRESS, u'mosen@noreply.users.github.com'),
+        x509.NameAttribute(NameOID.COUNTRY_NAME, u'US')
+    ])
 
-            db_session.add(db_cert)
-            db_session.add(db_pk)
+    @classmethod
+    def create(cls, subject=default_subject, key_size=2048):
+        """Create a new Certificate Authority.
 
-            db_session.commit()
+        Generates a new private key and self-signs a CA certificate.
 
-    def get_cacert(self):
-        return self.ca_identity.get_cert()
+        Args:
+            subject: cryptography.x509.Name The certificate subject to use
+            key_size: The RSA private key size integer, default is 2048.
 
-    def get_private_key(self):
-        return self.ca_identity.get_private_key()
+        Returns:
+            Instance of CertificateAuthority
+        """
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=key_size,
+            backend=default_backend(),
+        )
+        pk_model = models.RSAPrivateKey(pk=private_key)
+        
+        certificate = x509.CertificateBuilder().subject_name(
+            subject
+        ).issuer_name(
+            subject
+        ).public_key(
+            private_key.public_key()
+        ).serial_number(
+            x509.random_serial_number()
+        ).not_valid_before(
+            datetime.datetime.utcnow()
+        ).not_valid_after(
+            datetime.datetime.utcnow() + datetime.timedelta(days=365)
+        ).add_extension(
+            x509.BasicConstraints(ca=True, path_length=None),
+            True
+        ).sign(private_key, hashes.SHA256(), default_backend())
+        cert_model = models.Certificate('mdm.cacert', certificate=certificate)
 
-    def sign_new_device_req(self, csr):
-        '''Sign and persist a new device certificate request'''
+        ca = cls(cert_model, pk_model)
+        return ca
 
-        dev_signed_cert = self.ca_identity.sign_cert_req(csr)
+    def __init__(self, certificate: models.Certificate, private_key: models.RSAPrivateKey, password=None):
+        """
+        Args:
+            certificate: Instance of commandment.pki.models.Certificate with the BasicConstraints CA extension
+            private_key: Instance of commandment.pki.models.RSAPrivateKey
+            password: Private key password if required (Ignored currently)
+            
+        """
+        self._certificate = certificate
+        self._private_key = private_key
 
-        db_dev_crt = self.save_new_device_cert(dev_signed_cert)
+    @property
+    def certificate(self) -> models.Certificate:
+        """Retrieve the CA Certificate"""
+        return self._certificate
 
-        return dev_signed_cert, db_dev_crt
+    @property
+    def private_key(self) -> models.RSAPrivateKey:
+        """Retrieve the CA Private Key"""
+        return self._private_key
 
-    def save_new_device_cert(self, cert):
-        # cert should be of type Certificate
-        db_dev_crt = DBCertificate.from_x509(cert, 'mdm.device')
-        db_session.add(db_dev_crt)
-        db_session.commit()
+    def generate(self, type: str, subject: x509.Name) -> (models.RSAPrivateKey, models.Certificate):
+        """Generate a new private key and certificate with the given subject, and sign it with this CA.
 
-        return db_dev_crt
+        Args:
+            type: Certificate type i.e `mdm.webcrt` or `mdm.cacert`
+            subject: x509.Name the subject of the certificate being generated.
+        Returns:
+            (models.RSAPrivateKey, models.Certificate)
+        """
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=2048,
+            backend=default_backend(),
+        )
+        pk_model = models.RSAPrivateKey(pk=private_key)
 
-    def gen_new_device_identity(self):
-        # we don't persist the key as it should only be held and used by
-        # the client device
-        dev_csr, dev_key = CertificateRequest.with_new_private_key(CN=MDM_DEVICE_CN)
+        certificate = x509.CertificateBuilder().subject_name(
+            subject
+        ).issuer_name(
+            self.certificate.subject
+        ).public_key(
+            private_key.public_key()
+        ).serial_number(
+            x509.random_serial_number()
+        ).not_valid_before(
+            datetime.datetime.utcnow()
+        ).not_valid_after(
+            datetime.datetime.utcnow() + datetime.timedelta(days=365)
+        ).sign(self.private_key.raw, hashes.SHA256(), default_backend())
 
-        dev_crt, db_dev_crt = self.sign_new_device_req(dev_csr)
+        cert_model = models.Certificate(type=type, certificate=certificate)
 
-        return (Identity(dev_key, dev_crt), db_dev_crt)
+        return pk_model, cert_model
 
-class WebCertificate(Certificate):
-    def get_cn(self):
-        return self.get_m2_cert().get_subject().CN
 
-class PushCertificate(Certificate):
-    def get_topic(self):
-        x509_uid_name_entries = self._x509.get_subject().get_entries_by_nid(NID_userId)
+    def sign(self, csr: models.CertificateSigningRequest) -> models.Certificate:
+        """Sign a certificate signing request.
 
-        if len(x509_uid_name_entries) != 1:
-            raise AttributeError('No UID entry in APNS Push certificate subject')
+        :param CertificateSigningRequest csr: The signing request
+        :returns: The signed certificate
+        :rtype: x509.Certificate
+        """
+        builder = x509.CertificateBuilder()
+        cert = builder.subject_name(
+            csr.subject
+        ).issuer_name(
+            self.certificate.subject
+        ).not_valid_before(
+            datetime.datetime.utcnow()
+        ).not_valid_after(
+            datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        ).serial_number(x509.random_serial_number()).public_key(
+            csr.public_key()
+        ).sign(self.private_key, hashes.SHA256(), default_backend())
 
-        topic = x509_uid_name_entries[0].get_data().as_text()
+        return cert
 
-        return topic
 
-def get_or_generate_web_certificate(cn):
-    mdm_ca = CA()
+def get_or_generate_web_certificate(cn: str) -> (str, str, str):
+    mdm_ca = get_ca()
     try:
-        q = db_session.query(DBCertificate, DBPrivateKey)\
-            .join(DBCertificate, DBPrivateKey.certificates)\
-            .filter(DBCertificate.cert_type == 'mdm.webcrt')
-        result = q.first()
-        if not result:
-            q.one()
-        else:
-            db_cert, db_pk = result
+        result = db.session.query(dbmodels.SSLCertificate).filter(dbmodels.SSLCertificate.discriminator == 'mdm.webcrt').one()
+
         # TODO: return chain!
-        return (db_cert.pem_certificate, db_pk.pem_key, mdm_ca.get_cacert().to_pem())
+        return (result.pem_data, result.rsa_private_key.pem_data, mdm_ca.certificate.pem_data)
     except NoResultFound:
-        web_req, web_pk = CertificateRequest.with_new_private_key(CN=cn)
+        pk, cert = mdm_ca.generate('mdm.webcrt', x509.Name([
+            x509.NameAttribute(NameOID.COMMON_NAME, cn),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, 'commandment')
+        ]))
 
-        web_crt = mdm_ca.ca_identity.sign_cert_req(web_req)
+        db_pk = pk.model()
+        db_cert = cert.model()
+        db.session.add(db_cert)
+        db.session.add(db_pk)
 
-        db_cert = DBCertificate.from_x509(web_crt, 'mdm.webcrt')
-        db_pk = DBPrivateKey.from_x509(web_pk)
+        db_cert.rsa_private_key = db_pk
 
-        db_session.add(db_cert)
-        db_session.add(db_pk)
+        db.session.commit()
 
-        db_pk.certificates.append(db_cert)
-
-        db_session.commit()
-
-        return (db_cert.pem_certificate, db_pk.pem_key, mdm_ca.get_cacert().to_pem())
+        return db_cert.pem_data, db_pk.pem_data, mdm_ca.certificate.pem_data

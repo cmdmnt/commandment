@@ -1,0 +1,78 @@
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+//.navigation {
+//  box-sizing: border-box;
+//  display: flex;
+//  align-items: center;
+//  width: 100%;
+//  background: #eee;
+//  padding: 20px;
+//}
+
+nav {
+  background: #eee;
+}
+
+// top-level menu
+nav ul {
+  margin: 0;
+  list-style: none;
+  position: relative;
+  display: flex;
+  //padding: 1rem 0;  // same as milligram body padding
+
+  li {
+    float: left;
+    margin: 0;  // cancel out the milligram default margin
+
+    a {
+      padding: 1rem 2rem;
+      display: block;
+    }
+
+    span { // if not using a link
+      display: inline-block;
+      padding: 1rem 2rem;
+    }
+  }
+
+  li:hover {
+    // hover style
+  }
+
+  // make submenu active
+  li:hover > ul {
+    display: block;
+  }
+
+  li:active > ul {
+    display: block;
+  }
+}
+
+nav ul:after {
+  content: ""; clear: both; display: block;
+}
+
+// submenu
+nav ul ul {
+  z-index: 99;
+  background-color: #9b4dca;
+  position: absolute;
+  top: 100%;
+
+  display: none;
+  padding: 0;
+
+  li {
+    float: none;
+    position: relative;
+
+    a {
+      padding: 1rem 2rem;
+      color: #fff;
+    }
+  }
+}

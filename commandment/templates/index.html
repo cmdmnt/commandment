@@ -1,0 +1,21 @@
+{# The URL that assets will be loaded from if running from webpack-dev-server #}
+{% set webpack_dev_url = 'https://localhost:4000' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block head %}
+        {% if config['DEBUG'] == False %}
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+        {% endif %}
+        <title>commandment</title>
+    {% endblock %}
+</head>
+<body>
+    <div id="root">
+        loading {{ config['DEBUG'] }}
+    </div>
+    <script src="{{ webpack_dev_url if config['DEBUG'] else '' }}/static/app.js" type="text/javascript"></script>
+</body>
+</html>

@@ -3,8 +3,7 @@
 ##### Software Requirements
 
 * [Python](https://www.python.org/) 2.7+
-* [M2Crypto](http://chandlerproject.org/Projects/MeTooCrypto)
-* [pyOpenSSL](https://github.com/pyca/pyopenssl)
+* [cryptography](https://cryptography.io/en/latest/)
 * [Flask](http://flask.pocoo.org/)
 * [SQLAlchemy](http://www.sqlalchemy.org/)
 * [SQLite](https://www.sqlite.org/) (default database)

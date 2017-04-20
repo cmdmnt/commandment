@@ -4,7 +4,8 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 '''
 
 from oauthlib.oauth1 import Client
-from urllib2 import Request, urlopen, HTTPError
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 import json
 
 class DEP4xxError(Exception):
