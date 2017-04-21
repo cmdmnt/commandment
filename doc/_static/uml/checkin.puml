@@ -1,0 +1,16 @@
+@startuml
+actor Device
+boundary MDM
+entity DeviceModel
+
+Device -> MDM: Authenticate message
+MDM -> EnrollPolicy: Check whitelist
+EnrollPolicy -> MDM: Device passed
+MDM -> DeviceModel: Update Attributes
+MDM -> DeviceModel: Clear Token
+MDM -> Device: 200 "OK"
+
+Device -> MDM: TokenUpdate message
+
+
+@enduml

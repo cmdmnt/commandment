@@ -1,4 +1,5 @@
 import * as actions from '../actions/organization';
+import {isJSONAPIErrorResponsePayload} from "../constants";
 
 export interface OrganizationState {
     organization?: Organization;
@@ -6,14 +7,16 @@ export interface OrganizationState {
     error: boolean;
     errorDetail?: any
     lastReceived?: Date;
+    submitted: boolean;
 }
 
 const initialState: OrganizationState = {
     loading: false,
-    error: false
+    error: false,
+    submitted: false
 };
 
-export type OrganizationAction = actions.IndexActionResponse | actions.PostActionResponse;
+export type OrganizationAction = actions.ReadActionResponse | actions.PostActionResponse;
 
 export function organization(state: OrganizationState = initialState, action: OrganizationAction): OrganizationState {
     switch (action.type) {
@@ -33,7 +36,28 @@ export function organization(state: OrganizationState = initialState, action: Or
             return {
                 ...state,
                 loading: false,
-                config: action.payload.data
+                organization: action.payload,
+                submitted: true
+            };
+        case actions.READ_REQUEST:
+            return {
+                ...state,
+                loading: true
+            };
+        case actions.READ_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                errorDetail: action.payload
+            };
+        case actions.READ_SUCCESS:
+            console.dir(action);
+            return {
+                ...state,
+                loading: false,
+                organization: action.payload,
+                lastReceived: new Date()
             };
         default:
             return state;

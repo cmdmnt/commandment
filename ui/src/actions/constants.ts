@@ -3,6 +3,11 @@ export const JSONAPI_HEADERS = {
     'Accept': 'application/vnd.api+json'
 };
 
+export const JSON_HEADERS = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+};
+
 export type CertificatePurpose = 'apns' | 'ssl';
 
 // Flask-REST-JSONAPI Filter and Sort definitions

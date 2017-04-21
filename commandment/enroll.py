@@ -13,7 +13,7 @@ PROFILE_CONTENT_TYPE = 'application/x-apple-aspen-config'
 enroll_app = Blueprint('enroll_app', __name__)
 
 
-@enroll_app.route('/enroll/')
+@enroll_app.route('/')
 def index():
     """Show the enrollment page"""
     return render_template('enroll.html')
@@ -27,7 +27,7 @@ def base64_to_pem(crypto_type, b64_text, width=76):
     return '-----BEGIN %s-----\n%s-----END %s-----' % (crypto_type, lines, crypto_type)
 
 
-@enroll_app.route('/enroll/profile', methods=['GET', 'POST'])
+@enroll_app.route('/profile', methods=['GET', 'POST'])
 def enroll():
     """Generate an enrollment profile."""
     mdm_ca = get_ca()
@@ -82,14 +82,14 @@ def enroll():
     # else:
     #     abort(500, 'Invalid device identity method')
 
-    from .profiles.mdm import MDM_AR__ALL
+    from .mdm import AccessRights
 
     new_mdm_payload = MDMPayload(
         org.payload_prefix + '.mdm',
         cert_uuid,
         push_cert.topic,  # APNs push topic
         'https://localhost:5443/mdm',
-        MDM_AR__ALL,
+        AccessRights.All,
         CheckInURL='https://localhost:5443/checkin',
         # we can validate MDM device client certs provided via SSL/TLS.
         # however this requires an SSL framework that is able to do that.

@@ -1,6 +1,8 @@
 @import '~normalize.css';
 @import '~milligram-scss';
 @import '~font-awesome/scss/font-awesome';
+@import 'settings';
+@import 'helper';
 @import 'upload';
 @import 'nav';
 
@@ -44,4 +46,10 @@
 
 .warning {
   color: red;
+}
+
+
+// TEST: Padding glyphicons in headers
+h3 i {
+  margin-right: 0.8rem;
 }

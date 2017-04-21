@@ -7,12 +7,11 @@ ORM (SQLAlchemy) Models
     app.rst
     certificate.rst
     certificate_request.rst
+    command.rst
     dep_config.rst
     dep_profile.rst
     device.rst
     internal_ca.rst
-    mdm_config.rst
-    mdm_group.rst
-    rsa_private_key.rst
+    organization.rst
     profile.rst
-    command.rst
+    rsa_private_key.rst

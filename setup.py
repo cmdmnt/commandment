@@ -42,7 +42,9 @@ setup(
             'Sphinx',
             'sphinxcontrib-napoleon',
             'sphinx-rtd-theme',
-            'sphinxcontrib-httpdomain'
+            'sphinxcontrib-httpdomain',
+            'sphinxcontrib-plantuml',
+            'sadisplay'
         ]
     },
     setup_requires=['pytest-runner'],

@@ -8,3 +8,4 @@ All responses and requests are expected to follow the JSON-API standard.
 
     certificates.rst
     devices.rst
+    organization.rst

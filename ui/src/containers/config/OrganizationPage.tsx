@@ -11,7 +11,7 @@ interface OrganizationPageState {
 }
 
 interface OrganizationPageDispatchProps {
-    index: actions.IndexActionRequest;
+    read: actions.ReadActionRequest;
     post: actions.PostActionRequest;
 }
 
@@ -25,15 +25,15 @@ interface OrganizationPageProps extends OrganizationPageState, OrganizationPageD
     } },
     (dispatch: Dispatch<any>): OrganizationPageDispatchProps => {
         return bindActionCreators({
-            index: actions.index,
-            post: actions.post
+            post: actions.post,
+            read: actions.read
         }, dispatch);
     }
 )
 export class OrganizationPage extends React.Component<OrganizationPageProps, undefined> {
 
     componentWillMount() {
-        this.props.index();
+        this.props.read();
     }
 
     handleSubmit = (values: FormData): void => {
@@ -55,7 +55,7 @@ export class OrganizationPage extends React.Component<OrganizationPageProps, und
                 <div className='row'>
                     <div className='column'>
                         <OrganizationForm
-                            initialValues={}
+                            initialValues={organization.organization}
                             onSubmit={this.handleSubmit}
                         />
                     </div>

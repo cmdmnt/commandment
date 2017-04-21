@@ -2,6 +2,8 @@ import * as React from 'react';
 import {Field, reduxForm, FormProps} from 'redux-form';
 
 import './OrganizationForm.scss';
+import {required, reverseDns} from "../validations";
+import {textInput} from "./fields/TextInput";
 
 export interface FormData {
     name: string;
@@ -30,39 +32,60 @@ export class OrganizationForm extends React.Component<OrganizationFormProps, und
 
         return (
             <form onSubmit={handleSubmit}>
-                <fieldset>
-                    <h4>General Information</h4>
-                    <label htmlFor='name'>Name</label>
-                    <Field name='name' component='input' type='text' placeholder='Acme Inc.' id='name' required />
-                    <span>The name of your organization</span>
+                <fieldset className='top-margin'>
+                    <h3><i className='fa fa-home' /> General Information</h3>
+                    <blockquote>These details are shown in configuration profiles</blockquote>
+                    <label htmlFor='name'>Name <small className='float-right'>The name of your organization</small></label>
+                    <Field name='name' component={textInput} type='text' placeholder='Acme Inc.' id='name'
+                           required validate={required} />
 
-                    <label htmlFor='payload_prefix'>Prefix</label>
-                    <Field name='payload_prefix' component='input' type='text' placeholder='com.acme' id='payload_prefix' required />
-                    <span>The prefix is the reverse style DNS name of your organization which will uniquely identify profiles</span>
+
+                    <label htmlFor='payload-prefix'>Prefix <small className='float-right'>reverse style DNS name of your organization</small></label>
+                    <Field name='payload_prefix' component={textInput} type='text' placeholder='com.acme'
+                           id='payload-prefix' validate={[required, reverseDns]} required />
                 </fieldset>
+                <hr />
                 <fieldset>
-                    <h4>Certificate Details</h4>
-                    <p>These details will be shown on any certificates issued by the MDM</p>
 
-                    <label htmlFor='x509_ou'>Organization Unit or Department</label>
-                    <Field name='x509_ou' component='input' type='text' id='x509_ou' placeholder='IT' maxLength={32} />
+                    <h3><i className='fa fa-certificate' /> Certificate Details</h3>
+                    <blockquote>These details will be shown on any certificates issued by the MDM</blockquote>
 
-                    <label htmlFor='x509_o'>Organization Name</label>
-                    <Field name='x509_o' component='input' type='text' id='x509_o' placeholder='Acme' maxLength={64} />
+                    <div className='row'>
+                        <div className='column'>
+                            <label htmlFor='x509ou'>OU or Department</label>
+                            <Field name='x509_ou' component='input' type='text' id='x509ou' placeholder='IT' />
+                        </div>
+                        <div className='column'>
+                            <label htmlFor='x509o'>Organization Name</label>
+                            <Field name='x509_o' component='input' type='text' id='x509o' placeholder='Acme' />
+                        </div>
+                    </div>
+                    <div className='row'>
+                        <div className='column'>
+                            <label htmlFor='x509-st'>State or Province</label>
+                            <Field name='x509_st' component='input' type='text' id='x509-st' />
+                        </div>
+                        <div className='column'>
+                            <label htmlFor='x509-c'>Country</label>
+                            <Field name='x509_c' component='select' id='x509-c'>
+                                <option value='US'>United States</option>
+                                <option value='AU'>Australia</option>
+                            </Field>
+                        </div>
+                    </div>
 
-                    <label htmlFor='x509_st'>State or Province</label>
-                    <Field name='x509_st' component='input' type='text' id='x509_st' maxLength={128} />
-
-                    <label htmlFor='x509_c'>Country</label>
-                    <Field name='x509_c' component='select' id='x509_c_id'>
-                        <option value='US'>United States</option>
-                        <option value='AU'>Australia</option>
-                    </Field>
                 </fieldset>
-                <button type='submit' disabled={pristine || submitting} className="button-primary">Save</button>
-                <button type='button' disabled={pristine || submitting} className='button-outline' onClick={reset}>
-                    Undo Changes
-                </button>
+                <div className='row'>
+                    <div className='column clearfix'>
+                        <button type='button' disabled={pristine || submitting} className='float-left button-outline' onClick={reset}>
+                            Undo Changes
+                        </button>
+                        <button type='submit' disabled={pristine || submitting} className="float-right button-primary">
+                            Save
+                        </button>
+                    </div>
+                </div>
+
             </form>
         )
     }

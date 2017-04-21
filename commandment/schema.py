@@ -1,7 +1,8 @@
 from marshmallow_jsonapi import fields
 from marshmallow_jsonapi.flask import Relationship, Schema
-from marshmallow import Schema as FlatSchema
-
+from marshmallow import Schema as FlatSchema, post_load
+from .models import db, Organization
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 class DeviceSchema(Schema):
     """marshmallow-jsonapi schema for Device objects."""
@@ -174,7 +175,6 @@ class OrganizationSchema(Schema):
         type_ = 'organizations'
         self_view = 'api_app.organization_detail'
         self_view_kwargs = {'organization_id': '<id>'}
-        self_view_many = 'api_app.organizations_list'
 
 
 class OrganizationFlatSchema(FlatSchema):
@@ -185,6 +185,20 @@ class OrganizationFlatSchema(FlatSchema):
     x509_o = fields.Str()
     x509_st = fields.Str()
     x509_c = fields.Str()
+
+    @post_load
+    def make_organization(self, data: dict) -> Organization:
+        """Construct a model from a parsed JSON schema."""
+        rows = db.session.query(Organization).count()
+        
+        if rows == 1:
+            db.session.query(Organization).update(data)
+            o = db.session.query(Organization).first()
+        else:
+            o = Organization(**data)
+            db.session.add(o)
+
+        return o
 
 
 class PushResponseFlatSchema(FlatSchema):

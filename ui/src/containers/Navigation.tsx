@@ -12,9 +12,8 @@ export class Navigation extends React.Component<undefined, undefined> {
                     <li><span>CMDMNT</span></li>
                     <li><a href="#">Configure</a>
                         <ul>
-                            <li><Link to='/config/ca'>Internal CA</Link></li>
-                            <li><Link to='/config/scep'>SCEP</Link></li>
                             <li><Link to='/config/organization'>Organization</Link></li>
+                            <li><Link to='/config/scep'>SCEP</Link></li>
                         </ul>
                     </li>
                     <li><Link to='/config/assistant'>Assistant</Link></li>

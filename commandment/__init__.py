@@ -4,6 +4,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 from flask import Flask, render_template
 
+from .configuration import configuration_app
 from .mdm_app import mdm_app
 from .admin import admin_app
 from .mdmcert import admin_mdmcert_app
@@ -32,6 +33,7 @@ def create_app() -> Flask:
     app.register_blueprint(mdm_app)
     app.register_blueprint(admin_app)
     app.register_blueprint(admin_mdmcert_app, url_prefix='/admin/mdmcert')
+    app.register_blueprint(configuration_app, url_prefix='/api/v1/configuration')
     app.register_blueprint(api_app, url_prefix='/api')
     app.register_blueprint(api_push_app, url_prefix='/api')
     app.register_blueprint(flat_api, url_prefix='/api')

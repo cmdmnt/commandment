@@ -535,6 +535,21 @@ class DeviceUser(db.Model):
 
 
 class Organization(db.Model):
+    """The MDM home organization configuration.
+    
+    These attributes are used as the defaults for several other services where an org name is required.
+    
+    :table: organizations
+    
+    Attributes:
+          id (int): ID
+          name (string): Name
+          payload_prefix (string): The reverse-dns style prefix to use for all generated profiles.
+          x509_ou (string): The x.509 Organizational Unit for generating certificates.
+          x509_o (string): The x.509 Organization for generating certificates.
+          x509_st (string): The x.509 State for generating certificates.
+          x509_c (string): The 2 letter x.509 country code for generating certificates. 
+    """
     __tablename__ = 'organizations'
 
     id = Column(Integer, primary_key=True)
