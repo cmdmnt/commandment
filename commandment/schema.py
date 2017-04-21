@@ -200,6 +200,20 @@ class OrganizationFlatSchema(FlatSchema):
 
         return o
 
+    
+class SCEPConfigFlatSchema(FlatSchema):
+    url = fields.Url(relative=False, schemes=['http', 'https'], required=True)
+    challenge_enabled = fields.Boolean()
+    ca_fingerprint = fields.String()
+    subject = fields.String()
+    key_size = fields.Integer()
+    key_type = fields.String(dump_only=True)
+    key_usage = fields.Integer()
+    subject_alt_name = fields.String()
+    retries = fields.Integer()
+    retry_delay = fields.Integer()
+    certificate_renewal_time_interval = fields.Integer()
+
 
 class PushResponseFlatSchema(FlatSchema):
     apns_id = fields.Integer()

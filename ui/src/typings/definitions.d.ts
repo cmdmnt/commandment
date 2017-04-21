@@ -59,20 +59,20 @@ declare interface Certificate {
     fingerprint?: string;
 }
 
-declare interface MDMConfig {
-    prefix: string;
-    addl_config: string;
-    topic: string;
-    access_rights: number;
-    mdm_url: string;
-    checkin_url: string;
-    mdm_name: string;
-    description: string;
-    ca_cert_id: number;
-    push_cert_id: number;
-    device_identity_method: string;
-    scep_url: string;
-    scep_challenge: string;
+declare interface SCEPConfiguration {
+    id: string|number;
+    url: string;
+    challenge_enabled: boolean;
+    challenge: string;
+    ca_fingerprint: string;
+    subject: string;
+    key_size: number;
+    key_type: 'RSA';
+    key_usage: any;
+    subject_alt_name: string;
+    retries: number;
+    retry_delay: number;
+    certificate_renewal_time_interval: number;
 }
 
 declare interface JSONAPIObject<TObject> {

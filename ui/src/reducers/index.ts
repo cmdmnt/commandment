@@ -4,7 +4,7 @@ import { reducer as formReducer, FormStateMap } from 'redux-form';
 
 import {certificates, CertificatesState} from './certificates';
 import {assistant, AssistantState} from './assistant';
-import {config, ConfigState} from './config';
+import {configuration, ConfigurationState} from './configuration';
 import {organization, OrganizationState} from './organization';
 import {devices, DevicesState} from "./devices";
 import {device, DeviceState} from "./device";
@@ -16,7 +16,7 @@ export interface RootState {
     form?: FormStateMap;
     certificates?: CertificatesState;
     assistant?: AssistantState;
-    config?: ConfigState;
+    configuration?: ConfigurationState;
     organization?: OrganizationState;
     devices?: DevicesState;
     device?: DeviceState;
@@ -30,7 +30,7 @@ export const rootReducer = combineReducers<RootState>({
     form: formReducer,
     assistant,
     certificates,
-    config,
+    configuration,
     organization,
     devices,
     device,

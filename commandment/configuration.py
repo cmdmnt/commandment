@@ -3,8 +3,8 @@ This module contains a Blueprint for API endpoints relating to system configurat
 """
 from flask import Blueprint, abort, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
-from .models import db, Organization
-from .schema import OrganizationFlatSchema, ProfileSchema
+from .models import db, Organization, SCEPConfig
+from .schema import OrganizationFlatSchema, ProfileSchema, SCEPConfigFlatSchema
 
 configuration_app = Blueprint('configuration_app', __name__)
 
@@ -51,3 +51,24 @@ def organization_post():
 
     return dump.data, 200, {'Content-Type': 'application/json'}
 
+
+@configuration_app.route('/scep', methods=['GET'])
+def scep_get():
+    """Retrieve information about SCEP enrollment configuration
+
+    :reqheader Accept: application/json
+    :reqheader Content-Type: application/json
+    :resheader Content-Type: application/json
+    :statuscode 200: Success
+    :statuscode 404: No configuration available
+    :statuscode 500: Other error
+    """
+    try:
+        c = db.session.query(SCEPConfig).one()
+    except NoResultFound:
+        return abort(404, 'No organization details found')
+
+    schema = SCEPConfigFlatSchema()
+    dump = schema.dumps(c)
+
+    return dump.data, 200, {'Content-Type': 'application/json'}
