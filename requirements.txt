@@ -51,6 +51,7 @@ python-dateutil==2.6.0
 pytz==2016.10
 requests==2.13.0
 requests-oauthlib==0.8.0
+sadisplay==0.4.8
 semver==2.7.6
 six==1.10.0
 snowballstemmer==1.2.1
@@ -58,6 +59,7 @@ Sphinx==1.5.3
 sphinx-rtd-theme==0.2.4
 sphinxcontrib-httpdomain==1.5.0
 sphinxcontrib-napoleon==0.6.1
+sphinxcontrib-plantuml==0.8.1
 SQLAlchemy==1.1.6
 typing==3.6.1
 ujson==1.35
