@@ -121,3 +121,34 @@ export const push: PushActionRequest = (id: number) => {
         }
     }
 };
+
+export type INVENTORY_REQUEST = 'devices/INVENTORY_REQUEST';
+export const INVENTORY_REQUEST: INVENTORY_REQUEST = 'devices/INVENTORY_REQUEST';
+export type INVENTORY_SUCCESS = 'devices/INVENTORY_SUCCESS';
+export const INVENTORY_SUCCESS: INVENTORY_SUCCESS = 'devices/INVENTORY_SUCCESS';
+export type INVENTORY_FAILURE = 'devices/INVENTORY_FAILURE';
+export const INVENTORY_FAILURE: INVENTORY_FAILURE = 'devices/INVENTORY_FAILURE';
+
+export interface InventoryActionRequest {
+    (id: number): RSAA<INVENTORY_REQUEST, INVENTORY_SUCCESS, INVENTORY_FAILURE>;
+}
+
+export interface InventoryActionResponse {
+    type: INVENTORY_REQUEST | INVENTORY_SUCCESS | INVENTORY_FAILURE;
+    payload?: JSONAPIDetailResponse<any>;
+}
+
+export const inventory: InventoryActionRequest = (id: number) => {
+    return {
+        [CALL_API]: {
+            endpoint: `/api/v1/devices/inventory/${id}`,
+            method: 'GET',
+            types: [
+                INVENTORY_REQUEST,
+                INVENTORY_SUCCESS,
+                INVENTORY_FAILURE
+            ],
+            headers: JSON_HEADERS
+        }
+    }
+};

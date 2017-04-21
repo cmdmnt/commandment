@@ -16,13 +16,18 @@ export interface FormData {
 }
 
 interface SCEPPayloadFormProps extends FormProps<FormData, any, any> {
-
+    onClickTest: (url: string) => void;
 }
 
 @reduxForm<FormData, SCEPPayloadFormProps, undefined>({
     form: 'scep_payload'
 })
 export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undefined> {
+    handleClickTest = (e: any) => {
+        e.preventDefault();
+        // TODO: dispatch test action
+    };
+
     render() {
         const {
             handleSubmit
@@ -34,25 +39,22 @@ export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undef
                     <div className='column'>
                         <label htmlFor='url'>URL</label>
                         <Field id='url' name='url' component='input' type='url' placeholder='http://scep.example.com/scep' required />
-                         <span>Test will send a GetCACaps message</span>
                     </div>
-                    <div className='column-30'>
-                        <button className="button button-outline form-field-button">Test</button>
+                    <div className='column-30 column-bottom'>
+                        <button className="button button-outline form-field-button" onClick={this.handleClickTest}>Test + Fingerprint</button>
                     </div>
                 </div>
                 <div className='row'>
                     <div className='column'>
-                        <label htmlFor='cafingerprint'>CA Fingerprint</label>
+                        <label htmlFor='cafingerprint'>CA Fingerprint <small className='float-right'>A fingerprint ensures your devices trust this server only</small></label>
                         <Field id='cafingerprint' name='ca_fingerprint' component='input' type='text' />
                     </div>
-                    <div className='column'>
-                    </div>
                 </div>
                 <div className='row'>
                     <div className='column'>
-                        <label htmlFor='name'>Name</label>
-                        <Field id='name' name='name' component='input' type='text' placeholder='(Optional) CA-NAME or organization.org' />
-                        <p>Any string that is understood by the SCEP server.</p>
+                        <label htmlFor='name'>Name <small className='float-right'>Optional. Any string that is understood by the SCEP server.</small></label>
+                        <Field id='name' name='name' component='input' type='text' placeholder='CA-NAME or organization.org' />
+        
 
                         <label htmlFor='subject'>Subject</label>
                         <Field id='subject' name='subject' component='input' type='text' placeholder='O=Commandment/OU=IT/CN=%HardwareUUID%' />
@@ -61,16 +63,8 @@ export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undef
                 </div>
                 <div className='row'>
                     <div className='column'>
-                        <label htmlFor='challenge'>Challenge</label>
+                        <label htmlFor='challenge'>Challenge <small className='float-right'>Optional. Used as the pre-shared secret for automatic enrollment</small></label>
                         <Field id='challenge' name='challenge' component='input' type='password' />
-
-
-                    </div>
-                    <div className='column'>
-
-                        <label htmlFor='challenge'>Confirm Challenge</label>
-                        <Field id='confirm_challenge' name='confirm_challenge' component='input' type='password' />
-                        <p>Optional. Used as the pre-shared secret for automatic enrollment</p>
                     </div>
                 </div>
                 <div className='row'>

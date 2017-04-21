@@ -11,7 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 import datetime
 from enum import Enum
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum as DBEnum, text, \
-    BigInteger, and_, or_, LargeBinary
+    BigInteger, and_, or_, LargeBinary, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -209,8 +209,8 @@ class Device(db.Model):
     hostname = Column(String, nullable=True)
     local_hostname = Column(String, nullable=True)
 
-    available_device_capacity = Column(BigInteger, nullable=True)
-    device_capacity = Column(BigInteger, nullable=True)
+    available_device_capacity = Column(Float, nullable=True) # TODO: Float
+    device_capacity = Column(Float, nullable=True)
 
     wifi_mac = Column(String, nullable=True)
     bluetooth_mac = Column(String, nullable=True)
@@ -222,6 +222,7 @@ class Device(db.Model):
     # The APNS device token is stored in base64 format. Descriptors are added to handle this encoding and decoding
     # to bytes automatically.
     _token = Column(String, nullable=True)
+    tokenupdate_at = Column(DateTime)
 
     @hybrid_property
     def token(self):
@@ -255,7 +256,18 @@ class Device(db.Model):
     dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
     dep_config = relationship('DEPConfig', backref='devices')
     info_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-    first_user_message_seen = Column(Boolean, nullable=False, default=False)
+
+    # SecurityInfo
+    passcode_present = Column(Boolean)
+    passcode_compliant = Column(Boolean)
+    passcode_compliant_with_profiles = Column(Boolean)
+    fde_enabled = Column(Boolean)
+    fde_has_prk = Column(Boolean)
+    fde_has_irk = Column(Boolean)
+    firewall_enabled = Column(Boolean)
+    block_all_incoming = Column(Boolean)
+    stealth_mode_enabled = Column(Boolean)
+    sip_enabled = Column(Boolean)
 
     certificate_id = Column(Integer, ForeignKey('certificates.id'))
     certificate = relationship('Certificate', backref='devices')
@@ -333,10 +345,33 @@ class InstalledCertificate(db.Model):
     fingerprint_sha256 = Column(String(64), nullable=False, index=True)
 
 
-# class InstalledProfile(db.Model):
-#     __tablename__ = 'installed_profiles'
-#
-#
+class InstalledProfile(db.Model):
+    """This model represents a single installed profile on an enrolled device as returned by the ``ProfileList`` query.
+    
+    The response does not contain the entire contents of the profiles installed therefore the UUIDs returned are joined
+    against our profiles table to ascertain whether profiles have been installed or not.
+    
+    :table: installed_profiles
+    """
+    __tablename__ = 'installed_profiles'
+
+    id = Column(Integer, primary_key=True)
+    device_udid = Column(GUID, index=True, nullable=False)
+    device_id = Column(ForeignKey('devices.id'), nullable=True)
+    device = relationship('Device', backref='installed_profiles')
+
+    has_removal_password = Column(Boolean)
+    is_encrypted = Column(Boolean)
+
+    payload_description = Column(String)
+    payload_display_name = Column(String)
+    payload_identifier = Column(String)
+    payload_organization = Column(String)
+    payload_removal_disallowed = Column(Boolean)
+    payload_uuid = Column(GUID, index=True)
+    # SignerCertificates
+    
+
 
 class CommandSequence(db.Model):
     """A command sequence represents a series of commands where all members must succeed in order for the sequence to

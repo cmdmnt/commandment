@@ -22,8 +22,8 @@ class DeviceSchema(Schema):
     last_seen = fields.DateTime()
     hostname = fields.Str()
     local_hostname = fields.Str()
-    available_device_capacity = fields.Int()
-    device_capacity = fields.Int()
+    available_device_capacity = fields.Float()
+    device_capacity = fields.Float()
     wifi_mac = fields.Str()
     bluetooth_mac = fields.Str()
 
@@ -31,6 +31,7 @@ class DeviceSchema(Schema):
     # push_magic = fields.Str()
     # token = fields.Str()
     # unlock_token = fields.Str()
+    tokenupdate_at = fields.DateTime()
 
     # TODO: Relationship to dep_config
 

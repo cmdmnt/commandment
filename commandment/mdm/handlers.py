@@ -40,8 +40,22 @@ def ack_device_information(request: DeviceInformation, device: Device, response:
 
 @command_router.route('SecurityInfo')
 def ack_security_info(request: SecurityInfo, device: Device, response: dict):
-    responses = response['SecurityInfo']
-    
+    sinfo = response['SecurityInfo']
+    device.passcode_present = sinfo.get('PasscodePresent', None)
+    device.passcode_compliant = sinfo.get('PasscodeCompliant', None)
+    device.passcode_compliant_with_profiles = sinfo.get('PasscodeCompliantWithProfiles', None)
+    device.fde_enabled = sinfo.get('FDE_Enabled', None)
+    device.fde_has_prk = sinfo.get('FDE_HasPersonalRecoveryKey', None)
+    device.fde_has_irk = sinfo.get('FDE_HasInstitutionalRecoveryKey', None)
+    device.sip_enabled = sinfo.get('SystemIntegrityProtectionEnabled', None)
+
+    if 'FirewallSettings' in sinfo:
+        fw = sinfo['FirewallSettings']
+        device.firewall_enabled = fw.get('FirewallEnabled', None)
+        device.block_all_incoming = fw.get('BlockAllIncoming', None)
+        device.stealth_mode_enabled = fw.get('StealthMode', None)
+
+    db.session.commit()
 
 @command_router.route('ProfileList')
 def ack_profile_list(request: ProfileList, device: Device, response: dict):

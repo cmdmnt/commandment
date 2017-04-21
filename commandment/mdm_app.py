@@ -58,7 +58,6 @@ def authenticate(plist_data):
     # tell the difference between a periodic TokenUpdate and the first
     # post-enrollment TokenUpdate
     device.token = None
-    device.first_user_message_seen = False
 
     # TODO: we're essentially trusting the device to give the correct security infomration here
     #device.certificate = g.device_cert
@@ -83,6 +82,8 @@ def token_update(plist_data):
     if not device.token:
         device.is_enrolled = True
         device_enrolled.send(device)
+
+    device.tokenupdate_at = datetime.utcnow()
 
     # device.certificate = g.device_cert
 
@@ -184,6 +185,7 @@ def mdm():
 
     current_app.logger.info('device id=%d udid=%s processing status=%s', device.id, device.udid, status)
     device.last_seen = datetime.utcnow()
+    db.session.commit()
 
     print(g.plist_data)
 
@@ -201,6 +203,8 @@ def mdm():
                 command.status = CommandStatus.Acknowledged.value
             elif status == 'NotNow':
                 command.status = CommandStatus.NotNow.value
+            elif status == 'Error':
+                command.status = CommandStatus.Invalid.value
             else:
                 current_app.logger.warning('unrecognised command status: {}'.format(status))
 

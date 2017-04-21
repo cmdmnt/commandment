@@ -9,6 +9,9 @@ export const ModelIcon = (value: GriddleValue): JSX.Element => {
     console.log(value);
     const icons: { [propName: string]: string; } = {
        'iMac': 'fa-desktop',
+       'MacBook Pro': 'fa-laptop',
+       'MacBook Air': 'fa-laptop',
+       'MacPro': 'fa-trash',
        'iPhone': 'fa-mobile'
     };
 

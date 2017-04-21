@@ -5,7 +5,7 @@ import {bindActionCreators} from "redux";
 import * as actions from '../actions/devices';
 import {RootState} from "../reducers/index";
 import {RouteComponentProps} from "react-router";
-import {PushActionRequest, ReadActionRequest} from "../actions/devices";
+import {InventoryActionRequest, PushActionRequest, ReadActionRequest} from "../actions/devices";
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
 import {DeviceState} from "../reducers/device";
 
@@ -22,12 +22,14 @@ function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
 interface ReduxDispatchProps {
     read: ReadActionRequest;
     push: PushActionRequest;
+    inventory: InventoryActionRequest;
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
     return bindActionCreators({
         read: actions.read,
-        push: actions.push
+        push: actions.push,
+        inventory: actions.inventory
     }, dispatch);
 }
 
@@ -53,6 +55,11 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
         this.props.push(this.props.device.device.id);
     };
 
+    handleInventory = (e: any) => {
+        e.preventDefault();
+        this.props.inventory(this.props.device.device.id);
+    };
+
     componentDidMount(): void {
         this.props.read(this.props.match.params.id, ['commands']);
     }
@@ -65,6 +72,7 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
         return (
             <div className='DevicePage top-margin container'>
                 <button className='button button-outline' onClick={this.handlePush}>Force Push</button>
+                <button className='button button-outline' onClick={this.handleInventory}>Inventory</button>
                 {device && <MacOSDeviceDetail device={device} />}
             </div>
         );
