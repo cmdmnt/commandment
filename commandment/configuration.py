@@ -72,3 +72,24 @@ def scep_get():
     dump = schema.dumps(c)
 
     return dump.data, 200, {'Content-Type': 'application/json'}
+
+
+@configuration_app.route('/scep', methods=['PATCH', 'POST'])
+def scep_post():
+    """Update information about SCEP enrollment configuration
+
+    :reqheader Accept: application/json
+    :reqheader Content-Type: application/json
+    :resheader Content-Type: application/json
+    :statuscode 201: Success
+    :statuscode 400: Validation Error
+    :statuscode 500: Other error
+    """
+    schema = SCEPConfigFlatSchema()
+    data = request.data
+    result = schema.loads(data)
+    db.session.commit()
+
+    dump = schema.dumps(result.data)
+
+    return dump.data, 200, {'Content-Type': 'application/json'}

@@ -1,6 +1,6 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
 import { CALL_API, RSAA } from 'redux-api-middleware';
-import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from './constants'
+import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
 
 export type INDEX_REQUEST = 'devices/INDEX_REQUEST';
 export const INDEX_REQUEST: INDEX_REQUEST = 'devices/INDEX_REQUEST';
@@ -86,6 +86,38 @@ export const read: ReadActionRequest = (id: number, include?: Array<string>) => 
                 READ_FAILURE
             ],
             headers: JSONAPI_HEADERS
+        }
+    }
+};
+
+
+export type PUSH_REQUEST = 'devices/PUSH_REQUEST';
+export const PUSH_REQUEST: PUSH_REQUEST = 'devices/PUSH_REQUEST';
+export type PUSH_SUCCESS = 'devices/PUSH_SUCCESS';
+export const PUSH_SUCCESS: PUSH_SUCCESS = 'devices/PUSH_SUCCESS';
+export type PUSH_FAILURE = 'devices/PUSH_FAILURE';
+export const PUSH_FAILURE: PUSH_FAILURE = 'devices/PUSH_FAILURE';
+
+export interface PushActionRequest {
+    (id: number): RSAA<PUSH_REQUEST, PUSH_SUCCESS, PUSH_FAILURE>;
+}
+
+export interface PushActionResponse {
+    type: PUSH_REQUEST | PUSH_SUCCESS | PUSH_FAILURE;
+    payload?: JSONAPIDetailResponse<any>;
+}
+
+export const push: PushActionRequest = (id: number) => {
+    return {
+        [CALL_API]: {
+            endpoint: `/api/v1/devices/${id}/push`,
+            method: 'POST',
+            types: [
+                PUSH_REQUEST,
+                PUSH_SUCCESS,
+                PUSH_FAILURE
+            ],
+            headers: JSON_HEADERS
         }
     }
 };

@@ -53,3 +53,20 @@
 h3 i {
   margin-right: 0.8rem;
 }
+
+dl.horizontal {
+
+  dt {
+    width: 20%;
+    float: left;
+    font-weight: bold;
+  }
+  dd {
+    margin: 0;
+  }
+  dd:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+}

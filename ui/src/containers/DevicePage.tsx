@@ -5,7 +5,7 @@ import {bindActionCreators} from "redux";
 import * as actions from '../actions/devices';
 import {RootState} from "../reducers/index";
 import {RouteComponentProps} from "react-router";
-import {ReadActionRequest} from "../actions/devices";
+import {PushActionRequest, ReadActionRequest} from "../actions/devices";
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
 import {DeviceState} from "../reducers/device";
 
@@ -13,8 +13,22 @@ interface ReduxStateProps {
     device: DeviceState;
 }
 
+function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+    return {
+        device: state.device
+    };
+}
+
 interface ReduxDispatchProps {
     read: ReadActionRequest;
+    push: PushActionRequest;
+}
+
+function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
+    return bindActionCreators({
+        read: actions.read,
+        push: actions.push
+    }, dispatch);
 }
 
 interface RouteParameters {
@@ -22,6 +36,7 @@ interface RouteParameters {
 }
 
 interface DevicePageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteParameters> {
+    componentDidMount: () => void;
 }
 
 interface DevicePageState {
@@ -29,16 +44,14 @@ interface DevicePageState {
 }
 
 @connect<ReduxStateProps, ReduxDispatchProps, DevicePageProps>(
-    (state: RootState, ownProps?: any): ReduxStateProps => {
-        return { device: state.device };
-    },
-    (dispatch: Dispatch<any>): ReduxDispatchProps => {
-        return bindActionCreators({
-            read: actions.read
-        }, dispatch);
-    }
+    mapStateToProps,
+    mapDispatchToProps
 )
 export class DevicePage extends React.Component<DevicePageProps, DevicePageState> {
+
+    handlePush = (e: any) => {
+        this.props.push(this.props.device.device.id);
+    };
 
     componentDidMount(): void {
         this.props.read(this.props.match.params.id, ['commands']);
@@ -51,6 +64,7 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
 
         return (
             <div className='DevicePage top-margin container'>
+                <button className='button button-outline' onClick={this.handlePush}>Force Push</button>
                 {device && <MacOSDeviceDetail device={device} />}
             </div>
         );

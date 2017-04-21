@@ -1,7 +1,7 @@
 from marshmallow_jsonapi import fields
 from marshmallow_jsonapi.flask import Relationship, Schema
 from marshmallow import Schema as FlatSchema, post_load
-from .models import db, Organization
+from .models import db, Organization, SCEPConfig
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 class DeviceSchema(Schema):
@@ -213,6 +213,20 @@ class SCEPConfigFlatSchema(FlatSchema):
     retries = fields.Integer()
     retry_delay = fields.Integer()
     certificate_renewal_time_interval = fields.Integer()
+
+    @post_load
+    def make_scepconfig(self, data: dict) -> SCEPConfig:
+        """Construct a model from a parsed JSON schema."""
+        rows = db.session.query(SCEPConfig).count()
+
+        if rows == 1:
+            db.session.query(SCEPConfig).update(data)
+            o = db.session.query(SCEPConfig).first()
+        else:
+            o = SCEPConfig(**data)
+            db.session.add(o)
+
+        return o
 
 
 class PushResponseFlatSchema(FlatSchema):

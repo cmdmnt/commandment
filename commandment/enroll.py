@@ -6,7 +6,8 @@ from .pki.models import Certificate
 from .profiles.cert import PEMCertificatePayload, SCEPPayload
 from .profiles.mdm import MDMPayload
 from .profiles import Profile
-from .models import db, Organization
+from .models import db, Organization, SCEPConfig
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 PROFILE_CONTENT_TYPE = 'application/x-apple-aspen-config'
 
@@ -32,8 +33,20 @@ def enroll():
     """Generate an enrollment profile."""
     mdm_ca = get_ca()
 
-    org = db.session.query(Organization).first()
+    try:
+        org = db.session.query(Organization).one()
+    except NoResultFound:
+        abort(500, 'No organization is configured, cannot generate enrollment profile.')
+    except MultipleResultsFound:
+        abort(500, 'Multiple organizations, backup your database and start again')
+
+
     push_path = os.path.join(os.path.dirname(current_app.root_path), current_app.config['PUSH_CERTIFICATE'])
+
+    try:
+        scep_config = db.session.query(SCEPConfig).one()
+    except NoResultFound:
+        abort(500, 'No SCEP Configuration found, cannot generate enrollment profile.')
 
     if os.path.exists(push_path):
         with open(push_path, 'rb') as fd:
@@ -67,11 +80,10 @@ def enroll():
 
     scep_payload = SCEPPayload(
         org.payload_prefix + '.mdm-scep',
-        'http://localhost/scep',  # config.scep_url,
+        scep_config.url,
         PayloadContent=dict(
             Keysize=2048,
-            Challenge='sekret',
-            #CAFingerprint=plistlib.Data(ca_fingerprint),
+            # Challenge=scep_config.challenge,
             Subject=[
                 [['CN', '%HardwareUUID%']]
             ]

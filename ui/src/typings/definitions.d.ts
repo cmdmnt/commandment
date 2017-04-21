@@ -40,6 +40,7 @@ declare interface Device {
     product_name: string;
     serial_number: string;
     awaiting_configuration: boolean;
+    last_seen: string;
 }
 
 declare interface Organization {

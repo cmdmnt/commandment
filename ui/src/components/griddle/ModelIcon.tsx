@@ -8,9 +8,14 @@ interface GriddleValue {
 export const ModelIcon = (value: GriddleValue): JSX.Element => {
     console.log(value);
     const icons: { [propName: string]: string; } = {
-       'iMac': 'fa-computer',
+       'iMac': 'fa-desktop',
        'iPhone': 'fa-mobile'
     };
 
-    return <i className={'fa ' + icons[value.value]} />;
+    let className = 'fa fa-question-circle';
+    if (icons.hasOwnProperty(value.value)) {
+        className = 'fa ' + icons[value.value];
+    }
+
+    return <i className={className} />;
 };

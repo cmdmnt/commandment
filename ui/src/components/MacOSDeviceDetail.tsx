@@ -1,5 +1,7 @@
 import * as React from 'react';
+import * as moment from 'moment';
 import {DeviceState} from "../reducers/device";
+import {ModelIcon} from "./griddle/ModelIcon";
 
 interface MacOSDeviceDetailState {
 
@@ -25,31 +27,26 @@ export class MacOSDeviceDetail extends React.Component<MacOSDeviceDetailProps, M
 
         const attributes = device.device.attributes;
 
+        const name = attributes.device_name ? attributes.device_name : '(Untitled)';
+        const niceLastSeen = attributes.last_seen ? moment(attributes.last_seen).fromNow() : 'Never';
+
         return (
             <div className='MacOSDeviceDetail'>
+                <h1><ModelIcon value={attributes.model_name} /> {name}</h1>
                 <div className='row'>
                     <div className='column'>
-                        <dl>
+                        <dl className='horizontal'>
+                            <dt>Last Seen</dt>
+                            <dd>{niceLastSeen}</dd>
+
+                            <dt>macOS</dt>
+                            <dd>{attributes.os_version} ({attributes.build_version})</dd>
+                            
                             <dt>UDID</dt>
                             <dd>{attributes.udid}</dd>
 
-                            <dt>Device Name</dt>
-                            <dd>{attributes.device_name}</dd>
-
-                            <dt>Serial Number</dt>
-                            <dd>{attributes.serial_number}</dd>
-
                             <dt>Model</dt>
                             <dd>{attributes.model}</dd>
-
-                            <dt>Model Name</dt>
-                            <dd>{attributes.model_name}</dd>
-
-                            <dt>OS Version</dt>
-                            <dd>{attributes.os_version}</dd>
-
-                            <dt>Product Name</dt>
-                            <dd>{attributes.product_name}</dd>
                         </dl>
                     </div>
                 </div>
