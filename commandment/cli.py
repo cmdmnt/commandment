@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Copyright (c) 2015 Jesse Peterson
+Copyright (c) 2015 Jesse Peterson, 2017 Mosen
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 
@@ -57,6 +57,7 @@ def server():
     #     atexit.register(stop_runner)
 
 
+    # http://werkzeug.pocoo.org/docs/0.11/serving/#werkzeug.serving.run_simple
     app.run(
         host='0.0.0.0',
         port=app.config.get('PORT'),

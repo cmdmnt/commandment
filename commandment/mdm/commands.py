@@ -342,6 +342,13 @@ class CertificateList(Command):
         self._attrs = kwargs
 
 
+class ProvisioningProfileList(Command):
+    request_type = 'ProvisioningProfileList'
+    require_access = {AccessRights.ProfileInspection}
+
+    def __init__(self, uuid=None, **kwargs):
+        super(ProvisioningProfileList, self).__init__(uuid)
+        self._attrs = kwargs
 
 
 class InstalledApplicationList(Command):

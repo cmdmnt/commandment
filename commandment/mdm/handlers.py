@@ -1,5 +1,5 @@
 from flask import current_app
-from ..models import db, Device, InstalledApplication, InstalledCertificate
+from ..models import db, Device, InstalledApplication, InstalledCertificate, InstalledProfile
 from ..profiles.models import Profile
 from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList
 from ..mdm_app import command_router
@@ -57,11 +57,40 @@ def ack_security_info(request: SecurityInfo, device: Device, response: dict):
 
     db.session.commit()
 
+
 @command_router.route('ProfileList')
 def ack_profile_list(request: ProfileList, device: Device, response: dict):
-    responses = response['ProfileList']
-    # for profile in responses:
-    #     p =
+    """Acknowledge a ``ProfileList`` response.
+    
+    Args:
+        request (ProfileList): The command instance that generated this response.
+        device (Device): The device responding to the command.
+        response (dict): The raw response dictionary, de-serialized from plist.
+    Returns:
+          void: Reserved for future use
+    """
+    profiles = response['ProfileList']
+    
+    for profile in profiles:
+        ip = InstalledProfile()
+        ip.device = device
+        ip.device_udid = device.udid
+
+        ip.has_removal_password = profile.get('HasRemovalPasscode', None)
+        ip.is_encrypted = profile.get('IsEncrypted', None)
+
+        ip.payload_description = profile.get('PayloadDescription', None)
+        ip.payload_display_name = profile.get('PayloadDisplayName', None)
+        ip.payload_identifier = profile.get('PayloadIdentifier', None)
+        ip.payload_organization = profile.get('PayloadOrganization', None)
+        ip.payload_removal_disallowed = profile.get('PayloadRemovalDisallowed', None)
+        ip.payload_uuid = profile.get('PayloadUUID', None)
+
+        # TODO: SignerCertificates
+        # TODO: Payloads
+        db.session.add(ip)
+
+    db.session.commit()
 
 
 @command_router.route('CertificateList')

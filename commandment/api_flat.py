@@ -107,16 +107,28 @@ def device_inventory(device_id: int):
     db.session.add(db_command)
 
     # InstalledApplicationList
-    ial = commands.InstalledApplicationList()
-    db_command_ial = Command.from_model(ial)
-    db_command_ial.device = d
-    db.session.add(db_command_ial)
+    # ial = commands.InstalledApplicationList()
+    # db_command_ial = Command.from_model(ial)
+    # db_command_ial.device = d
+    # db.session.add(db_command_ial)
 
     # CertificateList
     cl = commands.CertificateList()
     dbc = Command.from_model(cl)
     dbc.device = d
     db.session.add(dbc)
+
+    # SecurityInfo
+    si = commands.SecurityInfo()
+    dbsi = Command.from_model(si)
+    dbsi.device = d
+    db.session.add(dbsi)
+
+    # ProfileList
+    pl = commands.ProfileList()
+    db_pl = Command.from_model(pl)
+    db_pl.device = d
+    db.session.add(db_pl)
 
     db.session.commit()
 
