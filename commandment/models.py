@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Copyright (c) 2015 Jesse Peterson
+Copyright (c) 2015 Jesse Peterson, 2017 Mosen
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 
 Attributes:
@@ -144,25 +144,6 @@ class DeviceIdentityCertificate(Certificate):
     }
 
 
-class InternalCA(db.Model):
-    """The InternalCA model keeps track of the issued certificate serial numbers."""
-    __tablename__ = 'internal_ca'
-
-    id = Column(Integer, primary_key=True)
-    ca_type = Column(String(64), nullable=False, index=True)
-    serial = Column(Integer, nullable=False)
-
-    certificate_id = Column(ForeignKey('certificates.id'), unique=True)
-    certificate = relationship('Certificate', backref='certificate_authority')
-
-    def get_next_serial(self):
-        '''Increment our serial number and return it for use in a 
-        new certificate'''
-
-        # MAX(serial) + 1
-        pass
-
-
 class Device(db.Model):
     """An enrolled device.
     
@@ -285,7 +266,7 @@ class Device(db.Model):
 
     @property
     def platform(self) -> Platform:
-        if self.model_name in ['iMac']:  # TODO: obviously not sufficient
+        if self.model_name in ['iMac', 'MacBook Pro', 'MacBook Air', 'MacPro']:  # TODO: obviously not sufficient
             return Platform.macOS
         else:
             return Platform.iOS
@@ -614,6 +595,10 @@ class AppSource(db.Model):
 
 
 class SCEPConfig(db.Model):
+    """This table holds a single row containing information used to generate the SCEP enrollment profile.
+    
+    :table: scep_config
+    """
     __tablename__ = 'scep_config'
 
     id = Column(Integer, primary_key=True)
@@ -630,4 +615,3 @@ class SCEPConfig(db.Model):
     retries = Column(Integer, default=3, nullable=False)
     retry_delay = Column(Integer, default=10, nullable=False)
     certificate_renewal_time_interval = Column(Integer, default=14, nullable=False)
-    

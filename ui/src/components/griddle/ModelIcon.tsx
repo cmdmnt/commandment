@@ -1,12 +1,11 @@
 import * as React from 'react';
 
 interface GriddleValue {
-    griddleKey: number;
+    griddleKey?: number;
     value: any;
 }
 
 export const ModelIcon = (value: GriddleValue): JSX.Element => {
-    console.log(value);
     const icons: { [propName: string]: string; } = {
        'iMac': 'fa-desktop',
        'MacBook Pro': 'fa-laptop',
@@ -20,5 +19,5 @@ export const ModelIcon = (value: GriddleValue): JSX.Element => {
         className = 'fa ' + icons[value.value];
     }
 
-    return <i className={className} />;
+    return <i className={className} title={value.value} />;
 };

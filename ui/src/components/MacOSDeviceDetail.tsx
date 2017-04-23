@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 import {DeviceState} from "../reducers/device";
 import {ModelIcon} from "./griddle/ModelIcon";
+import {InstalledCertificates} from './device/InstalledCertificates';
 
 interface MacOSDeviceDetailState {
 
@@ -18,9 +19,7 @@ export class MacOSDeviceDetail extends React.Component<MacOSDeviceDetailProps, M
         const {
             device
         } = this.props;
-
-
-
+        
         if (!device.device) {
             return (<div className='MacOSDeviceDetail'>No device</div>)
         }

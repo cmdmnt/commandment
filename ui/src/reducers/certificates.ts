@@ -10,6 +10,7 @@ import {FetchPushCertificatesActionResponse} from '../actions/certificates/push'
 import {PushState, push} from "./certificates/push";
 import {SSLState, ssl} from './certificates/ssl';
 import {CAState, ca} from "./certificates/ca";
+import {installed_certificates, InstalledCertificatesState} from "./device/installed_certificates";
 
 
 

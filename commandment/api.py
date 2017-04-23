@@ -4,8 +4,8 @@ from flask_rest_jsonapi import Api
 from .resources import CertificatesList, CertificateDetail, CertificateSigningRequestList, \
     CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
     CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, OrganizationList, \
-    OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationList, ProfilesList, ProfileDetail, \
-    PayloadsList, PayloadDetail
+    OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationsList, ProfilesList, ProfileDetail, \
+    PayloadsList, PayloadDetail, InstalledCertificatesList, InstalledCertificateDetail, InstalledApplicationDetail
 
 api_app = Blueprint('api_app', __name__)
 api = Api(api_app)
@@ -32,7 +32,16 @@ api.route(CommandsList, 'commands_list', '/v1/commands', '/v1/devices/<int:devic
 api.route(CommandDetail, 'command_detail', '/v1/commands/<int:command_id>')
 
 # InstalledApplications
-api.route(InstalledApplicationList, 'installed_applications_list', '/v1/devices/<int:device_id>/installed_applications')
+api.route(InstalledApplicationsList, 'installed_applications_list',
+          '/v1/devices/<int:device_id>/installed_applications')
+api.route(InstalledApplicationDetail, 'installed_application_detail',
+          '/v1/installed_applications/<int:installed_application_id>')
+
+# InstalledCertificates
+api.route(InstalledCertificatesList, 'installed_certificates_list',
+          '/v1/devices/<int:device_id>/installed_certificates')
+api.route(InstalledCertificateDetail, 'installed_certificate_detail',
+          '/v1/installed_certificates/<int:installed_certificate_id>')
 
 # Profiles
 api.route(ProfilesList, 'profiles_list', '/v1/profiles')

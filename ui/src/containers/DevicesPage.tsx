@@ -10,13 +10,24 @@ import {DevicesState} from "../reducers/devices";
 import {IndexActionRequest} from "../actions/devices";
 import {ModelIcon} from '../components/griddle/ModelIcon';
 import {DeviceLink} from '../components/griddle/DeviceLink';
+import {SinceNowUTC} from "../components/griddle/SinceNowUTC";
 
 interface ReduxStateProps {
     devices: DevicesState;
 }
 
+function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+    return { devices: state.devices };
+}
+
 interface ReduxDispatchProps {
     index: IndexActionRequest;
+}
+
+function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
+    return bindActionCreators({
+        index: actions.index
+    }, dispatch);
 }
 
 interface DevicesPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
@@ -28,14 +39,8 @@ interface DevicesPageState {
 }
 
 @connect<ReduxStateProps, ReduxDispatchProps, DevicesPageProps>(
-    (state: RootState, ownProps?: any): ReduxStateProps => {
-        return { devices: state.devices };
-    },
-    (dispatch: Dispatch<any>): ReduxDispatchProps => {
-        return bindActionCreators({
-            index: actions.index
-        }, dispatch);
-    }
+    mapStateToProps,
+    mapDispatchToProps
 )
 export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageState> {
 
@@ -76,6 +81,7 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
                         >
                             <RowDefinition>
                                 <ColumnDefinition id="id" customComponent={DeviceLink} />
+                                <ColumnDefinition title="Last Seen" id="attributes.last_seen" customComponent={SinceNowUTC} />
                                 <ColumnDefinition title="Name" id="attributes.device_name" />
                                 <ColumnDefinition title="Product Name" id="attributes.product_name" />
                                 <ColumnDefinition title='model' id='attributes.model_name' customComponent={ModelIcon} />

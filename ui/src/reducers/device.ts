@@ -2,6 +2,7 @@ import * as actions from '../actions/devices';
 import {
     ReadActionResponse
 } from "../actions/devices";
+import {installed_certificates, InstalledCertificatesState} from "./device/installed_certificates";
 
 
 export interface DeviceState {
@@ -13,6 +14,7 @@ export interface DeviceState {
     currentPage: number;
     pageSize: number;
     recordCount?: number;
+    certificates?: InstalledCertificatesState;
 }
 
 const initialState: DeviceState = {
@@ -22,7 +24,8 @@ const initialState: DeviceState = {
     errorDetail: null,
     lastReceived: null,
     currentPage: 1,
-    pageSize: 50
+    pageSize: 50,
+    certificates: {}
 };
 
 type DevicesAction = ReadActionResponse;
@@ -47,7 +50,8 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                 ...state,
                 device: action.payload.data,
                 lastReceived: new Date,
-                loading: false
+                loading: false,
+                certificates: installed_certificates(state.certificates, action)
             };
 
         default:

@@ -50,6 +50,22 @@ class DeviceSchema(Schema):
         type_='commands'
     )
 
+    installed_certificates = Relationship(
+        related_view='api_app.installed_certificate_detail',
+        related_view_kwargs={'installed_certificate_id': '<id>'},
+        many=True,
+        schema='InstalledCertificateSchema',
+        type_='installed_certificates'
+    )
+
+    installed_applications = Relationship(
+        related_view='api_app.installed_application_detail',
+        related_view_kwargs={'installed_application_id': '<id>'},
+        many=True,
+        schema='InstalledApplicationSchema',
+        type_='installed_applications'
+    )
+
     class Meta:
         type_ = 'devices'
         self_view = 'api_app.device_detail'
@@ -107,6 +123,25 @@ class InstalledApplicationSchema(Schema):
         self_view = 'api_app.installed_application_detail'
         self_view_kwargs = {'installed_application_id': '<id>'}
         strict = True
+
+
+class InstalledCertificateSchema(Schema):
+    class Meta:
+        type_ = 'installed_certificates'
+        self_view = 'api_app.installed_certificate_detail'
+        self_view_kwargs = {'installed_certificate_id': '<id>'}
+        strict = True
+
+    id = fields.Int(dump_only=True)
+    x509_cn = fields.Str(dump_only=True)
+    is_identity = fields.Boolean(dump_only=True)
+    fingerprint_sha256 = fields.String(dump_only=True)
+
+    device = Relationship(
+        related_view='api_app.device_detail',
+        related_view_kwargs={'device_id': '<id>'},
+        type_='devices',
+    )
 
 
 class PrivateKeySchema(Schema):

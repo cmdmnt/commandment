@@ -60,6 +60,12 @@ declare interface Certificate {
     fingerprint?: string;
 }
 
+declare interface InstalledCertificate {
+    x509_cn: string;
+    is_identity: boolean;
+    fingerprint_sha256: string;
+}
+
 declare interface SCEPConfiguration {
     id: string|number;
     url: string;
@@ -76,18 +82,31 @@ declare interface SCEPConfiguration {
     certificate_renewal_time_interval: number;
 }
 
+interface JSONAPIRelationships {
+    [relationshipName: string]: {
+        data: {
+            id: string;
+            type: string;
+        },
+        links?: {
+            related?: string;
+        }
+    }
+}
+
 declare interface JSONAPIObject<TObject> {
     id: string|number;
     type: string;
     attributes: TObject;
-    relationships: Array<any>;
+    relationships?: JSONAPIRelationships;
     links?: {
         self?: string;
     }
 }
 
-interface JSONAPIDetailResponse<TObject> {
+interface JSONAPIDetailResponse<TObject, TIncluded> {
     data?: JSONAPIObject<TObject>;
+    included?: Array<JSONAPIObject<TIncluded>>;
     links?: {
         self?: string;
     },
