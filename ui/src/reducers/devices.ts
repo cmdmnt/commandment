@@ -2,6 +2,7 @@ import * as actions from '../actions/devices';
 import {
     IndexActionResponse
 } from "../actions/devices";
+import {isJSONAPIErrorResponsePayload} from "../constants";
 
 
 export interface DevicesState {
@@ -43,13 +44,23 @@ export function devices(state: DevicesState = initialState, action: DevicesActio
             };
 
         case actions.INDEX_SUCCESS:
-            return {
-                ...state,
-                items: action.payload.data,
-                lastReceived: new Date,
-                loading: false,
-                recordCount: action.payload.meta.count
-            };
+            if (isJSONAPIErrorResponsePayload(action.payload)) {
+                return {
+                    ...state,
+                    loading: false,
+                    error: true,
+                    errorDetail: action.payload
+                }
+            } else {
+                return {
+                    ...state,
+                    items: action.payload.data,
+                    lastReceived: new Date,
+                    loading: false,
+                    recordCount: action.payload.meta.count
+                };
+            }
+
 
         // case actions.DELETE_REQUEST:
         //     return {

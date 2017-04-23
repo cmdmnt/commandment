@@ -1,5 +1,10 @@
+// Type definitions for rc-upload 2.3.4
+// Project: rc-upload
+// Definitions by: Mosen https://github.com/mosen
+
 declare module "rc-upload" {
     import * as React from 'react';
+    import Upload = require('rc-upload');
 
     export interface UploadComponentProps {
         component?: string;
@@ -24,9 +29,10 @@ declare module "rc-upload" {
 
     }
 
-    class Upload extends React.Component<UploadComponentProps, undefined> {
+    export interface Upload extends React.Component<UploadComponentProps, undefined> {
         
     }
-
-
 }
+
+
+

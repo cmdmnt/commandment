@@ -97,7 +97,7 @@ interface JSONAPIErrorObject {
     meta?: any;
 }
 
-interface JSONAPIErrors {
+interface JSONAPIErrorResponse {
     errors: Array<JSONAPIErrorObject>;
 }
 

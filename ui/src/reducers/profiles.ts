@@ -1,5 +1,6 @@
 import * as actions from '../actions/profiles';
 import {IndexActionResponse} from '../actions/profiles';
+import {isJSONAPIErrorResponsePayload} from "../constants";
 
 export interface ProfilesState {
     items: Array<JSONAPIObject<Profile>>;
@@ -40,14 +41,22 @@ export function profiles(state: ProfilesState = initialState, action: ProfilesAc
             };
 
         case actions.INDEX_SUCCESS:
-            return {
-                ...state,
-                items: action.payload.data,
-                lastReceived: new Date,
-                loading: false,
-                recordCount: action.payload.meta.count
-            };
-
+            if (isJSONAPIErrorResponsePayload(action.payload)) {
+                return {
+                    ...state,
+                    loading: false,
+                    error: true,
+                    errorDetail: action.payload
+                }    
+            } else {
+                return {
+                    ...state,
+                    items: action.payload.data,
+                    lastReceived: new Date,
+                    loading: false,
+                    recordCount: action.payload.meta.count
+                };
+            }
         default:
             return state;
     }

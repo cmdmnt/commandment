@@ -15,7 +15,7 @@ export interface IndexActionRequest {
 
 export interface IndexActionResponse {
     type: INDEX_REQUEST | INDEX_FAILURE | INDEX_SUCCESS;
-    payload?: JSONAPIListResponse<JSONAPIObject<Device>>;
+    payload?: JSONAPIListResponse<JSONAPIObject<Device>> | JSONAPIErrorResponse;
 }
 
 export const index: IndexActionRequest = (
@@ -66,7 +66,7 @@ export interface ReadActionRequest {
 
 export interface ReadActionResponse {
     type: READ_REQUEST | READ_FAILURE | READ_SUCCESS;
-    payload?: JSONAPIDetailResponse<Device, InstalledCertificate> | JSONAPIErrors;
+    payload?: JSONAPIDetailResponse<Device, InstalledCertificate> | JSONAPIErrorResponse;
 }
 
 export const read: ReadActionRequest = (id: number, include?: Array<string>) => {
@@ -104,7 +104,7 @@ export interface PushActionRequest {
 
 export interface PushActionResponse {
     type: PUSH_REQUEST | PUSH_SUCCESS | PUSH_FAILURE;
-    payload?: JSONAPIDetailResponse<any, undefined> | JSONAPIErrors;
+    payload?: JSONAPIDetailResponse<any, undefined> | JSONAPIErrorResponse;
 }
 
 export const push: PushActionRequest = (id: number) => {
@@ -135,7 +135,7 @@ export interface InventoryActionRequest {
 
 export interface InventoryActionResponse {
     type: INVENTORY_REQUEST | INVENTORY_SUCCESS | INVENTORY_FAILURE;
-    payload?: JSONAPIDetailResponse<any, undefined> | JSONAPIErrors;
+    payload?: JSONAPIDetailResponse<any, undefined> | JSONAPIErrorResponse;
 }
 
 export const inventory: InventoryActionRequest = (id: number) => {

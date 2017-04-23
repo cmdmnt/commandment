@@ -15,7 +15,7 @@ export interface IndexActionRequest {
 
 export interface IndexActionResponse {
     type: INDEX_REQUEST | INDEX_FAILURE | INDEX_SUCCESS;
-    payload?: JSONAPIListResponse<JSONAPIObject<Profile>> | JSONAPIErrors;
+    payload?: JSONAPIListResponse<JSONAPIObject<Profile>> | JSONAPIErrorResponse;
 }
 
 export const index: IndexActionRequest = (
@@ -66,7 +66,7 @@ export interface ReadActionRequest {
 
 export interface ReadActionResponse {
     type: READ_REQUEST | READ_FAILURE | READ_SUCCESS;
-    payload?: JSONAPIDetailResponse<Profile, undefined> | JSONAPIErrors;
+    payload?: JSONAPIDetailResponse<Profile, undefined> | JSONAPIErrorResponse;
 }
 
 export const read: ReadActionRequest = (id: number, include?: Array<string>) => {

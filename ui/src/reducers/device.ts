@@ -3,6 +3,7 @@ import {
     ReadActionResponse
 } from "../actions/devices";
 import {installed_certificates, InstalledCertificatesState} from "./device/installed_certificates";
+import {isJSONAPIErrorResponsePayload} from "../constants";
 
 
 export interface DeviceState {
@@ -45,14 +46,22 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
             };
 
         case actions.READ_SUCCESS:
-            return {
-                ...state,
-                device: action.payload.data,
-                lastReceived: new Date,
-                loading: false,
-                certificates: installed_certificates(state.certificates, action)
-            };
-
+            if (isJSONAPIErrorResponsePayload(action.payload)) {
+                return {
+                    ...state,
+                    error: true,
+                    errorDetail: action.payload
+                }
+            } else {
+                return {
+                    ...state,
+                    device: action.payload.data,
+                    lastReceived: new Date,
+                    loading: false,
+                    certificates: installed_certificates(state.certificates, action)
+                };
+            }
+            
         default:
             return state;
     }

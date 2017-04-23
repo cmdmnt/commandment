@@ -2,6 +2,7 @@ import {
     READ_SUCCESS,
     ReadActionResponse
 } from "../../actions/devices";
+import {isJSONAPIErrorResponsePayload} from "../../constants";
 
 interface CertificatesByDeviceId {
     [deviceId: number]: InstalledCertificate;
@@ -21,19 +22,26 @@ type InstalledCertificatesAction = ReadActionResponse;
 export function installed_certificates(state: InstalledCertificatesState, action: InstalledCertificatesAction): InstalledCertificatesState {
     switch (action.type) {
         case READ_SUCCESS:
-            if (!action.payload.data.relationships) { return state; }
-            if (!action.payload.data.relationships.hasOwnProperty('installed_certificates')) {
-                return state;
+            if (isJSONAPIErrorResponsePayload(action.payload)) {
+                return {
+                    ...state
+                }
+            } else {
+                if (!action.payload.data.relationships) { return state; }
+                if (!action.payload.data.relationships.hasOwnProperty('installed_certificates')) {
+                    return state;
+                }
+
+                const items = action.payload.included.filter((item: JSONAPIObject<any>) => {
+                    return item.type == 'installed_certificates';
+                });
+
+                return {
+                    ...state,
+                    items
+                };
             }
 
-            const items = action.payload.included.filter((item: JSONAPIObject<any>) => {
-                return item.type == 'installed_certificates';
-            });
-
-            return {
-                ...state,
-                items
-            };
         default:
             return state;
     }

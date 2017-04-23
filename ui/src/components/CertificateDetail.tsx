@@ -7,8 +7,8 @@ import './CertificateDetail.scss';
 interface CertificateDetailProps {
     certificate: JSONAPIObject<Certificate>;
     title: string;
-    onClickDelete: (certificateId: number) => void;
-    onClickDownload: (certificateId: number) => void;
+    onClickDelete: (certificateId: string) => void;
+    onClickDownload: (certificateId: string) => void;
 }
 
 export class CertificateDetail extends React.Component<CertificateDetailProps, undefined> {
