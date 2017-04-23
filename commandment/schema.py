@@ -33,6 +33,18 @@ class DeviceSchema(Schema):
     # unlock_token = fields.Str()
     tokenupdate_at = fields.DateTime()
 
+    # SecurityInfo
+    passcode_present = fields.Bool()
+    passcode_compliant = fields.Bool()
+    passcode_compliant_with_profiles = fields.Bool()
+    fde_enabled = fields.Bool()
+    fde_has_prk = fields.Bool()
+    fde_has_irk = fields.Bool()
+    firewall_enabled = fields.Bool()
+    block_all_incoming = fields.Bool()
+    stealth_mode_enabled = fields.Bool()
+    sip_enabled = fields.Bool()
+
     # TODO: Relationship to dep_config
 
     # certificate = Relationship(

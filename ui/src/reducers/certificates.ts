@@ -23,7 +23,7 @@ export interface CertificatesState {
     currentPage: number;
     pageSize: number;
     recordCount?: number;
-    byType?: { [propName: string]: JSONAPIDetailResponse<Certificate> };
+    byType?: { [propName: string]: JSONAPIDetailResponse<Certificate, undefined> };
     push?: PushState;
     ssl?: SSLState;
     ca?: CAState;

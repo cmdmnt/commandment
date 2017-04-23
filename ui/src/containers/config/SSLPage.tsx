@@ -121,7 +121,7 @@ export class SSLPage extends React.Component<SSLPageProps, undefined> {
                         </CertificateDetail>
                     </div>
                     <div className='column'>
-                        <CertificateDetail certificate={} title="SCEP CA Certificate" onClickDelete={this.handleDeleteCertificate} onClickDownload={this.handleDownloadCertificate}>
+                        <CertificateDetail certificate={{}} title="SCEP CA Certificate" onClickDelete={this.handleDeleteCertificate} onClickDownload={this.handleDownloadCertificate}>
                             <Upload
                                 name='file'
                                 accept='application/x-pem-file'

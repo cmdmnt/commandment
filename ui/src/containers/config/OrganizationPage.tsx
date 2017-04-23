@@ -5,9 +5,16 @@ import * as actions from '../../actions/organization';
 import {bindActionCreators} from "redux";
 import {OrganizationState} from "../../reducers/organization";
 import {OrganizationForm, FormData} from '../../forms/OrganizationForm';
+import {RootState} from "../../reducers/index";
 
 interface OrganizationPageState {
     organization: OrganizationState;
+}
+
+function mapStateToProps(state: RootState, ownProps?: any): OrganizationPageState {
+    return {
+        organization: state.organization
+    }
 }
 
 interface OrganizationPageDispatchProps {
@@ -15,20 +22,20 @@ interface OrganizationPageDispatchProps {
     post: actions.PostActionRequest;
 }
 
+function mapDispatchToProps(dispatch: Dispatch<any>) {
+    return bindActionCreators({
+        post: actions.post,
+        read: actions.read
+    }, dispatch);
+}
+
 interface OrganizationPageProps extends OrganizationPageState, OrganizationPageDispatchProps, RouteComponentProps<any> {
 
 }
 
 @connect<OrganizationPageState, OrganizationPageDispatchProps, OrganizationPageProps>(
-    (state: any, ownProps?: any): OrganizationState => { return {
-        organization: state.organization
-    } },
-    (dispatch: Dispatch<any>): OrganizationPageDispatchProps => {
-        return bindActionCreators({
-            post: actions.post,
-            read: actions.read
-        }, dispatch);
-    }
+    mapStateToProps,
+    mapDispatchToProps
 )
 export class OrganizationPage extends React.Component<OrganizationPageProps, undefined> {
 

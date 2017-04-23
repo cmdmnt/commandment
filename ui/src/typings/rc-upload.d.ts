@@ -24,10 +24,9 @@ declare module "rc-upload" {
 
     }
 
-    export interface IUpload extends React.Component<UploadComponentProps, undefined> {
+    class Upload extends React.Component<UploadComponentProps, undefined> {
         
     }
 
-    export const Upload: IUpload;
 
 }

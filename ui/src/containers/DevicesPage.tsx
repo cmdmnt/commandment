@@ -11,6 +11,7 @@ import {IndexActionRequest} from "../actions/devices";
 import {ModelIcon} from '../components/griddle/ModelIcon';
 import {DeviceLink} from '../components/griddle/DeviceLink';
 import {SinceNowUTC} from "../components/griddle/SinceNowUTC";
+import {SimpleLayout} from '../components/griddle/SimpleLayout';
 
 interface ReduxStateProps {
     devices: DevicesState;
@@ -52,6 +53,22 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
         // TODO: debounce filter text
     };
 
+    handleSort = (sortProperties: { id: string; }) => {
+        console.dir(sortProperties);
+    };
+
+    handleNextPage = () => {
+
+    };
+
+    handlePrevPage = () => {
+        
+    };
+
+    handleGetPage = (pageNumber: number) => {
+        console.log(pageNumber);
+    };
+
     render(): JSX.Element {
         const {
             devices
@@ -59,6 +76,10 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
 
         const eventHandlers = {
             onFilter: this.handleFilter,
+            onSort: this.handleSort,
+            onNext: this.handleNextPage,
+            onPrev: this.handlePrevPage,
+            onGetPage: this.handleGetPage
         };
 
         return (
@@ -78,13 +99,16 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
                                 recordCount: devices.recordCount
                             }}
                             events={eventHandlers}
+                            components={{
+                                Layout: SimpleLayout
+                            }}
                         >
                             <RowDefinition>
                                 <ColumnDefinition id="id" customComponent={DeviceLink} />
-                                <ColumnDefinition title="Last Seen" id="attributes.last_seen" customComponent={SinceNowUTC} />
+                                <ColumnDefinition title='Model' id='attributes.model_name' customComponent={ModelIcon} />
                                 <ColumnDefinition title="Name" id="attributes.device_name" />
+                                <ColumnDefinition title="Last Seen" id="attributes.last_seen" customComponent={SinceNowUTC} />
                                 <ColumnDefinition title="Product Name" id="attributes.product_name" />
-                                <ColumnDefinition title='model' id='attributes.model_name' customComponent={ModelIcon} />
                             </RowDefinition>
                         </Griddle>
                     </div>

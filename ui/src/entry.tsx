@@ -13,7 +13,6 @@ import {AssistantPage} from './containers/config/AssistantPage';
 import {SCEPPage} from './containers/config/SCEPPage';
 import '../sass/app.scss';
 import {SSLPage} from "./containers/config/SSLPage";
-import {MDMPage} from "./containers/config/MDMPage";
 import {CertificatesPage} from './containers/CertificatesPage';
 import {InternalCAPage} from './containers/config/InternalCAPage';
 import {OrganizationPage} from './containers/config/OrganizationPage';
@@ -38,7 +37,6 @@ render(
                     <Route path='/config/scep' component={SCEPPage} />
                     <Route path='/config/ca' component={InternalCAPage} />
                     <Route path='/config/ssl' component={SSLPage} />
-                    <Route path='/config/mdm' component={MDMPage} />
                     <Route path='/config/organization' component={OrganizationPage} />
                     <Route path='/certificates' component={CertificatesPage} />
                     <Route path='/devices' exact component={DevicesPage} />

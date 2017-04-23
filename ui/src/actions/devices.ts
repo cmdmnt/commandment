@@ -66,7 +66,7 @@ export interface ReadActionRequest {
 
 export interface ReadActionResponse {
     type: READ_REQUEST | READ_FAILURE | READ_SUCCESS;
-    payload?: JSONAPIDetailResponse<Device>;
+    payload?: JSONAPIDetailResponse<Device, InstalledCertificate> | JSONAPIErrors;
 }
 
 export const read: ReadActionRequest = (id: number, include?: Array<string>) => {
@@ -104,7 +104,7 @@ export interface PushActionRequest {
 
 export interface PushActionResponse {
     type: PUSH_REQUEST | PUSH_SUCCESS | PUSH_FAILURE;
-    payload?: JSONAPIDetailResponse<any>;
+    payload?: JSONAPIDetailResponse<any, undefined> | JSONAPIErrors;
 }
 
 export const push: PushActionRequest = (id: number) => {
@@ -135,7 +135,7 @@ export interface InventoryActionRequest {
 
 export interface InventoryActionResponse {
     type: INVENTORY_REQUEST | INVENTORY_SUCCESS | INVENTORY_FAILURE;
-    payload?: JSONAPIDetailResponse<any>;
+    payload?: JSONAPIDetailResponse<any, undefined> | JSONAPIErrors;
 }
 
 export const inventory: InventoryActionRequest = (id: number) => {

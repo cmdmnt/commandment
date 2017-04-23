@@ -24,8 +24,7 @@ const initialState: DeviceState = {
     errorDetail: null,
     lastReceived: null,
     currentPage: 1,
-    pageSize: 50,
-    certificates: {}
+    pageSize: 50
 };
 
 type DevicesAction = ReadActionResponse;

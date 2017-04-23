@@ -4,6 +4,8 @@ import {Field, reduxForm, FormProps} from 'redux-form';
 export interface FormData {
     scep_type: 'internal' | 'external';
     scep_url: string;
+    scep_challenge: string;
+    scep_subject: string;
 }
 
 interface SCEPConfigurationFormProps extends FormProps<FormData, any, any> {

@@ -66,7 +66,7 @@ export interface FetchCertificateTypeActionRequest {
 
 export interface FetchCertificateTypeActionResponse {
     type: CERTTYPE_REQUEST | CERTTYPE_SUCCESS | CERTTYPE_FAILURE;
-    payload?: JSONAPIDetailResponse<Certificate>;
+    payload?: JSONAPIDetailResponse<Certificate, undefined>;
 }
 
 

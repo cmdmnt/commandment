@@ -6,10 +6,11 @@ import {SCEPPayloadForm} from '../../forms/payloads/SCEPPayloadForm';
 import * as actions from '../../actions/configuration/scep';
 import {RootState} from "../../reducers/index";
 import {bindActionCreators} from "redux";
+import {SCEPState} from "../../reducers/configuration/scep";
 
 
 interface ReduxStateProps {
-
+    scep: SCEPState;
 }
 
 function mapStateToProps(state: RootState): ReduxStateProps {
@@ -48,6 +49,10 @@ export class SCEPPage extends React.Component<OwnProps, undefined> {
         this.props.post(values);
     };
 
+    handleTest = () => {
+
+    };
+
     render() {
         const {
             children
@@ -62,7 +67,7 @@ export class SCEPPage extends React.Component<OwnProps, undefined> {
                             The SCEP Configuration controls the parameters of certificates issued to devices via your
                             SCEP service.
                         </p>
-                        <SCEPPayloadForm onSubmit={this.handleSubmit} />
+                        <SCEPPayloadForm onSubmit={this.handleSubmit} onClickTest={this.handleTest} />
                     </div>
                 </div>
             </div>

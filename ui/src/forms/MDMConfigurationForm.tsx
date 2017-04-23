@@ -18,8 +18,8 @@ export interface FormData {
 }
 
 interface MDMConfigurationFormProps extends FormProps<FormData, any, any> {
-    CACertificate?: JSONAPIDetailResponse<Certificate>;
-    PushCertificate?: JSONAPIDetailResponse<Certificate>;
+    CACertificate?: JSONAPIDetailResponse<Certificate, undefined>;
+    PushCertificate?: JSONAPIDetailResponse<Certificate, undefined>;
 }
 
 @reduxForm<FormData, MDMConfigurationFormProps>({
@@ -56,12 +56,12 @@ export class MDMConfigurationForm extends React.Component<MDMConfigurationFormPr
 
                     <label htmlFor='ca_cert_id'>CA Certificate</label>
                     <Field name='ca_cert_id' component='select' id='ca_cert_id'>
-                        {CACertificate && <option value={CACertificate.data.id}>{CACertificate.data.attributes.subject}</option>}
+                        {CACertificate && <option value={CACertificate.data.id}>{CACertificate.data.attributes.x509_cn}</option>}
                     </Field>
 
                     <label htmlFor='push_cert_id'>Push Certificate</label>
                     <Field name='push_cert_id' component='select' id='push_cert_id'>
-                        {PushCertificate && <option value={PushCertificate.data.id}>{PushCertificate.data.attributes.subject}</option>}
+                        {PushCertificate && <option value={PushCertificate.data.id}>{PushCertificate.data.attributes.x509_cn}</option>}
                     </Field>
 
                     <label>

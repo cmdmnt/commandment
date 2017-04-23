@@ -7,7 +7,7 @@ import {bindActionCreators} from "redux";
 
 
 interface MDMPageState {
-    byType?: {[propName: string]: JSONAPIDetailResponse<Certificate>};
+    byType?: {[propName: string]: JSONAPIDetailResponse<Certificate, undefined>};
 }
 
 interface MDMPageDispatchProps {

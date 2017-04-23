@@ -82,6 +82,25 @@ declare interface SCEPConfiguration {
     certificate_renewal_time_interval: number;
 }
 
+interface JSONAPIErrorObject {
+    id?: any;
+    links?: {
+        about: string;
+    };
+    status?: string;
+    code?: string;
+    title?: string;
+    detail?: string;
+    source?: {
+        pointer: string;
+    };
+    meta?: any;
+}
+
+interface JSONAPIErrors {
+    errors: Array<JSONAPIErrorObject>;
+}
+
 interface JSONAPIRelationships {
     [relationshipName: string]: {
         data: {

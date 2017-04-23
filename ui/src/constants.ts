@@ -11,7 +11,7 @@ export const CERTIFICATE_PURPOSE: {[propName: string]:string} = {
 
 export function isJSONAPIErrorResponsePayload(
     payload: JSONAPIListResponse<any> |
-        JSONAPIDetailResponse<any> |
+        JSONAPIDetailResponse<any, any> |
         JSONAPIErrorResponse): payload is JSONAPIErrorResponse {
 
     return (<JSONAPIErrorResponse>payload).errors !== undefined;

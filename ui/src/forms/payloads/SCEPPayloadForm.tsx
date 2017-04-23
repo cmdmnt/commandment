@@ -3,6 +3,7 @@ import {Field, reduxForm, FormProps} from 'redux-form';
 
 
 export interface FormData {
+    id?: string;
     url: string;
     name: string;
     subject: string;
