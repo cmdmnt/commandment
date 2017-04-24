@@ -3,6 +3,7 @@ import * as React from 'react';
 interface GriddleValue {
     griddleKey?: number;
     value: any;
+    selectors: any;
 }
 
 export const ModelIcon = (value: GriddleValue): JSX.Element => {

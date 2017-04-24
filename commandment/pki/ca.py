@@ -1,9 +1,7 @@
-'''
+"""
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
-
-'''Commandment MDM Certificate Authority'''
+"""
 
 from flask import g, current_app
 from ..models import db
@@ -166,7 +164,6 @@ class CertificateAuthority(object):
 
         return pk_model, cert_model
 
-
     def sign(self, csr: models.CertificateSigningRequest) -> models.Certificate:
         """Sign a certificate signing request.
 
@@ -190,26 +187,57 @@ class CertificateAuthority(object):
         return cert
 
 
-def get_or_generate_web_certificate(cn: str) -> (str, str, str):
-    mdm_ca = get_ca()
-    try:
-        result = db.session.query(dbmodels.SSLCertificate).filter(dbmodels.SSLCertificate.discriminator == 'mdm.webcrt').one()
+def generate_self_signed_certificate(cn: str) -> (rsa.RSAPrivateKey, x509.Certificate):
+    """Generate an X.509 Certificate with the given Common Name."""
+    name = x509.Name([
+        x509.NameAttribute(NameOID.COMMON_NAME, cn),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, 'commandment')
+    ])
 
-        # TODO: return chain!
-        return (result.pem_data, result.rsa_private_key.pem_data, mdm_ca.certificate.pem_data)
-    except NoResultFound:
-        pk, cert = mdm_ca.generate('mdm.webcrt', x509.Name([
-            x509.NameAttribute(NameOID.COMMON_NAME, cn),
-            x509.NameAttribute(NameOID.ORGANIZATION_NAME, 'commandment')
-        ]))
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+        backend=default_backend(),
+    )
 
-        db_pk = pk.model()
-        db_cert = cert.model()
-        db.session.add(db_cert)
-        db.session.add(db_pk)
+    certificate = x509.CertificateBuilder().subject_name(
+        name
+    ).issuer_name(
+        name
+    ).public_key(
+        private_key.public_key()
+    ).serial_number(
+        x509.random_serial_number()
+    ).not_valid_before(
+        datetime.datetime.utcnow()
+    ).not_valid_after(
+        datetime.datetime.utcnow() + datetime.timedelta(days=365)
+    ).sign(private_key, hashes.SHA256(), default_backend())
 
-        db_cert.rsa_private_key = db_pk
+    return private_key, certificate
+    
 
-        db.session.commit()
 
-        return db_cert.pem_data, db_pk.pem_data, mdm_ca.certificate.pem_data
+# def get_or_generate_web_certificate(cn: str) -> (str, str, str):
+#     mdm_ca = get_ca()
+#     try:
+#         result = db.session.query(dbmodels.SSLCertificate).filter(dbmodels.SSLCertificate.discriminator == 'mdm.webcrt').one()
+#
+#         # TODO: return chain!
+#         return (result.pem_data, result.rsa_private_key.pem_data, mdm_ca.certificate.pem_data)
+#     except NoResultFound:
+#         pk, cert = mdm_ca.generate('mdm.webcrt', x509.Name([
+#             x509.NameAttribute(NameOID.COMMON_NAME, cn),
+#             x509.NameAttribute(NameOID.ORGANIZATION_NAME, 'commandment')
+#         ]))
+#
+#         db_pk = pk.model()
+#         db_cert = cert.model()
+#         db.session.add(db_cert)
+#         db.session.add(db_pk)
+#
+#         db_cert.rsa_private_key = db_pk
+#
+#         db.session.commit()
+#
+#         return db_cert.pem_data, db_pk.pem_data, mdm_ca.certificate.pem_data

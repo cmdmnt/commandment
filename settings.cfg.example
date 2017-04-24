@@ -1,13 +1,20 @@
 # http://flask-sqlalchemy.pocoo.org/2.1/config/
 SQLALCHEMY_DATABASE_URI = 'sqlite:///mdm.db'
 
-# Self-Signed Certificate Common Name (hostname)
-DEV_WEB_CERT_CN = 'localhost'
-
+# Development mode listen port
 PORT = 5443
 
-# This is expected to include the pub and private keypair.
-# You may export pkcs12 using this command:
+# This is expected to include the public and private keypair.
+# You may export pkcs#12 using this command:
 # openssl pkcs12 -in push.p12 -out push.pem -nodes -clcerts
 PUSH_CERTIFICATE = '../push.pem'
 
+# If commandment is running in development mode, specify the path to the certificate and private key.
+# These can also be generated at start up.
+# Normally SSL should be handled by Apache/Nginx/etc.
+
+SSL_CERTIFICATE = '../commandment.crt'
+SSL_RSA_KEY = '../commandment.key'
+
+# If commandment is running in development mode you should specify your public facing hostname here.
+SSL_COMMON_NAME = 'localhost'

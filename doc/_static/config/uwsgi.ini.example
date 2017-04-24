@@ -1,0 +1,5 @@
+[uwsgi]
+socket = /usr/local/var/run/%n.sock
+module = commandment:create_app
+processes = 4
+master = 1

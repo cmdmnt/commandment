@@ -375,6 +375,7 @@ class InstalledApplicationList(Command):
             'Command': command,
         }
 
+
 class InstallApplication(Command):
     request_type = 'InstallApplication'
     require_access = {AccessRights.ManageApps}
