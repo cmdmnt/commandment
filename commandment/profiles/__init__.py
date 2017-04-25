@@ -1,5 +1,5 @@
 """
-Copyright (c) 2015 Jesse Peterson
+Copyright (c) 2015 Jesse Peterson, 2017 Mosen
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 import plistlib
@@ -11,6 +11,7 @@ from enum import Enum, IntFlag
 class PayloadScope(Enum):
     User = 'User'
     System = 'System'
+
 
 class PayloadInvalid(Exception):
     # base class for invalid Payloads

@@ -3,10 +3,8 @@ Copyright (c) 2015 Jesse Peterson, 2017 Mosen
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 from flask import Flask, render_template
-
 from .configuration import configuration_app
 from .mdm_app import mdm_app
-from .admin import admin_app
 from .mdmcert import admin_mdmcert_app
 from .api import api_app
 from .api_push import api_push_app
@@ -41,11 +39,13 @@ def create_app() -> Flask:
     # SPA Entry Point
     @app.route('/')
     def index():
+        """Main entry point for the administrator web application."""
         return render_template('index.html')
 
     # SPA history fallback handler
     @app.errorhandler(404)
     def send_index(path: str):
+        """Fallback route for HTML5 History."""
         return render_template('index.html')
 
     return app

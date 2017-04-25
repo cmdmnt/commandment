@@ -121,6 +121,21 @@ def ack_certificate_list(request: CertificateList, device: Device, response: dic
 
 @command_router.route('InstalledApplicationList')
 def ack_installed_app_list(request: InstalledApplicationList, device: Device, response: dict):
+    """Acknowledge a response to ``InstalledApplicationList``.
+    
+    .. note:: There is no composite key which can uniquely identify an item in the installed applications list.
+        Some applications may not contain any version information at all. For this reason, the entire list of installed
+        applications is cleared before inserting a new list.
+        
+    Args:
+          request (InstalledApplicationList): An instance of the command that generated this response from the managed
+            device.
+          device (Device): The device responding
+          response (dict): The dictionary containing the parsed plist response from the device.
+    Returns:
+          void: Nothing is returned but this behaviour is subject to change.
+    """
+
     for a in device.installed_applications:
         db.session.delete(a)
 

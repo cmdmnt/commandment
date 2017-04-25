@@ -2,12 +2,17 @@ from enum import IntFlag, auto, Enum
 
 
 class Platform(Enum):
+    """The platform of the managed device."""
     macOS = 'macOS'
     iOS = 'iOS'
     tvOS = 'tvOS'
 
 
 class AccessRights(IntFlag):
+    """The MDM protocol defines a bitmask for granting permissions to an MDM to perform certain operations.
+    
+    This enumeration contains all of those access rights flags.
+    """
     def _generate_next_value_(name, start, count, last_values):
         return 2 ** count
 
