@@ -42,6 +42,8 @@ class MDMPayload(apns2.Payload):
 def push_to_device(device: Device) -> apns2.Response:
     """Issue a `Blank Push` to a device.
     
+    If the push token is invalid then it will be automatically set to None
+    
     Args:
         device (Device): The device model to push to, must have a valid apns token and push magic
           
@@ -56,6 +58,9 @@ def push_to_device(device: Device) -> apns2.Response:
     notification = apns2.Notification(payload, priority=apns2.PRIORITY_LOW)
     response = client.push(notification, device.hex_token, device.topic)
 
-    # TODO: Status 410 means the device token doesnt exist anymore
+    # 410 means that the token is no longer valid for this device, so don't attempt to push any more
+    if response.status_code == 410:
+        device.token = None
+        device.push_magic = None
 
     return response

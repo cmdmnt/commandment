@@ -12,8 +12,6 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from base64 import b64decode
 import plistlib
 from asn1crypto import cms
-from .models import db, DeviceIdentityCertificate
-from sqlalchemy.orm.exc import NoResultFound
 
 
 def _find_signer_sid(certificates: CertificateSet, sid: SignerIdentifier) -> Union[cms.Certificate,None]:

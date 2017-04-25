@@ -586,18 +586,47 @@ class AppSourceType(Enum):
     Munki = 'Munki'
 
 
-class AppSource(db.Model):
-    __tablename__ = 'app_sources'
+class ApplicationSource(db.Model):
+    """This table holds rows indicating sources that may referenced in ``InstallApplication`` commands.
+    
+    The MDM may require write access to create application manifests from existing items.
+    
+    :table: application_sources
+    
+    Attributes:
+          id (Integer): ID
+          name (String): A short, descriptive name for the source. Only used in display.
+          source_type (AppSourceType): The application source type.
+          endpoint (String): The hostname for object storage or URI for read-only munki repositories.
+          mount_uri (String): The R/W mount URI for munki repositories only.
+          use_ssl (Boolean): Use SSL when connecting to endpoint. Used when endpoint is host only.
+          access_key (String): The access key for S3 / Minio that uniquely identifies this client.
+          secret_key (String): The secret key for S3 / Minio that authenticates this client.
+          bucket (String): The bucket name that holds installation packages.
+    """
+    __tablename__ = 'application_sources'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
     source_type = Column(DBEnum(AppSourceType), default=AppSourceType.Munki)
 
+    endpoint = Column(String)
+    mount_uri = Column(String)
+    use_ssl = Column(Boolean)
+
+    # For S3 / Minio
+    access_key = Column(String)
+    secret_key = Column(String)
+    bucket = Column(String)
+    
 
 class SCEPConfig(db.Model):
     """This table holds a single row containing information used to generate the SCEP enrollment profile.
     
     :table: scep_config
+    
+    See Also:
+          - `https://tools.ietf.org/html/rfc3280.html`_.
     """
     __tablename__ = 'scep_config'
 
