@@ -18,9 +18,6 @@ import threading
 import datetime
 from .models import db, Device
 
-from .utils.dep_utils import dep_configs_needing_updates, update_dep_configs
-from .utils.dep_utils import unsubmitted_dep_profiles, submit_dep_profiles
-
 runner_thread = None
 runner_start = 5
 runner_time = 5

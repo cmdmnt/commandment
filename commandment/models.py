@@ -471,30 +471,30 @@ class App(db.Model):
         return '<App ID=%r Filename=%r>' % (self.id, self.filename)
 
 
-class DEPConfig(db.Model):
-    __tablename__ = 'dep_config'
-
-    id = Column(Integer, primary_key=True)
-
-    # certificate for PKI of server token
-    certificate_id = Column(ForeignKey('certificates.id'))
-    certificate = relationship('Certificate', backref='dep_configs')
-
-    server_token = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-    auth_session_token = Column(String, nullable=True)
-
-    initial_fetch_complete = Column(Boolean, nullable=False, default=False)
-    next_check = Column(DateTime(timezone=False), nullable=True)
-    device_cursor = Column(String)
-    device_cursor_recevied = Column(DateTime(timezone=False), nullable=True)  # shouldn't use if more than 7 days old
-
-    url_base = Column(String, nullable=True)  # testing server environment if used
-
-    def last_check_delta(self):
-        if self.next_check:
-            return str(self.next_check - datetime.datetime.utcnow())
-        else:
-            return ''
+# class DEPConfig(db.Model):
+#     __tablename__ = 'dep_config'
+#
+#     id = Column(Integer, primary_key=True)
+#
+#     # certificate for PKI of server token
+#     certificate_id = Column(ForeignKey('certificates.id'))
+#     certificate = relationship('Certificate', backref='dep_configs')
+#
+#     server_token = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
+#     auth_session_token = Column(String, nullable=True)
+#
+#     initial_fetch_complete = Column(Boolean, nullable=False, default=False)
+#     next_check = Column(DateTime(timezone=False), nullable=True)
+#     device_cursor = Column(String)
+#     device_cursor_recevied = Column(DateTime(timezone=False), nullable=True)  # shouldn't use if more than 7 days old
+#
+#     url_base = Column(String, nullable=True)  # testing server environment if used
+#
+#     def last_check_delta(self):
+#         if self.next_check:
+#             return str(self.next_check - datetime.datetime.utcnow())
+#         else:
+#             return ''
 
 #
 # class DEPProfile(db.Model):
@@ -640,12 +640,42 @@ class SCEPConfig(db.Model):
     key_size = Column(Integer, default=2048, nullable=False)
     key_type = Column(String, default='RSA', nullable=False)
     key_usage = Column(DBEnum(KeyUsage), default=KeyUsage.All)
-    
-    san_dnsname = Column(String, nullable=True)
-    san_rfc822name = Column(String, nullable=True)  # rfc822Name
-    san_uri = Column(String, nullable=True)  # uniformResourceIdentifier
-    san_ntprincipal = Column(String, nullable=True)  # ntPrincipalName
-    
+
     retries = Column(Integer, default=3, nullable=False)
     retry_delay = Column(Integer, default=10, nullable=False)
     certificate_renewal_time_interval = Column(Integer, default=14, nullable=False)
+
+
+class SubjectAlternativeNameType(Enum):
+    """Types of SubjectAlternativeNames that can be added using cryptography SAN extension.
+    
+    See Also:
+          - `https://tools.ietf.org/html/rfc3280.html`_.
+    """
+    
+    RFC822Name = 'RFC822Name'
+    """E-mail address, see: https://tools.ietf.org/html/rfc822"""
+    
+    DNSName = 'DNSName'
+    UniformResourceIdentifier = 'UniformResourceIdentifier'
+    DirectoryName = 'DirectoryName'
+    RegisteredID = 'RegisteredID'
+    IPAddress = 'IPAddress'
+    OtherName = 'OtherName'
+    # TODO: ntPrincipal
+
+
+class SubjectAlternativeName(db.Model):
+    """This table holds SANs included in the SCEP enrollment request.
+    
+    :table: subject_alternative_names
+    """
+    __tablename__ = 'subject_alternative_names'
+
+    id = Column(Integer, primary_key=True)
+    discriminator = Column(DBEnum(SubjectAlternativeNameType), nullable=False)
+
+    str_value = Column(String)
+    octet_value = Column(LargeBinary)  # For IPAddress
+    
+
