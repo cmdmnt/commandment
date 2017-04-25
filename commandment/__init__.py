@@ -31,13 +31,17 @@ def create_app() -> Flask:
 
     app.register_blueprint(enroll_app, url_prefix='/enroll')
     app.register_blueprint(mdm_app)
-    app.register_blueprint(admin_app)
     app.register_blueprint(admin_mdmcert_app, url_prefix='/admin/mdmcert')
     app.register_blueprint(configuration_app, url_prefix='/api/v1/configuration')
     app.register_blueprint(api_app, url_prefix='/api')
     app.register_blueprint(api_push_app, url_prefix='/api')
     app.register_blueprint(flat_api, url_prefix='/api')
     app.register_blueprint(ota_app, url_prefix='/ota')
+
+    # SPA Entry Point
+    @app.route('/')
+    def index():
+        return render_template('index.html')
 
     # SPA history fallback handler
     @app.errorhandler(404)
