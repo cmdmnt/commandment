@@ -1,7 +1,6 @@
 from typing import Union
 from functools import wraps
 
-
 from asn1crypto.cms import CertificateSet, SignerIdentifier
 from flask import request, abort, current_app, g
 from cryptography import x509

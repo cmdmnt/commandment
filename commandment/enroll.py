@@ -1,7 +1,6 @@
 from flask import current_app, render_template, abort, Blueprint, make_response
 import os
 import codecs
-from .pki.ca import get_ca
 from .pki.models import Certificate
 from .profiles.cert import PEMCertificatePayload, SCEPPayload
 from .profiles.mdm import MDMPayload
@@ -31,15 +30,12 @@ def base64_to_pem(crypto_type, b64_text, width=76):
 @enroll_app.route('/profile', methods=['GET', 'POST'])
 def enroll():
     """Generate an enrollment profile."""
-    mdm_ca = get_ca()
-
     try:
         org = db.session.query(Organization).one()
     except NoResultFound:
         abort(500, 'No organization is configured, cannot generate enrollment profile.')
     except MultipleResultsFound:
         abort(500, 'Multiple organizations, backup your database and start again')
-
 
     push_path = os.path.join(os.path.dirname(current_app.root_path), current_app.config['PUSH_CERTIFICATE'])
 
@@ -63,10 +59,10 @@ def enroll():
 
     profile = Profile(org.payload_prefix + '.enroll', PayloadDisplayName=org.name)
 
-    ca_cert_payload = PEMCertificatePayload(org.payload_prefix + '.mdm-ca', mdm_ca.certificate.pem_data,
-                                            PayloadDisplayName='MDM CA Certificate')
-
-    profile.append_payload(ca_cert_payload)
+    # ca_cert_payload = PEMCertificatePayload(org.payload_prefix + '.mdm-ca', mdm_ca.certificate.pem_data,
+    #                                         PayloadDisplayName='MDM CA Certificate')
+    #
+    # profile.append_payload(ca_cert_payload)
 
     # find and include all mdm.webcrt's
     # q = db_session.query(SSLCertificate).first()

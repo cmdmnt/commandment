@@ -9,7 +9,7 @@ import tempfile
 import atexit
 import werkzeug.serving
 from commandment import create_app
-from commandment.pki.ca import generate_self_signed_certificate
+from commandment.pki.ssl import generate_self_signed_certificate
 from cryptography.hazmat.primitives import hashes, serialization
 from commandment.runner import start_runner, stop_runner
 
