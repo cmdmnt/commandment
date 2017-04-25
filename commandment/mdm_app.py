@@ -1,32 +1,24 @@
 """
-Copyright (c) 2015 Jesse Peterson
+Copyright (c) 2015 Jesse Peterson, 2017 Mosen
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
-
 from flask import Blueprint, make_response, abort
-from flask import current_app, send_file, g
-import base64
+from flask import current_app, g
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from .models import db, Device, Command as DBCommand
-from .models import App, Organization, SSLCertificate
 from .mdm import CommandStatus
 from .mdm.commands import Command
-from .decorators import device_cert_check, parse_plist_input_data
+from .decorators import verify_mdm_signature, parse_plist_input_data
 from .routers import CommandRouter, PlistRouter
-from os import urandom
 import plistlib
-from .push import push_to_device
-import os
 from datetime import datetime
 from .signals import device_enrolled
 
-TRUST_DEV_PROVIDED_CERT = True
 
 mdm_app = Blueprint('mdm_app', __name__)
 
 plr = PlistRouter(mdm_app, '/checkin')
 command_router = CommandRouter(mdm_app)
-from .mdm import handlers
 
 
 @plr.route('MessageType', 'Authenticate')
@@ -54,13 +46,15 @@ def authenticate(plist_data):
         device.serial_number = plist_data.get('SerialNumber')
         device.topic = plist_data.get('Topic')
 
+    # Authenticate message is not enough to be enrolled
+    device.is_enrolled = False
+
     # remove the previous device token (in the case of a re-enrollment) to
     # tell the difference between a periodic TokenUpdate and the first
     # post-enrollment TokenUpdate
     device.token = None
 
-    # TODO: we're essentially trusting the device to give the correct security infomration here
-    #device.certificate = g.device_cert
+    # TODO: Check supplied identity against identities we actually issued
 
     db.session.commit()
 
@@ -143,8 +137,8 @@ def check_out(plist_data):
     return 'OK'
 
 
-#@device_cert_check()
 @mdm_app.route("/mdm", methods=['PUT'])
+@verify_mdm_signature
 @parse_plist_input_data
 def mdm():
     """MDM connection endpoint.
@@ -161,6 +155,8 @@ def mdm():
     """
     # TODO: proper identity verification, for now just matching on UDID
     device = db.session.query(Device).filter(Device.udid == g.plist_data['UDID']).one()
+
+    print(g.signer)
 
     # if g.device.udid != g.plist_data['UDID']:
     #     # see note in device_cert_check() about old device cert sometimes
@@ -264,63 +260,4 @@ def mdm():
     current_app.logger.info('no further MDM commands for device=%d', device.id)
     # return empty response as we have no further work
     return ''
-
-
-# @mdm_app.route("/app/<int:app_id>/manifest")
-# def app_manifest(app_id: int):
-#     """Retrieve an application manifest for the specified application ID."""
-#     app_q = db_session.query(App).filter(App.id == app_id)
-#     app = app_q.one()
-#
-#     config = db_session.query(MDMConfig).one()
-#
-#     asset = {
-#         'kind': 'software-package',
-#         'md5-size': app.md5_chunk_size,
-#         'md5s': app.md5_chunk_hashes.split(':'),
-#         'url': '%s/app/%d/download/%s' % (config.base_url(), app_id, app.filename),
-#     }
-#
-#     metadata = {'kind': 'software', 'title': app.filename, 'sizeInBytes': app.filesize}
-#
-#     pkgs_ids = app.pkg_ids_json
-#     pkgs_bundles = [{'bundle-identifier': i[0], 'bundle-version': i[1]} for i in pkgs_ids]
-#
-#     # if subtitle:
-#     #     metadata['subtitle'] = subtitle
-#
-#     metadata.update(pkgs_bundles[0])
-#
-#     if len(pkgs_bundles) > 1:
-#         metadata['items'] = pkgs_bundles
-#
-#     download = {'assets': [asset, ], 'metadata': metadata}
-#
-#     manifest = {'items': [download]}
-#
-#     resp = make_response(plistlib.writePlistToString(manifest))
-#     resp.headers['Content-Type'] = 'application/xml'
-#     return resp
-#
-#
-# @mdm_app.route("/app/<int:app_id>/download/<filename>")
-# def app_download(app_id: int, filename: str):
-#     """Download a file corresponding to the specified application ID."""
-#     app_q = db_session.query(App).filter(App.id == app_id)
-#     app = app_q.one()
-#
-#     return send_file(os.path.join(current_app.config['APP_UPLOAD_ROOT'], app.path_format()))
-
-#
-# cr = CommandRouter(mdm_app, '/mdm')
-#
-# @cr.route('ProfileList')
-# def profile_list(request: Command, response: dict):
-#     """Acknowledge a response to a ProfileList command.
-#
-#     Args:
-#           request (Command): The ProfileList command that was issued
-#           response (dict): The parsed plist data that was returned by the mdm client.
-#     """
-#     pass
 

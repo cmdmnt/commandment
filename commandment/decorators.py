@@ -1,120 +1,93 @@
+from typing import Union
 from functools import wraps
+
+
+from asn1crypto.cms import CertificateSet, SignerIdentifier
 from flask import request, abort, current_app, g
 from cryptography import x509
-from cryptography.exceptions import UnsupportedAlgorithm
+from cryptography.exceptions import UnsupportedAlgorithm, InvalidSignature
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 
+from base64 import b64decode
 import plistlib
 from asn1crypto import cms
 from .models import db, DeviceIdentityCertificate
 from sqlalchemy.orm.exc import NoResultFound
 
 
-# def verify_mdm_signature(mdm_sig: str, req_data):
-#     """Verify the client's supplied MDM signature and return the client certificate included in the signature.
-#
-#     Args:
-#         mdm_sig: Signature PEM data
-#         req_data: Request body content
-#     """
-#     p7_bio = BIO.MemoryBuffer(str(mdm_sig))
-#     p7 = SMIME.load_pkcs7_bio(p7_bio)
-#
-#     p7_signers = p7.get0_signers(X509.X509_Stack())
-#
-#     mdm_ca = get_ca()
-#
-#     # can probably directly use m2 certificate here
-#     ca_x509_bio = BIO.MemoryBuffer(mdm_ca.get_cacert().to_pem())
-#     ca_x509 = X509.load_cert_bio(ca_x509_bio)
-#
-#     cert_store = X509.X509_Store()
-#     cert_store.add_x509(ca_x509)
-#
-#     signer = SMIME.SMIME()
-#     signer.set_x509_store(cert_store)
-#     signer.set_x509_stack(p7_signers)
-#
-#     # NOTE: may need to do something special if we can't cleanly convert
-#     # to string from Unicode. must be byte-accurate as the signature won't
-#     # match otherwise
-#     data_bio = BIO.MemoryBuffer(req_data)
-#
-#     # will raise an exception if verification fails
-#     # if no CA certificate we get an:
-#     #   PKCS7_Error: certificate verify error
-#     signer.verify(p7, data_bio)
-#
-#     return p7_signers[0].as_pem()
-
-
-def base64_to_pem(crypto_type, b64_text, width=76):
-    lines = ''
-    for pos in range(0, len(b64_text), width):
-        lines += b64_text[pos:pos + width] + '\n'
-
-    return '-----BEGIN %s-----\n%s-----END %s-----' % (crypto_type, lines, crypto_type)
-
-
-def device_cert_check(no_device_okay=False):
-    """Perform checks on the device certificate (if provided) or ``Mdm-Signature`` header (if proxied through HTTPS).
-
-    The device model corresponding to the supplied certificate is attached to the **g** variable as **g.device**.
-
+def _find_signer_sid(certificates: CertificateSet, sid: SignerIdentifier) -> Union[cms.Certificate,None]:
+    """Find a signer certificate by its SignerIdentifier.
+    
     Args:
-          no_device_okay (bool): If the provided certificate does not match any in the database, this request will be
-            allowed to pass through if True.
-
-    :status 400: If no match was found for the supplied certificate and no_device_okay was False.
-    :status 500: If multiple matches were found for the suppied certificate.
+          certificates (CertificateSet): Set of certificates parsed by asn1crypto.
+          sid (SignerIdentifier): Signer Identifier, usually IssuerAndSerialNumber.
+    Returns:
+          cms.Certificate or None
     """
+    if sid.name != 'issuer_and_serial_number':
+        return None  # Only IssuerAndSerialNumber for now
 
-    def decorator(f):
-        @wraps(f)
-        def wrapper(*args, **kwargs):
-            # check if valid certificate and if request data matches signature
-            # TODO: implement alternate methods of getting supplied client cert
-            # (e.g. request.headers['X-Ssl-Client-Cert'].replace('\n ', '\n') for
-            # nginx)
-            # pkcs7_pem_sig = base64_to_pem('PKCS7', request.headers['Mdm-Signature'])
-            # device_supplied_cert = verify_mdm_signature(pkcs7_pem_sig, request.data)
-            #
-            # try:
-            #     device_cert = x509.load_pem_x509_certificate(device_supplied_cert, default_backend())
-            #     device_fingerprint = device_cert.fingerprint(hashes.SHA1())
-            #     g.device_cert = db.session.query(DeviceIdentityCertificate).filter(
-            #         DeviceIdentityCertificate.fingerprint == device_fingerprint).one()
-            # except NoResultFound:
-            #     current_app.logger.info('supplied device certificate not found; returning invalid')
-            #     abort(400, 'certificate invalid')
-            #
-            # # get a list of the devices that correspond to this certificate
-            # cert_devices = g.device_cert.devices
-            #
-            # if len(cert_devices) > 1:
-            #     dev_id_list = ', '.join([i.id for i in cert_devices])
-            #     current_app.logger.info(
-            #         'certificate has more than one device assigned (%s); returning invalid' % dev_id_list)
-            #     abort(500, 'certificate configuration invalid')
-            # elif len(cert_devices) < 1 and no_device_okay is not True:
-            #     current_app.logger.info('certificate has no associated device; returning invalid')
-            #     abort(400, 'certificate invalid')
-            #
-            # # NOTE: we've seen on odd circumstance where the provided device UDID
-            # # does not match the currently enrolled certificate (and thus device
-            # # UDID). this appears to be some weird certificate caching problem
-            # # on the client side there the client tries to auth with it's
-            # # previously enrolled cert when one removes/re-enrolls a device
-            # # quickly
-            # if len(cert_devices) == 1:
-            #     g.device = g.device_cert.devices[0]
-            # else:
-            #     g.device = None
+    #: IssuerAndSerialNumber
+    ias = sid.chosen
 
-            return f(*args, **kwargs)
+    for c in certificates:
+        if c.name != 'certificate':
+            continue  # we only support certificate for now
 
-        return wrapper
+        chosen = c.chosen  #: Certificate
+
+        if chosen.serial_number != ias['serial_number'].native:
+            continue
+
+        if chosen.issuer == ias['issuer']:
+            return c
+        
+    return None
+
+
+def verify_mdm_signature(f):
+    """Verify the signature supplied by the client in the request using the ``Mdm-Signature`` header.
+    
+    If the authenticity of the message has been verified,
+    then the signer is attached to the **g** object as **g.signer**
+    
+    :reqheader Mdm-Signature: BASE64-encoded CMS Detached Signature of the message. (if `SignMessage` was true)
+    """
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        if 'Mdm-Signature' not in request.headers:
+            current_app.logger.debug('Client did not supply an Mdm-Signature header but signature is required.')
+            # abort(401)
+
+        sig = b64decode(request.headers['Mdm-Signature'])
+        ci = cms.ContentInfo.load(sig)  # SignedData with zero length encap_content_info type: data
+        assert ci['content_type'].native == 'signed_data'
+        sd = ci['content']
+
+        g.signer = None
+        
+        for si in sd['signer_infos']:
+            sid = si['sid']
+            signer = _find_signer_sid(sd['certificates'], sid)
+            if signer is None:
+                continue  # No appropriate signer found
+
+            certificate = x509.load_der_x509_certificate(signer.dump(), default_backend())
+            verifier = certificate.public_key().verifier(
+                si['signature'].native,
+                padding.PKCS1v15(),
+                hashes.SHA1()
+            )
+            verifier.update(request.data)
+            verifier.verify()
+
+            g.signer = certificate
+
+            # TODO: I'm assuming that the device only has a single signer here
+
+        return f(*args, **kwargs)
 
     return decorator
 
