@@ -67,7 +67,6 @@ declare interface InstalledCertificate {
 }
 
 declare interface SCEPConfiguration {
-    id: string|number;
     url: string;
     challenge_enabled: boolean;
     challenge: string;

@@ -611,7 +611,12 @@ class SCEPConfig(db.Model):
     key_size = Column(Integer, default=2048, nullable=False)
     key_type = Column(String, default='RSA', nullable=False)
     key_usage = Column(DBEnum(KeyUsage), default=KeyUsage.All)
-    subject_alt_name = Column(String, nullable=True)
+    
+    san_dnsname = Column(String, nullable=True)
+    san_rfc822name = Column(String, nullable=True)  # rfc822Name
+    san_uri = Column(String, nullable=True)  # uniformResourceIdentifier
+    san_ntprincipal = Column(String, nullable=True)  # ntPrincipalName
+    
     retries = Column(Integer, default=3, nullable=False)
     retry_delay = Column(Integer, default=10, nullable=False)
     certificate_renewal_time_interval = Column(Integer, default=14, nullable=False)

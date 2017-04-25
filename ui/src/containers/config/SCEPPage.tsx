@@ -55,7 +55,7 @@ export class SCEPPage extends React.Component<OwnProps, undefined> {
 
     render() {
         const {
-            children
+            scep
         } = this.props;
 
         return (
@@ -67,7 +67,11 @@ export class SCEPPage extends React.Component<OwnProps, undefined> {
                             The SCEP Configuration controls the parameters of certificates issued to devices via your
                             SCEP service.
                         </p>
-                        <SCEPPayloadForm onSubmit={this.handleSubmit} onClickTest={this.handleTest} />
+                        <SCEPPayloadForm
+                            initialValues={scep.data}
+                            onSubmit={this.handleSubmit}
+                            onClickTest={this.handleTest}
+                        />
                     </div>
                 </div>
             </div>

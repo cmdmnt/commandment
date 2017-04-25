@@ -158,3 +158,5 @@ scep_settings.cfg
 *.crt
 *.key
 
+# UWSGi config
+uwsgi.ini

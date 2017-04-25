@@ -72,11 +72,11 @@ export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undef
                     <div className='column'>
                         <h4>Key size (in bits)</h4>
                         <label>
-                            <Field id='key_size_1024' component='input' type='radio' name='key_size' value='1024' />
+                            <Field id='key_size_1024' component='input' type='radio' name='key_size' value={1024} />
                             <span className='label-inline'>1024</span>
                         </label>
                         <label>
-                            <Field id='key_size_2048' component='input' type='radio' name='key_size' value='2048' />
+                            <Field id='key_size_2048' component='input' type='radio' name='key_size' value={2048} />
                             <span className='label-inline'>2048</span>
                         </label>
                     </div>
@@ -84,13 +84,18 @@ export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undef
                         <h4>Use SCEP key for</h4>
 
                         <label>
-                            <Field id='key_usage_signing' name='key_usage_signing' component='input' type='checkbox' value='1' />
+                            <Field id='key_usage_signing' name='key_usage' component='input' type='radio' value={1} />
                             <span className='label-inline' >Signing</span>
                         </label>
 
                         <label>
-                            <Field id='key_usage_encryption' name='key_usage_encryption' component='input' type='checkbox' value='4' />
+                            <Field id='key_usage_encryption' name='key_usage' component='input' type='radio' value={4} />
                             <span className='label-inline'>Encryption</span>
+                        </label>
+
+                        <label>
+                            <Field id='key_usage_both' name='key_usage' component='input' type='radio' value={5} />
+                            <span className='label-inline'>Signing + Encryption</span>
                         </label>
                     </div>
                 </div>

@@ -6,11 +6,10 @@ export interface ConfigurationState {
 }
 
 const initialState: ConfigurationState = {
-    scep: {}
 };
 
 export function configuration(state: ConfigurationState = initialState, action: any): ConfigurationState {
     return combineReducers({
         scep
-    });
+    })(state, action);
 }

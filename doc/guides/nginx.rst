@@ -5,9 +5,17 @@ If you are using commandment behind Nginx, Nginx will be terminating the SSL con
 to manage the SSL certificates for you. You should always pass the client certificate back up to commandment so that
 the validity of the device certificate can be determined using CA's stored in commandment.
 
-
 With uWSGI
 ----------
+
+Prerequisites:
+
+- Python 3.5+
+    + On macOS: ``brew install python3``
+- uWSGI
+    + On macOS: ``brew install uwsgi --with-python3``
+    + Linux DEB: ``uwsgi-plugin-python3``
+- uWSGI python3 plugin
 
 Example configuration (with uWSGI)::
 
@@ -38,6 +46,12 @@ References:
 
 With Gunicorn
 -------------
+
+- ``pip3 install gunicorn``
+
+
+    gunicorn -w 4 commandment:create_app
+
 
 
 With Phusion Passenger
