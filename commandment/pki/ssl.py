@@ -36,9 +36,9 @@ def generate_self_signed_certificate(cn: str) -> (rsa.RSAPrivateKey, x509.Certif
     ).not_valid_after(
         datetime.datetime.utcnow() + datetime.timedelta(days=365)
     ).add_extension(
-        x509.SubjectAlternativeName(
+        x509.SubjectAlternativeName([
             DNSName(cn)
-        )
+        ]), False
     ).sign(private_key, hashes.SHA256(), default_backend())
 
     return private_key, certificate
