@@ -1,4 +1,4 @@
-from flask import current_app, render_template, abort, Blueprint, make_response
+from flask import current_app, render_template, abort, Blueprint, make_response, url_for
 import os
 import codecs
 from .pki.models import Certificate
@@ -64,14 +64,20 @@ def enroll():
     #
     # profile.append_payload(ca_cert_payload)
 
-    # find and include all mdm.webcrt's
-    # q = db_session.query(SSLCertificate).first()
-    # for i, cert in enumerate(q):
-    #     new_webcrt_profile = PEMCertificatePayload(org.payload_prefix + '.webcrt.%d' % i, str(cert.pem_data).strip(),
-    #                                                PayloadDisplayName='Web Server Certificate')
-    #     profile.append_payload(new_webcrt_profile)
+
+    # Include Self Signed Certificate if necessary
+    # TODO: Check that cert is self signed.
+    if 'SSL_CERTIFICATE' in current_app.config:
+        basepath = os.path.dirname(__file__)
+        certpath = os.path.join(basepath, current_app.config['SSL_CERTIFICATE'])
+        with open(certpath, 'rb') as fd:
+            pem_data = fd.read()
+            pem_payload = PEMCertificatePayload(org.payload_prefix + '.ssl', pem_data, PayloadDisplayName='Web Server Certificate')
+            profile.append_payload(pem_payload)
+
 
     hexlify = codecs.getencoder('hex')
+    #ca_fingerprint = hexlify(mdm_ca.certificate.fingerprint)
 
     scep_payload = SCEPPayload(
         org.payload_prefix + '.mdm-scep',
@@ -96,6 +102,7 @@ def enroll():
         cert_uuid,
         push_cert.topic,  # APNs push topic
         'https://localhost:5443/mdm',
+        #url_for('mdm_app.mdm'),
         AccessRights.All,
         CheckInURL='https://localhost:5443/checkin',
         # we can validate MDM device client certs provided via SSL/TLS.

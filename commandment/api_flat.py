@@ -6,10 +6,12 @@ from flask import Blueprint, send_file, abort, current_app, jsonify, request, ma
 from flask_marshmallow import Marshmallow
 from sqlalchemy.orm.exc import NoResultFound
 import biplist
+import plistlib
 from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
 from .profiles.models import Profile
 from .mdm import commands
 from .schema import OrganizationFlatSchema, ProfileSchema
+from .profiles.schema import ProfileSchema as ProfilePlistSchema
 
 flat_api = Blueprint('flat_api', __name__)
 
@@ -33,7 +35,7 @@ def organization_get():
     return jsonify(result.data)
 
 
-@flat_api.route('/v1/certificates/<int:certificate_id>/download')
+@flat_api.route('/v1/download/certificates/<int:certificate_id>')
 def download_certificate(certificate_id: int):
     """Download a certificate in PEM format
 
@@ -135,7 +137,7 @@ def device_inventory(device_id: int):
     return 'OK'
 
 
-@flat_api.route('/v1/profiles/upload', methods=['POST'])
+@flat_api.route('/v1/upload/profiles', methods=['POST'])
 def upload_profile():
     """Upload a custom profile using multipart/form-data I.E from an upload input.
 
@@ -172,7 +174,8 @@ def upload_profile():
         data = f.read()
 
         profile = Profile.from_bytes(data)
-    except:  # TODO: separate errors for exceptions caught here
+    except BaseException as e:  # TODO: separate errors for exceptions caught here
+        current_app.logger.error(e)
         abort(400, 'cannot parse the supplied profile')
 
     db.session.add(profile)
@@ -182,3 +185,30 @@ def upload_profile():
     model_data = profile_schema.dump(profile).data
     resp = make_response(jsonify(model_data), 201, {'Content-Type': 'application/vnd.api+json'})
     return resp
+
+
+@flat_api.route('/v1/download/profiles/<int:profile_id>')
+def download_profile(profile_id: int):
+    """Download a profile.
+    
+    The profile is reconstructed from its database representation.
+    
+    Args:
+        profile_id (int): The profile id 
+
+    :reqheader Accept: application/x-apple-aspen-config
+    :resheader Content-Type: application/x-apple-aspen-config
+    :statuscode 200:
+    :statuscode 404:
+    :statuscode 500:
+    """
+    try:
+        profile = db.session.query(Profile).filter(Profile.id == profile_id).one()
+    except NoResultFound:
+        abort(404)
+
+    schema = ProfilePlistSchema()
+    result = schema.dump(profile)
+
+    return plistlib.dumps(result.data, skipkeys=True), 200, {'Content-Type': 'application/x-apple-aspen-config'}
+
