@@ -72,7 +72,6 @@ def enroll():
     #     profile.append_payload(new_webcrt_profile)
 
     hexlify = codecs.getencoder('hex')
-    ca_fingerprint = hexlify(mdm_ca.certificate.fingerprint)
 
     scep_payload = SCEPPayload(
         org.payload_prefix + '.mdm-scep',

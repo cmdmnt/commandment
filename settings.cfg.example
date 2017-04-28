@@ -18,3 +18,5 @@ SSL_RSA_KEY = '../commandment.key'
 
 # If commandment is running in development mode you should specify your public facing hostname here.
 SSL_COMMON_NAME = 'localhost'
+
+# OAuth

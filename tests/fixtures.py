@@ -9,8 +9,10 @@ def app():
     a.config['TESTING'] = True
     a.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     a.config['SQLALCHEMY_ECHO'] = True
-    db.init_app(a)
-    db.Base.create_all()
+
+    with a.app_context():
+        db.init_app(a)
+        db.Base.create_all()
 
     test_client = a.test_client()
     return test_client
