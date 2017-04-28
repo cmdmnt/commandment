@@ -64,7 +64,7 @@ export class ProfilesPage extends React.Component<ProfilesPageProps, ProfilesPag
                 </div>
                 <div className='row'>
                     <div className='column'>
-                        <form method='POST' action='/api/v1/profiles/upload' encType='multipart/form-data'>
+                        <form method='POST' action='/api/v1/upload/profiles' encType='multipart/form-data'>
                             <input type='file' name='file' accept='application/x-apple-aspen-config' />
                             <input type='submit' />
                         </form>

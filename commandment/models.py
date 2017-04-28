@@ -235,7 +235,7 @@ class Device(db.Model):
 
     dep_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
     dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
-    dep_config = relationship('DEPConfig', backref='devices')
+    # dep_config = relationship('DEPConfig', backref='devices')
     info_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
 
     # SecurityInfo

@@ -53,14 +53,19 @@ class Payload(db.Model):
         Returns:
               Payload: An instance of the payload model.
         """
-        if data['PayloadType'] != 'com.apple.security.scep':
+        if data['PayloadType'] == 'com.apple.security.scep':
+            return SCEPPayload.from_dict(data)
+        elif data['PayloadType'] == 'com.apple.wifi.managed':
+            return WIFIPayload.from_dict(data)
+        else:
             return None
 
-        return SCEPPayload.from_dict(data)
+
 
 
 class SCEPPayload(Payload):
-    """SCEP Payload ``com.apple.security.scep``"""
+    payload_type = 'com.apple.security.scep'
+
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     url = Column(String, nullable=False)
     name = Column(String, nullable=True)
@@ -87,6 +92,7 @@ class SCEPPayload(Payload):
         pp.description = data.get('PayloadDescription', None)
         pp.organization = data.get('PayloadOrganization', None)
 
+        # SCEP is strange and doubly nests PayloadContent
         content = data['PayloadContent']
 
         pp.url = content.get('URL')
@@ -110,7 +116,10 @@ class SCEPPayload(Payload):
 
 class ADCertPayload(Payload):
     """Active Directory Certificate Payload"""
+    payload_type = 'com.apple.ADCertificate.managed'
+
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
+    # description = Column(String)
     allow_all_apps_access = Column(Boolean)
     cert_server = Column(String, nullable=False)
     cert_template = Column(String, nullable=False, default='User')
@@ -159,6 +168,8 @@ class ADPayload(Payload):
 
 class WIFIPayload(Payload):
     """Wi-Fi Payload"""
+    payload_type = 'com.apple.wifi.managed'
+
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     ssid_str = Column(String, nullable=False)
     hidden_network = Column(Boolean, default=False)
@@ -178,6 +189,7 @@ class WIFIPayload(Payload):
     # If WEP, WPA or Any
     password = Column(String, nullable=True)
     eap_client_configuration = Column(String)  # JSON
+    tls_certificate_required = Column(Boolean)
     payload_certificate_uuid = Column(GUID, nullable=True)
 
     # Manual Proxy
@@ -191,6 +203,49 @@ class WIFIPayload(Payload):
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.wifi.managed',
     }
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        pp = cls()
+        pp.uuid = data.get('PayloadUUID', None)
+        pp.display_name = data.get('PayloadDisplayName', None)
+        pp.description = data.get('PayloadDescription', None)
+        pp.organization = data.get('PayloadOrganization', None)
+
+        content = data
+
+        pp.ssid_str = content.get('SSID_STR')
+        pp.hidden_network = content.get('HIDDEN_NETWORK', None)
+        pp.auto_join = content.get('AutoJoin', None)
+        if 'EncryptionType' in content:
+            pp.encryption_type = WIFIEncryptionType(content['EncryptionType'])
+
+        pp.is_hotspot = content.get('IsHotspot', None)
+        pp.domain_name = content.get('DomainName', None)
+        pp.displayed_operator_name = content.get('DisplayedOperatorName', None)
+        pp.service_provider_roaming_enabled = content.get('ServiceProviderRoamingEnabled', None)
+
+        # TODO: array
+        #pp.roaming_consortium_ois = content.get('RoamingConsortiumOIs', None)
+
+        # TODO: NAIRealmNames
+        # TODO: MCCANDMNCS
+        pp.password = content.get('Password', None)
+        pp.tls_certificate_required = content.get('TLSCertificateRequired', None)
+
+        if 'ProxyType' in content:
+            pp.proxy_type = WIFIProxyType(content['ProxyType'])
+
+        pp.proxy_server = content.get('ProxyServer', None)
+        pp.proxy_server_port = content.get('ProxyServerPort', None)
+        pp.proxy_username = content.get('ProxyUsername', None)
+        pp.proxy_password = content.get('ProxyPassword', None)
+        pp.proxy_pac_url = content.get('ProxyPACURL', None)
+        pp.proxy_pac_fallback_allowed = content.get('ProxyPACFallbackAllowed', None)
+
+        # TODO: QoS Marking
+
+        return pp
 
 
 class VPNPayload(Payload):
