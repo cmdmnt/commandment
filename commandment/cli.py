@@ -41,7 +41,7 @@ def server():
 
     if not os.path.exists(cert_path) and not os.path.exists(key_path):
         app.logger.info('Generating Self Signed Certificate')
-        pk, cert = generate_self_signed_certificate(app.config.get('SSL_COMMON_NAME', 'localhost'))
+        pk, cert = generate_self_signed_certificate(app.config['SERVER_NAME'])
 
         pem_key = pk.private_bytes(
             encoding=serialization.Encoding.PEM,

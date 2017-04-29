@@ -234,7 +234,7 @@ class Device(db.Model):
     _unlock_token = Column(String(), name='unlock_token', nullable=True)
 
     dep_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-    dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
+    # dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
     # dep_config = relationship('DEPConfig', backref='devices')
     info_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
 

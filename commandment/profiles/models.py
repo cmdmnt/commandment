@@ -30,6 +30,7 @@ class Payload(db.Model):
     id = Column(Integer, primary_key=True)
     type = Column(String, index=True, nullable=False)
     version = Column(Integer, nullable=True)
+    identifier = Column(String)
     uuid = Column(GUID, index=True, default=uuid4())
     display_name = Column(String, nullable=False)
     description = Column(Text, nullable=True)
@@ -183,7 +184,7 @@ class WIFIPayload(Payload):
     nai_realm_names = Column(String, nullable=True) # JSON
     mccs_and_mncs = Column(String, nullable=True) # JSON
     displayed_operator_name = Column(String, nullable=True)
-    proxy_type = Column(DBEnum(WIFIProxyType), nullable=True)
+    proxy_type = Column(String, nullable=True)
     captive_bypass = Column(Boolean, nullable=True)
 
     # If WEP, WPA or Any
@@ -323,56 +324,3 @@ class Profile(db.Model):
     payloads = relationship('Payload',
                             secondary=profile_payloads,
                             backref='profiles')
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Create an instance of ``Profile`` from a Configuration Profile as bytes.
-
-        Returns:
-              Profile: The configuration profile, with Payload objects created for each payload.
-        """
-        plist_data = readPlistFromString(data)
-        p = cls()
-        if 'PayloadDescription' in plist_data:
-            p.description = plist_data['PayloadDescription']
-
-        if 'PayloadDisplayName' in plist_data:
-            p.display_name = plist_data['PayloadDisplayName']
-
-        if 'PayloadExpirationDate' in plist_data:
-            p.expiration_date = plist_data['PayloadExpirationDate']
-
-        if 'PayloadIdentifier' in plist_data:
-            p.identifier = plist_data['PayloadIdentifier']
-
-        if 'PayloadOrganization' in plist_data:
-            p.organization = plist_data['PayloadOrganization']
-
-        if 'PayloadUUID' in plist_data:
-            p.uuid = plist_data['PayloadUUID']
-
-        if 'PayloadRemovalDisallowed' in plist_data:
-            p.removal_disallowed = plist_data['PayloadRemovalDisallowed']
-
-        if 'PayloadScope' in plist_data:
-            p.scope = PayloadScope(plist_data['PayloadScope']).value
-
-        if 'RemovalDate' in plist_data:
-            p.removal_date = plist_data['PayloadRemovalDate']
-
-        if 'DurationUntilRemoval' in plist_data:
-            p.duration_until_removal = plist_data['DurationUntilRemoval']
-
-        if 'ConsentText' in plist_data and 'en' in plist_data['ConsentText']:
-            p.consent_en = plist_data['ConsentText']['en']
-
-        # TODO: Some profiles can contain keys outside of PayloadData so we will have to calculate the intersection
-        # between the previous attributes and the remainder
-
-        if 'PayloadContent' in plist_data:
-            for payload_dict in plist_data['PayloadContent']:
-                pl = Payload.from_dict(payload_dict)
-                if pl is not None:
-                    p.payloads.append(pl)
-
-        return p

@@ -1,3 +1,7 @@
+# The public facing hostname of the MDM
+# This will also be used as the self signed certificate dnsname
+SERVER_NAME='commandment.dev'
+
 # http://flask-sqlalchemy.pocoo.org/2.1/config/
 SQLALCHEMY_DATABASE_URI = 'sqlite:///mdm.db'
 
@@ -15,8 +19,5 @@ PUSH_CERTIFICATE = '../push.pem'
 
 SSL_CERTIFICATE = '../commandment.crt'
 SSL_RSA_KEY = '../commandment.key'
-
-# If commandment is running in development mode you should specify your public facing hostname here.
-SSL_COMMON_NAME = 'localhost'
 
 # OAuth

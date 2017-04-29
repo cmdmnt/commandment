@@ -75,10 +75,6 @@ def enroll():
             pem_payload = PEMCertificatePayload(org.payload_prefix + '.ssl', pem_data, PayloadDisplayName='Web Server Certificate')
             profile.append_payload(pem_payload)
 
-
-    hexlify = codecs.getencoder('hex')
-    #ca_fingerprint = hexlify(mdm_ca.certificate.fingerprint)
-
     scep_payload = SCEPPayload(
         org.payload_prefix + '.mdm-scep',
         scep_config.url,
@@ -101,10 +97,10 @@ def enroll():
         org.payload_prefix + '.mdm',
         cert_uuid,
         push_cert.topic,  # APNs push topic
-        'https://localhost:5443/mdm',
-        #url_for('mdm_app.mdm'),
+        url_for('mdm_app.mdm', _external=True, _scheme='https'),
         AccessRights.All,
         CheckInURL='https://localhost:5443/checkin',
+        # CheckInURL=url_for('mdm_app.checkin', _external=True, _scheme='https'),
         # we can validate MDM device client certs provided via SSL/TLS.
         # however this requires an SSL framework that is able to do that.
         # alternatively we may optionally have the client digitally sign the

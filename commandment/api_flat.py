@@ -3,9 +3,7 @@ This module contains API endpoints which do not fit with the JSON-API specificat
 """
 import io
 from flask import Blueprint, send_file, abort, current_app, jsonify, request, make_response
-from flask_marshmallow import Marshmallow
 from sqlalchemy.orm.exc import NoResultFound
-import biplist
 import plistlib
 from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
 from .profiles.models import Profile
@@ -172,8 +170,9 @@ def upload_profile():
 
     try:
         data = f.read()
+        plist = plistlib.loads(data)
 
-        profile = Profile.from_bytes(data)
+        profile = ProfilePlistSchema().load(plist).data
     except BaseException as e:  # TODO: separate errors for exceptions caught here
         current_app.logger.error(e)
         abort(400, 'cannot parse the supplied profile')
