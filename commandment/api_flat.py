@@ -139,25 +139,28 @@ def device_inventory(device_id: int):
 def upload_profile():
     """Upload a custom profile using multipart/form-data I.E from an upload input.
 
-    The profile will be dissected into its individual payloads to propagate the ``payloads`` table.
-    
-    If the profile is encrypted then the MDM needs to have a private key corresponding to the payload otherwise
-    you will get a 400 bad request return status.
+    Encrypted profiles are not supported.
 
-    The returned body contains a json object with the identifier of the newly created profile.
+    The profiles contents will be stored using the following process:
+    - For the top level profile (and each payload) there is a marshmallow schema which maps the payload keys into
+        the SQLAlchemy model keys. It is also the responsibility of the marshmallow schema to be the validator for 
+        uploaded profiles.
+    - The profile itself is inserted as a Profile model.
+    - Each payload is unmarshalled using marshmallow to a specific Payload model. Each specific model contains a join
+        table inheritance to the base ``payloads`` table.
+
+    The returned body contains a jsonapi object with details of the newly created profile and associated payload ID's.
 
     Note: Does not support ``application/x-www-form-urlencoded``
 
     TODO:
         - Support signed profiles
-        - Support encrypted profiles
 
     :reqheader Accept: application/vnd.api+json
     :reqheader Content-Type: multipart/form-data
     :resheader Content-Type: application/vnd.api+json
     :statuscode 201: profile created
     :statuscode 400: If the request contained malformed or missing payload data.
-    :statuscode 415: If we cannot decrypt the payload(s).
     :statuscode 500: If something else went wrong with parsing or persisting the payload(s)
     """
     if 'file' not in request.files:
@@ -173,6 +176,10 @@ def upload_profile():
         plist = plistlib.loads(data)
 
         profile = ProfilePlistSchema().load(plist).data
+    except plistlib.InvalidFileException as e:
+        current_app.logger.error(e)
+        abort(400, 'invalid plist format supplied')
+
     except BaseException as e:  # TODO: separate errors for exceptions caught here
         current_app.logger.error(e)
         abort(400, 'cannot parse the supplied profile')
