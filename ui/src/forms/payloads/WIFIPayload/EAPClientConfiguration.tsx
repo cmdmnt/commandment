@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Field, formValueSelector} from 'redux-form';
 import {connect} from "react-redux";
+import {RootState} from "../../../reducers/index";
 
 enum EAPType {
     TLS = 13,
@@ -34,15 +35,30 @@ export interface EAPClientConfiguration {
 
 const selector = formValueSelector('wifi_payload');
 
-@connect(
-    state => {
-        const accept_eap_types = selector(state, 'accept_eap_types')
+interface EAPClientConfigurationProps {
+    accept_eap_types: { [eapType: number]: boolean };
+}
+
+function mapStateToProps(state): EAPClientConfigurationProps {
+    const accept_eap_types = selector(state, 'eap_client_configuration.accept_eap_types');
+    
+    return {
+        accept_eap_types
     }
+}
+
+@connect(
+    mapStateToProps
 )
-export class EAPClientConfiguration extends React.Component<undefined, undefined> {
+export class EAPClientConfiguration extends React.Component<EAPClientConfigurationProps, undefined> {
     render() {
+        const {
+            accept_eap_types
+        } = this.props;
+
         return (
             <fieldset name='eap_client_configuration'>
+                <legend><h3><span className='fa fa-building' />Enterprise (802.1x) Profile Configuration</h3></legend>
                 <div className='row'>
                     <div className='column'>
                         <h4>Accept EAP Types</h4>
@@ -106,12 +122,14 @@ export class EAPClientConfiguration extends React.Component<undefined, undefined
                         <label className='label-inline' htmlFor='tls-certificate-is-required'>Allow Two Factor Authentication</label>
                     </div>
                 </div>
+                {accept_eap_types && (accept_eap_types[EAPType.TTLS] || accept_eap_types[EAPType.PEAP] || accept_eap_types[EAPType.EAPFAST]) &&
                 <div className='row'>
                     <div className='column'>
                         <label htmlFor='outer-identity'>Outer Identity</label>
                         <Field id='outer-identity' name='outer_identity' component='input' type='text' />
                     </div>
-                </div>
+                </div>}
+                {accept_eap_types && accept_eap_types[EAPType.TTLS] &&
                 <div className='row'>
                     <div className='column'>
                         <label htmlFor='ttls-inner-authentication'>TTLS Inner Authentication</label>
@@ -123,7 +141,7 @@ export class EAPClientConfiguration extends React.Component<undefined, undefined
                             <option value='EA'>EA</option>
                         </Field>
                     </div>
-                </div>
+                </div>}
             </fieldset>
         )
     }

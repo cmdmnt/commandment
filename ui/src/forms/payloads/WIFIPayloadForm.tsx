@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {Field, reduxForm, FormProps, formValueSelector, FormSection} from 'redux-form';
 import {connect} from "react-redux";
-import {ProxyDetails} from "./WIFIPayload/ProxyDetails";
+import {ProxyDetails, WIFIProxyType} from "./WIFIPayload/ProxyDetails";
 import {EAPClientConfiguration} from "./WIFIPayload/EAPClientConfiguration";
 
 export type WIFIEncryptionType = 'None' | 'Any' | 'WPA2' | 'WPA' | 'WEP';
-export type WIFIProxyType = 'None' | 'Manual' | 'Auto';
+
 
 export interface EAPClientConfiguration {
     username?: string;
@@ -70,7 +70,7 @@ const selector = formValueSelector('wifi_payload');
 
 @connect(
     state => {
-        const is_hotspot = selector(state, 'is_hotspot')
+        const is_hotspot = selector(state, 'is_hotspot');
         return {
             is_hotspot
         }
@@ -93,11 +93,11 @@ export class WIFIPayloadForm extends React.Component<WIFIPayloadFormProps, undef
                         <label htmlFor='ssid-str'>SSID</label>
                         <Field id='ssid-str' name='ssid_str' component='input' type='text' required />
                     </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
-                        <Field id='is-hidden' name='is_hidden' component='input' type='checkbox' value={true} />
-                        <label className='label-inline' htmlFor='is-hidden'>Hidden</label>
+                    <div className='column-20'>
+
+                        <label htmlFor='is-hidden'>Hidden
+                            <Field id='is-hidden' name='is_hidden' component='input' type='checkbox' value={true} />
+                        </label>
                     </div>
                 </div>
                 <div className='row'>
