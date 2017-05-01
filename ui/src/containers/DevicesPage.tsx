@@ -12,6 +12,7 @@ import {ModelIcon} from '../components/griddle/ModelIcon';
 import {DeviceLink} from '../components/griddle/DeviceLink';
 import {SinceNowUTC} from "../components/griddle/SinceNowUTC";
 import {SimpleLayout} from '../components/griddle/SimpleLayout';
+import {SelectionPlugin} from '../griddle-plugins/selection';
 
 interface ReduxStateProps {
     devices: DevicesState;
@@ -99,6 +100,7 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
                                 recordCount: devices.recordCount
                             }}
                             events={eventHandlers}
+                            plugins={[SelectionPlugin()]}
                             components={{
                                 Layout: SimpleLayout
                             }}

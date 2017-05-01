@@ -59,6 +59,14 @@ def enroll():
 
     profile = Profile(org.payload_prefix + '.enroll', PayloadDisplayName=org.name)
 
+    if 'CA_CERTIFICATE' in current_app.config:
+        basepath = os.path.dirname(__file__)
+        certpath = os.path.join(basepath, current_app.config['CA_CERTIFICATE'])
+        with open(certpath, 'rb') as fd:
+            pem_data = fd.read()
+            pem_payload = PEMCertificatePayload(org.payload_prefix + '.ca', pem_data, PayloadDisplayName='Certificate Authority')
+            profile.append_payload(pem_payload)
+
     # ca_cert_payload = PEMCertificatePayload(org.payload_prefix + '.mdm-ca', mdm_ca.certificate.pem_data,
     #                                         PayloadDisplayName='MDM CA Certificate')
     #
@@ -97,9 +105,9 @@ def enroll():
         org.payload_prefix + '.mdm',
         cert_uuid,
         push_cert.topic,  # APNs push topic
-        url_for('mdm_app.mdm', _external=True, _scheme='https'),
+        'https://{}:5443/mdm'.format(current_app.config['PUBLIC_HOSTNAME']),
         AccessRights.All,
-        CheckInURL='https://localhost:5443/checkin',
+        CheckInURL='https://{}:5443/checkin'.format(current_app.config['PUBLIC_HOSTNAME']),
         # CheckInURL=url_for('mdm_app.checkin', _external=True, _scheme='https'),
         # we can validate MDM device client certs provided via SSL/TLS.
         # however this requires an SSL framework that is able to do that.

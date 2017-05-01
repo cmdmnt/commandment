@@ -78,7 +78,7 @@ def verify_mdm_signature(f):
                 hashes.SHA1()
             )
             verifier.update(request.data)
-            verifier.verify()
+            verifier.verify()  # Raises a SigningError if not valid
 
             g.signer = certificate
 

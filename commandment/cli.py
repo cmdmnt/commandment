@@ -8,7 +8,7 @@ import os
 import atexit
 import werkzeug.serving
 from commandment import create_app
-from commandment.pki.ssl import generate_self_signed_certificate
+from commandment.pki.ssl import generate_self_signed_certificate, generate_signing_request
 from cryptography.hazmat.primitives import serialization
 from commandment.runner import start_runner, stop_runner
 
@@ -39,9 +39,12 @@ def server():
     app.logger.debug('Using RSA Private Key From: %s', os.path.abspath(key_path))
     app.logger.debug('Using SSL Certificate From: %s', os.path.abspath(cert_path))
 
+    # pk, csr = generate_signing_request(app.config['PUBLIC_HOSTNAME'])
+    # app.logger.debug('Generated signing request for', app.config['PUBLIC_HOSTNAME'])
+
     if not os.path.exists(cert_path) and not os.path.exists(key_path):
         app.logger.info('Generating Self Signed Certificate')
-        pk, cert = generate_self_signed_certificate(app.config['SERVER_NAME'])
+        pk, cert = generate_self_signed_certificate(app.config['PUBLIC_HOSTNAME'])
 
         pem_key = pk.private_bytes(
             encoding=serialization.Encoding.PEM,
