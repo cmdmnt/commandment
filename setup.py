@@ -27,6 +27,7 @@ setup(
         'Flask-JWT',
         'oauthlib',
         'passlib',
+        'marshmallow-enum',
         'oscrypto>=0.18.0',
         'SQLAlchemy>=1.1.6',
         'acme>=0.12.0',

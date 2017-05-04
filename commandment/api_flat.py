@@ -5,6 +5,7 @@ import io
 from flask import Blueprint, send_file, abort, current_app, jsonify, request, make_response
 from sqlalchemy.orm.exc import NoResultFound
 import plistlib
+from .plistlib.nonewriter import dumps as dumps_none
 from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
 from .profiles.models import Profile
 from .mdm import commands
@@ -215,6 +216,7 @@ def download_profile(profile_id: int):
 
     schema = ProfilePlistSchema()
     result = schema.dump(profile)
+    plist_data = dumps_none(result.data, skipkeys=True)
 
-    return plistlib.dumps(result.data, skipkeys=True), 200, {'Content-Type': 'application/x-apple-aspen-config'}
+    return plist_data, 200, {'Content-Type': 'application/x-apple-aspen-config'}
 

@@ -29,12 +29,12 @@ class Payload(db.Model):
 
     id = Column(Integer, primary_key=True)
     type = Column(String, index=True, nullable=False)
-    version = Column(Integer, nullable=True)
+    version = Column(Integer)
     identifier = Column(String)
     uuid = Column(GUID, index=True, default=uuid4())
-    display_name = Column(String, nullable=False)
-    description = Column(Text, nullable=True)
-    organization = Column(String, nullable=True)
+    display_name = Column(String)
+    description = Column(Text)
+    organization = Column(String)
 
     # Dependencies should be tracked in cases where the payload refers to another required payload.
     # eg. a reference to certificate payload in an 802.1x configuration.
@@ -47,26 +47,8 @@ class Payload(db.Model):
         'polymorphic_on': type,
     }
 
-    @classmethod
-    def from_dict(cls, data: dict):
-        """Create a new payload from its PayloadData dict.
-
-        Returns:
-              Payload: An instance of the payload model.
-        """
-        if data['PayloadType'] == 'com.apple.security.scep':
-            return SCEPPayload.from_dict(data)
-        elif data['PayloadType'] == 'com.apple.wifi.managed':
-            return WIFIPayload.from_dict(data)
-        else:
-            return None
-
-
-
 
 class SCEPPayload(Payload):
-    payload_type = 'com.apple.security.scep'
-
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     url = Column(String, nullable=False)
     name = Column(String, nullable=True)
@@ -85,40 +67,8 @@ class SCEPPayload(Payload):
         'polymorphic_identity': 'com.apple.security.scep',
     }
 
-    @classmethod
-    def from_dict(cls, data: dict):
-        pp = cls()
-        pp.uuid = data.get('PayloadUUID', None)
-        pp.display_name = data.get('PayloadDisplayName', None)
-        pp.description = data.get('PayloadDescription', None)
-        pp.organization = data.get('PayloadOrganization', None)
-
-        # SCEP is strange and doubly nests PayloadContent
-        content = data['PayloadContent']
-
-        pp.url = content.get('URL')
-        pp.name = content.get('Name', None)
-        #pp.subject = '/'.join(data.get('Subject', []))
-        pp.subject = 'NOT=IMPLEMENTED'
-        pp.challenge = content.get('Challenge', None)
-        pp.key_size = content.get('Keysize', None)
-        pp.ca_fingerprint = content.get('CAFingerprint', None)
-        pp.key_type = 'RSA'
-        pp.key_usage = KeyUsage(content.get('KeyUsage', KeyUsage.All.value))
-        pp.retries = content.get('Retries', 3)
-        pp.retry_delay = content.get('RetryDelay', 10)
-        pp.certificate_renewal_time_interval = content.get('CertificateRenewalTimeInterval', 14)
-        # GetCACaps ignored
-
-        return pp
-
-
-
 
 class ADCertPayload(Payload):
-    """Active Directory Certificate Payload"""
-    payload_type = 'com.apple.ADCertificate.managed'
-
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     # description = Column(String)
     allow_all_apps_access = Column(Boolean)
@@ -138,7 +88,6 @@ class ADCertPayload(Payload):
 
 
 class ADPayload(Payload):
-    """Active Directory Join Payload"""
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     host_name = Column(String, nullable=False)
     user_name = Column(String, nullable=False)
@@ -168,85 +117,39 @@ class ADPayload(Payload):
 
 
 class WIFIPayload(Payload):
-    """Wi-Fi Payload"""
-    payload_type = 'com.apple.wifi.managed'
-
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     ssid_str = Column(String, nullable=False)
     hidden_network = Column(Boolean, default=False)
     auto_join = Column(Boolean, nullable=True)
     encryption_type = Column(DBEnum(WIFIEncryptionType), default=WIFIEncryptionType.Any)
-    is_hotspot = Column(Boolean, nullable=True)
-    domain_name = Column(String, nullable=True)
-    service_provider_roaming_enabled = Column(Boolean, nullable=True)
+    is_hotspot = Column(Boolean)
+    domain_name = Column(String)
+    service_provider_roaming_enabled = Column(Boolean)
 
-    roaming_consortium_ois = Column(String, nullable=True) # JSON
-    nai_realm_names = Column(String, nullable=True) # JSON
-    mccs_and_mncs = Column(String, nullable=True) # JSON
-    displayed_operator_name = Column(String, nullable=True)
-    proxy_type = Column(String, nullable=True)
-    captive_bypass = Column(Boolean, nullable=True)
+    roaming_consortium_ois = Column(String) # JSON
+    nai_realm_names = Column(String) # JSON
+    mccs_and_mncs = Column(String) # JSON
+    displayed_operator_name = Column(String)
+    captive_bypass = Column(Boolean)
 
     # If WEP, WPA or Any
-    password = Column(String, nullable=True)
+    password = Column(String)
     eap_client_configuration = Column(String)  # JSON
     tls_certificate_required = Column(Boolean)
-    payload_certificate_uuid = Column(GUID, nullable=True)
+    payload_certificate_uuid = Column(GUID)
 
     # Manual Proxy
-    proxy_server = Column(String, nullable=True)
-    proxy_server_port = Column(Integer, nullable=True)
-    proxy_username = Column(String, nullable=True)
-    proxy_password = Column(String, nullable=True)
-    proxy_pac_url = Column(String, nullable=True)
-    proxy_pac_fallback_allowed = Column(Boolean, nullable=True)
+    proxy_type = Column(String)
+    proxy_server = Column(String)
+    proxy_server_port = Column(Integer)
+    proxy_username = Column(String)
+    proxy_password = Column(String)
+    proxy_pac_url = Column(String)
+    proxy_pac_fallback_allowed = Column(Boolean)
 
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.wifi.managed',
     }
-
-    @classmethod
-    def from_dict(cls, data: dict):
-        pp = cls()
-        pp.uuid = data.get('PayloadUUID', None)
-        pp.display_name = data.get('PayloadDisplayName', None)
-        pp.description = data.get('PayloadDescription', None)
-        pp.organization = data.get('PayloadOrganization', None)
-
-        content = data
-
-        pp.ssid_str = content.get('SSID_STR')
-        pp.hidden_network = content.get('HIDDEN_NETWORK', None)
-        pp.auto_join = content.get('AutoJoin', None)
-        if 'EncryptionType' in content:
-            pp.encryption_type = WIFIEncryptionType(content['EncryptionType'])
-
-        pp.is_hotspot = content.get('IsHotspot', None)
-        pp.domain_name = content.get('DomainName', None)
-        pp.displayed_operator_name = content.get('DisplayedOperatorName', None)
-        pp.service_provider_roaming_enabled = content.get('ServiceProviderRoamingEnabled', None)
-
-        # TODO: array
-        #pp.roaming_consortium_ois = content.get('RoamingConsortiumOIs', None)
-
-        # TODO: NAIRealmNames
-        # TODO: MCCANDMNCS
-        pp.password = content.get('Password', None)
-        pp.tls_certificate_required = content.get('TLSCertificateRequired', None)
-
-        if 'ProxyType' in content:
-            pp.proxy_type = WIFIProxyType(content['ProxyType'])
-
-        pp.proxy_server = content.get('ProxyServer', None)
-        pp.proxy_server_port = content.get('ProxyServerPort', None)
-        pp.proxy_username = content.get('ProxyUsername', None)
-        pp.proxy_password = content.get('ProxyPassword', None)
-        pp.proxy_pac_url = content.get('ProxyPACURL', None)
-        pp.proxy_pac_fallback_allowed = content.get('ProxyPACFallbackAllowed', None)
-
-        # TODO: QoS Marking
-
-        return pp
 
 
 class VPNPayload(Payload):
@@ -281,8 +184,6 @@ class EmailPayload(Payload):
     outgoing_incoming_same = Column(Boolean)
     outgoing_auth = Column(DBEnum(EmailAuthenticationType), nullable=False)
     
-    
-
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.mail.managed'
     }
@@ -307,18 +208,18 @@ class Profile(db.Model):
     __tablename__ = 'profiles'
 
     id = Column(Integer, primary_key=True)
-    description = Column(Text, nullable=True)
-    display_name = Column(String, nullable=True)
-    expiration_date = Column(DateTime, nullable=True)  # Only for old style OTA
+    description = Column(Text)
+    display_name = Column(String)
+    expiration_date = Column(DateTime)  # Only for old style OTA
     identifier = Column(String, nullable=False)
-    organization = Column(String, nullable=True)
+    organization = Column(String)
     uuid = Column(GUID, index=True, default=uuid4())
-    removal_disallowed = Column(Boolean, nullable=True)
+    removal_disallowed = Column(Boolean)
     version = Column(Integer, default=1)
-    scope = Column(DBEnum(PayloadScope), default=PayloadScope.User.value, nullable=True)
-    removal_date = Column(DateTime, nullable=True)
-    duration_until_removal = Column(BigInteger, nullable=True)
-    consent_en = Column(Text, nullable=True)
+    scope = Column(DBEnum(PayloadScope), default=PayloadScope.User.value)
+    removal_date = Column(DateTime)
+    duration_until_removal = Column(BigInteger)
+    consent_en = Column(Text)
     is_encrypted = Column(Boolean, default=False)
 
     payloads = relationship('Payload',

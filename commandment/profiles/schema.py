@@ -3,22 +3,60 @@ This module defines marshmallow schemas for use in converting .mobileconfig (pli
 model representations.
 """
 
+from typing import Union, Callable, Type, List
 from marshmallow import Schema, fields, post_load
+from marshmallow_enum import EnumField
 from commandment.profiles import models
+from commandment.profiles.ad import ADCertificateAcquisitionMechanism
+from commandment.profiles.wifi import WIFIEncryptionType
+from commandment.profiles.cert import KeyUsage
+from . import PayloadScope
+
+_schemas = {}
+"""Hold all registered schemas by their PayloadType."""
+
+
+def schema_for(payload_type: str) -> Union[None, Type[Schema]]:
+    """Get a class that represents the marshmallow schema for a payload, using the payload type.
+    
+    Args:
+          payload_type (str): The value of PayloadType
+    Returns:
+          None or a class that represents a schema for that payload.
+    """
+    return _schemas.get(payload_type, None)
+
+
+def register_payload_schema(payload_type: str) -> Callable[[Type[Schema]], Type[Schema]]:
+    """Decorate a Payload schema to register its type. For use with schema_for."""
+    def wrapper(cls: Type[Schema]) -> Type[Schema]:
+        _schemas[payload_type] = cls
+        return cls
+        
+    return wrapper
+
+
+class Payload(Schema):
+    PayloadType = fields.Str(attribute='type')
+    PayloadVersion = fields.Integer(attribute='version')
+    PayloadIdentifier = fields.String(attribute='identifier')
+    PayloadUUID = fields.UUID(attribute='uuid')
+    PayloadDisplayName = fields.String(attribute='display_name')
+    PayloadDescription = fields.String(attribute='description')
+    PayloadOrganization = fields.String(attribute='organization')
 
 
 class ConsentTextSchema(Schema):
     en = fields.String(attribute='consent_en')
 
 
-
-
-class ADCertificatePayload(Schema):
+@register_payload_schema('com.apple.ADCertificate.managed')
+class ADCertificatePayload(Payload):
     Description = fields.Str(attribute='description')
     CertServer = fields.Str(attribute='cert_server')
     CertTemplate = fields.Str(attribute='cert_template')
     CertificateAuthority = fields.Str(attribute='certificate_authority')
-    CertificateAcquisitionMechanism = fields.Str(attribute='acquisition_mechanism')
+    CertificateAcquisitionMechanism = EnumField(ADCertificateAcquisitionMechanism, attribute='acquisition_mechanism')
     CertificateRenewalTimeInterval = fields.Int(attribute='renewal_time_interval')
     Keysize = fields.Int(attribute='keysize')
     UserName = fields.Str(attribute='username')
@@ -57,23 +95,27 @@ class EAPClientConfiguration(Schema):
     EAPSIMNumberOfRANDs = fields.Integer()
 
 
-class Payload(Schema):
-    PayloadType = fields.Str(attribute='type')
-    PayloadVersion = fields.Integer(attribute='version')
-    PayloadIdentifier = fields.String(attribute='identifier')
-    PayloadUUID = fields.UUID(attribute='uuid')
-    PayloadDisplayName = fields.String(attribute='display_name')
-    PayloadDescription = fields.String(attribute='description')
-    PayloadOrganization = fields.String(attribute='organization')
+@register_payload_schema('com.apple.security.scep')
+class SCEPPayload(Payload):
+    URL = fields.URL(attribute='url')
+    Name = fields.String(attribute='name')
+    # Subject = fields.Nested()
+    Challenge = fields.String(attribute='challenge')
+    Keysize = fields.Integer(attribute='key_size')
+    CAFingerprint = fields.String(attribute='ca_fingerprint')
+    KeyType = fields.String(attribute='key_type')
+    KeyUsage = EnumField(KeyUsage, attribute='key_usage')
+    # SubjectAltName = fields.Dict(attribute='subject_alt_name')
+    Retries = fields.Integer(attribute='retries')
+    RetryDelay = fields.Integer(attribute='retry_delay')
 
 
+@register_payload_schema('com.apple.wifi.managed')
 class WIFIPayload(Payload):
-
-
     SSID_STR = fields.Str(attribute='ssid_str')
     HIDDEN_NETWORK = fields.Boolean(attribute='hidden_network')
     AutoJoin = fields.Boolean(attribute='auto_join', allow_none=True)
-    EncryptionType = fields.Str(attribute='encryption_type')
+    EncryptionType = EnumField(WIFIEncryptionType, attribute='encryption_type')
     IsHotspot = fields.Boolean(attribute='is_hotspot', allow_none=True)
     DomainName = fields.String(attribute='domain_name', allow_none=True)
     ServiceProviderRoamingEnabled = fields.Boolean(attribute='service_provider_roaming_enabled', allow_none=True)
@@ -105,7 +147,7 @@ class ProfileSchema(Schema):
     PayloadRemovalDisallowed = fields.Bool(attribute='removal_disallowed')
     # PayloadType = fields.String(attribute='payload_type', default='Configuration', required=True)
     PayloadVersion = fields.Integer(attribute='version', default=1, required=True)
-    PayloadScope = fields.String(attribute='scope')
+    PayloadScope = EnumField(PayloadScope, attribute='scope')
     RemovalDate = fields.DateTime(attribute='removal_date')
     DurationUntilRemoval = fields.Float(attribute='duration_until_removal')
     ConsentText = fields.Nested(ConsentTextSchema())
@@ -113,15 +155,28 @@ class ProfileSchema(Schema):
     PayloadContent = fields.Method('get_payloads', deserialize='load_payloads')
 
     def get_payloads(self, obj):
-        return None
+        payloads = []
 
-    def load_payloads(self, payload_content: list):
+        for payload in obj.payloads:
+            schema = schema_for(payload.type)
+            if schema is not None:
+                result = schema().dump(payload)
+                payloads.append(result.data)
+            else:
+                print('Unsupported PayloadType: {}'.format(payload.type))
+
+        return payloads
+
+    def load_payloads(self, payload_content: list) -> List[Schema]:
         payloads = []
 
         for content in payload_content:
-            if content['PayloadType'] == 'com.apple.wifi.managed':
-                result = WIFIPayload().load(content)
+            schema = schema_for(content['PayloadType'])
+            if schema is not None:
+                result = schema().load(content)
                 payloads.append(result.data)
+            else:
+                print('Unsupported PayloadType: {}'.format(content['PayloadType']))
 
         return payloads
 

@@ -33,6 +33,7 @@ itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==1.0
 marshmallow==2.13.1
+marshmallow-enum==1.0
 marshmallow-jsonapi==0.11.0
 marshmallow-sqlalchemy==0.13.0
 minio==2.2.1
