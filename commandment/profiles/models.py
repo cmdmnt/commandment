@@ -24,7 +24,6 @@ payload_dependencies = Table('payload_dependencies', db.metadata,
 
 
 class Payload(db.Model):
-    """Configuration Profile Payload"""
     __tablename__ = 'payloads'
 
     id = Column(Integer, primary_key=True)
@@ -187,6 +186,54 @@ class EmailPayload(Payload):
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.mail.managed'
     }
+
+
+class BaseCertificatePayload(Payload):
+    id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
+    certificate_file_name = Column(String)
+    payload_content = Column(LargeBinary)
+    password = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity': 'com.apple.security.pem'
+    }
+
+
+class PEMCertificatePayload(BaseCertificatePayload):
+    __mapper_args__ = {
+        'polymorphic_identity': 'com.apple.security.pem'
+    }
+
+
+class DERCertificatePayload(BaseCertificatePayload):
+    __mapper_args__ = {
+        'polymorphic_identity': 'com.apple.security.pkcs1'
+    }
+
+
+class PKCS12CertificatePayload(BaseCertificatePayload):
+    __mapper_args__ = {
+        'polymorphic_identity': 'com.apple.security.pkcs12'
+    }
+
+
+class PasswordPolicy(Payload):
+    id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
+    allow_simple = Column(Boolean)
+    force_pin = Column(Boolean)
+    max_failed_attempts = Column(Integer)
+    max_inactivity = Column(Integer)
+    max_pin_age_in_days = Column(Integer)
+    min_complex_chars = Column(Integer)
+    min_length = Column(Integer)
+    require_alphanumeric = Column(Boolean)
+    pin_history = Column(Integer)
+    max_grace_period = Column(Integer)
+    allow_fingerprint_modification = Column(Boolean)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'com.apple.mobiledevice.passwordpolicy'
+    }
+
 
 profile_payloads = Table('profile_payloads', db.metadata,
                          Column('profile_id', Integer, ForeignKey('profiles.id')),

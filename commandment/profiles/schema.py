@@ -66,7 +66,7 @@ class ADCertificatePayload(Payload):
     KeyIsExtractable = fields.Bool(attribute='key_is_extractable')
     
     @post_load
-    def make_payload(self, data):
+    def make_payload(self, data) -> models.ADCertPayload:
         return models.ADCertPayload(**data)
 
 
@@ -108,6 +108,10 @@ class SCEPPayload(Payload):
     # SubjectAltName = fields.Dict(attribute='subject_alt_name')
     Retries = fields.Integer(attribute='retries')
     RetryDelay = fields.Integer(attribute='retry_delay')
+
+    @post_load
+    def make_payload(self, data: dict) -> models.SCEPPayload:
+        return models.SCEPPayload(**data)
 
 
 @register_payload_schema('com.apple.wifi.managed')
