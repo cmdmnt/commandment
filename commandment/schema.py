@@ -4,6 +4,7 @@ from marshmallow import Schema as FlatSchema, post_load
 from .models import db, Organization, SCEPConfig
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
+
 class DeviceSchema(Schema):
     """marshmallow-jsonapi schema for Device objects."""
     id = fields.Int(dump_only=True)
@@ -78,11 +79,39 @@ class DeviceSchema(Schema):
         type_='installed_applications'
     )
 
+    groups = Relationship(
+        related_view='api_app.device_group_detail',
+        related_view_kwargs={'device_group_id': '<id>'},
+        many=True,
+        schema='DeviceGroupSchema',
+        type_='device_groups'
+    )
+
     class Meta:
         type_ = 'devices'
         self_view = 'api_app.device_detail'
         self_view_kwargs = {'device_id': '<id>'}
         self_view_many = 'api_app.devices_list'
+        strict = True
+
+
+class DeviceGroupSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+
+    devices = Relationship(
+        related_view='api_app.device_detail',
+        related_view_kwargs={'device_id': '<id>'},
+        many=True,
+        schema='DeviceSchema',
+        type_='devices',
+    )
+
+    class Meta:
+        type_ = 'device_groups'
+        self_view = 'api_app.device_group_detail'
+        self_view_kwargs = {'device_group_id': '<id>'}
+        self_view_many = 'api_app.device_groups_list'
         strict = True
 
 

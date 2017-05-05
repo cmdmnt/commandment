@@ -1,11 +1,11 @@
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
     CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, InstalledApplicationSchema, ProfileSchema, \
-    PayloadSchema, InstalledCertificateSchema
+    PayloadSchema, InstalledCertificateSchema, DeviceGroupSchema
 from .models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
-    SSLCertificate, Organization, Command, InstalledApplication, InstalledProfile, InstalledCertificate
+    SSLCertificate, Organization, Command, InstalledApplication, InstalledProfile, InstalledCertificate, DeviceGroup
 from .profiles.models import Profile, Payload
 
-from flask_rest_jsonapi import ResourceDetail, ResourceList
+from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
 
 
 class DeviceList(ResourceList):
@@ -20,6 +20,25 @@ class DeviceDetail(ResourceDetail):
         'model': Device,
         'url_field': 'device_id'
     }
+
+
+class DeviceGroupList(ResourceList):
+    schema = DeviceGroupSchema
+    data_layer = {'session': db.session, 'model': DeviceGroup}
+
+
+class DeviceGroupDetail(ResourceDetail):
+    schema = DeviceGroupSchema
+    data_layer = {
+        'session': db.session,
+        'model': DeviceGroup,
+        'url_field': 'device_group_id'
+    }
+
+
+class DeviceRelationship(ResourceRelationship):
+    schema = DeviceSchema
+    data_layer = {'session': db.session, 'model': Device}
 
 
 class CertificatesList(ResourceList):

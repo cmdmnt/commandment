@@ -5,7 +5,8 @@ from .resources import CertificatesList, CertificateDetail, CertificateSigningRe
     CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
     CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, OrganizationList, \
     OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationsList, ProfilesList, ProfileDetail, \
-    PayloadsList, PayloadDetail, InstalledCertificatesList, InstalledCertificateDetail, InstalledApplicationDetail
+    PayloadsList, PayloadDetail, InstalledCertificatesList, InstalledCertificateDetail, InstalledApplicationDetail, \
+    DeviceGroupList, DeviceGroupDetail, DeviceRelationship
 
 api_app = Blueprint('api_app', __name__)
 api = Api(api_app)
@@ -24,8 +25,12 @@ api.route(PrivateKeyDetail, 'private_key_detail', '/v1/rsa_private_keys/<int:pri
 
 
 # Devices
-api.route(DeviceList, 'devices_list', '/v1/devices')
+api.route(DeviceList, 'devices_list', '/v1/devices', '/v1/device_groups/<int:device_group_id>/devices')
 api.route(DeviceDetail, 'device_detail', '/v1/devices/<int:device_id>')
+
+api.route(DeviceGroupList, 'device_groups_list', '/v1/device_groups', '/v1/devices/<int:device_id>/groups')
+api.route(DeviceGroupDetail, 'device_group_detail', '/v1/device_groups/<int:device_group_id>')
+api.route(DeviceRelationship, 'device_group_devices', '/v1/device_groups/<int:device_group_id>/relationship/devices')
 
 # Commands
 api.route(CommandsList, 'commands_list', '/v1/commands', '/v1/devices/<int:device_id>/commands')

@@ -275,10 +275,10 @@ class Device(db.Model):
         return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
 
 
-device_group_devices = Table('device_group_devices', db.Model,
+device_group_devices = Table('device_group_devices', db.metadata,
                              Column('device_group_id', ForeignKey('device_groups.id'), primary_key=True),
                              Column('device_id', ForeignKey('devices.id'), primary_key=True),
-                    )
+                             )
 
 
 class DeviceGroup(db.Model):
@@ -286,7 +286,6 @@ class DeviceGroup(db.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
-
 
 
 class InstalledApplication(db.Model):
