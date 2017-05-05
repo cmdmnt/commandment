@@ -83,12 +83,6 @@ def enroll():
             )
             profile.payloads.append(pem_payload)
 
-    # ca_cert_payload = PEMCertificatePayload(org.payload_prefix + '.mdm-ca', mdm_ca.certificate.pem_data,
-    #                                         PayloadDisplayName='MDM CA Certificate')
-    #
-    # profile.append_payload(ca_cert_payload)
-
-
     # Include Self Signed Certificate if necessary
     # TODO: Check that cert is self signed.
     if 'SSL_CERTIFICATE' in current_app.config:
@@ -109,7 +103,7 @@ def enroll():
         identifier=org.payload_prefix + '.mdm-scep',
         url=scep_config.url,
         name='MDM SCEP',
-        subject='CN=%HardwareUUID%',
+        subject=[['CN', '%HardwareUUID%']],
         challenge=scep_config.challenge,
         key_size=2048,
         key_type='RSA',
@@ -131,31 +125,10 @@ def enroll():
         check_in_url='https://{}:{}/checkin'.format(current_app.config['PUBLIC_HOSTNAME'], current_app.config['PORT']),
         sign_message=True,
         check_out_when_removed=True,
-        display_name='Device Configuration and Management'
+        display_name='Device Configuration and Management',
+        server_capabilities=['com.apple.mdm.per-user-connections'],
     )
     profile.payloads.append(mdm_payload)
-
-
-    # new_mdm_payload = MDMPayload(
-    #     org.payload_prefix + '.mdm',
-    #     cert_uuid,
-    #     push_cert.topic,  # APNs push topic
-    #     'https://{}:5443/mdm'.format(current_app.config['PUBLIC_HOSTNAME']),
-    #     AccessRights.All,
-    #     CheckInURL='https://{}:5443/checkin'.format(current_app.config['PUBLIC_HOSTNAME']),
-    #     # CheckInURL=url_for('mdm_app.checkin', _external=True, _scheme='https'),
-    #     # we can validate MDM device client certs provided via SSL/TLS.
-    #     # however this requires an SSL framework that is able to do that.
-    #     # alternatively we may optionally have the client digitally sign the
-    #     # MDM messages in an HTTP header. this method is most portable across
-    #     # web servers so we'll default to using that method. note it comes
-    #     # with the disadvantage of adding something like 2KB to every MDM
-    #     # request
-    #     SignMessage=True,
-    #     CheckOutWhenRemoved=True,
-    #     ServerCapabilities=['com.apple.mdm.per-user-connections'],
-    #     # per-network user & mobile account authentication (OS X extensions)
-    #     PayloadDisplayName='Device Configuration and Management')
 
     schema = profile_schema.ProfileSchema()
     result = schema.dump(profile)

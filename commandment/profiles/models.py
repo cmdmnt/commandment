@@ -50,7 +50,7 @@ class SCEPPayload(Payload):
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     url = Column(String, nullable=False)
     name = Column(String, nullable=True)
-    subject = Column(String, nullable=False)  # eg. O=x/OU=y/CN=z
+    subject = Column(JSONEncodedDict, nullable=False)  # eg. O=x/OU=y/CN=z
     challenge = Column(String, nullable=True)
     key_size = Column(Integer, default=2048, nullable=False)
     ca_fingerprint = Column(LargeBinary, nullable=True)
