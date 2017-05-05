@@ -275,6 +275,20 @@ class Device(db.Model):
         return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
 
 
+device_group_devices = Table('device_group_devices', db.Model,
+                             Column('device_group_id', ForeignKey('device_groups.id'), primary_key=True),
+                             Column('device_id', ForeignKey('devices.id'), primary_key=True),
+                    )
+
+
+class DeviceGroup(db.Model):
+    __tablename__ = 'device_groups'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+
+
+
 class InstalledApplication(db.Model):
     """This model represents a single application that was returned as part of an ``InstalledApplicationList`` query.
     

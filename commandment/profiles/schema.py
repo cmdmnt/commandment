@@ -10,6 +10,7 @@ from commandment.profiles import models
 from commandment.profiles.ad import ADCertificateAcquisitionMechanism
 from commandment.profiles.wifi import WIFIEncryptionType
 from commandment.profiles.cert import KeyUsage
+from commandment.profiles.eap import TTLSInnerAuthentication
 from . import PayloadScope
 
 _schemas = {}
@@ -77,22 +78,70 @@ class QoSMarkingPolicy(Schema):
 
 
 class EAPClientConfiguration(Schema):
+    """EAPOLClient configuration properties.
+    
+    I have added several more unpublished properties from the EAP8012X source available via opensource.apple.com.
+    """
+
     UserName = fields.String()
-    # AcceptEAPTypes = fields.Integer()
     UserPassword = fields.String()
+    UserPasswordKeychainItemID = fields.String()  # Unconfirmed
+    OneTimeUserPassword = fields.Boolean()  # Unconfirmed
     OneTimePassword = fields.Boolean()
+    # AcceptEAPTypes = fields.Integer()
+    # InnerAcceptEAPTypes  # Unconfirmed
     # PayloadCertificateAnchorUUID = fields.UUID()
-    # TLSTrustedServerNames
+    # TLSTrustedServerNames 
     TLSAllowTrustExceptions = fields.Boolean()
     TLSCertificateIsRequired = fields.Boolean()
+    """- TLS-based authentication protocol requires a certificate to authenticate
+       - the default value is TRUE for EAP-TLS, FALSE otherwise
+       - allows for two-factor authentication (certificate + name/password)  
+         when set to TRUE for EAP-TTLS, PEAP, EAP-FAST
+       - allows for zero-factor authentication when set to FALSE for EAP-TLS"""
+    # TLSTrustedCertificates array<data> Unconfirmed
+    # TLSSaveTrustExceptions
+    # TLSTrustExceptionsDomain
+    # exceptions domain values:
+    # WirelessSSID
+    # ProfileID
+    # NetworkInterfaceName  
+
+    # TLSTrustExceptionsID
+    # SaveCredentialsOnSuccessfulAuthentication
+    # TLSVerifyServerCertificate
+    # TLSEnableSessionResumption
+    # TLSUserTrustProceedCertificateChain
+    # SystemModeUseOpenDirectoryCredentials
+    # SystemModeOpenDirectoryNodeName
+    
+    
+    NewPassword = fields.String()
     OuterIdentity = fields.String()
-    TTLSInnerAuthentication = fields.String()
+    """OuterIdentity: Applies to TTLS, PEAP, EAP-FAST."""
+
+    TLSIdentityHandle = fields.String()
+    """TLSIdentityHandle: TLS only"""
+
+    
+
+    SystemModeCredentialsSource = fields.String()
+    TTLSInnerAuthentication = EnumField(TTLSInnerAuthentication)
 
     # EAP-FAST
     EAPFASTUsePAC = fields.Boolean()
     EAPFASTProvisionPAC = fields.Boolean()
     EAPFASTProvisionPACAnonymously = fields.Boolean()
     EAPSIMNumberOfRANDs = fields.Integer()
+
+    # InnerEAPType
+    # InnerEAPTypeName
+    # TLSServerCertificateChain
+
+    # To Check: In EAP8012X source
+    # SystemModeUseOpenDirectoryCredentials
+    # SystemModeOpenDirectoryNodeName
+    # 
 
 
 @register_payload_schema('com.apple.security.scep')
