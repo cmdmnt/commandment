@@ -141,6 +141,23 @@ class WIFIPayload(Payload):
         return payload
 
 
+@register_payload_schema('com.apple.mdm')
+class MDMPayload(Payload):
+    IdentityCertificateUUID = fields.UUID(attribute='identity_certificate_uuid', required=True)
+    Topic = fields.String(attribute='topic', required=True)
+    ServerURL = fields.URL(attribute='server_url', required=True)
+    # ServerCapabilities = fields.Nested(many=True)
+    SignMessage = fields.Boolean(attribute='sign_message')
+    CheckInURL = fields.String(attribute='check_in_url')
+    CheckOutWhenRemoved = fields.Boolean(attribute='check_out_when_removed')
+    AccessRights = fields.Integer(attribute='access_rights')
+    UseDevelopmentAPNS = fields.Boolean(attribute='use_development_apns')
+
+    @post_load
+    def make_payload(self, data: dict) -> models.MDMPayload:
+        return models.MDMPayload(**data)
+
+
 class ProfileSchema(Schema):
     PayloadDescription = fields.Str(attribute='description')
     PayloadDisplayName = fields.Str(attribute='display_name')

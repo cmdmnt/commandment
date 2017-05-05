@@ -10,7 +10,6 @@ from commandment.profiles.email import EmailAuthenticationType, EmailAccountType
 from commandment.profiles.vpn import VPNType
 from commandment.profiles.wifi import WIFIEncryptionType, WIFIProxyType
 from ..dbtypes import GUID, JSONEncodedDict
-from biplist import Data as NSData, readPlistFromString
 from uuid import uuid4
 from .cert import KeyUsage
 from . import PayloadScope
@@ -30,7 +29,7 @@ class Payload(db.Model):
     type = Column(String, index=True, nullable=False)
     version = Column(Integer)
     identifier = Column(String)
-    uuid = Column(GUID, index=True, default=uuid4())
+    uuid = Column(GUID, index=True, default=uuid4(), nullable=False)
     display_name = Column(String)
     description = Column(Text)
     organization = Column(String)
@@ -69,7 +68,7 @@ class SCEPPayload(Payload):
 
 class ADCertPayload(Payload):
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
-    # description = Column(String)
+    certificate_description = Column(String)  # Description was reserved from the base Payload table
     allow_all_apps_access = Column(Boolean)
     cert_server = Column(String, nullable=False)
     cert_template = Column(String, nullable=False, default='User')
@@ -115,6 +114,27 @@ class ADPayload(Payload):
     }
 
 
+# class EAPClientConfiguration(db.Model):
+#     __table__ = 'eap_client_configurations'
+#
+#     id = Column(Integer, primary_key=True)
+    # accept_eap_types
+    # payload_id = Column(Integer, ForeignKey('payloads.id'))
+    #user_name = Column(String)
+    #user_password = Column(String)
+    #one_time_password = Column(Boolean)
+    # payload_certificate_anchor_uuid
+    # tls_trusted_server_names
+    #tls_allow_trust_exceptions = Column(Boolean)
+    #ttls_inner_authentication = Column(String)
+    #outer_identity = Column(String)
+    #system_mode_credentials_source = Column(String)
+    #eap_fast_use_pac = Column(Boolean)
+    #eap_fast_provision_pac = Column(Boolean)
+    #eap_fast_provision_pac_anonymously = Column(Boolean)
+    #eap_sim_number_of_rands = Column(Integer)
+
+
 class WIFIPayload(Payload):
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     ssid_str = Column(String, nullable=False)
@@ -133,7 +153,7 @@ class WIFIPayload(Payload):
 
     # If WEP, WPA or Any
     password = Column(String)
-    eap_client_configuration = Column(String)  # JSON
+    #eap_client_configuration_id = Column(Integer, ForeignKey('eap_client_configurations.id'))
     tls_certificate_required = Column(Boolean)
     payload_certificate_uuid = Column(GUID)
 
@@ -188,7 +208,7 @@ class EmailPayload(Payload):
     }
 
 
-class BaseCertificatePayload(Payload):
+class CertificatePayload(Payload):
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     certificate_file_name = Column(String)
     payload_content = Column(LargeBinary)
@@ -198,25 +218,25 @@ class BaseCertificatePayload(Payload):
     }
 
 
-class PEMCertificatePayload(BaseCertificatePayload):
+class PEMCertificatePayload(CertificatePayload):
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.security.pem'
     }
 
 
-class DERCertificatePayload(BaseCertificatePayload):
+class DERCertificatePayload(CertificatePayload):
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.security.pkcs1'
     }
 
 
-class PKCS12CertificatePayload(BaseCertificatePayload):
+class PKCS12CertificatePayload(CertificatePayload):
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.security.pkcs12'
     }
 
 
-class PasswordPolicy(Payload):
+class PasswordPolicyPayload(Payload):
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     allow_simple = Column(Boolean)
     force_pin = Column(Boolean)
@@ -234,6 +254,23 @@ class PasswordPolicy(Payload):
         'polymorphic_identity': 'com.apple.mobiledevice.passwordpolicy'
     }
 
+
+class MDMPayload(Payload):
+    id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
+    identity_certificate_uuid = Column(GUID, nullable=False)
+    topic = Column(String, nullable=False)
+    server_url = Column(String, nullable=False)
+    server_capabilities = Column(String)
+    sign_message = Column(Boolean)
+    check_in_url = Column(String)
+    check_out_when_removed = Column(Boolean)
+    access_rights = Column(Integer)
+    use_development_apns = Column(Boolean)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'com.apple.mdm'
+    }
+    
 
 profile_payloads = Table('profile_payloads', db.metadata,
                          Column('profile_id', Integer, ForeignKey('profiles.id')),

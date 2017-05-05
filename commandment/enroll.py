@@ -1,14 +1,16 @@
+from uuid import uuid4
+
 from flask import current_app, render_template, abort, Blueprint, make_response, url_for
 import os
 import codecs
 from .pki.models import Certificate
-from .profiles.cert import PEMCertificatePayload, SCEPPayload
-from .profiles.mdm import MDMPayload
-from .profiles import Profile
+#from .profiles.cert import PEMCertificatePayload, SCEPPayload
+#from .profiles.mdm import MDMPayload
+from .profiles.models import MDMPayload, Profile, PEMCertificatePayload, SCEPPayload
+from .profiles import PROFILE_CONTENT_TYPE, schema as profile_schema, PayloadScope
 from .models import db, Organization, SCEPConfig
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-
-PROFILE_CONTENT_TYPE = 'application/x-apple-aspen-config'
+from .plistlib.nonewriter import dumps as dumps_none
 
 enroll_app = Blueprint('enroll_app', __name__)
 
@@ -57,15 +59,29 @@ def enroll():
     if not org.payload_prefix:
         abort(500, 'MDM configuration has no profile prefix')
 
-    profile = Profile(org.payload_prefix + '.enroll', PayloadDisplayName=org.name)
+    # profile = Profile(org.payload_prefix + '.enroll', PayloadDisplayName=org.name)
+    profile = Profile(
+        identifier=org.payload_prefix + '.enroll',
+        uuid=uuid4(),
+        display_name='Commandment Enrollment Profile',
+        description='Enrolls your device for Mobile Device Management',
+        organization=org.name,
+        version=1,
+        scope=PayloadScope.System,
+    )
 
     if 'CA_CERTIFICATE' in current_app.config:
         basepath = os.path.dirname(__file__)
         certpath = os.path.join(basepath, current_app.config['CA_CERTIFICATE'])
         with open(certpath, 'rb') as fd:
             pem_data = fd.read()
-            pem_payload = PEMCertificatePayload(org.payload_prefix + '.ca', pem_data, PayloadDisplayName='Certificate Authority')
-            profile.append_payload(pem_payload)
+            pem_payload = PEMCertificatePayload(
+                uuid=uuid4(),
+                identifier=org.payload_prefix + '.ca',
+                payload_content=pem_data,
+                display_name='Certificate Authority',
+            )
+            profile.payloads.append(pem_payload)
 
     # ca_cert_payload = PEMCertificatePayload(org.payload_prefix + '.mdm-ca', mdm_ca.certificate.pem_data,
     #                                         PayloadDisplayName='MDM CA Certificate')
@@ -80,53 +96,72 @@ def enroll():
         certpath = os.path.join(basepath, current_app.config['SSL_CERTIFICATE'])
         with open(certpath, 'rb') as fd:
             pem_data = fd.read()
-            pem_payload = PEMCertificatePayload(org.payload_prefix + '.ssl', pem_data, PayloadDisplayName='Web Server Certificate')
-            profile.append_payload(pem_payload)
+            pem_payload = PEMCertificatePayload(
+                uuid=uuid4(),
+                identifier=org.payload_prefix + '.ssl',
+                payload_content=pem_data,
+                display_name='Web Server Certificate',
+            )
+            profile.payloads.append(pem_payload)
 
     scep_payload = SCEPPayload(
-        org.payload_prefix + '.mdm-scep',
-        scep_config.url,
-        PayloadContent=dict(
-            Keysize=2048,
-            # Challenge=scep_config.challenge,
-            Subject=[
-                [['CN', '%HardwareUUID%']]
-            ]
-        ),
-        PayloadDisplayName='MDM SCEP')
-    profile.append_payload(scep_payload)
-    cert_uuid = scep_payload.get_uuid()
-    # else:
-    #     abort(500, 'Invalid device identity method')
+        uuid=uuid4(),
+        identifier=org.payload_prefix + '.mdm-scep',
+        url=scep_config.url,
+        name='MDM SCEP',
+        subject='CN=%HardwareUUID%',
+        challenge=scep_config.challenge,
+        key_size=2048,
+        key_type='RSA',
+        display_name='MDM SCEP',
+    )
+
+    profile.payloads.append(scep_payload)
+    cert_uuid = scep_payload.uuid
 
     from .mdm import AccessRights
 
-    new_mdm_payload = MDMPayload(
-        org.payload_prefix + '.mdm',
-        cert_uuid,
-        push_cert.topic,  # APNs push topic
-        'https://{}:5443/mdm'.format(current_app.config['PUBLIC_HOSTNAME']),
-        AccessRights.All,
-        CheckInURL='https://{}:5443/checkin'.format(current_app.config['PUBLIC_HOSTNAME']),
-        # CheckInURL=url_for('mdm_app.checkin', _external=True, _scheme='https'),
-        # we can validate MDM device client certs provided via SSL/TLS.
-        # however this requires an SSL framework that is able to do that.
-        # alternatively we may optionally have the client digitally sign the
-        # MDM messages in an HTTP header. this method is most portable across
-        # web servers so we'll default to using that method. note it comes
-        # with the disadvantage of adding something like 2KB to every MDM
-        # request
-        SignMessage=True,
-        CheckOutWhenRemoved=True,
-        ServerCapabilities=['com.apple.mdm.per-user-connections'],
-        # per-network user & mobile account authentication (OS X extensions)
-        PayloadDisplayName='Device Configuration and Management')
+    mdm_payload = MDMPayload(
+        uuid=uuid4(),
+        identifier=org.payload_prefix + '.mdm',
+        identity_certificate_uuid=cert_uuid,
+        topic=push_cert.topic,
+        server_url='https://{}:{}/mdm'.format(current_app.config['PUBLIC_HOSTNAME'], current_app.config['PORT']),
+        access_rights=AccessRights.All.value,
+        check_in_url='https://{}:{}/checkin'.format(current_app.config['PUBLIC_HOSTNAME'], current_app.config['PORT']),
+        sign_message=True,
+        check_out_when_removed=True,
+        display_name='Device Configuration and Management'
+    )
+    profile.payloads.append(mdm_payload)
 
-    profile.append_payload(new_mdm_payload)
 
-    resp = make_response(profile.generate_plist())
-    resp.headers['Content-Type'] = PROFILE_CONTENT_TYPE
-    return resp
+    # new_mdm_payload = MDMPayload(
+    #     org.payload_prefix + '.mdm',
+    #     cert_uuid,
+    #     push_cert.topic,  # APNs push topic
+    #     'https://{}:5443/mdm'.format(current_app.config['PUBLIC_HOSTNAME']),
+    #     AccessRights.All,
+    #     CheckInURL='https://{}:5443/checkin'.format(current_app.config['PUBLIC_HOSTNAME']),
+    #     # CheckInURL=url_for('mdm_app.checkin', _external=True, _scheme='https'),
+    #     # we can validate MDM device client certs provided via SSL/TLS.
+    #     # however this requires an SSL framework that is able to do that.
+    #     # alternatively we may optionally have the client digitally sign the
+    #     # MDM messages in an HTTP header. this method is most portable across
+    #     # web servers so we'll default to using that method. note it comes
+    #     # with the disadvantage of adding something like 2KB to every MDM
+    #     # request
+    #     SignMessage=True,
+    #     CheckOutWhenRemoved=True,
+    #     ServerCapabilities=['com.apple.mdm.per-user-connections'],
+    #     # per-network user & mobile account authentication (OS X extensions)
+    #     PayloadDisplayName='Device Configuration and Management')
+
+    schema = profile_schema.ProfileSchema()
+    result = schema.dump(profile)
+    plist_data = dumps_none(result.data, skipkeys=True)
+
+    return plist_data, 200, {'Content-Type': PROFILE_CONTENT_TYPE}
 
 
 # def device_first_post_enroll(device, awaiting=False):

@@ -7,6 +7,8 @@ from uuid import uuid4
 import collections
 from enum import Enum, IntFlag
 
+PROFILE_CONTENT_TYPE = 'application/x-apple-aspen-config'
+
 
 class PayloadScope(Enum):
     User = 'User'
