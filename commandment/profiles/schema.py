@@ -8,6 +8,7 @@ from marshmallow import Schema, fields, post_load
 from marshmallow_enum import EnumField
 from commandment.profiles import models
 from commandment.profiles.ad import ADCertificateAcquisitionMechanism
+from commandment.profiles.energy import ScheduledPowerEventType
 from commandment.profiles.wifi import WIFIEncryptionType
 from commandment.profiles.cert import KeyUsage
 from commandment.profiles.eap import TTLSInnerAuthentication
@@ -189,6 +190,37 @@ class WIFIPayload(Payload):
         payload = models.WIFIPayload(**data)
         return payload
 
+
+class EnergySaverSettings(Schema):
+    AutomaticRestartOnPowerLoss = fields.Integer(load_from='Automatic Restart On Power Loss')  # Pseudo boolean 0/1
+    DiskSleepTimerBoolean = fields.Boolean(load_from='Disk Sleep Timer-boolean')
+    DiskSleepTimer = fields.Integer(load_from='Display Sleep Timer')
+    SystemSleepTimer = fields.Integer(load_from='System Sleep Timer')
+    WakeOnLAN = fields.Integer(load_from='Wake On LAN')  # Pseudo boolean 0/1
+
+
+class EnergySaverPowerSchedule(Schema):
+    eventtype = EnumField(ScheduledPowerEventType)
+    time = fields.Integer(validate=lambda n: 0 <= n <= 2400)
+    weekdays = fields.Integer()
+
+
+class EnergySaverSchedules(Schema):
+    RepeatingPowerOn = fields.Nested(EnergySaverPowerSchedule)
+    RepeatingPowerOff = fields.Nested(EnergySaverPowerSchedule)
+
+
+@register_payload_schema('com.apple.MCX')
+class EnergySaverPayload(Payload):
+    DestroyFVKeyOnStandby = fields.Boolean(attribute='destroy_fv_key_on_standby')
+    SleepDisabled = fields.Boolean(attribute='sleep_disabled')
+    DesktopACPowerProfileNumber = fields.Integer(load_from='com.apple.EnergySaver.desktop.ACPower-ProfileNumber')
+    PortableACPowerProfileNumber = fields.Integer(load_from='com.apple.EnergySaver.portable.ACPower-ProfileNumber')
+    PortableBatteryProfileNumber = fields.Integer(load_from='com.apple.EnergySaver.portable.BatteryPower-ProfileNumber')
+    DesktopACPower = fields.Nested(EnergySaverSettings, load_from='com.apple.EnergySaver.desktop.ACPower')
+    PortableACPower = fields.Nested(EnergySaverSettings, load_from='com.apple.EnergySaver.portable.ACPower')
+    PortableBatteryPower = fields.Nested(EnergySaverSettings, load_from='com.apple.EnergySaver.portable.BatteryPower')
+    Schedule = fields.Nested(EnergySaverSchedules, load_from='com.apple.EnergySaver.desktop.Schedule')
 
 @register_payload_schema('com.apple.mdm')
 class MDMPayload(Payload):

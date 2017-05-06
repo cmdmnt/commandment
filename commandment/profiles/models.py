@@ -255,6 +255,23 @@ class PasswordPolicyPayload(Payload):
     }
 
 
+class EnergySaverPayload(Payload):
+    id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
+    destroy_fv_key_on_standby = Column(Boolean)
+    sleep_disabled = Column(Boolean)
+    desktop_acpower_profilenumber = Column(Integer)
+    portable_acpower_profilenumber = Column(Integer)
+    portable_battery_profilenumber = Column(Integer)
+    desktop_acpower = Column(JSONEncodedDict)
+    portable_acpower = Column(JSONEncodedDict)
+    portable_battery = Column(JSONEncodedDict)
+    desktop_schedule = Column(JSONEncodedDict)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'com.apple.MCX'
+    }
+
+
 class MDMPayload(Payload):
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     identity_certificate_uuid = Column(GUID, nullable=False)
