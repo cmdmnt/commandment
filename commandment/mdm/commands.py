@@ -305,6 +305,17 @@ class DeviceLock(Command):
         super(DeviceLock, self).__init__(uuid)
         self._attrs = kwargs
 
+    def to_dict(self) -> dict:
+        return {
+            'CommandUUID': str(self._uuid),
+            'Command': {
+                'RequestType': type(self).request_type,
+                'PIN': self._attrs.get('PIN', None),
+                'Message': self._attrs.get('Message', None),
+                'PhoneNumber': self._attrs.get('PhoneNumber', None)
+            }
+        }
+
 
 class ProfileList(Command):
     request_type = 'ProfileList'
