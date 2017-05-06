@@ -19,7 +19,7 @@ const initialState: InstalledCertificatesState = {
 
 type InstalledCertificatesAction = ReadActionResponse;
 
-export function installed_certificates(state: InstalledCertificatesState, action: InstalledCertificatesAction): InstalledCertificatesState {
+export function installed_certificates(state: InstalledCertificatesState = initialState, action: InstalledCertificatesAction): InstalledCertificatesState {
     switch (action.type) {
         case READ_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {

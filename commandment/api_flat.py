@@ -102,34 +102,34 @@ def device_inventory(device_id: int):
     d = db.session.query(Device).filter(Device.id == device_id).one()
 
     # DeviceInformation
-    di = commands.DeviceInformation.for_platform(d.platform, d.os_version)
-    db_command = Command.from_model(di)
-    db_command.device = d
-    db.session.add(db_command)
+    # di = commands.DeviceInformation.for_platform(d.platform, d.os_version)
+    # db_command = Command.from_model(di)
+    # db_command.device = d
+    # db.session.add(db_command)
 
     # InstalledApplicationList
-    # ial = commands.InstalledApplicationList()
-    # db_command_ial = Command.from_model(ial)
-    # db_command_ial.device = d
-    # db.session.add(db_command_ial)
+    ial = commands.InstalledApplicationList()
+    db_command_ial = Command.from_model(ial)
+    db_command_ial.device = d
+    db.session.add(db_command_ial)
 
     # CertificateList
-    cl = commands.CertificateList()
-    dbc = Command.from_model(cl)
-    dbc.device = d
-    db.session.add(dbc)
+    # cl = commands.CertificateList()
+    # dbc = Command.from_model(cl)
+    # dbc.device = d
+    # db.session.add(dbc)
 
     # SecurityInfo
-    si = commands.SecurityInfo()
-    dbsi = Command.from_model(si)
-    dbsi.device = d
-    db.session.add(dbsi)
+    # si = commands.SecurityInfo()
+    # dbsi = Command.from_model(si)
+    # dbsi.device = d
+    # db.session.add(dbsi)
 
     # ProfileList
-    pl = commands.ProfileList()
-    db_pl = Command.from_model(pl)
-    db_pl.device = d
-    db.session.add(db_pl)
+    # pl = commands.ProfileList()
+    # db_pl = Command.from_model(pl)
+    # db_pl.device = d
+    # db.session.add(db_pl)
 
     db.session.commit()
 

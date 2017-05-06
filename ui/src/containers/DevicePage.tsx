@@ -8,6 +8,7 @@ import {RouteComponentProps} from "react-router";
 import {InventoryActionRequest, PushActionRequest, ReadActionRequest} from "../actions/devices";
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
 import {DeviceState} from "../reducers/device";
+import {Link} from "react-router-dom";
 
 interface ReduxStateProps {
     device: DeviceState;
@@ -66,13 +67,16 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
 
     render(): JSX.Element {
         const {
-            device
+            device,
+            match: { params: { id: device_id }}
         } = this.props;
 
         return (
             <div className='DevicePage top-margin container'>
                 <button className='button button-outline' onClick={this.handlePush}>Force Push</button>
                 <button className='button button-outline' onClick={this.handleInventory}>Inventory</button>
+                <Link to={`/devices/${device_id}/certificates`}>Certificates</Link>
+                <Link to={`/devices/${device_id}/commands`}>Commands</Link>
                 {device && <MacOSDeviceDetail device={device} />}
             </div>
         );

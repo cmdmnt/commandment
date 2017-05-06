@@ -56,13 +56,13 @@ class SecurityInfoResponse(CommandResponse):
 
 
 class InstalledApplication(Schema):
-    Identifier = fields.String()
-    Version = fields.String()
-    ShortVersion = fields.String()
-    Name = fields.String()
-    BundleSize = fields.Integer()
-    DynamicSize = fields.Integer()
-    IsValidated = fields.Boolean()
+    Identifier = fields.String(attribute='bundle_identifier')
+    Version = fields.String(attribute='version')
+    ShortVersion = fields.String(attribute='short_version')
+    Name = fields.String(attribute='name')
+    BundleSize = fields.Integer(attribute='bundle_size')
+    DynamicSize = fields.Integer(attribute='dynamic_size')
+    IsValidated = fields.Boolean(attribute='is_validated')
 
     @post_load
     def make_installed_application(self, data: dict) -> models.InstalledApplication:

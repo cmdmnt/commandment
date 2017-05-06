@@ -4,6 +4,7 @@ import {
 } from "../actions/devices";
 import {installed_certificates, InstalledCertificatesState} from "./device/installed_certificates";
 import {isJSONAPIErrorResponsePayload} from "../constants";
+import {commands, DeviceCommandsState} from "./device/commands";
 
 
 export interface DeviceState {
@@ -16,6 +17,7 @@ export interface DeviceState {
     pageSize: number;
     recordCount?: number;
     certificates?: InstalledCertificatesState;
+    commands?: DeviceCommandsState;
 }
 
 const initialState: DeviceState = {
@@ -58,7 +60,8 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                     device: action.payload.data,
                     lastReceived: new Date,
                     loading: false,
-                    certificates: installed_certificates(state.certificates, action)
+                    certificates: installed_certificates(state.certificates, action),
+                    commands: commands(state.commands, action)
                 };
             }
             

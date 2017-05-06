@@ -152,3 +152,34 @@ export const inventory: InventoryActionRequest = (id: number) => {
         }
     }
 };
+
+export type COMMANDS_REQUEST = 'devices/COMMANDS_REQUEST';
+export const COMMANDS_REQUEST: COMMANDS_REQUEST = 'devices/COMMANDS_REQUEST';
+export type COMMANDS_SUCCESS = 'devices/COMMANDS_SUCCESS';
+export const COMMANDS_SUCCESS: COMMANDS_SUCCESS = 'devices/COMMANDS_SUCCESS';
+export type COMMANDS_FAILURE = 'devices/COMMANDS_FAILURE';
+export const COMMANDS_FAILURE: COMMANDS_FAILURE = 'devices/COMMANDS_FAILURE';
+
+export interface CommandsActionRequest {
+    (device_id: number): RSAA<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE>;
+}
+
+export interface CommandsActionResponse {
+    type: COMMANDS_REQUEST | COMMANDS_SUCCESS | COMMANDS_FAILURE;
+    payload?: JSONAPIListResponse<Command> | JSONAPIErrorResponse;
+}
+
+export const commands: CommandsActionRequest = (device_id: number) => {
+    return {
+        [CALL_API]: {
+            endpoint: `/api/v1/devices/${device_id}/commands`,
+            method: 'GET',
+            types: [
+                COMMANDS_REQUEST,
+                COMMANDS_SUCCESS,
+                COMMANDS_FAILURE
+            ],
+            headers: JSON_HEADERS
+        }
+    }
+};
