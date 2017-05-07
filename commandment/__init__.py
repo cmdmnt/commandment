@@ -11,6 +11,7 @@ from .api_push import api_push_app
 from .api_flat import flat_api
 from .enroll import enroll_app
 from .ota import ota_app
+from .sso.oauth import oauth_app
 from .models import db
 
 
@@ -35,6 +36,7 @@ def create_app() -> Flask:
     app.register_blueprint(api_push_app, url_prefix='/api')
     app.register_blueprint(flat_api, url_prefix='/api')
     app.register_blueprint(ota_app, url_prefix='/ota')
+    app.register_blueprint(oauth_app, url_prefix='/oauth')
 
     # SPA Entry Point
     @app.route('/')

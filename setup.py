@@ -23,7 +23,7 @@ setup(
         'Flask-REST-JSONAPI>=0.11',
         'Flask-Cors>=3.0',
         'flask-marshmallow>=0.7.0',
-        'Flask-OAuth',
+        'Flask-OAuthlib>=0.9.3',
         'duo_web',
         'Flask-JWT',
         'passlib',

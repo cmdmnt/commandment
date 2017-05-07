@@ -101,27 +101,4 @@ admin_mdmcert_app = Blueprint('admin_mdmcert_app', __name__)
 #     response.headers['Content-Disposition'] = 'attachment; filename=mdm_signed_request.%s.plist.b64' % datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 #     return response
 #
-# @admin_mdmcert_app.route('/upload_cert', methods=['POST'])
-# def upload_cert():
-#     pcert = PushCertificate.from_pem(request.files['upload_cert_file'].stream.read())
-#
-#     cert_modulus = pcert._get_pubkey().get_modulus()
-#
-#     q = db_session.query(DBCertificateRequest).filter(DBCertificateRequest.req_type == CERT_REQ_TYPE)
-#     for cr in q:
-#         req = cr.to_x509()
-#         if req._get_pubkey().get_modulus() == cert_modulus:
-#             db_cert = DBCertificate.from_x509(pcert, 'mdm.pushcert')
-#
-#             db_pk = cr.privatekeys[0]
-#
-#             db_pk.certificates.append(db_cert)
-#
-#             db_session.add(db_cert)
-#
-#             db_session.commit()
-#
-#             return redirect('/admin/certificates', Response=FixedLocationResponse)
-#
-#
-#     return 'no matching CSR found'
+
