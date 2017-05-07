@@ -1,7 +1,7 @@
-'''
+"""
 Copyright (c) 2015 Jesse Peterson
 Licensed under the MIT license. See the included LICENSE.txt file for details.
-'''
+"""
 
 from flask import Blueprint, Response, render_template, request, make_response
 from flask import redirect
@@ -18,21 +18,15 @@ import datetime
 
 MDMCERT_REQ_URL = 'https://mdmcert.download/api/v1/signrequest'
 
-# PLEASE! Do not take this key and use it for another product/project. It's
-# only for Commandment's use. If you'd like to get your own (free!) key
-# contact the mdmcert.download administrators and get your own key for your
-# own project/product.  We're trying to keep statistics on which products are
-# requesting certs (per Apple T&C). Don't force Apple's hand and
-# ruin it for everyone!
-MDMCERT_API_KEY = 'b742461ff981756ca3f924f02db5a12e1f6639a9109db047ead1814aafc058dd'
 
 CERT_REQ_TYPE = 'mdmcert.pushcert'
 
-def submit_mdmcert_request(email, pem_csr, pem_enc):
+
+def submit_mdmcert_request(email: str, api_key: str, pem_csr: x509.CertificateSigningRequest, pem_enc):
     mdmcert_dict = {
         'csr': b64encode(pem_csr),
         'email': email,
-        'key': MDMCERT_API_KEY,
+        'key': api_key,
         'encrypt': b64encode(pem_enc),
     }
 
@@ -56,9 +50,6 @@ class FixedLocationResponse(Response):
 
 admin_mdmcert_app = Blueprint('admin_mdmcert_app', __name__)
 
-@admin_mdmcert_app.route('/')
-def index():
-    return render_template('admin/mdmcert/new.html')
 
 # @admin_mdmcert_app.route('/submit', methods=['POST'])
 # def submit():

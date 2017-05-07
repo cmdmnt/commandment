@@ -2,7 +2,6 @@ from marshmallow_jsonapi import fields
 from marshmallow_jsonapi.flask import Relationship, Schema
 from marshmallow import Schema as FlatSchema, post_load
 from .models import db, Organization, SCEPConfig
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 
 class DeviceSchema(Schema):
@@ -20,7 +19,7 @@ class DeviceSchema(Schema):
     serial_number = fields.Str()
 
     awaiting_configuration = fields.Bool()
-    last_seen = fields.DateTime()
+    last_seen = fields.DateTime(dump_only=True)
     hostname = fields.Str()
     local_hostname = fields.Str()
     available_device_capacity = fields.Float()
@@ -126,14 +125,13 @@ class CommandSchema(Schema):
     after = fields.DateTime()
     ttl = fields.Int()
 
-
-    # device = Relationship(
-    #     related_view='api_app.device_detail',
-    #     related_url_kwargs={'device_id': '<id>'},
-    #     many=False,
-    #     schema='DeviceSchema',
-    #     type_='devices'
-    # )
+    device = Relationship(
+        related_view='api_app.device_detail',
+        related_url_kwargs={'device_id': '<id>'},
+        many=False,
+        schema='DeviceSchema',
+        type_='devices'
+    )
 
     class Meta:
         type_ = 'commands'
@@ -307,6 +305,7 @@ class SCEPConfigFlatSchema(FlatSchema):
 
 
 class PushResponseFlatSchema(FlatSchema):
+    """This structure mimics the fields of an APNS2 service reply."""
     apns_id = fields.Integer()
     status_code = fields.Integer()
     reason = fields.Str()

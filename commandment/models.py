@@ -229,14 +229,7 @@ class Device(db.Model):
     # if the time delta between last_push_at and last_seen is >= several days to a week,
     # this should count as a failed push, and potentially declare the device as dead.
     failed_push_count = Column(Integer, default=0, nullable=False)
-
-    # DEP
     _unlock_token = Column(String(), name='unlock_token', nullable=True)
-
-    dep_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-    # dep_config_id = Column(ForeignKey('dep_config.id'), nullable=True)
-    # dep_config = relationship('DEPConfig', backref='devices')
-    info_json = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
 
     # SecurityInfo
     passcode_present = Column(Boolean)

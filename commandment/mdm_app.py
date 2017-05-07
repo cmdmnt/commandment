@@ -73,9 +73,11 @@ def token_update(plist_data):
     # TODO: check to make sure device == UDID == cert, etc.
     device = db.session.query(Device).filter(Device.udid == plist_data['UDID']).one()
 
-    if not device.token:
+    if not device.token:  # First contact
         device.is_enrolled = True
         device_enrolled.send(device)
+
+        # TODO: Queue inventory
 
     device.tokenupdate_at = datetime.utcnow()
 
@@ -97,6 +99,8 @@ def token_update(plist_data):
         device.unlock_token = plist_data['UnlockToken']
 
     db.session.commit()
+
+    # TODO: Can return next command here, no need to wait for Idle
     return 'OK'
 
 
