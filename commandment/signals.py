@@ -9,3 +9,6 @@ device_unenrolled = signals.signal('device-unenrolled')
 
 # Sent when a device checks in, including: Authenticate, TokenUpdate, Acknowledge, NotNow
 device_checkin = signals.signal('device-checkin')
+
+# If APNS tells us that a device token expired
+device_token_expired = signals.signal('device-token-expired')

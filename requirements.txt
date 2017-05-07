@@ -13,11 +13,12 @@ click==6.7
 cryptography==1.8.1
 decorator==4.0.11
 docutils==0.13.1
+duo-web==1.2.0
 Flask==0.12
 Flask-Cors==3.0.2
 Flask-JWT==0.3.2
 flask-marshmallow==0.7.0
-Flask-OAuthlib==0.9.3
+Flask-OAuth==0.12
 Flask-REST-JSONAPI==0.11.4
 Flask-RESTful==0.3.5
 Flask-SQLAlchemy==2.2
@@ -25,6 +26,7 @@ future==0.16.0
 gunicorn==19.7.1
 h2==2.6.1
 hpack==2.3.0
+httplib2==0.10.3
 hyper==0.7.0
 hyperframe==3.2.0
 idna==2.5
@@ -38,6 +40,8 @@ marshmallow-jsonapi==0.11.0
 marshmallow-sqlalchemy==0.13.0
 minio==2.2.1
 mock==2.0.0
+oauth2==1.9.0.post1
+oauth2client==4.0.0
 oauthlib==2.0.2
 oscrypto==0.18.0
 packaging==16.8
@@ -46,6 +50,8 @@ Paste==2.0.3
 pbr==2.0.0
 pockets==0.3.2
 py==1.4.33
+pyasn1==0.2.3
+pyasn1-modules==0.0.8
 pycparser==2.17
 pycryptodomex==3.4.5
 Pygments==2.2.0
@@ -61,6 +67,7 @@ pytz==2016.10
 repoze.who==2.3
 requests==2.13.0
 requests-oauthlib==0.8.0
+rsa==3.4.2
 sadisplay==0.4.8
 semver==2.7.6
 six==1.10.0

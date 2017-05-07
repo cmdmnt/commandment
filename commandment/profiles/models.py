@@ -214,7 +214,7 @@ class CertificatePayload(Payload):
     payload_content = Column(LargeBinary)
     password = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity': 'com.apple.security.pem'
+        'polymorphic_identity': 'certificate'
     }
 
 
