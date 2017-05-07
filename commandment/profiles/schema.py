@@ -4,7 +4,7 @@ model representations.
 """
 
 from typing import Union, Callable, Type, List
-from marshmallow import Schema, fields, post_load
+from marshmallow import Schema, fields, post_load, post_dump
 from marshmallow_enum import EnumField
 from commandment.profiles import models
 from commandment.profiles.ad import ADCertificateAcquisitionMechanism
@@ -159,6 +159,24 @@ class SCEPPayload(Payload):
     Retries = fields.Integer(attribute='retries')
     RetryDelay = fields.Integer(attribute='retry_delay')
 
+    @post_dump(pass_many=False)
+    def wrap_payload_content(self, data: dict) -> dict:
+        """SCEP Payload is silly and double wraps its PayloadContent item."""
+        inner_content = {
+            'URL': data.pop('URL', None),
+            'Name': data.pop('Name'),
+            'Challenge': data.pop('Challenge'),
+            'Keysize': data.pop('Keysize'),
+            'CAFingerprint': data.pop('CAFingerprint'),
+            'KeyType': data.pop('KeyType'),
+            'KeyUsage': data.pop('KeyUsage'),
+            'Retries': data.pop('Retries'),
+            'RetryDelay': data.pop('RetryDelay'),
+        }
+
+        data['PayloadContent'] = inner_content
+        return data
+
     @post_load
     def make_payload(self, data: dict) -> models.SCEPPayload:
         return models.SCEPPayload(**data)
@@ -221,6 +239,7 @@ class EnergySaverPayload(Payload):
     PortableACPower = fields.Nested(EnergySaverSettings, load_from='com.apple.EnergySaver.portable.ACPower')
     PortableBatteryPower = fields.Nested(EnergySaverSettings, load_from='com.apple.EnergySaver.portable.BatteryPower')
     Schedule = fields.Nested(EnergySaverSchedules, load_from='com.apple.EnergySaver.desktop.Schedule')
+
 
 @register_payload_schema('com.apple.mdm')
 class MDMPayload(Payload):

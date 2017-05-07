@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Link} from 'react-router-dom';
+import {Link, NavLink} from 'react-router-dom';
 
 import './Navigation.scss';
 
@@ -19,7 +19,6 @@ export class Navigation extends React.Component<undefined, undefined> {
                     <li><Link to='/config/assistant'>Assistant</Link></li>
 
                     <li><Link to='/config/ssl'>SSL</Link></li>
-                    <li><Link to='/config/mdm'>MDM</Link></li>
                     <li><Link to='/certificates'>Certificates</Link></li>
                     <li><Link to='/devices'>Devices</Link></li>
                     <li><Link to='/profiles'>Profiles</Link></li>
