@@ -1,27 +1,32 @@
 import pytest
-from flask.testing import FlaskClient
 from flask import Response
-from tests.fixtures import app
+from tests.client import MDMClient
+from tests.fixtures import client, authenticate_request, tokenupdate_request, tokenupdate_user_request, \
+    checkout_request
 
 
 class TestCheckin:
 
-    def test_authenticate(self, app: FlaskClient):
+    def test_authenticate(self, client: MDMClient, authenticate_request: str):
         """Basic test: Authenticate"""
-        with open('../../testdata/Authenticate/10.12.2.xml', 'r') as fd:
-            plist_data = fd.read()
-            
-        response: Response = app.put('/checkin', data=plist_data, content_type='text/xml')
+        response: Response = client.put('/checkin', data=authenticate_request, content_type='text/xml')
         assert response.status_code != 410
         assert response.status_code == 200
         
-    def test_tokenupdate(self, app: FlaskClient):
+    def test_tokenupdate(self, client: MDMClient, tokenupdate_request: str):
         """Test a client attempting to update its token after being unenrolled."""
-        with open('../../testdata/TokenUpdate/10.12.2.xml', 'r') as fd:
-            plist_data = fd.read()
-
-        response: Response = app.put('/checkin', data=plist_data, content_type='text/xml')
+        response: Response = client.put('/checkin', data=tokenupdate_request, content_type='text/xml')
         assert response.status_code != 410
         assert response.status_code == 200
 
+    def test_user_tokenupdate(self, client: MDMClient, tokenupdate_user_request: str):
+        """Test a TokenUpdate message on the user channel."""
+        response: Response = client.put('/checkin', data=tokenupdate_user_request, content_type='text/xml')
+        assert response.status_code != 410
+        assert response.status_code == 200
 
+    def test_checkout(self, client: MDMClient, checkout_request: str):
+        """Test a CheckOut message"""
+        response: Response = client.put('/checkin', data=checkout_request, content_type='text/xml')
+        assert response.status_code != 410
+        assert response.status_code == 200
