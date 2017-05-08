@@ -2,7 +2,6 @@ import pytest
 import os
 from flask import Response
 from tests.client import MDMClient
-from tests.fixtures import client
 
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 

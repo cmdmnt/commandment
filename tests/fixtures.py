@@ -1,25 +1,63 @@
 import pytest
 import os
-from flask.testing import FlaskClient
+from flask import Flask
+from typing import Generator
 from commandment import create_app
-from commandment.models import db
+from commandment.models import db as _db
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import scoped_session
 from tests.client import MDMClient
 
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 
+
 @pytest.fixture(scope='session')
-def client() -> MDMClient:
+def app() -> Generator[Flask, None, None]:
+    """Flask Application Fixture"""
     a = create_app()
-    a.test_client_class = MDMClient
     a.config['TESTING'] = True
-    a.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    a.config['SQLALCHEMY_ECHO'] = False
+    ctx = a.app_context()
+    ctx.push()
 
-    with a.app_context():
-        db.init_app(a)
-        db.create_all()
+    yield a
 
-    test_client = a.test_client()
+    ctx.pop()
+
+
+@pytest.fixture(scope='session')
+def db(app: Flask) -> Generator[SQLAlchemy, None, None]:
+    """Flask-SQLAlchemy Fixture"""
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    app.config['SQLALCHEMY_ECHO'] = False
+    _db.init_app(app)
+    _db.create_all()
+
+    yield _db
+
+    _db.drop_all()
+
+
+@pytest.fixture(scope='session')
+def session(db: SQLAlchemy) -> Generator[scoped_session, None, None]:
+    """SQLAlchemy session Fixture"""
+    connection = db.engine.connect()
+    transaction = connection.begin()
+    options = dict(bind=connection, binds={})
+    session = db.create_scoped_session(options=options)
+
+    db.session = session
+    yield session
+
+    transaction.rollback()
+    connection.close()
+    session.remove()
+
+
+@pytest.fixture(scope='session')
+def client(app: Flask) -> MDMClient:
+    """Flask test client"""
+    app.test_client_class = MDMClient
+    test_client = app.test_client()
     return test_client
 
 

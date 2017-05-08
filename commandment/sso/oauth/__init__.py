@@ -1,4 +1,4 @@
-from flask import Blueprint, request, url_for
+from flask import Blueprint, request, url_for, current_app
 from .applications import google, oauth, get_oauth
 
 oauth_app = Blueprint('oauth_app', __name__)
@@ -21,3 +21,8 @@ def authorize():
             request.args['error_description'],
             resp
         )
+
+    current_app.logger.debug(resp)
+    user_info = provider.get('https://www.googleapis.com/userinfo/v2/me')
+    from pprint import pprint
+    pprint(user_info)

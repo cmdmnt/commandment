@@ -32,7 +32,8 @@ setup(
         'SQLAlchemy>=1.1.6',
         'acme>=0.12.0',
         'semver>=2.7.6',
-        'minio>=2.2.1'
+        'minio>=2.2.1',
+        'alembic>=0.9.1'
     ],
     python_requires='>=3.5',
     tests_require=[
@@ -53,7 +54,6 @@ setup(
     entry_points={
         'console_scripts': [
             'commandment=commandment.cli:server',
-            'scepclient=scep.client:main',
         ]
     },
     zip_safe=False
