@@ -1,5 +1,6 @@
 acme==0.12.0
 alabaster==0.7.10
+alembic==0.9.1
 aniso8601==1.2.0
 apns==2.0.1
 apns2-client==0.5.3
@@ -14,6 +15,7 @@ cryptography==1.8.1
 decorator==4.0.11
 docutils==0.13.1
 duo-web==1.2.0
+Faker==0.7.11
 Flask==0.12
 Flask-Cors==3.0.2
 Flask-JWT==0.3.2
@@ -33,6 +35,7 @@ idna==2.5
 imagesize==0.7.1
 itsdangerous==0.24
 Jinja2==2.9.5
+Mako==1.0.6
 MarkupSafe==1.0
 marshmallow==2.13.1
 marshmallow-enum==1.0
@@ -63,6 +66,7 @@ pysaml2==4.4.0
 pytest==3.0.7
 pytest-runner==2.11.1
 python-dateutil==2.6.0
+python-editor==1.0.3
 pytz==2016.10
 repoze.who==2.3
 requests==2.13.0

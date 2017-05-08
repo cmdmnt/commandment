@@ -38,7 +38,8 @@ setup(
     python_requires='>=3.5',
     tests_require=[
         'pytest',
-        'mock'
+        'mock',
+        'Faker>=0.7.11'
     ],
     extras_requires={
         'ReST': [
