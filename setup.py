@@ -39,7 +39,8 @@ setup(
     tests_require=[
         'pytest',
         'mock',
-        'Faker>=0.7.11'
+        'Faker>=0.7.11',
+        'Factory-Boy'
     ],
     extras_requires={
         'ReST': [
