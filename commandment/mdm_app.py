@@ -160,7 +160,7 @@ def mdm():
     # TODO: proper identity verification, for now just matching on UDID
     device = db.session.query(Device).filter(Device.udid == g.plist_data['UDID']).one()
 
-    print(g.signer)
+    #print(g.signer)
 
     # if g.device.udid != g.plist_data['UDID']:
     #     # see note in device_cert_check() about old device cert sometimes

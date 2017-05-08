@@ -14,6 +14,7 @@ def device_information_response():
     return plist_data
 
 
+@pytest.mark.usefixtures("device")
 class TestDeviceInformation:
 
     def test_device_information_response(self, client: MDMClient, device_information_response: str):

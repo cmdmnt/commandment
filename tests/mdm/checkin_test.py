@@ -1,8 +1,6 @@
 import pytest
 from flask import Response
 from tests.client import MDMClient
-from tests.fixtures import client, authenticate_request, tokenupdate_request, tokenupdate_user_request, \
-    checkout_request
 
 
 class TestCheckin:

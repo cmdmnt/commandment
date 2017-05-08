@@ -50,10 +50,15 @@ def verify_mdm_signature(f):
     If the authenticity of the message has been verified,
     then the signer is attached to the **g** object as **g.signer**
     
+    In unit tests, this decorator is completely disabled by the presence of testing = True
+    
     :reqheader Mdm-Signature: BASE64-encoded CMS Detached Signature of the message. (if `SignMessage` was true)
     """
     @wraps(f)
     def decorator(*args, **kwargs):
+        if current_app.testing:
+            return f(*args, **kwargs)
+
         if 'Mdm-Signature' not in request.headers:
             current_app.logger.debug('Client did not supply an Mdm-Signature header but signature is required.')
             # abort(401)

@@ -2,7 +2,7 @@ import pytest
 import os
 from flask import Response
 from tests.client import MDMClient
-from tests.fixtures import client
+
 
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 
@@ -14,7 +14,7 @@ def profile_list_response():
 
     return plist_data
 
-
+@pytest.mark.usefixtures("device")
 class TestProfileList:
 
     def test_profile_list_response(self, client: MDMClient, profile_list_response: str):

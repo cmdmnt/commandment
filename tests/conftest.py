@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from typing import Generator
 from commandment import create_app
-from commandment.models import db as _db
+from commandment.models import db as _db, Device
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import scoped_session
 from tests.client import MDMClient
@@ -37,7 +37,7 @@ def db(app: Flask) -> Generator[SQLAlchemy, None, None]:
     _db.drop_all()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def session(db: SQLAlchemy) -> Generator[scoped_session, None, None]:
     """SQLAlchemy session Fixture"""
     connection = db.engine.connect()
@@ -53,12 +53,22 @@ def session(db: SQLAlchemy) -> Generator[scoped_session, None, None]:
     session.remove()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def client(app: Flask) -> MDMClient:
     """Flask test client"""
     app.test_client_class = MDMClient
     test_client = app.test_client()
     return test_client
+
+
+@pytest.fixture(scope='function')
+def device(session: scoped_session):
+    d = Device(
+        udid='00000000-1111-2222-3333-444455556666',
+        device_name='commandment-mdmclient'
+    )
+    session.add(d)
+    session.commit()
 
 
 @pytest.fixture()
