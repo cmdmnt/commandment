@@ -452,7 +452,7 @@ class Command(db.Model):
 
 
 class App(db.Model):
-    __tablename__ = 'app'
+    __tablename__ = 'apps'
 
     id = Column(Integer, primary_key=True)
 
