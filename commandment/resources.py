@@ -121,7 +121,7 @@ class CommandsList(ResourceList):
     schema = CommandSchema
     data_layer = {
         'session': db.session,
-        'model': Command
+        'model': Command,
     }
 
 
@@ -129,8 +129,14 @@ class CommandDetail(ResourceDetail):
     schema = CommandSchema
     data_layer = {
         'session': db.session,
-        'model': Command
+        'model': Command,
+        'url_field': 'command_id'
     }
+
+
+class CommandRelationship(ResourceRelationship):
+    schema = CommandSchema
+    data_layer = {'session': db.session, 'model': Command}
 
 
 class InstalledApplicationsList(ResourceList):

@@ -448,7 +448,7 @@ class Command(db.Model):
                 cls.status == CommandStatus.Queued.value)).order_by(cls.id).first()
 
     def __repr__(self):
-        return '<QueuedCommand ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
+        return '<Command ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
 
 
 class App(db.Model):

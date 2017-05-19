@@ -115,6 +115,13 @@ class DeviceGroupSchema(Schema):
 
 
 class CommandSchema(Schema):
+    class Meta:
+        type_ = 'commands'
+        self_view = 'api_app.command_detail'
+        self_view_kwargs = {'command_id': '<id>'}
+        self_view_many = 'api_app.commands_list'
+        strict = True
+
     id = fields.Int(dump_only=True)
     uuid = fields.Str(dump_only=True)
     request_type = fields.Str()
@@ -127,21 +134,19 @@ class CommandSchema(Schema):
 
     device = Relationship(
         related_view='api_app.device_detail',
-        related_url_kwargs={'device_id': '<id>'},
-        many=False,
-        schema='DeviceSchema',
+        related_view_kwargs={'device_id': '<id>'},
         type_='devices'
     )
 
-    class Meta:
-        type_ = 'commands'
-        self_view = 'api_app.command_detail'
-        self_view_kwargs = {'command_id': '<id>'}
-        self_view_many = 'api_app.commands_list'
-        strict = True
-
 
 class InstalledApplicationSchema(Schema):
+    class Meta:
+        type_ = 'installed_applications'
+        self_view = 'api_app.installed_application_detail'
+        self_view_kwargs = {'installed_application_id': '<id>'}
+        self_view_many = 'api_app.installed_applications_list'
+        strict = True
+    
     id = fields.Int(dump_only=True)
     bundle_identifier = fields.Str(dump_only=True)
     name = fields.Str(dump_only=True)
@@ -153,15 +158,9 @@ class InstalledApplicationSchema(Schema):
 
     device = Relationship(
         related_view='api_app.device_detail',
-        related_view_kwargs={'device_id': '<id>'},
+        related_view_kwargs={'device_id': '<device_id>'},
         type_='devices',
     )
-
-    class Meta:
-        type_ = 'installed_applications'
-        self_view = 'api_app.installed_application_detail'
-        self_view_kwargs = {'installed_application_id': '<id>'}
-        strict = True
 
 
 class InstalledCertificateSchema(Schema):
@@ -169,6 +168,7 @@ class InstalledCertificateSchema(Schema):
         type_ = 'installed_certificates'
         self_view = 'api_app.installed_certificate_detail'
         self_view_kwargs = {'installed_certificate_id': '<id>'}
+        self_view_many = 'api_app.installed_certificates_list'
         strict = True
 
     id = fields.Int(dump_only=True)
@@ -178,7 +178,7 @@ class InstalledCertificateSchema(Schema):
 
     device = Relationship(
         related_view='api_app.device_detail',
-        related_view_kwargs={'device_id': '<id>'},
+        related_view_kwargs={'device_id': '<device_id>'},
         type_='devices',
     )
 

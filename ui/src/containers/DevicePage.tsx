@@ -62,7 +62,9 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
     };
 
     componentDidMount(): void {
-        this.props.read(this.props.match.params.id, ['commands', 'installed_certificates']);
+        this.props.read(this.props.match.params.id, [
+            'commands'
+        ]);
     }
 
     render(): JSX.Element {

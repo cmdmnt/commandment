@@ -144,7 +144,7 @@ fabric.properties
 .idea
 
 # commandment
-mdm.db
+*.db
 commandment/apps
 
 # Flask settings.cfg
