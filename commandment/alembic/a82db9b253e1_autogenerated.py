@@ -31,125 +31,16 @@ def upgrade():
 
 
 
-    op.create_table('subject_alternative_names',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('discriminator', sa.Enum('RFC822Name', 'DNSName', 'UniformResourceIdentifier', 'DirectoryName', 'RegisteredID', 'IPAddress', 'OtherName', name='subjectalternativenametype'), nullable=False),
-    sa.Column('str_value', sa.String(), nullable=True),
-    sa.Column('octet_value', sa.LargeBinary(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
 
-    op.create_table('ad_cert_payload',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('certificate_description', sa.String(), nullable=True),
-    sa.Column('allow_all_apps_access', sa.Boolean(), nullable=True),
-    sa.Column('cert_server', sa.String(), nullable=False),
-    sa.Column('cert_template', sa.String(), nullable=False),
-    sa.Column('acquisition_mechanism', sa.Enum('RPC', 'HTTP', name='adcertificateacquisitionmechanism'), nullable=True),
-    sa.Column('certificate_authority', sa.String(), nullable=False),
-    sa.Column('renewal_time_interval', sa.Integer(), nullable=True),
-    sa.Column('identity_description', sa.String(), nullable=True),
-    sa.Column('key_is_extractable', sa.Boolean(), nullable=True),
-    sa.Column('prompt_for_credentials', sa.Boolean(), nullable=True),
-    sa.Column('keysize', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('ad_payload',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('host_name', sa.String(), nullable=False),
-    sa.Column('user_name', sa.String(), nullable=False),
-    sa.Column('password', sa.String(), nullable=False),
-    sa.Column('ad_organizational_unit', sa.String(), nullable=False),
-    sa.Column('ad_mount_style', sa.Enum('AFP', 'SMB', name='admountstyle'), nullable=False),
-    sa.Column('ad_default_user_shell', sa.String(), nullable=True),
-    sa.Column('ad_map_uid_attribute', sa.String(), nullable=True),
-    sa.Column('ad_map_gid_attribute', sa.String(), nullable=True),
-    sa.Column('ad_map_ggid_attribute', sa.String(), nullable=True),
-    sa.Column('ad_preferred_dc_server', sa.String(), nullable=True),
-    sa.Column('ad_domain_admin_group_list', sa.String(), nullable=True),
-    sa.Column('ad_namespace', sa.Enum('Domain', 'Forest', name='adnamespace'), nullable=True),
-    sa.Column('ad_packet_sign', sa.Enum('Allow', 'Disable', 'Require', name='adpacketsignpolicy'), nullable=True),
-    sa.Column('ad_packet_encrypt', sa.Enum('Allow', 'Disable', 'Require', 'SSL', name='adpacketencryptpolicy'), nullable=True),
-    sa.Column('ad_restrict_ddns', sa.String(), nullable=True),
-    sa.Column('ad_trust_change_pass_interval', sa.Integer(), nullable=True),
-    sa.Column('ad_create_mobile_account_at_login', sa.Boolean(), nullable=True),
-    sa.Column('ad_warn_user_before_creating_ma', sa.Boolean(), nullable=True),
-    sa.Column('ad_force_home_local', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('certificate_payload',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('certificate_file_name', sa.String(), nullable=True),
-    sa.Column('payload_content', sa.LargeBinary(), nullable=True),
-    sa.Column('password', sa.String(), nullable=True),
-    sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
 
-    op.create_table('email_payload',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('email_account_description', sa.String(), nullable=True),
-    sa.Column('email_account_name', sa.String(), nullable=True),
-    sa.Column('email_account_type', sa.Enum('POP', 'IMAP', name='emailaccounttype'), nullable=False),
-    sa.Column('email_address', sa.String(), nullable=True),
-    sa.Column('incoming_auth', sa.Enum('Password', 'CRAM_MD5', 'NTLM', 'HTTP_MD5', 'ENone', name='emailauthenticationtype'), nullable=False),
-    sa.Column('incoming_host', sa.String(), nullable=False),
-    sa.Column('incoming_port', sa.Integer(), nullable=True),
-    sa.Column('incoming_use_ssl', sa.Boolean(), nullable=True),
-    sa.Column('incoming_username', sa.String(), nullable=False),
-    sa.Column('incoming_password', sa.String(), nullable=True),
-    sa.Column('outgoing_password', sa.String(), nullable=True),
-    sa.Column('outgoing_incoming_same', sa.Boolean(), nullable=True),
-    sa.Column('outgoing_auth', sa.Enum('Password', 'CRAM_MD5', 'NTLM', 'HTTP_MD5', 'ENone', name='emailauthenticationtype'), nullable=False),
-    sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('energy_saver_payload',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('destroy_fv_key_on_standby', sa.Boolean(), nullable=True),
-    sa.Column('sleep_disabled', sa.Boolean(), nullable=True),
-    sa.Column('desktop_acpower_profilenumber', sa.Integer(), nullable=True),
-    sa.Column('portable_acpower_profilenumber', sa.Integer(), nullable=True),
-    sa.Column('portable_battery_profilenumber', sa.Integer(), nullable=True),
-    sa.Column('desktop_acpower', commandment.dbtypes.JSONEncodedDict(), nullable=True),
-    sa.Column('portable_acpower', commandment.dbtypes.JSONEncodedDict(), nullable=True),
-    sa.Column('portable_battery', commandment.dbtypes.JSONEncodedDict(), nullable=True),
-    sa.Column('desktop_schedule', commandment.dbtypes.JSONEncodedDict(), nullable=True),
-    sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('mdm_payload',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('identity_certificate_uuid', commandment.dbtypes.GUID(), nullable=False),
-    sa.Column('topic', sa.String(), nullable=False),
-    sa.Column('server_url', sa.String(), nullable=False),
-    sa.Column('server_capabilities', sa.String(), nullable=True),
-    sa.Column('sign_message', sa.Boolean(), nullable=True),
-    sa.Column('check_in_url', sa.String(), nullable=True),
-    sa.Column('check_out_when_removed', sa.Boolean(), nullable=True),
-    sa.Column('access_rights', sa.Integer(), nullable=True),
-    sa.Column('use_development_apns', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('password_policy_payload',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('allow_simple', sa.Boolean(), nullable=True),
-    sa.Column('force_pin', sa.Boolean(), nullable=True),
-    sa.Column('max_failed_attempts', sa.Integer(), nullable=True),
-    sa.Column('max_inactivity', sa.Integer(), nullable=True),
-    sa.Column('max_pin_age_in_days', sa.Integer(), nullable=True),
-    sa.Column('min_complex_chars', sa.Integer(), nullable=True),
-    sa.Column('min_length', sa.Integer(), nullable=True),
-    sa.Column('require_alphanumeric', sa.Boolean(), nullable=True),
-    sa.Column('pin_history', sa.Integer(), nullable=True),
-    sa.Column('max_grace_period', sa.Integer(), nullable=True),
-    sa.Column('allow_fingerprint_modification', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
+
+
+
+
+
+
+
+
     op.create_table('payload_dependencies',
     sa.Column('payload_uuid', commandment.dbtypes.GUID(), nullable=True),
     sa.Column('depends_on_payload_uuid', commandment.dbtypes.GUID(), nullable=True),
@@ -231,16 +122,15 @@ def downgrade():
     op.drop_table('scep_payload')
 
     op.drop_table('payload_dependencies')
-    op.drop_table('password_policy_payload')
-    op.drop_table('mdm_payload')
-    op.drop_table('energy_saver_payload')
-    op.drop_table('email_payload')
 
-    op.drop_table('certificate_payload')
-    op.drop_table('ad_payload')
-    op.drop_table('ad_cert_payload')
 
-    op.drop_table('subject_alternative_names')
+
+
+
+
+
+
+
 
 
 
