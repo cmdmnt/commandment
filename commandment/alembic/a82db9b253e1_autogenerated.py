@@ -26,55 +26,11 @@ def upgrade():
     )
 
 
-    op.create_table('organizations',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(), nullable=True),
-    sa.Column('payload_prefix', sa.String(), nullable=True),
-    sa.Column('x509_ou', sa.String(length=32), nullable=True),
-    sa.Column('x509_o', sa.String(length=64), nullable=True),
-    sa.Column('x509_st', sa.String(length=128), nullable=True),
-    sa.Column('x509_c', sa.String(length=2), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
 
-    op.create_table('profiles',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('description', sa.Text(), nullable=True),
-    sa.Column('display_name', sa.String(), nullable=True),
-    sa.Column('expiration_date', sa.DateTime(), nullable=True),
-    sa.Column('identifier', sa.String(), nullable=False),
-    sa.Column('organization', sa.String(), nullable=True),
-    sa.Column('uuid', commandment.dbtypes.GUID(), nullable=True),
-    sa.Column('removal_disallowed', sa.Boolean(), nullable=True),
-    sa.Column('version', sa.Integer(), nullable=True),
-    sa.Column('scope', sa.Enum('User', 'System', name='payloadscope'), nullable=True),
-    sa.Column('removal_date', sa.DateTime(), nullable=True),
-    sa.Column('duration_until_removal', sa.BigInteger(), nullable=True),
-    sa.Column('consent_en', sa.Text(), nullable=True),
-    sa.Column('is_encrypted', sa.Boolean(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_profiles_uuid'), 'profiles', ['uuid'], unique=False)
-    op.create_table('rsa_private_keys',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('pem_data', sa.Text(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('scep_config',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('url', sa.String(), nullable=False),
-    sa.Column('challenge_enabled', sa.Boolean(), nullable=True),
-    sa.Column('challenge', sa.String(), nullable=True),
-    sa.Column('ca_fingerprint', sa.String(), nullable=True),
-    sa.Column('subject', sa.String(), nullable=False),
-    sa.Column('key_size', sa.Integer(), nullable=False),
-    sa.Column('key_type', sa.String(), nullable=False),
-    sa.Column('key_usage', sa.Enum('Signing', 'Encryption', 'All', name='keyusage'), nullable=True),
-    sa.Column('retries', sa.Integer(), nullable=False),
-    sa.Column('retry_delay', sa.Integer(), nullable=False),
-    sa.Column('certificate_renewal_time_interval', sa.Integer(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
+
+
+
+
     op.create_table('subject_alternative_names',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('discriminator', sa.Enum('RFC822Name', 'DNSName', 'UniformResourceIdentifier', 'DirectoryName', 'RegisteredID', 'IPAddress', 'OtherName', name='subjectalternativenametype'), nullable=False),
@@ -82,13 +38,7 @@ def upgrade():
     sa.Column('octet_value', sa.LargeBinary(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('users',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(), nullable=True),
-    sa.Column('fullname', sa.String(), nullable=True),
-    sa.Column('password', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
+
     op.create_table('ad_cert_payload',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('certificate_description', sa.String(), nullable=True),
@@ -137,24 +87,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('certificates',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('pem_data', sa.Text(), nullable=False),
-    sa.Column('rsa_private_key_id', sa.Integer(), nullable=True),
-    sa.Column('x509_cn', sa.String(length=64), nullable=True),
-    sa.Column('x509_ou', sa.String(length=32), nullable=True),
-    sa.Column('x509_o', sa.String(length=64), nullable=True),
-    sa.Column('x509_c', sa.String(length=2), nullable=True),
-    sa.Column('x509_st', sa.String(length=128), nullable=True),
-    sa.Column('not_before', sa.DateTime(), nullable=False),
-    sa.Column('not_after', sa.DateTime(), nullable=False),
-    sa.Column('fingerprint', sa.String(length=64), nullable=False),
-    sa.Column('push_topic', sa.String(), nullable=True),
-    sa.Column('discriminator', sa.String(length=20), nullable=True),
-    sa.ForeignKeyConstraint(['rsa_private_key_id'], ['rsa_private_keys.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_certificates_fingerprint'), 'certificates', ['fingerprint'], unique=True)
+
     op.create_table('email_payload',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email_account_description', sa.String(), nullable=True),
@@ -429,19 +362,17 @@ def downgrade():
     op.drop_table('mdm_payload')
     op.drop_table('energy_saver_payload')
     op.drop_table('email_payload')
-    op.drop_index(op.f('ix_certificates_fingerprint'), table_name='certificates')
-    op.drop_table('certificates')
+
     op.drop_table('certificate_payload')
     op.drop_table('ad_payload')
     op.drop_table('ad_cert_payload')
-    op.drop_table('users')
-    op.drop_table('subject_alternative_names')
-    op.drop_table('scep_config')
-    op.drop_table('rsa_private_keys')
-    op.drop_index(op.f('ix_profiles_uuid'), table_name='profiles')
-    op.drop_table('profiles')
 
-    op.drop_table('organizations')
+    op.drop_table('subject_alternative_names')
+
+
+
+
+
 
 
     op.drop_table('command_sequences')
