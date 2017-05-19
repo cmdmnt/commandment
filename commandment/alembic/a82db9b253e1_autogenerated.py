@@ -156,12 +156,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['depends_on_payload_uuid'], ['payloads.uuid'], ),
     sa.ForeignKeyConstraint(['payload_uuid'], ['payloads.uuid'], )
     )
-    op.create_table('profile_payloads',
-    sa.Column('profile_id', sa.Integer(), nullable=True),
-    sa.Column('payload_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['payload_id'], ['payloads.id'], ),
-    sa.ForeignKeyConstraint(['profile_id'], ['profiles.id'], )
-    )
+
     op.create_table('scep_payload',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('url', sa.String(), nullable=False),
@@ -217,146 +212,24 @@ def upgrade():
     sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('devices',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('udid', sa.String(), nullable=True),
-    sa.Column('topic', sa.String(), nullable=True),
-    sa.Column('last_seen', sa.DateTime(), nullable=True),
-    sa.Column('is_enrolled', sa.Boolean(), nullable=True),
-    sa.Column('build_version', sa.String(), nullable=True),
-    sa.Column('device_name', sa.String(), nullable=True),
-    sa.Column('model', sa.String(), nullable=True),
-    sa.Column('model_name', sa.String(), nullable=True),
-    sa.Column('os_version', sa.String(), nullable=True),
-    sa.Column('product_name', sa.String(), nullable=True),
-    sa.Column('serial_number', sa.String(length=64), nullable=True),
-    sa.Column('hostname', sa.String(), nullable=True),
-    sa.Column('local_hostname', sa.String(), nullable=True),
-    sa.Column('available_device_capacity', sa.Float(), nullable=True),
-    sa.Column('device_capacity', sa.Float(), nullable=True),
-    sa.Column('wifi_mac', sa.String(), nullable=True),
-    sa.Column('bluetooth_mac', sa.String(), nullable=True),
-    sa.Column('awaiting_configuration', sa.Boolean(), nullable=True),
-    sa.Column('push_magic', sa.String(), nullable=True),
-    sa.Column('_token', sa.String(), nullable=True),
-    sa.Column('tokenupdate_at', sa.DateTime(), nullable=True),
-    sa.Column('last_push_at', sa.DateTime(), nullable=True),
-    sa.Column('last_apns_id', sa.Integer(), nullable=True),
-    sa.Column('failed_push_count', sa.Integer(), nullable=False),
-    sa.Column('unlock_token', sa.String(), nullable=True),
-    sa.Column('passcode_present', sa.Boolean(), nullable=True),
-    sa.Column('passcode_compliant', sa.Boolean(), nullable=True),
-    sa.Column('passcode_compliant_with_profiles', sa.Boolean(), nullable=True),
-    sa.Column('fde_enabled', sa.Boolean(), nullable=True),
-    sa.Column('fde_has_prk', sa.Boolean(), nullable=True),
-    sa.Column('fde_has_irk', sa.Boolean(), nullable=True),
-    sa.Column('firewall_enabled', sa.Boolean(), nullable=True),
-    sa.Column('block_all_incoming', sa.Boolean(), nullable=True),
-    sa.Column('stealth_mode_enabled', sa.Boolean(), nullable=True),
-    sa.Column('sip_enabled', sa.Boolean(), nullable=True),
-    sa.Column('certificate_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['certificate_id'], ['certificates.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_devices_serial_number'), 'devices', ['serial_number'], unique=False)
-    op.create_index(op.f('ix_devices_udid'), 'devices', ['udid'], unique=False)
-    op.create_table('commands',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('request_type', sa.String(), nullable=False),
-    sa.Column('uuid', commandment.dbtypes.GUID(), nullable=False),
-    sa.Column('parameters', commandment.dbtypes.JSONEncodedDict(), nullable=True),
-    sa.Column('status', sa.String(length=1), nullable=False),
-    sa.Column('queued_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
-    sa.Column('sent_at', sa.DateTime(), nullable=True),
-    sa.Column('acknowledged_at', sa.DateTime(), nullable=True),
-    sa.Column('after', sa.DateTime(), nullable=True),
-    sa.Column('ttl', sa.Integer(), nullable=False),
-    sa.Column('device_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['device_id'], ['devices.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_commands_status'), 'commands', ['status'], unique=False)
-    op.create_index(op.f('ix_commands_uuid'), 'commands', ['uuid'], unique=True)
-    op.create_table('device_group_devices',
-    sa.Column('device_group_id', sa.Integer(), nullable=False),
-    sa.Column('device_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['device_group_id'], ['device_groups.id'], ),
-    sa.ForeignKeyConstraint(['device_id'], ['devices.id'], ),
-    sa.PrimaryKeyConstraint('device_group_id', 'device_id')
-    )
-    op.create_table('installed_applications',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('device_udid', commandment.dbtypes.GUID(), nullable=False),
-    sa.Column('device_id', sa.Integer(), nullable=True),
-    sa.Column('bundle_identifier', sa.String(), nullable=True),
-    sa.Column('version', sa.String(), nullable=True),
-    sa.Column('short_version', sa.String(), nullable=True),
-    sa.Column('name', sa.String(), nullable=True),
-    sa.Column('bundle_size', sa.BigInteger(), nullable=True),
-    sa.Column('dynamic_size', sa.BigInteger(), nullable=True),
-    sa.Column('is_validated', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['device_id'], ['devices.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_installed_applications_bundle_identifier'), 'installed_applications', ['bundle_identifier'], unique=False)
-    op.create_index(op.f('ix_installed_applications_device_udid'), 'installed_applications', ['device_udid'], unique=False)
-    op.create_index(op.f('ix_installed_applications_version'), 'installed_applications', ['version'], unique=False)
-    op.create_table('installed_certificates',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('device_udid', commandment.dbtypes.GUID(), nullable=False),
-    sa.Column('device_id', sa.Integer(), nullable=True),
-    sa.Column('x509_cn', sa.String(), nullable=True),
-    sa.Column('is_identity', sa.Boolean(), nullable=True),
-    sa.Column('der_data', sa.LargeBinary(), nullable=False),
-    sa.Column('fingerprint_sha256', sa.String(length=64), nullable=False),
-    sa.ForeignKeyConstraint(['device_id'], ['devices.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_installed_certificates_device_udid'), 'installed_certificates', ['device_udid'], unique=False)
-    op.create_index(op.f('ix_installed_certificates_fingerprint_sha256'), 'installed_certificates', ['fingerprint_sha256'], unique=False)
-    op.create_table('installed_profiles',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('device_udid', commandment.dbtypes.GUID(), nullable=False),
-    sa.Column('device_id', sa.Integer(), nullable=True),
-    sa.Column('has_removal_password', sa.Boolean(), nullable=True),
-    sa.Column('is_encrypted', sa.Boolean(), nullable=True),
-    sa.Column('payload_description', sa.String(), nullable=True),
-    sa.Column('payload_display_name', sa.String(), nullable=True),
-    sa.Column('payload_identifier', sa.String(), nullable=True),
-    sa.Column('payload_organization', sa.String(), nullable=True),
-    sa.Column('payload_removal_disallowed', sa.Boolean(), nullable=True),
-    sa.Column('payload_uuid', commandment.dbtypes.GUID(), nullable=True),
-    sa.ForeignKeyConstraint(['device_id'], ['devices.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_installed_profiles_device_udid'), 'installed_profiles', ['device_udid'], unique=False)
-    op.create_index(op.f('ix_installed_profiles_payload_uuid'), 'installed_profiles', ['payload_uuid'], unique=False)
+
+
+
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_index(op.f('ix_installed_profiles_payload_uuid'), table_name='installed_profiles')
-    op.drop_index(op.f('ix_installed_profiles_device_udid'), table_name='installed_profiles')
-    op.drop_table('installed_profiles')
-    op.drop_index(op.f('ix_installed_certificates_fingerprint_sha256'), table_name='installed_certificates')
-    op.drop_index(op.f('ix_installed_certificates_device_udid'), table_name='installed_certificates')
-    op.drop_table('installed_certificates')
-    op.drop_index(op.f('ix_installed_applications_version'), table_name='installed_applications')
-    op.drop_index(op.f('ix_installed_applications_device_udid'), table_name='installed_applications')
-    op.drop_index(op.f('ix_installed_applications_bundle_identifier'), table_name='installed_applications')
-    op.drop_table('installed_applications')
-    op.drop_table('device_group_devices')
-    op.drop_index(op.f('ix_commands_uuid'), table_name='commands')
-    op.drop_index(op.f('ix_commands_status'), table_name='commands')
-    op.drop_table('commands')
-    op.drop_index(op.f('ix_devices_udid'), table_name='devices')
-    op.drop_index(op.f('ix_devices_serial_number'), table_name='devices')
-    op.drop_table('devices')
+
+
+
+
+
+
     op.drop_table('wifi_payload')
     op.drop_table('vpn_payload')
     op.drop_table('scep_payload')
-    op.drop_table('profile_payloads')
+
     op.drop_table('payload_dependencies')
     op.drop_table('password_policy_payload')
     op.drop_table('mdm_payload')
