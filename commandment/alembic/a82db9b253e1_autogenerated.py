@@ -41,68 +41,11 @@ def upgrade():
 
 
 
-    op.create_table('payload_dependencies',
-    sa.Column('payload_uuid', commandment.dbtypes.GUID(), nullable=True),
-    sa.Column('depends_on_payload_uuid', commandment.dbtypes.GUID(), nullable=True),
-    sa.ForeignKeyConstraint(['depends_on_payload_uuid'], ['payloads.uuid'], ),
-    sa.ForeignKeyConstraint(['payload_uuid'], ['payloads.uuid'], )
-    )
 
-    op.create_table('scep_payload',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('url', sa.String(), nullable=False),
-    sa.Column('name', sa.String(), nullable=True),
-    sa.Column('subject', commandment.dbtypes.JSONEncodedDict(), nullable=False),
-    sa.Column('challenge', sa.String(), nullable=True),
-    sa.Column('key_size', sa.Integer(), nullable=False),
-    sa.Column('ca_fingerprint', sa.LargeBinary(), nullable=True),
-    sa.Column('key_type', sa.String(), nullable=False),
-    sa.Column('key_usage', sa.Enum('Signing', 'Encryption', 'All', name='keyusage'), nullable=True),
-    sa.Column('subject_alt_name', sa.String(), nullable=True),
-    sa.Column('retries', sa.Integer(), nullable=False),
-    sa.Column('retry_delay', sa.Integer(), nullable=False),
-    sa.Column('certificate_renewal_time_interval', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('vpn_payload',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_defined_name', sa.String(), nullable=True),
-    sa.Column('override_primary', sa.Boolean(), nullable=True),
-    sa.Column('vpn_type', sa.Enum('L2TP', 'PPTP', 'IPSec', 'IKEv2', 'AlwaysOn', 'VPN', name='vpntype'), nullable=False),
-    sa.Column('vpn_sub_type', sa.String(), nullable=True),
-    sa.Column('provider_bundle_identifier', sa.String(), nullable=True),
-    sa.Column('on_demand_enabled', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('wifi_payload',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('ssid_str', sa.String(), nullable=False),
-    sa.Column('hidden_network', sa.Boolean(), nullable=True),
-    sa.Column('auto_join', sa.Boolean(), nullable=True),
-    sa.Column('encryption_type', sa.Enum('ENone', 'Any', 'WPA2', 'WPA', 'WEP', name='wifiencryptiontype'), nullable=True),
-    sa.Column('is_hotspot', sa.Boolean(), nullable=True),
-    sa.Column('domain_name', sa.String(), nullable=True),
-    sa.Column('service_provider_roaming_enabled', sa.Boolean(), nullable=True),
-    sa.Column('roaming_consortium_ois', sa.String(), nullable=True),
-    sa.Column('nai_realm_names', sa.String(), nullable=True),
-    sa.Column('mccs_and_mncs', sa.String(), nullable=True),
-    sa.Column('displayed_operator_name', sa.String(), nullable=True),
-    sa.Column('captive_bypass', sa.Boolean(), nullable=True),
-    sa.Column('password', sa.String(), nullable=True),
-    sa.Column('tls_certificate_required', sa.Boolean(), nullable=True),
-    sa.Column('payload_certificate_uuid', commandment.dbtypes.GUID(), nullable=True),
-    sa.Column('proxy_type', sa.String(), nullable=True),
-    sa.Column('proxy_server', sa.String(), nullable=True),
-    sa.Column('proxy_server_port', sa.Integer(), nullable=True),
-    sa.Column('proxy_username', sa.String(), nullable=True),
-    sa.Column('proxy_password', sa.String(), nullable=True),
-    sa.Column('proxy_pac_url', sa.String(), nullable=True),
-    sa.Column('proxy_pac_fallback_allowed', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['id'], ['payloads.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
+
+
+
+
 
 
 
@@ -117,11 +60,11 @@ def downgrade():
 
 
 
-    op.drop_table('wifi_payload')
-    op.drop_table('vpn_payload')
-    op.drop_table('scep_payload')
 
-    op.drop_table('payload_dependencies')
+
+
+
+
 
 
 
