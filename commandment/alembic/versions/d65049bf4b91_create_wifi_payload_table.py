@@ -7,7 +7,7 @@ Create Date: 2017-05-19 20:00:36.548840
 """
 from alembic import op
 import sqlalchemy as sa
-
+import commandment.dbtypes
 
 # revision identifiers, used by Alembic.
 revision = 'd65049bf4b91'
