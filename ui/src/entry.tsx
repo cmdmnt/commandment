@@ -28,7 +28,6 @@ const initialState: RootState = {};
 const history = createHistory();
 const store = configureStore(initialState, routerMiddleware(history));
 
-
 render(
     <Provider store={store}>
         <ConnectedRouter history={history}>

@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 import {DeviceState} from "../reducers/device";
 import {ModelIcon} from "./griddle/ModelIcon";
+import { Button } from 'semantic-ui-react'
 import {InstalledCertificates} from './device/InstalledCertificates';
 
 interface MacOSDeviceDetailState {

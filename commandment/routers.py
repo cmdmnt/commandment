@@ -1,5 +1,5 @@
 from typing import Union
-from flask import Flask, app, Blueprint, request, abort
+from flask import Flask, app, Blueprint, request, abort, current_app
 from functools import wraps
 import biplist
 from .models import db, Device
@@ -25,6 +25,7 @@ class CommandRouter(object):
         if command.request_type in self._handlers:
             return self._handlers[command.request_type](command, device, response)
         else:
+            current_app.logger.warning('No handler found to process command response: {}'.format(command.request_type))
             return None
 
     def route(self, request_type: str):
@@ -37,6 +38,7 @@ class CommandRouter(object):
         :return: 
         """
         handlers = self._handlers
+        # current_app.logger.debug('Registering command handler for request type: {}'.format(request_type))
 
         def decorator(f):
             handlers[request_type] = f

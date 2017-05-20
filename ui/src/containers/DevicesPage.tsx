@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
+import { Grid, Header, Container } from 'semantic-ui-react'
 
 import {bindActionCreators} from "redux";
 import * as actions from '../actions/devices';
@@ -84,38 +85,40 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
         };
 
         return (
-            <div className='DevicesPage top-margin container'>
-                <div className='row'>
-                    <div className='column'>
-                        <h1>Devices</h1>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
-                        <Griddle
-                            data={devices.items}
-                            pageProperties={{
-                                currentPage: devices.currentPage,
-                                pageSize: devices.pageSize,
-                                recordCount: devices.recordCount
-                            }}
-                            events={eventHandlers}
-                            plugins={[SelectionPlugin()]}
-                            components={{
-                                Layout: SimpleLayout
-                            }}
-                        >
-                            <RowDefinition>
-                                <ColumnDefinition id="id" customComponent={DeviceLink} />
-                                <ColumnDefinition title='Model' id='attributes.model_name' customComponent={ModelIcon} />
-                                <ColumnDefinition title="Name" id="attributes.device_name" />
-                                <ColumnDefinition title="Last Seen" id="attributes.last_seen" customComponent={SinceNowUTC} />
-                                <ColumnDefinition title="Product Name" id="attributes.product_name" />
-                            </RowDefinition>
-                        </Griddle>
-                    </div>
-                </div>
-            </div>
+            <Container className='DevicesPage'>
+                <Grid>
+                <Grid.Column>
+                <Header as="h1">Devices</Header>
+
+                <Griddle
+                    data={devices.items}
+                    pageProperties={{
+                        currentPage: devices.currentPage,
+                        pageSize: devices.pageSize,
+                        recordCount: devices.recordCount
+                    }}
+                    styleConfig={{
+                        classNames: {
+                            Table: 'ui celled table'
+                        }
+                    }}
+                    events={eventHandlers}
+                    plugins={[SelectionPlugin()]}
+                    components={{
+                        Layout: SimpleLayout
+                    }}
+                >
+                    <RowDefinition>
+                        <ColumnDefinition id="id" customComponent={DeviceLink} />
+                        <ColumnDefinition title='Model' id='attributes.model_name' customComponent={ModelIcon} />
+                        <ColumnDefinition title="Name" id="attributes.device_name" />
+                        <ColumnDefinition title="Last Seen" id="attributes.last_seen" customComponent={SinceNowUTC} />
+                        <ColumnDefinition title="Product Name" id="attributes.product_name" />
+                    </RowDefinition>
+                </Griddle>
+                </Grid.Column>
+                </Grid>
+            </Container>
         );
     }
 }

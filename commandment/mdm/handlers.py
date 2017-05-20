@@ -1,7 +1,6 @@
 from flask import current_app
-from ..models import db, Device, InstalledApplication, InstalledCertificate, InstalledProfile
+from ..models import db, Device, InstalledCertificate, InstalledProfile
 from .response_schema import InstalledApplicationListResponse
-from ..profiles.models import Profile
 from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList
 from ..mdm_app import command_router
 from .util import queryresponses_to_query_set
@@ -152,20 +151,6 @@ def ack_installed_app_list(request: InstalledApplicationList, device: Device, re
         app.device = device
         app.device_udid = device.udid
         db.session.add(app)
-
-
-    # for app in applications:
-    #     dba = InstalledApplication()
-    #     dba.device = device
-    #     dba.device_udid = device.udid
-    #     dba.bundle_identifier = app.get('BundleIdentifier', None)
-    #     dba.bundle_size = app.get('BundleSize', None)
-    #     dba.dynamic_size = app.get('DynamicSize', None)
-    #     dba.is_validated = app.get('IsValidated', None)
-    #     dba.name = app.get('Name', None)
-    #     dba.short_version = app.get('ShortVersion', None)
-    #     dba.version = app.get('Version', None)
-    #     db.session.add(dba)
 
     db.session.commit()
 

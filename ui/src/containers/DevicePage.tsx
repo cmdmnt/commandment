@@ -9,6 +9,7 @@ import {InventoryActionRequest, PushActionRequest, ReadActionRequest} from "../a
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
 import {DeviceState} from "../reducers/device";
 import {Link} from "react-router-dom";
+import {Container, Grid, Menu, Button} from 'semantic-ui-react';
 
 interface ReduxStateProps {
     device: DeviceState;
@@ -74,13 +75,20 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
         } = this.props;
 
         return (
-            <div className='DevicePage top-margin container'>
-                <button className='button button-outline' onClick={this.handlePush}>Force Push</button>
-                <button className='button button-outline' onClick={this.handleInventory}>Inventory</button>
-                <Link to={`/devices/${device_id}/certificates`}>Certificates</Link>
-                <Link to={`/devices/${device_id}/commands`}>Commands</Link>
+            <Container className='DevicePage'>
+                <Grid>
+                    <Grid.Column>
+                <Button onClick={this.handlePush}>Force Push</Button>
+                <Button onClick={this.handleInventory}>Inventory</Button>
+
                 {device && <MacOSDeviceDetail device={device} />}
-            </div>
+                        <Menu secondary>
+                            <Menu.Item><Link to={`/devices/${device_id}/certificates`}>Certificates</Link></Menu.Item>
+                            <Menu.Item><Link to={`/devices/${device_id}/commands`}>Commands</Link></Menu.Item>
+                        </Menu>
+                    </Grid.Column>
+                </Grid>
+            </Container>
         );
     }
 }

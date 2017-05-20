@@ -46,6 +46,11 @@ export class DeviceCommands extends React.Component<DeviceCommandsProps, undefin
                 {commands &&
                 <Griddle
                     data={commands.items}
+                    styleConfig={{
+                        classNames: {
+                            Table: 'ui celled table'
+                        }
+                    }}
                 >
                     <RowDefinition>
                         <ColumnDefinition id="id" />
