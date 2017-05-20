@@ -27,10 +27,7 @@ export function installed_certificates(state: InstalledCertificatesState = initi
                     ...state
                 }
             } else {
-                if (!action.payload.data.relationships) { return state; }
-                if (!action.payload.data.relationships.hasOwnProperty('installed_certificates')) {
-                    return state;
-                }
+                if (!action.payload.hasOwnProperty('included')) { return state; }
 
                 const items = action.payload.included.filter((item: JSONAPIObject<any>) => {
                     return item.type == 'installed_certificates';

@@ -4,6 +4,7 @@ import {SinceNowUTC} from "../../components/griddle/SinceNowUTC";
 import {RootState} from "../../reducers/index";
 import {DeviceCommandsState} from "../../reducers/device/commands";
 import {connect, Dispatch} from "react-redux";
+import {CommandStatus} from "../../components/griddle/CommandStatus";
 
 interface ReduxStateProps {
     commands?: DeviceCommandsState;
@@ -37,8 +38,6 @@ export class DeviceCommands extends React.Component<DeviceCommandsProps, undefin
         const {
             commands
         } = this.props;
-        
-        console.dir(commands);
 
         return (
             <div className='DeviceCommands container'>

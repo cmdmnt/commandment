@@ -18,10 +18,7 @@ export function commands(state: DeviceCommandsState = initialState, action: Devi
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return state;
             } else {
-                if (!action.payload.data.relationships) { return state; }
-                if (!action.payload.data.relationships.hasOwnProperty('commands')) {
-                    return state;
-                }
+                if (!action.payload.hasOwnProperty('included')) { return state; }
 
                 const items = action.payload.included.filter((item: JSONAPIObject<any>) => {
                     return item.type == 'commands';

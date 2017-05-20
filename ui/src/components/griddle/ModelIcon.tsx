@@ -11,7 +11,7 @@ export const ModelIcon = (value: GriddleValue): JSX.Element => {
        'iMac': 'fa-desktop',
        'MacBook Pro': 'fa-laptop',
        'MacBook Air': 'fa-laptop',
-       'MacPro': 'fa-trash',
+       'Mac Pro': 'fa-trash',
        'iPhone': 'fa-mobile'
     };
 

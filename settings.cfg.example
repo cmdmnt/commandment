@@ -12,6 +12,7 @@ PORT = 5443
 # You may export pkcs#12 using this command:
 # openssl pkcs12 -in push.p12 -out push.pem -nodes -clcerts
 PUSH_CERTIFICATE = '../push.pem'
+PUSH_CERTIFICATE_PASSWORD = 'sekret'  # for pkcs12 only
 
 # If commandment is running in development mode, specify the path to the certificate and private key.
 # These can also be generated at start up.
