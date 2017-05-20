@@ -1,6 +1,7 @@
 import * as actions from '../actions/profiles';
 import {IndexActionResponse} from '../actions/profiles';
 import {isJSONAPIErrorResponsePayload} from "../constants";
+import {PageProperties} from "griddle-react";
 
 export interface ProfilesState {
     items: Array<JSONAPIObject<Profile>>;
@@ -8,9 +9,7 @@ export interface ProfilesState {
     error: boolean;
     errorDetail?: any
     lastReceived?: Date;
-    currentPage: number;
-    pageSize: number;
-    recordCount?: number;
+    pageProperties: PageProperties;
 }
 
 const initialState: ProfilesState = {
@@ -19,8 +18,11 @@ const initialState: ProfilesState = {
     error: false,
     errorDetail: null,
     lastReceived: null,
-    currentPage: 1,
-    pageSize: 50
+    pageProperties: {
+        currentPage: 1,
+        pageSize: 10,
+        recordCount: 0
+    }
 };
 
 type ProfilesAction = IndexActionResponse;

@@ -20,11 +20,13 @@ import json
 
 def get_apns() -> apns2.APNSClient:
     apns = getattr(g, '_apns', None)
-
+    
     if apns is None:
         push_certificate_path = current_app.config['PUSH_CERTIFICATE']
         if not os.path.exists(push_certificate_path):
             raise RuntimeError('You specified a push certificate at: {}, but it does not exist.'.format(push_certificate_path))
+
+        client_cert = push_certificate_path  # can be a single path or tuple of 2
 
         # We can handle loading PKCS#12 but APNS2Client specifically requests PEM encoded certificates
         push_certificate_basename, ext = os.path.splitext(push_certificate_path)
@@ -53,8 +55,10 @@ def get_apns() -> apns2.APNSClient:
                 with open(pem_certificate_path, 'wb') as fd:
                     fd.write(crypto_cert.public_bytes(serialization.Encoding.PEM))
 
+            client_cert = pem_certificate_path, pem_key_path
+        
         try:
-            apns = g._apns = apns2.APNSClient(mode='prod', client_cert=(pem_certificate_path, pem_key_path))
+            apns = g._apns = apns2.APNSClient(mode='prod', client_cert=client_cert)
         except:
             raise RuntimeError('Your push certificate is expired or invalid')
 

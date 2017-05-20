@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
+import {Grid, Container, Table, Header} from 'semantic-ui-react';
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
 
 import {bindActionCreators} from "redux";
@@ -52,32 +53,27 @@ export class ProfilesPage extends React.Component<ProfilesPageProps, ProfilesPag
         } = this.props;
 
         const eventHandlers = {
-            onFilter: this.handleFilter,
+            onFilter: this.handleFilter
         };
 
         return (
-            <div className='DevicesPage top-margin container'>
-                <div className='row'>
-                    <div className='column'>
-                        <h1>Profiles</h1>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
+            <Container className='ProfilesPage'>
+                <Grid>
+                    <Grid.Column>
+                        <Header as="h1">Profiles</Header>
+
                         <form method='POST' action='/api/v1/upload/profiles' encType='multipart/form-data'>
                             <input type='file' name='file' accept='application/x-apple-aspen-config' />
                             <input type='submit' />
                         </form>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
+
                         <Griddle
                             data={profiles.items}
-                            pageProperties={{
-                                currentPage: profiles.currentPage,
-                                pageSize: profiles.pageSize,
-                                recordCount: profiles.recordCount
+                            pageProperties={profiles.pageProperties}
+                            styleConfig={{
+                                classNames: {
+                                    Table: 'ui celled table'
+                                }
                             }}
                             events={eventHandlers}
                         >
@@ -88,9 +84,9 @@ export class ProfilesPage extends React.Component<ProfilesPageProps, ProfilesPag
                                 <ColumnDefinition title="Name" id="attributes.display_name" />
                             </RowDefinition>
                         </Griddle>
-                    </div>
-                </div>
-            </div>
+                    </Grid.Column>
+                </Grid>
+            </Container>
         );
     }
 }
