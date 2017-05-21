@@ -9,7 +9,8 @@ import {InventoryActionRequest, PushActionRequest, ReadActionRequest} from "../a
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
 import {DeviceState} from "../reducers/device";
 import {Link} from "react-router-dom";
-import {Container, Grid, Menu, Button} from 'semantic-ui-react';
+import {Container, Grid, Menu, Button, Segment, Dropdown} from 'semantic-ui-react';
+import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 
 interface ReduxStateProps {
     device: DeviceState;
@@ -71,20 +72,25 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
     render(): JSX.Element {
         const {
             device,
-            match: { params: { id: device_id }}
+            match: { params: { id: device_id }, url}
         } = this.props;
+
+        console.log(url);
 
         return (
             <Container className='DevicePage'>
                 <Grid>
                     <Grid.Column>
-                <Button onClick={this.handlePush}>Force Push</Button>
-                <Button onClick={this.handleInventory}>Inventory</Button>
-
+                        <Dropdown inline options={[
+                            { text: 'Force Push', value: 'push' },
+                            { text: 'Inventory', value: 'inventory '}
+                        ]}></Dropdown>
+                        <Segment>
                 {device && <MacOSDeviceDetail device={device} />}
-                        <Menu secondary>
-                            <Menu.Item><Link to={`/devices/${device_id}/certificates`}>Certificates</Link></Menu.Item>
-                            <Menu.Item><Link to={`/devices/${device_id}/commands`}>Commands</Link></Menu.Item>
+                        </Segment>
+                        <Menu pointing secondary color="purple" inverted>
+                            <MenuItemLink to={`/devices/${device_id}/certificates`} label="Certificates" />
+                            <MenuItemLink to={`/devices/${device_id}/commands`} label="Commands" />
                         </Menu>
                     </Grid.Column>
                 </Grid>

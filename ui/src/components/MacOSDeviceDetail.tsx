@@ -2,8 +2,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 import {DeviceState} from "../reducers/device";
 import {ModelIcon} from "./griddle/ModelIcon";
-import { Button } from 'semantic-ui-react'
-import {InstalledCertificates} from './device/InstalledCertificates';
+import { Button, Header } from 'semantic-ui-react';
 
 interface MacOSDeviceDetailState {
 
@@ -32,7 +31,9 @@ export class MacOSDeviceDetail extends React.Component<MacOSDeviceDetailProps, M
 
         return (
             <div className='MacOSDeviceDetail'>
-                <h1><ModelIcon value={attributes.model_name} /> {name}</h1>
+                <Header floated="right" as="h1" color="grey"><small>{attributes.serial_number}</small></Header>
+                <Header as="h1"><ModelIcon value={attributes.model_name} /> {name}</Header>
+
                 <div className='row'>
                     <div className='column'>
                         <dl className='horizontal'>
