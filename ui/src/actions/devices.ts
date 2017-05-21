@@ -26,8 +26,8 @@ export const index: IndexActionRequest = (
 ): RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE> => {
 
     let queryParameters = [];
-    queryParameters.push(`size=${size}`);
-    queryParameters.push(`number=${number}`);
+    queryParameters.push(`page[size]=${size}`);
+    queryParameters.push(`page[number]=${number}`);
 
     if (sort.length > 0) {
         // TODO: sorting
@@ -161,7 +161,7 @@ export type COMMANDS_FAILURE = 'devices/COMMANDS_FAILURE';
 export const COMMANDS_FAILURE: COMMANDS_FAILURE = 'devices/COMMANDS_FAILURE';
 
 export interface CommandsActionRequest {
-    (device_id: number): RSAA<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE>;
+    (device_id: number, size?: number, number?: number, sort?: Array<string>, filter?: Array<FlaskFilter>): RSAA<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE>;
 }
 
 export interface CommandsActionResponse {
@@ -169,17 +169,29 @@ export interface CommandsActionResponse {
     payload?: JSONAPIListResponse<Command> | JSONAPIErrorResponse;
 }
 
-export const commands: CommandsActionRequest = (device_id: number) => {
+export const commands: CommandsActionRequest = (
+    device_id: number,
+    size = 10, number = 1,
+    sort = [], filter = []
+) => {
+    let queryParameters = [];
+    queryParameters.push(`page[size]=${size}`);
+    queryParameters.push(`page[number]=${number}`);
+
+    if (sort.length > 0) {
+        // TODO: sorting
+    }
+
     return {
         [CALL_API]: {
-            endpoint: `/api/v1/devices/${device_id}/commands`,
+            endpoint: `/api/v1/devices/${device_id}/commands?${queryParameters.join('&')}`,
             method: 'GET',
             types: [
                 COMMANDS_REQUEST,
                 COMMANDS_SUCCESS,
                 COMMANDS_FAILURE
             ],
-            headers: JSON_HEADERS
+            headers: JSONAPI_HEADERS
         }
     }
 };

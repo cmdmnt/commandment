@@ -40,9 +40,8 @@ render(
                     <Route path='/config/organization' component={OrganizationPage} />
                     <Route path='/certificates' component={CertificatesPage} />
                     <Route path='/devices' exact component={DevicesPage} />
-                    <Route path='/devices/:id' component={DevicePage} />
-                    <Route path='/devices/:id/certificates' component={DeviceCertificates} />
-                    <Route path='/devices/:id/commands' component={DeviceCommands} />
+                    <Route path='/devices/:id' component={DevicePage}>
+                    </Route>
                     <Route path='/profiles' component={ProfilesPage} />
                 </App>
             </AppContainer>

@@ -2,7 +2,6 @@ import * as actions from '../actions/devices';
 import {
     ReadActionResponse
 } from "../actions/devices";
-import {installed_certificates, InstalledCertificatesState} from "./device/installed_certificates";
 import {isJSONAPIErrorResponsePayload} from "../constants";
 import {commands, DeviceCommandsState} from "./device/commands";
 
@@ -16,7 +15,6 @@ export interface DeviceState {
     currentPage: number;
     pageSize: number;
     recordCount?: number;
-    certificates?: InstalledCertificatesState;
     commands?: DeviceCommandsState;
 }
 
@@ -60,12 +58,13 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                     device: action.payload.data,
                     lastReceived: new Date,
                     loading: false,
-                    certificates: installed_certificates(state.certificates, action),
-                    commands: commands(state.commands, action)
                 };
             }
             
         default:
-            return state;
+            return {
+                ...state,
+                commands: commands(state.commands, action)
+            };
     }
 }

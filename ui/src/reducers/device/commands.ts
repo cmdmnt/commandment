@@ -1,32 +1,37 @@
-
-
-import {READ_SUCCESS, ReadActionResponse} from "../../actions/devices";
+import {COMMANDS_SUCCESS, CommandsActionResponse} from "../../actions/devices";
 import {isJSONAPIErrorResponsePayload} from "../../constants";
+import {PageProperties} from "griddle-react";
+
 export interface DeviceCommandsState {
-    items?: Array<JSONAPIObject<Command>>;
+    items?: Array<Command>;
+    pageProperties?: PageProperties;
 }
 
 const initialState: DeviceCommandsState = {
-    items: []
+    items: [],
+    pageProperties: {
+        currentPage: 1,
+        pageSize: 20
+    }
 };
 
-type DeviceCommandsAction = ReadActionResponse;
+type DeviceCommandsAction = CommandsActionResponse;
 
 export function commands(state: DeviceCommandsState = initialState, action: DeviceCommandsAction): DeviceCommandsState {
     switch (action.type) {
-        case READ_SUCCESS:
+        case COMMANDS_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return state;
             } else {
-                if (!action.payload.hasOwnProperty('included')) { return state; }
-
-                const items = action.payload.included.filter((item: JSONAPIObject<any>) => {
-                    return item.type == 'commands';
-                });
+                const pageProperties = {
+                    ...state.pageProperties,
+                    recordCount: action.payload.meta.count
+                };
 
                 return {
                     ...state,
-                    items
+                    items: action.payload.data,
+                    pageProperties
                 };
             }
         default:
