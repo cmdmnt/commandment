@@ -10,6 +10,8 @@ import {RouteComponentProps} from "react-router";
 import {ProfilesState} from "../reducers/profiles";
 import {IndexActionRequest} from "../actions/profiles";
 import {PayloadScopeIcon} from '../components/griddle/PayloadScopeIcon';
+import {SimpleLayout as Layout} from "../components/griddle/SimpleLayout";
+import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 
 interface ReduxStateProps {
     profiles: ProfilesState;
@@ -69,6 +71,7 @@ export class ProfilesPage extends React.Component<ProfilesPageProps, ProfilesPag
 
                         <Griddle
                             data={profiles.items}
+                            plugins={[SemanticUIPlugin()]}
                             pageProperties={profiles.pageProperties}
                             styleConfig={{
                                 classNames: {

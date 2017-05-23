@@ -4,16 +4,12 @@ import Griddle, {RowDefinition, ColumnDefinition, SortProperties} from 'griddle-
 import {SinceNowUTC} from "../../components/griddle/SinceNowUTC";
 import {RootState} from "../../reducers/index";
 import {DeviceCommandsState} from "../../reducers/device/commands";
-import {SUIFilter as Filter} from "../../components/griddle/SUIFilter";
 import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
-import {SUIPagination as Pagination} from '../../components/griddle/SUIPagination';
-import {SUIPageList as PageDropdown} from '../../components/griddle/SUIPageList';
-import {SUINextButton as NextButton} from '../../components/griddle/SUINextButton';
-import {SUIPrevButton as PrevButton} from '../../components/griddle/SUIPrevButton';
 import {CommandStatus} from "../../components/griddle/CommandStatus";
 import {CommandsActionRequest, commands as fetchCommands} from "../../actions/devices";
 import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators} from "redux";
+import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
 
 
 
@@ -71,7 +67,7 @@ export class DeviceCommands extends React.Component<DeviceCommandsProps, undefin
                 {commands &&
                 <Griddle
                     data={commands.items}
-                    components={{ Filter, Layout, NextButton, PrevButton, PageDropdown, Pagination }}
+                    plugins={[SemanticUIPlugin()]}
                     styleConfig={{
                         classNames: {
                             Table: 'ui celled table'

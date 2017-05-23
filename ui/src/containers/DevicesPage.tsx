@@ -14,6 +14,9 @@ import {DeviceLink} from '../components/griddle/DeviceLink';
 import {SinceNowUTC} from "../components/griddle/SinceNowUTC";
 import {SimpleLayout} from '../components/griddle/SimpleLayout';
 import {SelectionPlugin} from '../griddle-plugins/selection';
+import {DeviceColumn} from "../components/griddle/DeviceColumn";
+import {MultiAttrCellPlugin} from "../griddle-plugins/multiattr-cell/index";
+import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 
 interface ReduxStateProps {
     devices: DevicesState;
@@ -103,13 +106,13 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
                         }
                     }}
                     events={eventHandlers}
-                    plugins={[SelectionPlugin()]}
+                    plugins={[SemanticUIPlugin(), SelectionPlugin(), MultiAttrCellPlugin()]}
                     components={{
                         Layout: SimpleLayout
                     }}
                 >
                     <RowDefinition>
-                        <ColumnDefinition id="id" customComponent={DeviceLink} />
+                        <ColumnDefinition title='Device' id="id,attributes.model_name,attributes.device_name" customComponent={DeviceColumn} />
                         <ColumnDefinition title='Model' id='attributes.model_name' customComponent={ModelIcon} />
                         <ColumnDefinition title="Name" id="attributes.device_name" />
                         <ColumnDefinition title="Last Seen" id="attributes.last_seen" customComponent={SinceNowUTC} />

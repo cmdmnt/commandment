@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {Icon} from 'semantic-ui-react';
 
 interface GriddleValue {
     griddleKey?: number;
@@ -8,17 +9,17 @@ interface GriddleValue {
 
 export const ModelIcon = (value: GriddleValue): JSX.Element => {
     const icons: { [propName: string]: string; } = {
-       'iMac': 'fa-desktop',
-       'MacBook Pro': 'fa-laptop',
-       'MacBook Air': 'fa-laptop',
+       'iMac': 'desktop',
+       'MacBook Pro': 'laptop',
+       'MacBook Air': 'laptop',
        'Mac Pro': 'fa-trash',
-       'iPhone': 'fa-mobile'
+       'iPhone': 'mobile'
     };
 
-    let className = 'fa fa-question-circle';
+    let className = 'question';
     if (icons.hasOwnProperty(value.value)) {
-        className = 'fa ' + icons[value.value];
+        className = icons[value.value];
     }
 
-    return <i className={className} title={value.value} />;
+    return <Icon name={className} bordered circular title={value.value} />;
 };

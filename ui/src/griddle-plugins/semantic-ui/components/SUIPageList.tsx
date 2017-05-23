@@ -19,7 +19,7 @@ export class SUIPageList extends React.Component<SUIPageListProps, undefined> {
 
         const pages = [];
         for (let x = 0; x < maxPages; x++) {
-            pages.push(<Menu.Item as='a' onClick={() => { this.props.dispatch(setPage(x+1)) }}>{x+1}</Menu.Item>);
+            pages.push(<Menu.Item key={'page-'+(x+1)} as='a' onClick={() => { this.props.dispatch(setPage(x+1)) }}>{x+1}</Menu.Item>);
         }
         
         return (
