@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import { Grid, Header, Container } from 'semantic-ui-react'
+import {Grid, Header, Container} from 'semantic-ui-react'
 
 import {bindActionCreators} from "redux";
 import * as actions from '../actions/devices';
@@ -23,7 +23,7 @@ interface ReduxStateProps {
 }
 
 function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
-    return { devices: state.devices };
+    return {devices: state.devices};
 }
 
 interface ReduxDispatchProps {
@@ -67,7 +67,7 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
     };
 
     handlePrevPage = () => {
-        
+
     };
 
     handleGetPage = (pageNumber: number) => {
@@ -90,36 +90,38 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
         return (
             <Container className='DevicesPage'>
                 <Grid>
-                <Grid.Column>
-                <Header as="h1">Devices</Header>
+                    <Grid.Column>
+                        <Header as="h1">Devices</Header>
 
-                <Griddle
-                    data={devices.items}
-                    pageProperties={{
-                        currentPage: devices.currentPage,
-                        pageSize: devices.pageSize,
-                        recordCount: devices.recordCount
-                    }}
-                    styleConfig={{
-                        classNames: {
-                            Table: 'ui celled table'
-                        }
-                    }}
-                    events={eventHandlers}
-                    plugins={[SemanticUIPlugin(), SelectionPlugin(), MultiAttrCellPlugin()]}
-                    components={{
-                        Layout: SimpleLayout
-                    }}
-                >
-                    <RowDefinition>
-                        <ColumnDefinition title='Device' id="id,attributes.model_name,attributes.device_name" customComponent={DeviceColumn} />
-                        <ColumnDefinition title='Model' id='attributes.model_name' customComponent={ModelIcon} />
-                        <ColumnDefinition title="Name" id="attributes.device_name" />
-                        <ColumnDefinition title="Last Seen" id="attributes.last_seen" customComponent={SinceNowUTC} />
-                        <ColumnDefinition title="Product Name" id="attributes.product_name" />
-                    </RowDefinition>
-                </Griddle>
-                </Grid.Column>
+                        <Griddle
+                            data={devices.items}
+                            pageProperties={{
+                                currentPage: devices.currentPage,
+                                pageSize: devices.pageSize,
+                                recordCount: devices.recordCount
+                            }}
+                            styleConfig={{
+                                classNames: {
+                                    Table: 'ui celled table'
+                                }
+                            }}
+                            events={eventHandlers}
+                            plugins={[SemanticUIPlugin(), SelectionPlugin(), MultiAttrCellPlugin()]}
+                            components={{
+                                Layout: SimpleLayout
+                            }}
+                        >
+                            <RowDefinition onClick={() => console.log('fmeh')}>
+                                <ColumnDefinition title='Device' id="id,attributes.model_name,attributes.device_name"
+                                                  customComponent={DeviceColumn}/>
+                                <ColumnDefinition title='Model' id='attributes.model_name' customComponent={ModelIcon}/>
+                                <ColumnDefinition title="Name" id="attributes.device_name"/>
+                                <ColumnDefinition title="Last Seen" id="attributes.last_seen"
+                                                  customComponent={SinceNowUTC}/>
+                                <ColumnDefinition title="Product Name" id="attributes.product_name"/>
+                            </RowDefinition>
+                        </Griddle>
+                    </Grid.Column>
                 </Grid>
             </Container>
         );
