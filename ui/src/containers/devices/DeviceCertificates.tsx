@@ -2,14 +2,20 @@ import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 import {RouteComponentProps} from 'react-router';
 import {RootState} from "../../reducers/index";
+import {bindActionCreators} from "redux";
+import {CertificatesActionRequest, certificates as fetchInstalledCertificates} from "../../actions/devices";
+import {installed_certificates, InstalledCertificatesState} from "../../reducers/device/installed_certificates";
+import Griddle, {RowDefinition, ColumnDefinition, SortProperties} from 'griddle-react';
+import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
+import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
 
 interface ReduxStateProps {
-    items: Array<JSONAPIObject<InstalledCertificate>>;
+    installed_certificates: InstalledCertificatesState;
 }
 
 function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
     return {
-        items: state.device.certificates.items
+        installed_certificates: state.device.installed_certificates
     }
 }
 
@@ -18,7 +24,9 @@ interface ReduxDispatchProps {
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
-    return {};
+    return bindActionCreators({
+        fetchInstalledCertificates
+    }, dispatch);
 }
 
 interface RouterProps {
@@ -35,9 +43,42 @@ interface DeviceCertificatesProps extends ReduxStateProps, ReduxDispatchProps, R
 )
 export class DeviceCertificates extends React.Component<DeviceCertificatesProps, any> {
 
-  render (): JSX.Element {
-      return (
-          <div>Certs</div>
-      )
-  }
+    componentWillMount() {
+        this.props.fetchInstalledCertificates(this.props.match.params.id, 25);
+    }
+
+    render(): JSX.Element {
+        const {
+            installed_certificates
+        } = this.props;
+
+        return (
+            <div className='DeviceCertificates'>
+
+                        {installed_certificates.items &&
+                        <Griddle
+                            data={installed_certificates.items}
+                            plugins={[SemanticUIPlugin()]}
+                            styleConfig={{
+                                classNames: {
+                                    Table: 'ui celled table'
+                                }
+                            }}
+                            events={{
+                                // onSort: this.onSort
+                            }}
+                            components={{
+                                Layout
+                            }}
+                            pageProperties={installed_certificates.pageProperties}
+                        >
+                            <RowDefinition>
+                                <ColumnDefinition id="id" />
+                                <ColumnDefinition title='Identity' id="attributes.is_identity" />
+                                <ColumnDefinition title='X.509 CN' id='attributes.x509_cn' />
+                            </RowDefinition>
+                        </Griddle>}
+            </div>
+        )
+    }
 }

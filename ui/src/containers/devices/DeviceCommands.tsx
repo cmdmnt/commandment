@@ -52,7 +52,7 @@ export class DeviceCommands extends React.Component<DeviceCommandsProps, undefin
     };
 
     componentWillMount() {
-        this.props.fetchCommands(this.props.match.params.id);
+        this.props.fetchCommands(this.props.match.params.id, 10, 1, ['-sent_at']);
     }
 
     render() {
@@ -75,6 +75,9 @@ export class DeviceCommands extends React.Component<DeviceCommandsProps, undefin
                     }}
                     events={{
                         onSort: this.onSort
+                    }}
+                    components={{
+                        Layout
                     }}
                     pageProperties={commands.pageProperties}
                 >

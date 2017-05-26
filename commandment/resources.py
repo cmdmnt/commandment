@@ -167,7 +167,8 @@ class InstalledCertificateDetail(ResourceDetail):
     schema = InstalledCertificateSchema
     data_layer = {
         'session': db.session,
-        'model': InstalledCertificate
+        'model': InstalledCertificate,
+        'url_field': 'installed_certificate_id'
     }
 
 

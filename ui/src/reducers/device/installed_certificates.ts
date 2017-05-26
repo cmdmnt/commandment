@@ -1,44 +1,43 @@
 import {
-    READ_SUCCESS,
-    ReadActionResponse
+    CERTIFICATES_SUCCESS,
+    CertificatesActionResponse
 } from "../../actions/devices";
 import {isJSONAPIErrorResponsePayload} from "../../constants";
-
-interface CertificatesByDeviceId {
-    [deviceId: number]: InstalledCertificate;
-}
+import {PageProperties} from "griddle-react";
 
 export interface InstalledCertificatesState {
-    items: Array<JSONAPIObject<InstalledCertificate>>;
+    items?: Array<InstalledCertificate>;
+    pageProperties?: PageProperties;
 }
 
 const initialState: InstalledCertificatesState = {
-    items: []
+    items: [],
+    pageProperties: {
+        currentPage: 1,
+        pageSize: 20
+    }
 };
 
 
-type InstalledCertificatesAction = ReadActionResponse;
+type InstalledCertificatesAction = CertificatesActionResponse;
 
 export function installed_certificates(state: InstalledCertificatesState = initialState, action: InstalledCertificatesAction): InstalledCertificatesState {
     switch (action.type) {
-        case READ_SUCCESS:
+        case CERTIFICATES_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
-                return {
-                    ...state
-                }
+                return state;
             } else {
-                if (!action.payload.hasOwnProperty('included')) { return state; }
-
-                const items = action.payload.included.filter((item: JSONAPIObject<any>) => {
-                    return item.type == 'installed_certificates';
-                });
+                const pageProperties = {
+                    ...state.pageProperties,
+                    recordCount: action.payload.meta.count
+                };
 
                 return {
                     ...state,
-                    items
+                    items: action.payload.data,
+                    pageProperties
                 };
             }
-
         default:
             return state;
     }

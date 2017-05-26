@@ -4,6 +4,7 @@ import {
 } from "../actions/devices";
 import {isJSONAPIErrorResponsePayload} from "../constants";
 import {commands, DeviceCommandsState} from "./device/commands";
+import {installed_certificates, InstalledCertificatesState} from "./device/installed_certificates";
 
 
 export interface DeviceState {
@@ -16,6 +17,7 @@ export interface DeviceState {
     pageSize: number;
     recordCount?: number;
     commands?: DeviceCommandsState;
+    installed_certificates?: InstalledCertificatesState;
 }
 
 const initialState: DeviceState = {
@@ -64,7 +66,8 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
         default:
             return {
                 ...state,
-                commands: commands(state.commands, action)
+                commands: commands(state.commands, action),
+                installed_certificates: installed_certificates(state.installed_certificates, action),
             };
     }
 }

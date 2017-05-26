@@ -178,7 +178,7 @@ class InstalledCertificateSchema(Schema):
 
     device = Relationship(
         related_view='api_app.device_detail',
-        related_view_kwargs={'device_id': '<device_id>'},
+        related_view_kwargs={'device_id': '<id>'},
         type_='devices',
     )
 

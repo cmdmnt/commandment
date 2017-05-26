@@ -45,7 +45,7 @@ api.route(InstalledApplicationDetail, 'installed_application_detail',
 
 # InstalledCertificates
 api.route(InstalledCertificatesList, 'installed_certificates_list',
-          '/v1/devices/<int:device_id>/installed_certificates')
+          '/v1/installed_certificates', '/v1/devices/<int:device_id>/installed_certificates')
 api.route(InstalledCertificateDetail, 'installed_certificate_detail',
           '/v1/installed_certificates/<int:installed_certificate_id>')
 
