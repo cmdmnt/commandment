@@ -8,6 +8,7 @@ import {installed_certificates, InstalledCertificatesState} from "../../reducers
 import Griddle, {RowDefinition, ColumnDefinition, SortProperties} from 'griddle-react';
 import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
 import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
+import {CertificateTypeIcon} from "../../components/CertificateTypeIcon";
 
 interface ReduxStateProps {
     installed_certificates: InstalledCertificatesState;
@@ -74,7 +75,7 @@ export class DeviceCertificates extends React.Component<DeviceCertificatesProps,
                         >
                             <RowDefinition>
                                 <ColumnDefinition id="id" />
-                                <ColumnDefinition title='Identity' id="attributes.is_identity" />
+                                <ColumnDefinition title='Identity' id="attributes.is_identity" customComponent={CertificateTypeIcon} />
                                 <ColumnDefinition title='X.509 CN' id='attributes.x509_cn' />
                             </RowDefinition>
                         </Griddle>}
