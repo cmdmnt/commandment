@@ -46,7 +46,7 @@ class OSUpdateSettings(Schema):
 
 class DeviceInformation(Schema):
     # Table 5
-    UDID = fields.UUID(attribute='udid')
+    UDID = fields.String(attribute='udid')
     # Languages
     DeviceID = fields.String(attribute='device_id')
     OrganizationInfo = fields.Nested(OrganizationInfo)
@@ -106,6 +106,10 @@ class DeviceInformation(Schema):
     SubscriberMNC = fields.String(attribute='subscriber_mnc')
     CurrentMCC = fields.String(attribute='current_mcc')
     CurrentMNC = fields.String(attribute='current_mnc')
+
+    # @post_load
+    # def make_device(self, data):
+    #     return models.Device(**data)
 
 
 class DeviceInformationResponse(CommandResponse):

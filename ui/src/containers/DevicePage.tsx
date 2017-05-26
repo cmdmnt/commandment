@@ -89,7 +89,7 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
                         <Grid.Column>
                             <Dropdown inline text="action" onChange={this.handleAction} options={[
                                 {text: 'Force Push', value: 'push'},
-                                {text: 'Inventory', value: 'inventory '}
+                                {text: 'Inventory', value: 'inventory'}
                             ]}></Dropdown>
                             <Segment>
                                 {device && <MacOSDeviceDetail device={device}/>}

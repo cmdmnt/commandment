@@ -316,10 +316,12 @@ class Device(db.Model):
 
     @property
     def platform(self) -> Platform:
-        if self.model_name in ['iMac', 'MacBook Pro', 'MacBook Air', 'MacPro']:  # TODO: obviously not sufficient
+        if self.model_name in ['iMac', 'MacBook Pro', 'MacBook Air', 'Mac Pro']:  # TODO: obviously not sufficient
             return Platform.macOS
-        else:
+        elif self.model_name in ['iPhone', 'iPad']:
             return Platform.iOS
+        else:
+            return Platform.Unknown
 
     def __repr__(self):
         return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)

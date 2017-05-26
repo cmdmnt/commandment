@@ -16,6 +16,8 @@ Queries = DeviceInformation.Queries
 def ack_device_information(request: DeviceInformation, device: Device, response: dict):
     schema = DeviceInformationResponse()
     result = schema.load(response)
+    for k, v in result.data['QueryResponses'].items():
+        setattr(device, k, v)
 
     db.session.commit()
 

@@ -3,6 +3,7 @@ from enum import IntFlag, auto, Enum
 
 class Platform(Enum):
     """The platform of the managed device."""
+    Unknown = 'Unknown'  # Not enough information
     macOS = 'macOS'
     iOS = 'iOS'
     tvOS = 'tvOS'
