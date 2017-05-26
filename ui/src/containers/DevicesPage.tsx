@@ -17,6 +17,21 @@ import {SelectionPlugin} from '../griddle-plugins/selection';
 import {DeviceColumn} from "../components/griddle/DeviceColumn";
 import {MultiAttrCellPlugin} from "../griddle-plugins/multiattr-cell/index";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
+import { connect } from 'react-redux';
+
+const rowDataSelector = (state, { griddleKey }) => {
+    return state
+        .get('data')
+        .find(rowMap => rowMap.get('griddleKey') === griddleKey)
+        .toJSON();
+};
+
+const enhancedWithRowData = connect((state, props) => {
+    return {
+        // rowData will be available into MyCustomComponent
+        rowData: rowDataSelector(state, props)
+    };
+});
 
 interface ReduxStateProps {
     devices: DevicesState;
@@ -106,19 +121,17 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
                                 }
                             }}
                             events={eventHandlers}
-                            plugins={[SemanticUIPlugin(), SelectionPlugin(), MultiAttrCellPlugin()]}
+                            plugins={[SemanticUIPlugin(), SelectionPlugin()]}
                             components={{
                                 Layout: SimpleLayout
                             }}
                         >
                             <RowDefinition onClick={() => console.log('fmeh')}>
                                 <ColumnDefinition title='Device' id="id,attributes.model_name,attributes.device_name"
-                                                  customComponent={DeviceColumn}/>
-                                <ColumnDefinition title='Model' id='attributes.model_name' customComponent={ModelIcon}/>
-                                <ColumnDefinition title="Name" id="attributes.device_name"/>
+                                                  customComponent={enhancedWithRowData(DeviceColumn)}/>
+
                                 <ColumnDefinition title="Last Seen" id="attributes.last_seen"
                                                   customComponent={SinceNowUTC}/>
-                                <ColumnDefinition title="Product Name" id="attributes.product_name"/>
                             </RowDefinition>
                         </Griddle>
                     </Grid.Column>

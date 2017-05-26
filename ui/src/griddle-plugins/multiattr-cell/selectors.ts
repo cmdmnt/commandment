@@ -2,6 +2,7 @@ import { createSelector} from 'reselect';
 import {cellPropertiesSelector} from 'griddle-react/dist/module/selectors/dataSelectors';
 
 export const cellValueSelector = (state, props) => {
+    console.log('cell value selector');
     const { griddleKey, columnId } = props;
     const cellProperties = cellPropertiesSelector(state, props);
 

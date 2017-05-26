@@ -22,7 +22,98 @@ class ProfileListResponse(CommandResponse):
     pass
 
 
+class OrganizationInfo(Schema):
+    pass
+
+
+class AutoSetupAdminAccount(Schema):
+    GUID = fields.UUID()
+    shortName = fields.String()
+
+
+class OSUpdateSettings(Schema):
+    CatalogURL = fields.String()
+    IsDefaultCatalog = fields.Boolean()
+    PreviousScanDate = fields.Date()
+    PreviousScanResult = fields.String()
+    PerformPeriodicCheck = fields.Boolean()
+    AutomaticCheckEnabled = fields.Boolean()
+    BackgroundDownloadEnabled = fields.Boolean()
+    AutomaticAppInstallationEnabled = fields.Boolean()
+    AutomaticOSInstallationEnabled = fields.Boolean()
+    AutomaticSecurityUpdatesEnabled = fields.Boolean()
+
+
+class DeviceInformation(Schema):
+    # Table 5
+    UDID = fields.UUID(attribute='udid')
+    # Languages
+    DeviceID = fields.String(attribute='device_id')
+    OrganizationInfo = fields.Nested(OrganizationInfo)
+    LastCloudBackupDate = fields.Date(attribute='last_cloud_backup_date')
+    AwaitingConfiguration = fields.Boolean(attribute='awaiting_configuration')
+    AutoSetupAdminAccounts = fields.Nested(AutoSetupAdminAccount, many=True)
+
+    # Table 6
+    iTunesStoreAccountIsActive = fields.Boolean(attribute='itunes_store_account_is_active')
+    iTunesStoreAccountHash = fields.String(attribute='itunes_store_account_hash')
+
+    # Table 7
+    DeviceName = fields.String(attribute='device_name')
+    OSVersion = fields.String(attribute='os_version')
+    BuildVersion = fields.String(attribute='build_version')
+    ModelName = fields.String(attribute='model_name')
+    Model = fields.String(attribute='model')
+    ProductName = fields.String(attribute='product_name')
+    SerialNumber = fields.String(attribute='serial_number')
+    DeviceCapacity = fields.Float(attribute='device_capacity')
+    AvailableDeviceCapacity = fields.Float(attribute='available_device_capacity')
+    BatteryLevel = fields.Float(attribute='battery_level')
+    CellularTechnology = fields.Integer(attribute='cellular_technology')
+    IMEI = fields.String(attribute='imei')
+    MEID = fields.String(attribute='meid')
+    ModemFirmwareVersion = fields.String(attribute='modem_firmware_version')
+    IsSupervised = fields.Boolean(attribute='is_supervised')
+    IsDeviceLocatorServiceEnabled = fields.Boolean(attribute='is_device_locator_service_enabled')
+    IsActivationLockEnabled = fields.Boolean(attribute='is_activation_lock_enabled')
+    IsDoNotDisturbInEffect = fields.Boolean(attribute='is_do_not_disturb_in_effect')
+    EASDeviceIdentifier = fields.String(attribute='eas_device_identifier')
+    IsCloudBackupEnabled = fields.Boolean(attribute='is_cloud_backup_enabled')
+    OSUpdateSettings = fields.Nested(OSUpdateSettings, attribute='os_update_settings')  # T8
+    LocalHostName = fields.String(attribute='local_hostname')
+    HostName = fields.String(attribute='hostname')
+    SystemIntegrityProtectionEnabled = fields.Boolean(attribute='sip_enabled')
+    # Array of str
+    #ActiveManagedUsers = fields.Nested(ActiveManagedUser)
+    IsMDMLostModeEnabled = fields.Boolean(attribute='is_mdm_lost_mode_enabled')
+    MaximumResidentUsers = fields.Integer(attribute='maximum_resident_users')
+
+    # Table 9
+    ICCID = fields.String(attribute='iccid')
+    BluetoothMAC = fields.String(attribute='bluetooth_mac')
+    WiFiMAC = fields.String(attribute='wifi_mac')
+    EthernetMACs = fields.String(attribute='ethernet_macs', many=True)
+    CurrentCarrierNetwork = fields.String(attribute='current_carrier_network')
+    SIMCarrierNetwork = fields.String(attribute='sim_carrier_network')
+    SubscriberCarrierNetwork = fields.String(attribute='subscriber_carrier_network')
+    CarrierSettingsVersion = fields.String(attribute='carrier_settings_version')
+    PhoneNumber = fields.String(attribute='phone_number')
+    VoiceRoamingEnabled = fields.Boolean(attribute='voice_roaming_enabled')
+    DataRoamingEnabled = fields.Boolean(attribute='data_roaming_enabled')
+    IsRoaming = fields.Boolean(attribute='is_roaming')
+    PersonalHotspotEnabled = fields.Boolean(attribute='personal_hotspot_enabled')
+    SubscriberMCC = fields.String(attribute='subscriber_mcc')
+    SubscriberMNC = fields.String(attribute='subscriber_mnc')
+    CurrentMCC = fields.String(attribute='current_mcc')
+    CurrentMNC = fields.String(attribute='current_mnc')
+
+
+class DeviceInformationResponse(CommandResponse):
+    QueryResponses = fields.Nested(DeviceInformation)
+
+
 class HardwareEncryptionCaps(IntFlag):
+    Nothing = 0
     BlockLevelEncryption = 1
     FileLevelEncryption = 2
 

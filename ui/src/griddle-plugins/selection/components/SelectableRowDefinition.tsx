@@ -9,6 +9,8 @@ interface SelectableRowDefinitionProps {
 
 export default class SelectableRowDefinition extends React.Component<SelectableRowDefinitionProps, undefined> {
   render () {
+    console.log('selectable row def');
+
     return null;
   }
 }

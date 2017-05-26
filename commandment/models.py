@@ -9,12 +9,13 @@ Attributes:
 from flask_sqlalchemy import SQLAlchemy
 
 import datetime
-from enum import Enum
+from enum import Enum, IntEnum
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum as DBEnum, text, \
     BigInteger, and_, or_, LargeBinary, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.hybrid import hybrid_property
+
 from .mutablelist import MutableList
 from .dbtypes import GUID, JSONEncodedDict
 from .mdm import CommandStatus, Platform, commands
@@ -144,6 +145,13 @@ class DeviceIdentityCertificate(Certificate):
     }
 
 
+class CellularTechnology(IntEnum):
+    Nothing = 0
+    GSM = 1
+    CDMA = 2
+    Both = 3
+
+
 class Device(db.Model):
     """An enrolled device.
     
@@ -173,37 +181,98 @@ class Device(db.Model):
     # Common attributes
     id = Column(Integer, primary_key=True)
     udid = Column(String, index=True, nullable=True)
-    topic = Column(String, nullable=True)
     last_seen = Column(DateTime, nullable=True)
     is_enrolled = Column(Boolean, default=False)
 
-    # DeviceInformation that is optionally given in `Authenticate` message for a device
-    build_version = Column(String)
-    device_name = Column(String)
-    model = Column(String)
-    model_name = Column(String)
-    os_version = Column(String)
-    product_name = Column(String)
-    serial_number = Column(String(64), index=True, nullable=True)
-
-    # DeviceInformation extracted from replies
-    hostname = Column(String, nullable=True)
-    local_hostname = Column(String, nullable=True)
-
-    available_device_capacity = Column(Float, nullable=True) # TODO: Float
-    device_capacity = Column(Float, nullable=True)
-
-    wifi_mac = Column(String, nullable=True)
-    bluetooth_mac = Column(String, nullable=True)
-
-    # APNS / TokenUpdate
-    awaiting_configuration = Column(Boolean, default=False)
+    # APNS / Push
+    topic = Column(String, nullable=True)
     push_magic = Column(String, nullable=True)
-
     # The APNS device token is stored in base64 format. Descriptors are added to handle this encoding and decoding
     # to bytes automatically.
     _token = Column(String, nullable=True)
     tokenupdate_at = Column(DateTime)
+
+    # Table 5
+    last_cloud_backup_date = Column(DateTime)
+    awaiting_configuration = Column(Boolean)
+
+    # Table 6
+    itunes_store_account_is_active = Column(Boolean)
+    itunes_store_account_hash = Column(String)
+
+    # DeviceInformation : Table 7
+    device_name = Column(String)  # Authenticate
+    os_version = Column(String)  # Authenticate
+    build_version = Column(String)  # Authenticate
+    model_name = Column(String)  # Authenticate
+    model = Column(String)  # Authenticate
+    product_name = Column(String)  # Authenticate
+    serial_number = Column(String(64), index=True, nullable=True)  # Authenticate
+
+    device_capacity = Column(Float, nullable=True)
+    available_device_capacity = Column(Float, nullable=True)  # TODO: Float
+    battery_level = Column(Integer)
+    cellular_technology = Column(DBEnum(CellularTechnology))
+    imei = Column(String)
+    meid = Column(String)
+    modem_firmware_version = Column(String)
+    is_supervised = Column(String)
+    is_device_locator_service_enabled = Column(Boolean)
+    is_activation_lock_enabled = Column(Boolean)
+    is_do_not_disturb_in_effect = Column(Boolean)
+    device_id = Column(String)  # ATV
+    eas_device_identifier = Column(String)
+    is_cloud_backup_enabled = Column(Boolean)
+    # TODO: OSUpdateSettings
+    local_hostname = Column(String, nullable=True)
+    hostname = Column(String, nullable=True)
+    sip_enabled = Column(Boolean)
+    # TODO: ActiveManagedUsers
+    is_mdm_lost_mode_enabled = Column(Boolean)
+    maximum_resident_users = Column(Integer)
+
+    # NetworkInfo : Table 9
+    iccid = Column(String)
+    bluetooth_mac = Column(String)
+    wifi_mac = Column(String)
+    # TODO: EthernetMACs
+    current_carrier_network = Column(String)
+    sim_carrier_network = Column(String)
+    subscriber_carrier_network = Column(String)
+    carrier_settings_version = Column(String)
+    phone_number = Column(String)
+    voice_roaming_enabled = Column(Boolean)
+    data_roaming_enabled = Column(Boolean)
+    is_roaming = Column(Boolean)
+    personal_hotspot_enabled = Column(Boolean)
+    subscriber_mcc = Column(String)
+    subscriber_mnc = Column(String)
+    current_mcc = Column(String)
+    current_mnc = Column(String)
+
+
+
+
+    # SecurityInfo
+    # hardware_encryption_caps = Column(DBEnum(HardwareEncryptionCaps))
+    passcode_present = Column(Boolean)
+    passcode_compliant = Column(Boolean)
+    passcode_compliant_with_profiles = Column(Boolean)
+    passcode_lock_grace_period_enforced = Column(Boolean)
+    fde_enabled = Column(Boolean)
+    fde_has_prk = Column(Boolean)
+    fde_has_irk = Column(Boolean)
+    firewall_enabled = Column(Boolean)
+    block_all_incoming = Column(Boolean)
+    stealth_mode_enabled = Column(Boolean)
+    # TODO: Blocked Applications
+
+
+    # APNS / TokenUpdate
+
+
+
+
 
     @hybrid_property
     def token(self):
@@ -230,18 +299,6 @@ class Device(db.Model):
     # this should count as a failed push, and potentially declare the device as dead.
     failed_push_count = Column(Integer, default=0, nullable=False)
     _unlock_token = Column(String(), name='unlock_token', nullable=True)
-
-    # SecurityInfo
-    passcode_present = Column(Boolean)
-    passcode_compliant = Column(Boolean)
-    passcode_compliant_with_profiles = Column(Boolean)
-    fde_enabled = Column(Boolean)
-    fde_has_prk = Column(Boolean)
-    fde_has_irk = Column(Boolean)
-    firewall_enabled = Column(Boolean)
-    block_all_incoming = Column(Boolean)
-    stealth_mode_enabled = Column(Boolean)
-    sip_enabled = Column(Boolean)
 
     certificate_id = Column(Integer, ForeignKey('certificates.id'))
     certificate = relationship('Certificate', backref='devices')

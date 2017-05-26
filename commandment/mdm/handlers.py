@@ -1,6 +1,6 @@
 from flask import current_app
 from ..models import db, Device, InstalledCertificate, InstalledProfile
-from .response_schema import InstalledApplicationListResponse
+from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse
 from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList
 from ..mdm_app import command_router
 from .util import queryresponses_to_query_set
@@ -14,26 +14,8 @@ Queries = DeviceInformation.Queries
 
 @command_router.route('DeviceInformation')
 def ack_device_information(request: DeviceInformation, device: Device, response: dict):
-    responses = response['QueryResponses']
-    qs = queryresponses_to_query_set(responses)
-
-    if Queries.AvailableDeviceCapacity in qs:
-        device.available_device_capacity = qs[Queries.AvailableDeviceCapacity]
-
-    if Queries.DeviceCapacity in qs:
-        device.device_capacity = qs[Queries.DeviceCapacity]
-
-    if Queries.LocalHostName in qs:
-        device.local_hostname = qs[Queries.LocalHostName]
-
-    if Queries.HostName in qs:
-        device.hostname = qs[Queries.HostName]
-
-    if Queries.BluetoothMAC in qs:
-        device.bluetooth_mac = qs[Queries.BluetoothMAC]
-
-    if Queries.WiFiMAC in qs:
-        device.wifi_mac = qs[Queries.WiFiMAC]
+    schema = DeviceInformationResponse()
+    result = schema.load(response)
 
     db.session.commit()
 
