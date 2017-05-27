@@ -19,8 +19,7 @@ import {OrganizationPage} from './containers/config/OrganizationPage';
 import {DevicesPage} from "./containers/DevicesPage";
 import {DevicePage} from "./containers/DevicePage";
 import {ProfilesPage} from './containers/ProfilesPage';
-import {DeviceCertificates} from "./containers/devices/DeviceCertificates";
-import {DeviceCommands} from "./containers/devices/DeviceCommands";
+import {SettingsPage} from './containers/SettingsPage';
 
 const initialState: RootState = {};
 
@@ -40,9 +39,9 @@ render(
                     <Route path='/config/organization' component={OrganizationPage} />
                     <Route path='/certificates' component={CertificatesPage} />
                     <Route path='/devices' exact component={DevicesPage} />
-                    <Route path='/devices/:id' component={DevicePage}>
-                    </Route>
+                    <Route path='/devices/:id' component={DevicePage} />
                     <Route path='/profiles' component={ProfilesPage} />
+                    <Route path='/settings' component={SettingsPage} />
                 </App>
             </AppContainer>
         </ConnectedRouter>

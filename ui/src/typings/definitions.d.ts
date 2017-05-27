@@ -1,9 +1,9 @@
-import {PageProperties} from "griddle-react";
+import {PageProperties, SortProperties} from "griddle-react";
 
 interface GriddleState {
     pageProperties: PageProperties;
     filter: string;
-    sort: string;
+    sortProperties: SortProperties;
 }
 
 

@@ -1,6 +1,18 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
 import { CALL_API, RSAA } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
+import {
+    Command,
+    Device,
+    InstalledCertificate, JSONAPIDetailResponse, JSONAPIErrorResponse,
+    JSONAPIListResponse, JSONAPIObject
+} from "../typings/definitions";
+import {
+    encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, RSAAIndexActionRequest,
+    RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse
+} from "../constants";
+
+
 
 export type INDEX_REQUEST = 'devices/INDEX_REQUEST';
 export const INDEX_REQUEST: INDEX_REQUEST = 'devices/INDEX_REQUEST';
@@ -9,35 +21,10 @@ export const INDEX_SUCCESS: INDEX_SUCCESS = 'devices/INDEX_SUCCESS';
 export type INDEX_FAILURE = 'devices/INDEX_FAILURE';
 export const INDEX_FAILURE: INDEX_FAILURE = 'devices/INDEX_FAILURE';
 
-export interface IndexActionRequest {
-    (size?: number, number?: number, sort?: Array<string>, filter?: Array<FlaskFilter>): RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>;
-}
+export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>;
+export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, Device>;
 
-export interface IndexActionResponse {
-    type: INDEX_REQUEST | INDEX_FAILURE | INDEX_SUCCESS;
-    payload?: JSONAPIListResponse<JSONAPIObject<Device>> | JSONAPIErrorResponse;
-}
-
-export const index: IndexActionRequest = (
-    size: number = 50,
-    number: number = 1,
-    sort: Array<string> = [],
-    filter?: Array<FlaskFilter>
-): RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE> => {
-
-    let queryParameters = [];
-    queryParameters.push(`page[size]=${size}`);
-    queryParameters.push(`page[number]=${number}`);
-
-    if (sort.length > 0) {
-        // TODO: sorting
-    }
-
-    if (filter && filter.length > 0) {
-        let rawFilters = JSON.stringify(filter);
-        queryParameters.push(`filter=${rawFilters}`);
-    }
-
+export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String>) => {
     return {
         [CALL_API]: {
             endpoint: '/api/v1/devices?' + queryParameters.join('&'),
@@ -50,7 +37,7 @@ export const index: IndexActionRequest = (
             headers: JSONAPI_HEADERS
         }
     }
-};
+});
 
 
 export type READ_REQUEST = 'devices/READ_REQUEST';
@@ -60,14 +47,8 @@ export const READ_SUCCESS: READ_SUCCESS = 'devices/READ_SUCCESS';
 export type READ_FAILURE = 'devices/READ_FAILURE';
 export const READ_FAILURE: READ_FAILURE = 'devices/READ_FAILURE';
 
-export interface ReadActionRequest {
-    (id: number, include?: Array<string>): RSAA<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
-}
-
-export interface ReadActionResponse {
-    type: READ_REQUEST | READ_FAILURE | READ_SUCCESS;
-    payload?: JSONAPIDetailResponse<Device, InstalledCertificate> | JSONAPIErrorResponse;
-}
+export type ReadActionRequest = RSAAReadActionRequest<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
+export type ReadActionResponse = RSAAReadActionResponse<READ_REQUEST, READ_SUCCESS, READ_FAILURE, JSONAPIDetailResponse<Device, undefined>>;
 
 export const read: ReadActionRequest = (id: number, include?: Array<string>) => {
 
@@ -160,28 +141,10 @@ export const COMMANDS_SUCCESS: COMMANDS_SUCCESS = 'devices/COMMANDS_SUCCESS';
 export type COMMANDS_FAILURE = 'devices/COMMANDS_FAILURE';
 export const COMMANDS_FAILURE: COMMANDS_FAILURE = 'devices/COMMANDS_FAILURE';
 
-export interface CommandsActionRequest {
-    (device_id: number, size?: number, number?: number, sort?: Array<string>, filter?: Array<FlaskFilter>): RSAA<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE>;
-}
+export type CommandsActionRequest = RSAAIndexActionRequest<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE>;
+export type CommandsActionResponse = RSAAIndexActionResponse<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE, Command>;
 
-export interface CommandsActionResponse {
-    type: COMMANDS_REQUEST | COMMANDS_SUCCESS | COMMANDS_FAILURE;
-    payload?: JSONAPIListResponse<Command> | JSONAPIErrorResponse;
-}
-
-export const commands: CommandsActionRequest = (
-    device_id: number,
-    size = 10, number = 1,
-    sort = [], filter = []
-) => {
-    let queryParameters = [];
-    queryParameters.push(`page[size]=${size}`);
-    queryParameters.push(`page[number]=${number}`);
-
-    if (sort.length > 0) {
-        queryParameters.push('sort=' + sort.join(','))
-    }
-
+export const commands = encodeJSONAPIChildIndexParameters((device_id: number, queryParameters: Array<String>)  => {
     return {
         [CALL_API]: {
             endpoint: `/api/v1/devices/${device_id}/commands?${queryParameters.join('&')}`,
@@ -194,7 +157,7 @@ export const commands: CommandsActionRequest = (
             headers: JSONAPI_HEADERS
         }
     }
-};
+});
 
 export type CERTIFICATES_REQUEST = 'devices/CERTIFICATES_REQUEST';
 export const CERTIFICATES_REQUEST: CERTIFICATES_REQUEST = 'devices/CERTIFICATES_REQUEST';
@@ -203,28 +166,10 @@ export const CERTIFICATES_SUCCESS: CERTIFICATES_SUCCESS = 'devices/CERTIFICATES_
 export type CERTIFICATES_FAILURE = 'devices/CERTIFICATES_FAILURE';
 export const CERTIFICATES_FAILURE: CERTIFICATES_FAILURE = 'devices/CERTIFICATES_FAILURE';
 
-export interface CertificatesActionRequest {
-    (device_id: number, size?: number, number?: number, sort?: Array<string>, filter?: Array<FlaskFilter>): RSAA<CERTIFICATES_REQUEST, CERTIFICATES_SUCCESS, CERTIFICATES_FAILURE>;
-}
+export type CertificatesActionRequest = RSAAIndexActionRequest<CERTIFICATES_REQUEST, CERTIFICATES_SUCCESS, CERTIFICATES_FAILURE>;
+export type CertificatesActionResponse = RSAAIndexActionResponse<CERTIFICATES_REQUEST, CERTIFICATES_SUCCESS, CERTIFICATES_FAILURE, InstalledCertificate>;
 
-export interface CertificatesActionResponse {
-    type: CERTIFICATES_REQUEST | CERTIFICATES_SUCCESS | CERTIFICATES_FAILURE;
-    payload?: JSONAPIListResponse<InstalledCertificate> | JSONAPIErrorResponse;
-}
-
-export const certificates: CertificatesActionRequest = (
-    device_id: number,
-    size = 10, number = 1,
-    sort = [], filter = []
-) => {
-    let queryParameters = [];
-    queryParameters.push(`page[size]=${size}`);
-    queryParameters.push(`page[number]=${number}`);
-
-    if (sort.length > 0) {
-        queryParameters.push('sort=' + sort.join(','))
-    }
-
+export const certificates = encodeJSONAPIChildIndexParameters((device_id: number, queryParameters: Array<String>)  => {
     return {
         [CALL_API]: {
             endpoint: `/api/v1/devices/${device_id}/installed_certificates?${queryParameters.join('&')}`,
@@ -237,4 +182,4 @@ export const certificates: CertificatesActionRequest = (
             headers: JSONAPI_HEADERS
         }
     }
-};
+});

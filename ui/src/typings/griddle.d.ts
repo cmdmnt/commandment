@@ -4,4 +4,8 @@ declare module "griddle-react" {
         pageSize?: number;
         recordCount?: number;
     }
+
+    export interface SortProperties {
+
+    }
 }

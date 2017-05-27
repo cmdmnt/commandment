@@ -38,18 +38,40 @@ interface DeviceCertificatesProps extends ReduxStateProps, ReduxDispatchProps, R
 
 }
 
+interface DeviceCertificatesState {
+    filter: string;
+}
+
 @connect<ReduxStateProps, ReduxDispatchProps, DeviceCertificatesProps>(
     mapStateToProps,
     mapDispatchToProps
 )
 export class DeviceCertificates extends React.Component<DeviceCertificatesProps, any> {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            filter: ''
+        }
+    }
+
     componentWillMount() {
         this.props.fetchInstalledCertificates(this.props.match.params.id, 25);
     }
 
+    componentWillUpdate(nextProps: DeviceCertificatesProps, nextState: DeviceCertificatesState) {
+        if (nextState.filter !== this.state.filter) {
+            this.props.fetchInstalledCertificates(this.props.match.params.id, 25, 1, [],
+                [{ name: 'x509_cn', op: 'ilike', val: `%${nextState.filter}%` }]);
+        }
+    }
+
     onFilter = (value: string) => {
-        console.log('filterr');
+        this.setState({ filter: value });
+    };
+
+    onGetPage = (pageNumber: number) => {
+        this.setState({ page: pageNumber });
     };
 
     render(): JSX.Element {
@@ -70,8 +92,8 @@ export class DeviceCertificates extends React.Component<DeviceCertificatesProps,
                                 }
                             }}
                             events={{
-                                onFilter: this.onFilter
-                                // onSort: this.onSort
+                                onFilter: this.onFilter,
+                                onGetPage: this.onGetPage
                             }}
                             components={{
                                 Layout

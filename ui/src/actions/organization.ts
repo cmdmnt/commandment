@@ -1,6 +1,8 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
 import { CALL_API, RSAA } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, JSON_HEADERS} from './constants'
+import {RSAAReadActionRequest, RSAAReadActionResponse} from "../constants";
+import {JSONAPIDetailResponse, Organization} from "../typings/definitions";
 
 export type READ_REQUEST = 'organization/READ_REQUEST';
 export const READ_REQUEST: READ_REQUEST = 'organization/READ_REQUEST';
@@ -9,14 +11,8 @@ export const READ_SUCCESS: READ_SUCCESS = 'organization/READ_SUCCESS';
 export type READ_FAILURE = 'organization/READ_FAILURE';
 export const READ_FAILURE: READ_FAILURE = 'organization/READ_FAILURE';
 
-export interface ReadActionRequest {
-    (): RSAA<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
-}
-
-export interface ReadActionResponse {
-    type: READ_REQUEST | READ_SUCCESS | READ_FAILURE;
-    payload?: Organization;
-}
+export type ReadActionRequest = RSAAReadActionRequest<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
+export type ReadActionResponse = RSAAReadActionResponse<READ_REQUEST, READ_SUCCESS, READ_FAILURE, Organization>;
 
 export const read: ReadActionRequest = () => {
     return {
