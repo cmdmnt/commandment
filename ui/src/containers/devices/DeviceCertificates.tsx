@@ -48,6 +48,10 @@ export class DeviceCertificates extends React.Component<DeviceCertificatesProps,
         this.props.fetchInstalledCertificates(this.props.match.params.id, 25);
     }
 
+    onFilter = (value: string) => {
+        console.log('filterr');
+    };
+
     render(): JSX.Element {
         const {
             installed_certificates
@@ -66,6 +70,7 @@ export class DeviceCertificates extends React.Component<DeviceCertificatesProps,
                                 }
                             }}
                             events={{
+                                onFilter: this.onFilter
                                 // onSort: this.onSort
                             }}
                             components={{

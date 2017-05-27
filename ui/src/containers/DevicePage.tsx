@@ -95,8 +95,8 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
                                 {device && <MacOSDeviceDetail device={device}/>}
                             </Segment>
                             <Menu pointing secondary color="purple" inverted>
-                                <MenuItemLink to={`/devices/${device_id}/certificates`} label="Certificates"/>
-                                <MenuItemLink to={`/devices/${device_id}/commands`} label="Commands"/>
+                                <MenuItemLink to={`/devices/${device_id}/certificates`}>Certificates</MenuItemLink>
+                                <MenuItemLink to={`/devices/${device_id}/commands`}>Commands</MenuItemLink>
                             </Menu>
                         </Grid.Column>
                     </Grid.Row>

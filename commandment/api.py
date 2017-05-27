@@ -5,8 +5,9 @@ from .resources import CertificatesList, CertificateDetail, CertificateSigningRe
     CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
     CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, OrganizationList, \
     OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationsList, ProfilesList, ProfileDetail, \
-    PayloadsList, PayloadDetail, InstalledCertificatesList, InstalledCertificateDetail, InstalledApplicationDetail, \
+    InstalledCertificatesList, InstalledCertificateDetail, InstalledApplicationDetail, \
     DeviceGroupList, DeviceGroupDetail, DeviceRelationship, CommandRelationship
+# PayloadsList, PayloadDetail, 
 
 api_app = Blueprint('api_app', __name__)
 api = Api(api_app)
@@ -52,8 +53,8 @@ api.route(InstalledCertificateDetail, 'installed_certificate_detail',
 # Profiles
 api.route(ProfilesList, 'profiles_list', '/v1/profiles')
 api.route(ProfileDetail, 'profile_detail', '/v1/profiles/<int:profile_id>')
-api.route(PayloadsList, 'payloads_list', '/v1/payloads')
-api.route(PayloadDetail, 'payload_detail', '/v1/payloads/<int:payload_id>')
+# api.route(PayloadsList, 'payloads_list', '/v1/payloads')
+# api.route(PayloadDetail, 'payload_detail', '/v1/payloads/<int:payload_id>')
 
 
 

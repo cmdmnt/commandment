@@ -3,6 +3,7 @@ import {Menu} from 'semantic-ui-react';
 import {Link, NavLink} from 'react-router-dom';
 
 import './Navigation.scss';
+import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 
 export class Navigation extends React.Component<undefined, undefined> {
     render() {
@@ -10,9 +11,9 @@ export class Navigation extends React.Component<undefined, undefined> {
         return (
             <Menu>
                 <Menu.Item header>CMDMNT</Menu.Item>
-                <Menu.Item><NavLink to='/devices'>Devices</NavLink></Menu.Item>
-                <Menu.Item><NavLink to='/profiles'>Profiles</NavLink></Menu.Item>
-                <Menu.Item>Settings</Menu.Item>
+                <MenuItemLink to='/devices'>Devices</MenuItemLink>
+                <MenuItemLink to='/profiles'>Profiles</MenuItemLink>
+                <MenuItemLink to='/settings'>Settings</MenuItemLink>
             </Menu>
         )
     }

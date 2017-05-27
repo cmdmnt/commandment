@@ -1,3 +1,11 @@
+import {PageProperties} from "griddle-react";
+
+interface GriddleState {
+    pageProperties: PageProperties;
+    filter: string;
+    sort: string;
+}
+
 
 declare interface Profile {
     id?: number;

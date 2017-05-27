@@ -52,24 +52,24 @@ class ConsentTextSchema(Schema):
     en = fields.String(attribute='consent_en')
 
 
-@register_payload_schema('com.apple.ADCertificate.managed')
-class ADCertificatePayload(Payload):
-    Description = fields.Str(attribute='description')
-    CertServer = fields.Str(attribute='cert_server')
-    CertTemplate = fields.Str(attribute='cert_template')
-    CertificateAuthority = fields.Str(attribute='certificate_authority')
-    CertificateAcquisitionMechanism = EnumField(ADCertificateAcquisitionMechanism, attribute='acquisition_mechanism')
-    CertificateRenewalTimeInterval = fields.Int(attribute='renewal_time_interval')
-    Keysize = fields.Int(attribute='keysize')
-    UserName = fields.Str(attribute='username')
-    Password = fields.Str(attribute='password')
-    PromptForCredentials = fields.Bool(attribute='prompt_for_credentials')
-    AllowAllAppsAccess = fields.Bool(attribute='allow_all_apps_access')
-    KeyIsExtractable = fields.Bool(attribute='key_is_extractable')
-    
-    @post_load
-    def make_payload(self, data) -> models.ADCertPayload:
-        return models.ADCertPayload(**data)
+# @register_payload_schema('com.apple.ADCertificate.managed')
+# class ADCertificatePayload(Payload):
+#     Description = fields.Str(attribute='description')
+#     CertServer = fields.Str(attribute='cert_server')
+#     CertTemplate = fields.Str(attribute='cert_template')
+#     CertificateAuthority = fields.Str(attribute='certificate_authority')
+#     CertificateAcquisitionMechanism = EnumField(ADCertificateAcquisitionMechanism, attribute='acquisition_mechanism')
+#     CertificateRenewalTimeInterval = fields.Int(attribute='renewal_time_interval')
+#     Keysize = fields.Int(attribute='keysize')
+#     UserName = fields.Str(attribute='username')
+#     Password = fields.Str(attribute='password')
+#     PromptForCredentials = fields.Bool(attribute='prompt_for_credentials')
+#     AllowAllAppsAccess = fields.Bool(attribute='allow_all_apps_access')
+#     KeyIsExtractable = fields.Bool(attribute='key_is_extractable')
+#
+#     @post_load
+#     def make_payload(self, data) -> models.ADCertPayload:
+#         return models.ADCertPayload(**data)
 
 
 class QoSMarkingPolicy(Schema):
@@ -181,32 +181,32 @@ class SCEPPayload(Payload):
     def make_payload(self, data: dict) -> models.SCEPPayload:
         return models.SCEPPayload(**data)
 
-
-@register_payload_schema('com.apple.wifi.managed')
-class WIFIPayload(Payload):
-    SSID_STR = fields.Str(attribute='ssid_str')
-    HIDDEN_NETWORK = fields.Boolean(attribute='hidden_network')
-    AutoJoin = fields.Boolean(attribute='auto_join', allow_none=True)
-    EncryptionType = EnumField(WIFIEncryptionType, attribute='encryption_type')
-    IsHotspot = fields.Boolean(attribute='is_hotspot', allow_none=True)
-    DomainName = fields.String(attribute='domain_name', allow_none=True)
-    ServiceProviderRoamingEnabled = fields.Boolean(attribute='service_provider_roaming_enabled', allow_none=True)
-    # RoamingConsortiumOIs = fields.Nested(fields.String(), many=True)
-    # NAIRealmNames
-    # MCCAndMNCs
-    DisplayedOperatorName = fields.String(attribute='displayed_operator_name', allow_none=True)
-    ProxyType = fields.String(attribute='proxy_type', allow_none=True)
-    CaptiveBypass = fields.Boolean(attribute='captive_bypass', allow_none=True)
-    QoSMarkingPolicy = fields.Nested(QoSMarkingPolicy(), allow_none=True)
-
-    Password = fields.String(attribute='password', allow_none=True)
-    PayloadCertificateUUID = fields.UUID(attribute='payload_certificate_uuid', allow_none=True)
-    EAPClientConfiguration = fields.Nested(EAPClientConfiguration(), allow_none=True)
-
-    @post_load
-    def make_payload(self, data: dict) -> models.WIFIPayload:
-        payload = models.WIFIPayload(**data)
-        return payload
+#
+# @register_payload_schema('com.apple.wifi.managed')
+# class WIFIPayload(Payload):
+#     SSID_STR = fields.Str(attribute='ssid_str')
+#     HIDDEN_NETWORK = fields.Boolean(attribute='hidden_network')
+#     AutoJoin = fields.Boolean(attribute='auto_join', allow_none=True)
+#     EncryptionType = EnumField(WIFIEncryptionType, attribute='encryption_type')
+#     IsHotspot = fields.Boolean(attribute='is_hotspot', allow_none=True)
+#     DomainName = fields.String(attribute='domain_name', allow_none=True)
+#     ServiceProviderRoamingEnabled = fields.Boolean(attribute='service_provider_roaming_enabled', allow_none=True)
+#     # RoamingConsortiumOIs = fields.Nested(fields.String(), many=True)
+#     # NAIRealmNames
+#     # MCCAndMNCs
+#     DisplayedOperatorName = fields.String(attribute='displayed_operator_name', allow_none=True)
+#     ProxyType = fields.String(attribute='proxy_type', allow_none=True)
+#     CaptiveBypass = fields.Boolean(attribute='captive_bypass', allow_none=True)
+#     QoSMarkingPolicy = fields.Nested(QoSMarkingPolicy(), allow_none=True)
+#
+#     Password = fields.String(attribute='password', allow_none=True)
+#     PayloadCertificateUUID = fields.UUID(attribute='payload_certificate_uuid', allow_none=True)
+#     EAPClientConfiguration = fields.Nested(EAPClientConfiguration(), allow_none=True)
+#
+#     @post_load
+#     def make_payload(self, data: dict) -> models.WIFIPayload:
+#         payload = models.WIFIPayload(**data)
+#         return payload
 
 
 class EnergySaverSettings(Schema):
@@ -266,47 +266,47 @@ class ProfileSchema(Schema):
     PayloadOrganization = fields.Str(attribute='organization')
     PayloadUUID = fields.UUID(attribute='uuid')
     PayloadRemovalDisallowed = fields.Bool(attribute='removal_disallowed')
-    PayloadType = fields.Function(lambda obj: 'Configuration')
-    PayloadVersion = fields.Function(lambda obj: 1)
+    PayloadType = fields.Function(lambda obj: 'Configuration', attribute='payload_type')
+    PayloadVersion = fields.Function(lambda obj: 1, attribute='version')
     PayloadScope = EnumField(PayloadScope, attribute='scope')
     RemovalDate = fields.DateTime(attribute='removal_date')
     DurationUntilRemoval = fields.Float(attribute='duration_until_removal')
     ConsentText = fields.Nested(ConsentTextSchema())
 
-    PayloadContent = fields.Method('get_payloads', deserialize='load_payloads')
+    # PayloadContent = fields.Method('get_payloads', deserialize='load_payloads')
 
-    def get_payloads(self, obj):
-        payloads = []
-
-        for payload in obj.payloads:
-            schema = schema_for(payload.type)
-            if schema is not None:
-                result = schema().dump(payload)
-                payloads.append(result.data)
-            else:
-                print('Unsupported PayloadType: {}'.format(payload.type))
-
-        return payloads
-
-    def load_payloads(self, payload_content: list) -> List[Schema]:
-        payloads = []
-
-        for content in payload_content:
-            schema = schema_for(content['PayloadType'])
-            if schema is not None:
-                result = schema().load(content)
-                payloads.append(result.data)
-            else:
-                print('Unsupported PayloadType: {}'.format(content['PayloadType']))
-
-        return payloads
+    # def get_payloads(self, obj):
+    #     payloads = []
+    #
+    #     for payload in obj.payloads:
+    #         schema = schema_for(payload.type)
+    #         if schema is not None:
+    #             result = schema().dump(payload)
+    #             payloads.append(result.data)
+    #         else:
+    #             print('Unsupported PayloadType: {}'.format(payload.type))
+    #
+    #     return payloads
+    #
+    # def load_payloads(self, payload_content: list) -> List[Schema]:
+    #     payloads = []
+    #
+    #     for content in payload_content:
+    #         schema = schema_for(content['PayloadType'])
+    #         if schema is not None:
+    #             result = schema().load(content)
+    #             payloads.append(result.data)
+    #         else:
+    #             print('Unsupported PayloadType: {}'.format(content['PayloadType']))
+    #
+    #     return payloads
 
 
     @post_load
     def make_profile(self, data):
         payloads = data.pop('PayloadContent', [])
         p = models.Profile(**data)
-        for pl in payloads:
-            p.payloads.append(pl)
+        # for pl in payloads:
+        #     p.payloads.append(pl)
 
         return p

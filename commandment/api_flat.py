@@ -185,6 +185,7 @@ def upload_profile():
         current_app.logger.error(e)
         abort(400, 'cannot parse the supplied profile')
 
+    profile.data = data
     db.session.add(profile)
     db.session.commit()
 
@@ -214,9 +215,5 @@ def download_profile(profile_id: int):
     except NoResultFound:
         abort(404)
 
-    schema = ProfilePlistSchema()
-    result = schema.dump(profile)
-    plist_data = dumps_none(result.data, skipkeys=True)
-
-    return plist_data, 200, {'Content-Type': 'application/x-apple-aspen-config'}
+    return profile.data, 200, {'Content-Type': 'application/x-apple-aspen-config'}
 
