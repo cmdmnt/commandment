@@ -40,6 +40,7 @@ interface DeviceCertificatesProps extends ReduxStateProps, ReduxDispatchProps, R
 
 interface DeviceCertificatesState {
     filter: string;
+    page: number;
 }
 
 @connect<ReduxStateProps, ReduxDispatchProps, DeviceCertificatesProps>(
@@ -51,17 +52,18 @@ export class DeviceCertificates extends React.Component<DeviceCertificatesProps,
     constructor(props) {
         super(props);
         this.state = {
-            filter: ''
-        }
+            filter: '',
+            page: 1
+        };
     }
 
     componentWillMount() {
-        this.props.fetchInstalledCertificates(this.props.match.params.id, 25);
+        this.props.fetchInstalledCertificates(this.props.match.params.id, 10);
     }
 
     componentWillUpdate(nextProps: DeviceCertificatesProps, nextState: DeviceCertificatesState) {
-        if (nextState.filter !== this.state.filter) {
-            this.props.fetchInstalledCertificates(this.props.match.params.id, 25, 1, [],
+        if (nextState.filter !== this.state.filter || nextState.page !== this.state.page) {
+            this.props.fetchInstalledCertificates(this.props.match.params.id, 10, nextState.page, [],
                 [{ name: 'x509_cn', op: 'ilike', val: `%${nextState.filter}%` }]);
         }
     }
@@ -93,12 +95,18 @@ export class DeviceCertificates extends React.Component<DeviceCertificatesProps,
                             }}
                             events={{
                                 onFilter: this.onFilter,
-                                onGetPage: this.onGetPage
-                            }}
+                                onGetPage: this.onGetPage,
+                                onNext: () => { this.onGetPage(this.state.page + 1); },
+                                onPrevious: () => { this.onGetPage(this.state.page - 1); },
+                                }}
                             components={{
                                 Layout
                             }}
-                            pageProperties={installed_certificates.pageProperties}
+                            pageProperties={{
+                                currentPage: this.state.page,
+                                pageSize: 10,
+                                recordCount: installed_certificates.pageProperties.recordCount
+                            }}
                         >
                             <RowDefinition>
                                 <ColumnDefinition id="id" />

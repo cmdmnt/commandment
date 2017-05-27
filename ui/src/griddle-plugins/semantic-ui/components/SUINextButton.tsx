@@ -9,7 +9,7 @@ interface SUINextButtonProps {
 }
 
 export const SUINextButton = ({ className, style, hasNext, onClick }: SUINextButtonProps) => (
-    <Menu.Item as='a' icon className={className} style={style} onClick={onClick}>
+    <Menu.Item as='a' icon className={className} style={style} onClick={onClick} disabled={!hasNext} >
         <Icon name='right chevron'/>
     </Menu.Item>
 );
