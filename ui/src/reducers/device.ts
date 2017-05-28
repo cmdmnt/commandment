@@ -1,10 +1,16 @@
 import * as actions from '../actions/devices';
 import {
+    CommandsActionResponse,
     ReadActionResponse
 } from "../actions/devices";
+import {CertificatesActionResponse} from '../actions/device/certificates';
 import {isJSONAPIErrorResponsePayload} from "../constants";
 import {commands, DeviceCommandsState} from "./device/commands";
 import {installed_certificates, InstalledCertificatesState} from "./device/installed_certificates";
+import {installed_applications, InstalledApplicationsState} from "./device/installed_applications";
+import {Device, JSONAPIObject} from "../typings/definitions";
+import {InstalledApplicationsActionResponse} from "../actions/device/applications";
+import {installed_profiles, InstalledProfilesState} from "./device/installed_profiles";
 
 
 export interface DeviceState {
@@ -18,6 +24,8 @@ export interface DeviceState {
     recordCount?: number;
     commands?: DeviceCommandsState;
     installed_certificates?: InstalledCertificatesState;
+    installed_applications?: InstalledApplicationsState;
+    installed_profiles?: InstalledProfilesState;
 }
 
 const initialState: DeviceState = {
@@ -30,7 +38,8 @@ const initialState: DeviceState = {
     pageSize: 50
 };
 
-type DevicesAction = ReadActionResponse;
+type DevicesAction = ReadActionResponse | InstalledApplicationsActionResponse | CommandsActionResponse |
+    CertificatesActionResponse;
 
 export function device(state: DeviceState = initialState, action: DevicesAction): DeviceState {
     switch (action.type) {
@@ -68,6 +77,8 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                 ...state,
                 commands: commands(state.commands, action),
                 installed_certificates: installed_certificates(state.installed_certificates, action),
+                installed_applications: installed_applications(state.installed_applications, action),
+                installed_profiles: installed_profiles(state.installed_profiles, action)
             };
     }
 }

@@ -6,7 +6,7 @@ import {SUIPrevButton as PreviousButton} from './components/SUIPrevButton';
 import {SUISettingsToggle as SettingsToggle} from './components/SUISettingsToggle';
 
 
-export const SemanticUIPlugin = (config: any) => {
+export const SemanticUIPlugin = (config?: any) => {
     return {
         components: {
             Filter,

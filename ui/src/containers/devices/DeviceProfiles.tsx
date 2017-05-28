@@ -3,9 +3,9 @@ import {connect, Dispatch} from "react-redux";
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
 import {SinceNowUTC} from "../../components/griddle/SinceNowUTC";
 import {RootState} from "../../reducers/index";
-import {DeviceCommandsState} from "../../reducers/device/commands";
+import {InstalledProfilesState} from "../../reducers/device/installed_profiles";
 import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
-import {CommandsActionRequest, commands as fetchCommands} from "../../actions/devices";
+import {InstalledProfilesActionRequest, profiles as fetchInstalledProfiles} from "../../actions/device/profiles";
 import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators} from "redux";
 import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
@@ -14,30 +14,30 @@ import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
 
 
 interface ReduxStateProps {
-    commands?: DeviceCommandsState;
+    applications?: InstalledProfilesState;
 }
 
 function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
     return {
-        commands: state.device.commands
+        profiles: state.device.installed_profiles
     }
 }
 
 interface ReduxDispatchProps {
-    fetchCommands: CommandsActionRequest
+    fetchInstalledProfiles: InstalledProfilesActionRequest;
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
    return bindActionCreators({
-       fetchCommands
+       fetchInstalledProfiles
    }, dispatch);
 }
 
-interface DeviceCommandsRouteProps {
+interface DeviceProfilesRouteProps {
     id: number;
 }
 
-interface DeviceCommandsProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<DeviceCommandsRouteProps> {
+interface DeviceProfilesProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<DeviceProfilesRouteProps> {
     griddleState: GriddleDecoratorState;
     events: any;
 }
@@ -48,34 +48,36 @@ interface DeviceCommandsProps extends ReduxStateProps, ReduxDispatchProps, Route
     mapDispatchToProps
 )
 @griddle
-export class DeviceCommands extends React.Component<DeviceCommandsProps, undefined> {
+export class DeviceProfiles extends React.Component<DeviceProfilesProps, undefined> {
 
     componentWillMount?() {
-        this.props.fetchCommands(this.props.match.params.id, 10, 1, ['-sent_at']);
+        this.props.fetchInstalledProfiles(this.props.match.params.id, this.props.griddleState.pageSize, 1);
     }
 
-    componentWillUpdate?(nextProps: DeviceCommandsProps, nextState: void | Readonly<DeviceCommandsState>) {
+    componentWillUpdate?(nextProps: DeviceProfilesProps, nextState: void | Readonly<{}>) {
         const {griddleState} = this.props;
         const {griddleState: nextGriddleState} = nextProps;
 
         if (nextGriddleState.filter !== griddleState.filter || nextGriddleState.currentPage !== griddleState.currentPage) {
-            this.props.fetchCommands(
+            this.props.fetchInstalledProfiles(
                 this.props.match.params.id,
-                10, nextGriddleState.currentPage, [], []);
+                nextGriddleState.pageSize,
+                nextGriddleState.currentPage, [],
+                [{ name: 'payload_display_name', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
         }
     }
 
     render() {
         const {
-            commands
+            profiles
         } = this.props;
 
         return (
-            <div className='DeviceCommands container'>
+            <div className='DeviceProfiles container'>
 
-                {commands &&
+                {profiles &&
                 <Griddle
-                    data={commands.items}
+                    data={profiles.items}
                     plugins={[SemanticUIPlugin()]}
                     styleConfig={{
                         classNames: {
@@ -85,16 +87,14 @@ export class DeviceCommands extends React.Component<DeviceCommandsProps, undefin
                     events={this.props.events}
                     components={{Layout}}
                     pageProperties={{
-                        recordCount: commands.recordCount,
+                        recordCount: profiles.recordCount,
                         currentPage: this.props.griddleState.currentPage,
                         pageSize: this.props.griddleState.pageSize
                     }}
                 >
                     <RowDefinition>
-                        <ColumnDefinition id="id" />
-                        <ColumnDefinition title='Type' id='attributes.request_type' />
-                        <ColumnDefinition title='Status' id="attributes.status" />
-                        <ColumnDefinition title='Sent' id="attributes.sent_at" customComponent={SinceNowUTC} />
+                        <ColumnDefinition title='Name' id='attributes.name' />
+                        <ColumnDefinition title='Version' id="attributes.version" />
                     </RowDefinition>
                 </Griddle>}
             </div>

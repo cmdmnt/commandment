@@ -74,6 +74,33 @@ declare interface InstalledCertificate {
     fingerprint_sha256: string;
 }
 
+declare interface InstalledApplication {
+    id?: number;
+    device_udid: string;
+    device_id: number;
+    bundle_identifier: string;
+    version: string;
+    short_version: string;
+    name: string;
+    bundle_size: number;
+    dynamic_size: number;
+    is_validated: boolean;
+}
+
+declare interface InstalledProfile {
+    id?: number;
+    device_udid: string;
+    device_id: number;
+    has_removal_password: boolean;
+    is_encrypted: boolean;
+    payload_description: string;
+    payload_display_name: string;
+    payload_identifier: string;
+    payload_organization: string;
+    payload_removal_disallowed: boolean;
+    payload_uuid: string;
+}
+
 declare interface SCEPConfiguration {
     url: string;
     challenge_enabled: boolean;

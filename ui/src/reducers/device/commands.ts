@@ -1,18 +1,15 @@
 import {COMMANDS_SUCCESS, CommandsActionResponse} from "../../actions/devices";
 import {isJSONAPIErrorResponsePayload} from "../../constants";
-import {PageProperties} from "griddle-react";
+import {Command, JSONAPIObject} from "../../typings/definitions";
 
 export interface DeviceCommandsState {
-    items?: Array<Command>;
-    pageProperties?: PageProperties;
+    items?: Array<JSONAPIObject<Command>>;
+    recordCount: number;
 }
 
 const initialState: DeviceCommandsState = {
     items: [],
-    pageProperties: {
-        currentPage: 1,
-        pageSize: 20
-    }
+    recordCount: 0
 };
 
 type DeviceCommandsAction = CommandsActionResponse;
@@ -23,15 +20,10 @@ export function commands(state: DeviceCommandsState = initialState, action: Devi
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return state;
             } else {
-                const pageProperties = {
-                    ...state.pageProperties,
-                    recordCount: action.payload.meta.count
-                };
-
                 return {
                     ...state,
                     items: action.payload.data,
-                    pageProperties
+                    recordCount: action.payload.meta.count
                 };
             }
         default:

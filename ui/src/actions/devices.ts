@@ -80,7 +80,7 @@ export type PUSH_FAILURE = 'devices/PUSH_FAILURE';
 export const PUSH_FAILURE: PUSH_FAILURE = 'devices/PUSH_FAILURE';
 
 export interface PushActionRequest {
-    (id: number): RSAA<PUSH_REQUEST, PUSH_SUCCESS, PUSH_FAILURE>;
+    (id: string): RSAA<PUSH_REQUEST, PUSH_SUCCESS, PUSH_FAILURE>;
 }
 
 export interface PushActionResponse {
@@ -88,7 +88,7 @@ export interface PushActionResponse {
     payload?: JSONAPIDetailResponse<any, undefined> | JSONAPIErrorResponse;
 }
 
-export const push: PushActionRequest = (id: number) => {
+export const push: PushActionRequest = (id: string) => {
     return {
         [CALL_API]: {
             endpoint: `/api/v1/devices/${id}/push`,
@@ -111,7 +111,7 @@ export type INVENTORY_FAILURE = 'devices/INVENTORY_FAILURE';
 export const INVENTORY_FAILURE: INVENTORY_FAILURE = 'devices/INVENTORY_FAILURE';
 
 export interface InventoryActionRequest {
-    (id: number): RSAA<INVENTORY_REQUEST, INVENTORY_SUCCESS, INVENTORY_FAILURE>;
+    (id: string): RSAA<INVENTORY_REQUEST, INVENTORY_SUCCESS, INVENTORY_FAILURE>;
 }
 
 export interface InventoryActionResponse {
@@ -119,7 +119,7 @@ export interface InventoryActionResponse {
     payload?: JSONAPIDetailResponse<any, undefined> | JSONAPIErrorResponse;
 }
 
-export const inventory: InventoryActionRequest = (id: number) => {
+export const inventory: InventoryActionRequest = (id: string) => {
     return {
         [CALL_API]: {
             endpoint: `/api/v1/devices/inventory/${id}`,
@@ -159,27 +159,4 @@ export const commands = encodeJSONAPIChildIndexParameters((device_id: number, qu
     }
 });
 
-export type CERTIFICATES_REQUEST = 'devices/CERTIFICATES_REQUEST';
-export const CERTIFICATES_REQUEST: CERTIFICATES_REQUEST = 'devices/CERTIFICATES_REQUEST';
-export type CERTIFICATES_SUCCESS = 'devices/CERTIFICATES_SUCCESS';
-export const CERTIFICATES_SUCCESS: CERTIFICATES_SUCCESS = 'devices/CERTIFICATES_SUCCESS';
-export type CERTIFICATES_FAILURE = 'devices/CERTIFICATES_FAILURE';
-export const CERTIFICATES_FAILURE: CERTIFICATES_FAILURE = 'devices/CERTIFICATES_FAILURE';
 
-export type CertificatesActionRequest = RSAAIndexActionRequest<CERTIFICATES_REQUEST, CERTIFICATES_SUCCESS, CERTIFICATES_FAILURE>;
-export type CertificatesActionResponse = RSAAIndexActionResponse<CERTIFICATES_REQUEST, CERTIFICATES_SUCCESS, CERTIFICATES_FAILURE, InstalledCertificate>;
-
-export const certificates = encodeJSONAPIChildIndexParameters((device_id: number, queryParameters: Array<String>)  => {
-    return {
-        [CALL_API]: {
-            endpoint: `/api/v1/devices/${device_id}/installed_certificates?${queryParameters.join('&')}`,
-            method: 'GET',
-            types: [
-                CERTIFICATES_REQUEST,
-                CERTIFICATES_SUCCESS,
-                CERTIFICATES_FAILURE
-            ],
-            headers: JSONAPI_HEADERS
-        }
-    }
-});

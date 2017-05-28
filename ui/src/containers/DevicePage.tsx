@@ -8,12 +8,13 @@ import {Route, RouteComponentProps} from "react-router";
 import {InventoryActionRequest, PushActionRequest, ReadActionRequest} from "../actions/devices";
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
 import {DeviceState} from "../reducers/device";
-import {Link} from "react-router-dom";
 import {Container, Grid, Menu, Button, Segment, Dropdown} from 'semantic-ui-react';
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {SyntheticEvent} from "react";
 import {DeviceCertificates} from "./devices/DeviceCertificates";
 import {DeviceCommands} from "./devices/DeviceCommands";
+import {DeviceApplications} from "./devices/DeviceApplications";
+import {DeviceProfiles} from "./devices/DeviceProfiles";
 
 interface ReduxStateProps {
     device: DeviceState;
@@ -75,12 +76,9 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
 
     render(): JSX.Element {
         const {
-            children,
             device,
-            match: {params: {id: device_id}, url}
+            match: {params: {id: device_id}}
         } = this.props;
-
-        console.log(url);
 
         return (
             <Container className='DevicePage'>
@@ -97,6 +95,8 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
                             <Menu pointing secondary color="purple" inverted>
                                 <MenuItemLink to={`/devices/${device_id}/certificates`}>Certificates</MenuItemLink>
                                 <MenuItemLink to={`/devices/${device_id}/commands`}>Commands</MenuItemLink>
+                                <MenuItemLink to={`/devices/${device_id}/installed_applications`}>Applications</MenuItemLink>
+                                <MenuItemLink to={`/devices/${device_id}/installed_profiles`}>Profiles</MenuItemLink>
                             </Menu>
                         </Grid.Column>
                     </Grid.Row>
@@ -104,6 +104,8 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
                         <Grid.Column>
                             <Route path='/devices/:id/certificates' component={DeviceCertificates}/>
                             <Route path='/devices/:id/commands' component={DeviceCommands}/>
+                            <Route path='/devices/:id/installed_applications' component={DeviceApplications}/>
+                            <Route path='/devices/:id/installed_profiles' component={DeviceProfiles}/>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

@@ -1,23 +1,19 @@
 import {
     CERTIFICATES_SUCCESS,
     CertificatesActionResponse
-} from "../../actions/devices";
+} from "../../actions/device/certificates";
 import {isJSONAPIErrorResponsePayload} from "../../constants";
-import {PageProperties} from "griddle-react";
+import {InstalledCertificate, JSONAPIObject} from "../../typings/definitions";
 
 export interface InstalledCertificatesState {
-    items?: Array<InstalledCertificate>;
-    pageProperties?: PageProperties;
+    items?: Array<JSONAPIObject<InstalledCertificate>>;
+    recordCount: number;
 }
 
 const initialState: InstalledCertificatesState = {
     items: [],
-    pageProperties: {
-        currentPage: 1,
-        pageSize: 20
-    }
+    recordCount: 0
 };
-
 
 type InstalledCertificatesAction = CertificatesActionResponse;
 
@@ -27,15 +23,10 @@ export function installed_certificates(state: InstalledCertificatesState = initi
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return state;
             } else {
-                const pageProperties = {
-                    ...state.pageProperties,
-                    recordCount: action.payload.meta.count
-                };
-
                 return {
                     ...state,
                     items: action.payload.data,
-                    pageProperties
+                    recordCount: action.payload.meta.count
                 };
             }
         default:

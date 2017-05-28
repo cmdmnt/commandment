@@ -3,12 +3,13 @@ import {connect, Dispatch} from 'react-redux';
 import {RouteComponentProps} from 'react-router';
 import {RootState} from "../../reducers/index";
 import {bindActionCreators} from "redux";
-import {CertificatesActionRequest, certificates as fetchInstalledCertificates} from "../../actions/devices";
-import {installed_certificates, InstalledCertificatesState} from "../../reducers/device/installed_certificates";
-import Griddle, {RowDefinition, ColumnDefinition, SortProperties} from 'griddle-react';
+import {CertificatesActionRequest, certificates as fetchInstalledCertificates} from "../../actions/device/certificates";
+import {InstalledCertificatesState} from "../../reducers/device/installed_certificates";
+import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
 import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
 import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
 import {CertificateTypeIcon} from "../../components/CertificateTypeIcon";
+import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
 
 interface ReduxStateProps {
     installed_certificates: InstalledCertificatesState;
@@ -21,7 +22,7 @@ function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
 }
 
 interface ReduxDispatchProps {
-
+    fetchInstalledCertificates: CertificatesActionRequest;
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
@@ -35,50 +36,41 @@ interface RouterProps {
 }
 
 interface DeviceCertificatesProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouterProps> {
-
+    griddleState: GriddleDecoratorState;
+    events: any;
 }
 
 interface DeviceCertificatesState {
-    filter: string;
-    page: number;
 }
 
 @connect<ReduxStateProps, ReduxDispatchProps, DeviceCertificatesProps>(
     mapStateToProps,
     mapDispatchToProps
 )
+@griddle
 export class DeviceCertificates extends React.Component<DeviceCertificatesProps, any> {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            filter: '',
-            page: 1
-        };
-    }
-
     componentWillMount() {
-        this.props.fetchInstalledCertificates(this.props.match.params.id, 10);
+        this.props.fetchInstalledCertificates(this.props.match.params.id, this.props.griddleState.pageSize);
     }
 
     componentWillUpdate(nextProps: DeviceCertificatesProps, nextState: DeviceCertificatesState) {
-        if (nextState.filter !== this.state.filter || nextState.page !== this.state.page) {
-            this.props.fetchInstalledCertificates(this.props.match.params.id, 10, nextState.page, [],
-                [{ name: 'x509_cn', op: 'ilike', val: `%${nextState.filter}%` }]);
+        const {griddleState} = this.props;
+        const {griddleState: nextGriddleState} = nextProps;
+
+        if (nextGriddleState.filter !== griddleState.filter || nextGriddleState.currentPage !== griddleState.currentPage) {
+            this.props.fetchInstalledCertificates(
+                this.props.match.params.id,
+                nextGriddleState.pageSize,
+                nextGriddleState.currentPage, [],
+                [{ name: 'x509_cn', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
         }
     }
 
-    onFilter = (value: string) => {
-        this.setState({ filter: value });
-    };
-
-    onGetPage = (pageNumber: number) => {
-        this.setState({ page: pageNumber });
-    };
-
     render(): JSX.Element {
         const {
-            installed_certificates
+            installed_certificates,
+            griddleState
         } = this.props;
 
         return (
@@ -93,19 +85,12 @@ export class DeviceCertificates extends React.Component<DeviceCertificatesProps,
                                     Table: 'ui celled table'
                                 }
                             }}
-                            events={{
-                                onFilter: this.onFilter,
-                                onGetPage: this.onGetPage,
-                                onNext: () => { this.onGetPage(this.state.page + 1); },
-                                onPrevious: () => { this.onGetPage(this.state.page - 1); },
-                                }}
-                            components={{
-                                Layout
-                            }}
+                            events={this.props.events}
+                            components={{Layout}}
                             pageProperties={{
-                                currentPage: this.state.page,
-                                pageSize: 10,
-                                recordCount: installed_certificates.pageProperties.recordCount
+                                currentPage: griddleState.currentPage,
+                                pageSize: griddleState.pageSize,
+                                recordCount: installed_certificates.recordCount
                             }}
                         >
                             <RowDefinition>
