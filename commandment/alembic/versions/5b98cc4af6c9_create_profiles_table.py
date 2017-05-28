@@ -19,6 +19,8 @@ depends_on = None
 def upgrade():
     op.create_table('profiles',
                     sa.Column('id', sa.Integer(), nullable=False),
+                    sa.Column('data', sa.LargeBinary(), nullable=True),
+                    sa.Column('payload_type', sa.String(), nullable=True),
                     sa.Column('description', sa.Text(), nullable=True),
                     sa.Column('display_name', sa.String(), nullable=True),
                     sa.Column('expiration_date', sa.DateTime(), nullable=True),

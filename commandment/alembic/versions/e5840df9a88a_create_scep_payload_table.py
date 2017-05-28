@@ -11,7 +11,7 @@ import commandment.dbtypes
 
 # revision identifiers, used by Alembic.
 revision = 'e5840df9a88a'
-down_revision = 'fc0c134cbb2e'
+down_revision = '13358fb3846b'
 branch_labels = None
 depends_on = None
 
