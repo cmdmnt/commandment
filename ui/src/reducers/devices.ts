@@ -3,6 +3,8 @@ import {
     IndexActionResponse
 } from "../actions/devices";
 import {isJSONAPIErrorResponsePayload} from "../constants";
+import {JSONAPIObject} from "../json-api";
+import {Device} from "../models";
 
 
 export interface DevicesState {

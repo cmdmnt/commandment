@@ -1,7 +1,8 @@
 import {JSONAPI_HEADERS} from "../constants";
 import {CALL_API} from "redux-api-middleware";
 import {encodeJSONAPIChildIndexParameters, RSAAIndexActionRequest, RSAAIndexActionResponse} from "../../constants";
-import {InstalledCertificate} from "../../typings/definitions";
+import {InstalledCertificate} from "../../models";
+
 
 export type CERTIFICATES_REQUEST = 'devices/CERTIFICATES_REQUEST';
 export const CERTIFICATES_REQUEST: CERTIFICATES_REQUEST = 'devices/CERTIFICATES_REQUEST';

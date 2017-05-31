@@ -1,7 +1,7 @@
 import {JSONAPI_HEADERS} from "../constants";
 import {CALL_API} from "redux-api-middleware";
 import {encodeJSONAPIChildIndexParameters, RSAAIndexActionRequest, RSAAIndexActionResponse} from "../../constants";
-import {InstalledApplication, InstalledCertificate} from "../../typings/definitions";
+import {InstalledApplication} from "../../models";
 
 
 export type APPLICATIONS_REQUEST = 'devices/APPLICATIONS_REQUEST';

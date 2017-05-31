@@ -2,6 +2,8 @@ import * as actions from '../actions/profiles';
 import {IndexActionResponse} from '../actions/profiles';
 import {isJSONAPIErrorResponsePayload} from "../constants";
 import {PageProperties} from "griddle-react";
+import {JSONAPIObject} from "../json-api";
+import {Profile} from "../models";
 
 export interface ProfilesState {
     items: Array<JSONAPIObject<Profile>>;

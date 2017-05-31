@@ -22,6 +22,7 @@ export interface GriddleDecoratorState {
 export const griddle: GriddleDecorator = (WrappedComponent: React.Component<any, any>) => {
     class GriddleDecorator extends React.Component<any, GriddleDecoratorState> {
 
+        displayName: string;
 
         constructor(props: any) {
             super(props);

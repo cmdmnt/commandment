@@ -6,7 +6,7 @@ import {Store} from "react-redux";
 import {Middleware} from "redux";
 import {RootState} from "../reducers/index";
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const composeEnhancers = (<any>window).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export const configureStore = (initialState: RootState, ...middlewares: Array<Middleware> ): Store<any> => {
 

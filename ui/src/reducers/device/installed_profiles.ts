@@ -3,7 +3,9 @@ import {
     InstalledProfilesActionResponse
 } from "../../actions/device/profiles";
 import {isJSONAPIErrorResponsePayload} from "../../constants";
-import {InstalledProfile, JSONAPIObject} from "../../typings/definitions";
+import {JSONAPIObject} from "../../json-api";
+import {InstalledProfile} from "../../models";
+
 
 export interface InstalledProfilesState {
     items?: Array<JSONAPIObject<InstalledProfile>>;

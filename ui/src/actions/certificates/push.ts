@@ -1,6 +1,8 @@
 /// <reference path="../../typings/redux-api-middleware.d.ts" />
 import { CALL_API, RSAA } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from '../constants'
+import {JSONAPIListResponse, JSONAPIObject} from "../../json-api";
+import {Certificate} from "../../models";
 
 
 export type PUSHCERT_REQUEST = 'certificates/PUSHCERT_REQUEST';

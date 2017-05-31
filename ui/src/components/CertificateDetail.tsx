@@ -3,6 +3,8 @@ import {CERTIFICATE_PURPOSE} from "../constants";
 import * as moment from 'moment';
 
 import './CertificateDetail.scss';
+import {JSONAPIObject} from "../json-api";
+import {Certificate} from "../models";
 
 interface CertificateDetailProps {
     certificate: JSONAPIObject<Certificate>;

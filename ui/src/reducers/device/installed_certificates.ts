@@ -3,7 +3,8 @@ import {
     CertificatesActionResponse
 } from "../../actions/device/certificates";
 import {isJSONAPIErrorResponsePayload} from "../../constants";
-import {InstalledCertificate, JSONAPIObject} from "../../typings/definitions";
+import {JSONAPIObject} from "../../json-api";
+import {InstalledCertificate} from "../../models";
 
 export interface InstalledCertificatesState {
     items?: Array<JSONAPIObject<InstalledCertificate>>;

@@ -7,7 +7,10 @@ import {
     RSAAIndexActionRequest, RSAAIndexActionResponse, encodeJSONAPIIndexParameters,
     RSAAReadActionRequest, RSAAReadActionResponse
 } from "../constants";
-import {JSONAPIDetailResponse, JSONAPIErrorResponse, Profile} from "../typings/definitions";
+import {Profile} from "../models";
+import {JSONAPIDetailResponse} from "../json-api";
+import {Dispatch} from "redux";
+
 
 export type INDEX_REQUEST = 'profiles/INDEX_REQUEST';
 export const INDEX_REQUEST: INDEX_REQUEST = 'profiles/INDEX_REQUEST';
@@ -83,7 +86,7 @@ export const prevPage = () => {
 
 export type SET_PAGE = 'profiles/SET_PAGE';
 export const SET_PAGE: SET_PAGE = 'profiles/SET_PAGE';
-export const setPage: ThunkAction<any, RootState, undefined> = (pageNumber: number) => (dispatch, getState) => {
+export const setPage: ThunkAction<any, RootState, undefined> = (pageNumber: number) => (dispatch: Dispatch<RootState>, getState) => {
     
     // Dispatch index w page
 };

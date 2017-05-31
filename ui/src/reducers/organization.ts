@@ -1,5 +1,6 @@
 import * as actions from '../actions/organization';
 import {isJSONAPIErrorResponsePayload} from "../constants";
+import {Organization} from "../models";
 
 export interface OrganizationState {
     organization?: Organization;

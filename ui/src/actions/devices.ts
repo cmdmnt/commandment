@@ -2,15 +2,11 @@
 import { CALL_API, RSAA } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
 import {
-    Command,
-    Device,
-    InstalledCertificate, JSONAPIDetailResponse, JSONAPIErrorResponse,
-    JSONAPIListResponse, JSONAPIObject
-} from "../typings/definitions";
-import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse
 } from "../constants";
+import {Command, Device} from "../models";
+import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../json-api";
 
 
 

@@ -2,14 +2,10 @@
 import { CALL_API, RSAA } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
 import {
-    DeviceGroup,
-    JSONAPIDetailResponse, JSONAPIErrorResponse,
-    JSONAPIListResponse, JSONAPIObject
-} from "../typings/definitions";
-import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse
 } from "../constants";
+import {DeviceGroup} from "../models";
 
 
 export type INDEX_REQUEST = 'device_groups/INDEX_REQUEST';
