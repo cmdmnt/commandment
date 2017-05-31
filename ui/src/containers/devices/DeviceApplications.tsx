@@ -81,7 +81,8 @@ export class DeviceApplications extends React.Component<DeviceApplicationsProps,
                     plugins={[SemanticUIPlugin()]}
                     styleConfig={{
                         classNames: {
-                            Table: 'ui celled table'
+                            Table: 'ui celled table',
+                            NoResults: 'ui message'
                         }
                     }}
                     events={this.props.events}

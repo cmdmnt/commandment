@@ -82,7 +82,8 @@ export class DeviceCertificates extends React.Component<DeviceCertificatesProps,
                             plugins={[SemanticUIPlugin()]}
                             styleConfig={{
                                 classNames: {
-                                    Table: 'ui celled table'
+                                    Table: 'ui celled table',
+                                    NoResults: 'ui message'
                                 }
                             }}
                             events={this.props.events}

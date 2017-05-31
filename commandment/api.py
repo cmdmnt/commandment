@@ -6,8 +6,10 @@ from .resources import CertificatesList, CertificateDetail, CertificateSigningRe
     CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, OrganizationList, \
     OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationsList, ProfilesList, ProfileDetail, \
     InstalledCertificatesList, InstalledCertificateDetail, InstalledApplicationDetail, \
-    DeviceGroupList, DeviceGroupDetail, DeviceRelationship, CommandRelationship
-# PayloadsList, PayloadDetail, 
+    DeviceGroupList, DeviceGroupDetail, DeviceRelationship, CommandRelationship, InstalledProfilesList, \
+    InstalledProfileDetail
+
+# PayloadsList, PayloadDetail,
 
 api_app = Blueprint('api_app', __name__)
 api = Api(api_app)
@@ -50,12 +52,15 @@ api.route(InstalledCertificatesList, 'installed_certificates_list',
 api.route(InstalledCertificateDetail, 'installed_certificate_detail',
           '/v1/installed_certificates/<int:installed_certificate_id>')
 
-# Profiles
+# Profiles (Different to profiles returned by inventory)
 api.route(ProfilesList, 'profiles_list', '/v1/profiles')
 api.route(ProfileDetail, 'profile_detail', '/v1/profiles/<int:profile_id>')
 # api.route(PayloadsList, 'payloads_list', '/v1/payloads')
 # api.route(PayloadDetail, 'payload_detail', '/v1/payloads/<int:payload_id>')
 
+api.route(InstalledProfilesList, 'installed_profiles_list', '/v1/installed_profiles',
+          '/v1/devices/<int:device_id>/installed_profiles')
+api.route(InstalledProfileDetail, 'installed_profile_detail', '/v1/installed_profiles/<int:installed_profile_id>')
 
 
 # Organizations

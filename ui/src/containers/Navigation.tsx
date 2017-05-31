@@ -14,6 +14,7 @@ export class Navigation extends React.Component<undefined, undefined> {
                 <MenuItemLink to='/devices'>Devices</MenuItemLink>
                 <MenuItemLink to='/profiles'>Profiles</MenuItemLink>
                 <MenuItemLink to='/settings'>Settings</MenuItemLink>
+                <MenuItemLink to='/device_groups'>Groups</MenuItemLink>
             </Menu>
         )
     }

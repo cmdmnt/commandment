@@ -80,6 +80,7 @@ def enroll():
                 identifier=org.payload_prefix + '.ca',
                 payload_content=pem_data,
                 display_name='Certificate Authority',
+                type='com.apple.security.pem',
             )
             profile.payloads.append(pem_payload)
 
@@ -95,6 +96,7 @@ def enroll():
                 identifier=org.payload_prefix + '.ssl',
                 payload_content=pem_data,
                 display_name='Web Server Certificate',
+                type='com.apple.security.pem',
             )
             profile.payloads.append(pem_payload)
 

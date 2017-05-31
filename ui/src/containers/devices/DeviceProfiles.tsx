@@ -81,7 +81,8 @@ export class DeviceProfiles extends React.Component<DeviceProfilesProps, undefin
                     plugins={[SemanticUIPlugin()]}
                     styleConfig={{
                         classNames: {
-                            Table: 'ui celled table'
+                            Table: 'ui celled table',
+                            NoResults: 'ui message',
                         }
                     }}
                     events={this.props.events}
@@ -93,8 +94,8 @@ export class DeviceProfiles extends React.Component<DeviceProfilesProps, undefin
                     }}
                 >
                     <RowDefinition>
-                        <ColumnDefinition title='Name' id='attributes.name' />
-                        <ColumnDefinition title='Version' id="attributes.version" />
+                        <ColumnDefinition title='Display Name' id='attributes.payload_display_name' />
+                        <ColumnDefinition title='Identifier' id="attributes.payload_identifier" />
                     </RowDefinition>
                 </Griddle>}
             </div>

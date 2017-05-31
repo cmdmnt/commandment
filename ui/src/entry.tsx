@@ -20,6 +20,7 @@ import {DevicesPage} from "./containers/DevicesPage";
 import {DevicePage} from "./containers/DevicePage";
 import {ProfilesPage} from './containers/ProfilesPage';
 import {SettingsPage} from './containers/SettingsPage';
+import {DeviceGroupsPage} from "./containers/DeviceGroupsPage";
 
 const initialState: RootState = {};
 
@@ -40,6 +41,7 @@ render(
                     <Route path='/certificates' component={CertificatesPage} />
                     <Route path='/devices' exact component={DevicesPage} />
                     <Route path='/devices/:id' component={DevicePage} />
+                    <Route path='/device_groups' exact component={DeviceGroupsPage} />
                     <Route path='/profiles' component={ProfilesPage} />
                     <Route path='/settings' component={SettingsPage} />
                 </App>

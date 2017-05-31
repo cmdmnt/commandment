@@ -352,6 +352,27 @@ class PushResponseFlatSchema(FlatSchema):
 #         self_view_many = 'api_app.profiles_list'
 
 
+class InstalledProfileSchema(Schema):
+    """marshmallow-jsonapi schema for Profile SQLAlchemy models."""
+    id = fields.Int(dump_only=True)
+
+    has_removal_password = fields.Bool()
+    is_encrypted = fields.Bool()
+    payload_description = fields.Str()
+    payload_display_name = fields.Str()
+    payload_identifier = fields.Str()
+    payload_organization = fields.Str()
+    payload_removal_disallowed = fields.Boolean()
+    payload_uuid = fields.UUID()
+    # signer_certificates = fields.Nested()
+    
+    class Meta:
+        type_ = 'installed_profiles'
+        self_view = 'api_app.installed_profile_detail'
+        self_view_kwargs = {'installed_profile_id': '<id>'}
+        self_view_many = 'api_app.installed_profiles_list'
+
+
 class ProfileSchema(Schema):
     """marshmallow-jsonapi schema for Profile SQLAlchemy models."""
     id = fields.Int(dump_only=True)

@@ -4,11 +4,12 @@ from sqlalchemy import Column, Integer, LargeBinary, String, Text, Enum as DBEnu
     BigInteger
 
 from commandment.profiles import PayloadScope
-from commandment.profiles.cert import KeyUsage
+from commandment.profiles.certificates import KeyUsage
 from ..dbtypes import GUID, JSONEncodedDict
 from uuid import uuid4
 
 from ..models import db
+
 
 class Payload(db.Model):
     __tablename__ = 'payloads'
@@ -33,6 +34,7 @@ class Payload(db.Model):
         'polymorphic_on': type,
     }
 
+
 class MDMPayload(Payload):
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
     identity_certificate_uuid = Column(GUID, nullable=False)
@@ -48,6 +50,7 @@ class MDMPayload(Payload):
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.mdm'
     }
+
 
 class SCEPPayload(Payload):
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
@@ -67,6 +70,7 @@ class SCEPPayload(Payload):
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.security.scep',
     }
+
 
 class CertificatePayload(Payload):
     id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
@@ -94,6 +98,11 @@ class PKCS12CertificatePayload(CertificatePayload):
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.security.pkcs12'
     }
+
+
+profile_payloads = db.Table('profile_payloads', db.metadata,
+                            Column('profile_id', Integer, ForeignKey('profiles.id')),
+                            Column('payload_id', Integer, ForeignKey('payloads.id')))
 
 
 class Profile(db.Model):
@@ -125,3 +134,7 @@ class Profile(db.Model):
     duration_until_removal = Column(BigInteger)
     consent_en = Column(Text)
     is_encrypted = Column(Boolean, default=False)
+
+    payloads = db.relationship('Payload',
+                               secondary=profile_payloads,
+                               backref='profiles')

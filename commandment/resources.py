@@ -1,6 +1,6 @@
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
     CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, InstalledApplicationSchema, ProfileSchema, \
-    InstalledCertificateSchema, DeviceGroupSchema
+    InstalledCertificateSchema, DeviceGroupSchema, InstalledProfileSchema
 from .models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
     SSLCertificate, Organization, Command, InstalledApplication, InstalledProfile, InstalledCertificate, DeviceGroup
 from .profiles.models import Profile
@@ -201,4 +201,20 @@ class ProfileDetail(ResourceDetail):
     data_layer = {
         'session': db.session,
         'model': Profile
+    }
+
+
+class InstalledProfilesList(ResourceList):
+    schema = InstalledProfileSchema
+    data_layer = {
+        'session': db.session,
+        'model': InstalledProfile
+    }
+
+
+class InstalledProfileDetail(ResourceDetail):
+    schema = InstalledProfileSchema
+    data_layer = {
+        'session': db.session,
+        'model': InstalledProfile
     }

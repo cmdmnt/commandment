@@ -51,6 +51,11 @@ declare interface Device {
     last_seen: string;
 }
 
+declare interface DeviceGroup {
+    id?: string;
+    name: string;
+}
+
 declare interface Organization {
     name: string;
     payload_prefix: string;

@@ -23,7 +23,7 @@ import base64
 from binascii import hexlify
 from biplist import Data as NSData, readPlistFromString
 from uuid import uuid4
-from .profiles.cert import KeyUsage
+from .profiles.certificates import KeyUsage
 from .profiles import PayloadScope
 
 db = SQLAlchemy()
@@ -250,9 +250,6 @@ class Device(db.Model):
     current_mcc = Column(String)
     current_mnc = Column(String)
 
-
-
-
     # SecurityInfo
     # hardware_encryption_caps = Column(DBEnum(HardwareEncryptionCaps))
     passcode_present = Column(Boolean)
@@ -266,13 +263,6 @@ class Device(db.Model):
     block_all_incoming = Column(Boolean)
     stealth_mode_enabled = Column(Boolean)
     # TODO: Blocked Applications
-
-
-    # APNS / TokenUpdate
-
-
-
-
 
     @hybrid_property
     def token(self):

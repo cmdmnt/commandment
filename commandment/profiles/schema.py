@@ -4,13 +4,12 @@ model representations.
 """
 
 from typing import Union, Callable, Type, List
+import plistlib
 from marshmallow import Schema, fields, post_load, post_dump
 from marshmallow_enum import EnumField
 from commandment.profiles import models
-from commandment.profiles.ad import ADCertificateAcquisitionMechanism
 from commandment.profiles.energy import ScheduledPowerEventType
-from commandment.profiles.wifi import WIFIEncryptionType
-from commandment.profiles.cert import KeyUsage
+from commandment.profiles.certificates import KeyUsage
 from commandment.profiles.eap import TTLSInnerAuthentication
 from . import PayloadScope
 
@@ -51,6 +50,12 @@ class Payload(Schema):
 class ConsentTextSchema(Schema):
     en = fields.String(attribute='consent_en')
 
+
+@register_payload_schema('com.apple.security.pem')
+class CertificatePayloadSchema(Payload):
+    PayloadCertificateFileName = fields.Str(attribute='certificate_file_name')
+    PayloadContent = fields.Raw(attribute='payload_content')
+    Password = fields.Str(attribute='password')
 
 # @register_payload_schema('com.apple.ADCertificate.managed')
 # class ADCertificatePayload(Payload):
@@ -272,34 +277,33 @@ class ProfileSchema(Schema):
     RemovalDate = fields.DateTime(attribute='removal_date')
     DurationUntilRemoval = fields.Float(attribute='duration_until_removal')
     ConsentText = fields.Nested(ConsentTextSchema())
+    PayloadContent = fields.Method('get_payloads', deserialize='load_payloads')
 
-    # PayloadContent = fields.Method('get_payloads', deserialize='load_payloads')
+    def get_payloads(self, obj):
+        payloads = []
 
-    # def get_payloads(self, obj):
-    #     payloads = []
-    #
-    #     for payload in obj.payloads:
-    #         schema = schema_for(payload.type)
-    #         if schema is not None:
-    #             result = schema().dump(payload)
-    #             payloads.append(result.data)
-    #         else:
-    #             print('Unsupported PayloadType: {}'.format(payload.type))
-    #
-    #     return payloads
-    #
-    # def load_payloads(self, payload_content: list) -> List[Schema]:
-    #     payloads = []
-    #
-    #     for content in payload_content:
-    #         schema = schema_for(content['PayloadType'])
-    #         if schema is not None:
-    #             result = schema().load(content)
-    #             payloads.append(result.data)
-    #         else:
-    #             print('Unsupported PayloadType: {}'.format(content['PayloadType']))
-    #
-    #     return payloads
+        for payload in obj.payloads:
+            schema = schema_for(payload.type)
+            if schema is not None:
+                result = schema().dump(payload)
+                payloads.append(result.data)
+            else:
+                print('Unsupported PayloadType: {}'.format(payload.type))
+
+        return payloads
+
+    def load_payloads(self, payload_content: list) -> List[Schema]:
+        payloads = []
+
+        for content in payload_content:
+            schema = schema_for(content['PayloadType'])
+            if schema is not None:
+                result = schema().load(content)
+                payloads.append(result.data)
+            else:
+                print('Unsupported PayloadType: {}'.format(content['PayloadType']))
+
+        return payloads
 
 
     @post_load
