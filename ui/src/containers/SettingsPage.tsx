@@ -2,7 +2,8 @@ import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RootState} from "../reducers/index";
-import { Container, Card } from 'semantic-ui-react'
+import { Container, Card, Icon } from 'semantic-ui-react';
+import {Link} from 'react-router-dom';
 
 interface ReduxStateProps {
 
@@ -24,15 +25,11 @@ interface SettingsPageProps {
 
 }
 
-interface SettingsPageState {
-
-}
-
 @connect<ReduxStateProps, ReduxDispatchProps, SettingsPageProps>(
     mapStateToProps,
     mapDispatchToProps
 )
-export class SettingsPage extends React.Component<ReduxStateProps & ReduxDispatchProps & SettingsPageProps, SettingsPageState> {
+export class SettingsPage extends React.Component<ReduxStateProps & ReduxDispatchProps & SettingsPageProps, void | Readonly<{}>> {
 
     render() {
         const {
@@ -42,16 +39,26 @@ export class SettingsPage extends React.Component<ReduxStateProps & ReduxDispatc
         return (
             <Container>
                 <Card.Group>
-                    <Card
-                        header='Organization'
-                        description='Configure your organization'
-                    />
-                </Card.Group>
-                <Card.Group>
-                    <Card
-                        header='SCEP'
-                        description='Configure scep'
-                    />
+                    <Card as={Link} to='/settings/organization'>
+                        <Card.Content>
+                            <Card.Header>
+                                <Icon name='building' /> Organization
+                            </Card.Header>
+                            <Card.Description>
+                                Configure your organization
+                            </Card.Description>
+                        </Card.Content>
+                    </Card>
+                    <Card as={Link} to='/settings/scep'>
+                        <Card.Content>
+                            <Card.Header>
+                                <Icon name='protect' /> SCEP
+                            </Card.Header>
+                            <Card.Description>
+                                Configure how communication is secured between your devices and this MDM
+                            </Card.Description>
+                        </Card.Content>
+                    </Card>
                 </Card.Group>
             </Container>
         );

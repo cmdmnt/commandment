@@ -1,5 +1,8 @@
 import * as React from 'react';
 import {Field, reduxForm, FormProps} from 'redux-form';
+import {Header, Icon, Segment, Message, Input, Button, Grid, Form} from 'semantic-ui-react';
+import {SemanticInput} from "./fields/SemanticInput";
+import {SemanticDropdown} from "./fields/SemanticDropdown";
 
 export interface FormData {
     scep_type: 'internal' | 'external';
@@ -22,16 +25,17 @@ export class SCEPConfigurationForm extends React.Component<SCEPConfigurationForm
         } = this.props;
 
         return (
-            <form onSubmit={handleSubmit}>
-                <fieldset>
+            <Form onSubmit={handleSubmit}>
+                <Segment>
                     <label>
                         <Field name='scep_type' component='input' type='radio' value='internal'/>
                         <span className="label-inline">Use internal SCEP service</span>
                     </label>
                     <p>Your devices will contact this server directly to request their identity certificate.
                     Use this if you are testing or developing commandment.</p>
-                </fieldset>
-                <fieldset>
+                    
+                </Segment>
+                <Segment>
                     <label>
                         <Field name='scep_type' component='input' type='radio' value='external'/>
                         <span className="label-inline">Use external SCEP service</span>
@@ -63,8 +67,8 @@ export class SCEPConfigurationForm extends React.Component<SCEPConfigurationForm
                     <Field id='scepSubject' name='scep_subject' component='input' type='text' placeholder='O=Commandment/OU=IT/CN=%HardwareUUID%'/>
 
                     <input className="button-primary" type="submit" value="Save"/>
-                </fieldset>
-            </form>
+                </Segment>
+            </Form>
         )
     }
 }

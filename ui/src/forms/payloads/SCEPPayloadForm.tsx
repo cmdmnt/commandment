@@ -1,6 +1,9 @@
 import * as React from 'react';
 import {Field, reduxForm, FormProps} from 'redux-form';
-
+import {Header, Icon, Segment, Message, Input, Button, Grid, Form, Radio} from 'semantic-ui-react';
+import {SemanticInput} from "../fields/SemanticInput";
+import {SemanticDropdown} from "../fields/SemanticDropdown";
+import {SemanticField} from "../fields/SemanticField";
 
 export interface FormData {
     id?: string;
@@ -35,97 +38,46 @@ export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undef
         } = this.props;
 
         return (
-            <form onSubmit={handleSubmit}>
-                <div className='row'>
-                    <div className='column'>
-                        <label htmlFor='url'>URL</label>
-                        <Field id='url' name='url' component='input' type='url' placeholder='http://scep.example.com/scep' required />
-                    </div>
-                    <div className='column-30 column-bottom'>
-                        <button className="button button-outline form-field-button" onClick={this.handleClickTest}>Test + Fingerprint</button>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
-                        <label htmlFor='cafingerprint'>CA Fingerprint <small className='float-right'>A fingerprint ensures your devices trust this server only</small></label>
-                        <Field id='cafingerprint' name='ca_fingerprint' component='input' type='text' />
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
-                        <label htmlFor='name'>Name <small className='float-right'>Optional. Any string that is understood by the SCEP server.</small></label>
-                        <Field id='name' name='name' component='input' type='text' placeholder='CA-NAME or organization.org' />
-        
+            <Form onSubmit={handleSubmit}>
+                <Field id='url' label='URL' name='url' component={SemanticInput} type='url' placeholder='http://scep.example.com/scep' required />
+                <Button primary onClick={this.handleClickTest}>Test + Fingerprint</Button>
 
-                        <label htmlFor='subject'>Subject</label>
-                        <Field id='subject' name='subject' component='input' type='text' placeholder='O=Commandment/OU=IT/CN=%HardwareUUID%' />
-
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
-                        <label htmlFor='challenge'>Challenge <small className='float-right'>Optional. Used as the pre-shared secret for automatic enrollment</small></label>
-                        <Field id='challenge' name='challenge' component='input' type='password' />
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
-                        <h4>Key size (in bits)</h4>
-                        <label>
-                            <Field id='key_size_1024' component='input' type='radio' name='key_size' value={1024} />
-                            <span className='label-inline'>1024</span>
-                        </label>
-                        <label>
-                            <Field id='key_size_2048' component='input' type='radio' name='key_size' value={2048} />
-                            <span className='label-inline'>2048</span>
-                        </label>
-                    </div>
-                    <div className='column'>
-                        <h4>Use SCEP key for</h4>
-
-                        <label>
-                            <Field id='key_usage_signing' name='key_usage' component='input' type='radio' value={1} />
-                            <span className='label-inline' >Signing</span>
-                        </label>
-
-                        <label>
-                            <Field id='key_usage_encryption' name='key_usage' component='input' type='radio' value={4} />
-                            <span className='label-inline'>Encryption</span>
-                        </label>
-
-                        <label>
-                            <Field id='key_usage_both' name='key_usage' component='input' type='radio' value={5} />
-                            <span className='label-inline'>Signing + Encryption</span>
-                        </label>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
+                <small className='float-right'>A fingerprint ensures your devices trust this server only</small>
+                <Field label='CA Fingerprint' id='cafingerprint' name='ca_fingerprint' component={SemanticInput} type='text' />
 
 
-                        <label htmlFor='subject_alt_name'>SubjectAltName</label>
-                        <Field id='subject_alt_name' name='subject_alt_name' component='input' type='text' />
+                <small className='float-right'>Optional. Any string that is understood by the SCEP server.</small>
+                <Field label='Name' id='name' name='name' component={SemanticInput} type='text' placeholder='CA-NAME or organization.org' />
 
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
-                        <label htmlFor='retries'>Retries</label>
-                        <Field id='retries' name='retries' component='input' type='number' />
-                        <p>The number of times the device should retry if the server sends a PENDING response</p>
-                    </div>
-                    <div className='column'>
-                        <label htmlFor='retry_delay'>Retry Delay</label>
-                        <Field id='retry_delay' name='retry_delay' component='input' type='number' />
-                        <p>The number of seconds to wait between subsequent retries. The first retry is attempted without this delay</p>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
-                        <button type="submit">Submit</button>
-                    </div>
-                </div>
-            </form>
+                <Field label='Subject' id='subject' name='subject' component={SemanticInput} type='text' placeholder='O=Commandment/OU=IT/CN=%HardwareUUID%' />
+                
+                <small className='float-right'>Optional. Used as the pre-shared secret for automatic enrollment</small>
+                <Field label='Challenge' id='challenge' name='challenge' component={SemanticInput} type='password' />
+
+                <Form.Group>
+                    <label>Key size (in bits)</label>
+                    <Field id='key_size_1024' component={SemanticField} control={Radio} type='radio' name='key_size' label='1024' value={1024} />
+                    <Field id='key_size_2048' component={SemanticField} control={Radio} type='radio' name='key_size' label='2048' value={2048} />
+                </Form.Group>
+
+                <Form.Group>
+                    <label>Use SCEP key for</label>
+                    <Field id='key_usage_signing' name='key_usage' component={SemanticField} control={Radio} type='radio' value={1} label='Signing' />
+                    <Field id='key_usage_encryption' name='key_usage' component={SemanticField} control={Radio} type='radio' value={4} label='Encryption' />
+                    <Field id='key_usage_both' name='key_usage' component={SemanticField} control={Radio} type='radio' value={5} label='Both' />
+                </Form.Group>
+                
+                <Field id='subject_alt_name' name='subject_alt_name' component={SemanticInput} label='SubjectAltName' type='text' />
+
+
+                <Field id='retries' label='Retries' name='retries' component={SemanticInput} type='number' />
+                <p>The number of times the device should retry if the server sends a PENDING response</p>
+
+                <Field id='retry_delay' label='Retry Delay' name='retry_delay' component={SemanticInput} type='number' />
+                <p>The number of seconds to wait between subsequent retries. The first retry is attempted without this delay</p>
+
+                <Button type="submit">Submit</Button>
+            </Form>
         );
     }
 }

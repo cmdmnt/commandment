@@ -7,6 +7,7 @@ import * as actions from '../../actions/configuration/scep';
 import {RootState} from "../../reducers/index";
 import {bindActionCreators} from "redux";
 import {SCEPState} from "../../reducers/configuration/scep";
+import {Container, Header} from 'semantic-ui-react';
 
 
 interface ReduxStateProps {
@@ -59,10 +60,8 @@ export class SCEPPage extends React.Component<OwnProps, undefined> {
         } = this.props;
 
         return (
-            <div className='SCEPPage container top-margin'>
-                <div className='row'>
-                    <div className='column'>
-                        <h1>SCEP Configuration</h1>
+            <Container className='SCEPPage'>
+                <Header as='h1'>SCEP Configuration</Header>
                         <p>
                             The SCEP Configuration controls the parameters of certificates issued to devices via your
                             SCEP service.
@@ -72,9 +71,8 @@ export class SCEPPage extends React.Component<OwnProps, undefined> {
                             onSubmit={this.handleSubmit}
                             onClickTest={this.handleTest}
                         />
-                    </div>
-                </div>
-            </div>
+
+            </Container>
         )
     }
 

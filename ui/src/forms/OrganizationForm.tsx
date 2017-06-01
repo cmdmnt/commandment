@@ -3,7 +3,9 @@ import {Field, reduxForm, FormProps} from 'redux-form';
 
 import './OrganizationForm.scss';
 import {required, reverseDns} from "../validations";
-import {textInput} from "./fields/TextInput";
+import {Header, Icon, Segment, Message, Input, Button, Grid, Form} from 'semantic-ui-react';
+import {SemanticInput} from "./fields/SemanticInput";
+import {SemanticDropdown} from "./fields/SemanticDropdown";
 
 export interface FormData {
     name: string;
@@ -31,62 +33,57 @@ export class OrganizationForm extends React.Component<OrganizationFormProps, und
         } = this.props;
 
         return (
-            <form onSubmit={handleSubmit}>
-                <fieldset className='top-margin'>
-                    <h3><i className='fa fa-home' /> General Information</h3>
-                    <blockquote>These details are shown in configuration profiles</blockquote>
-                    <label htmlFor='name'>Name <small className='float-right'>The name of your organization</small></label>
-                    <Field name='name' component={textInput} type='text' placeholder='Acme Inc.' id='name'
-                           required validate={required} />
+            <Form onSubmit={handleSubmit}>
+                <Message attached>These details are shown in configuration profiles</Message>
+                <Segment attached>
+                    <Header as='h3'><Icon name='home'/> General Information</Header>
+                    
+                    <small className='float-right'>The name of your organization</small>
+                    <Field name='name' component={SemanticInput} label='Name' type='text' placeholder='Acme Inc.'
+                           id='name'
+                           required validate={required}/>
 
+                    <small className='float-right'>reverse style DNS name of your organization</small>
+                    <Field name='payload_prefix' component={SemanticInput} label='Prefix' type='text'
+                           placeholder='com.acme'
+                           id='payload-prefix' validate={[required, reverseDns]} required/>
+                </Segment>
 
-                    <label htmlFor='payload-prefix'>Prefix <small className='float-right'>reverse style DNS name of your organization</small></label>
-                    <Field name='payload_prefix' component={textInput} type='text' placeholder='com.acme'
-                           id='payload-prefix' validate={[required, reverseDns]} required />
-                </fieldset>
-                <hr />
-                <fieldset>
-
-                    <h3><i className='fa fa-certificate' /> Certificate Details</h3>
-                    <blockquote>These details will be shown on any certificates issued by the MDM</blockquote>
-
-                    <div className='row'>
-                        <div className='column'>
-                            <label htmlFor='x509ou'>OU or Department</label>
-                            <Field name='x509_ou' component='input' type='text' id='x509ou' placeholder='IT' />
-                        </div>
-                        <div className='column'>
-                            <label htmlFor='x509o'>Organization Name</label>
-                            <Field name='x509_o' component='input' type='text' id='x509o' placeholder='Acme' />
-                        </div>
-                    </div>
-                    <div className='row'>
-                        <div className='column'>
-                            <label htmlFor='x509-st'>State or Province</label>
-                            <Field name='x509_st' component='input' type='text' id='x509-st' />
-                        </div>
-                        <div className='column'>
-                            <label htmlFor='x509-c'>Country</label>
-                            <Field name='x509_c' component='select' id='x509-c'>
+                <Message attached>These details will be shown on any certificates issued by the MDM</Message>
+                <Segment attached>
+                    <Header as='h3'><Icon name='certificate'/> Certificate Details</Header>
+                    
+                    <Grid columns={2}>
+                        <Grid.Column>
+                            <Field name='x509_ou' component={SemanticInput}
+                                   type='text' label='OU or Department' id='x509ou' placeholder='IT'/>
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Field name='x509_o' component={SemanticInput}
+                                   type='text' label='Organization Name' id='x509o' placeholder='Acme'/>
+                        </Grid.Column>
+                    </Grid>
+                    <Grid columns={2}>
+                        <Grid.Column>
+                            <Field name='x509_st' label='State or Province' component={SemanticInput}
+                                   type='text' id='x509-st'/>
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Field name='x509_c' label='Country Code' component={SemanticDropdown} id='x509-c'>
                                 <option value='US'>United States</option>
                                 <option value='AU'>Australia</option>
                             </Field>
-                        </div>
-                    </div>
-
-                </fieldset>
-                <div className='row'>
-                    <div className='column clearfix'>
-                        <button type='button' disabled={pristine || submitting} className='float-left button-outline' onClick={reset}>
-                            Undo Changes
-                        </button>
-                        <button type='submit' disabled={pristine || submitting} className="float-right button-primary">
-                            Save
-                        </button>
-                    </div>
-                </div>
-
-            </form>
+                        </Grid.Column>
+                    </Grid>
+                    
+                    <Button type='button' disabled={pristine || submitting} onClick={reset}>
+                        Undo Changes
+                    </Button>
+                    <Button type='submit' disabled={pristine || submitting} primary>
+                        Save
+                    </Button>
+                </Segment>
+            </Form>
         )
     }
 }

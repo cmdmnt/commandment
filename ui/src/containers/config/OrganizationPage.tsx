@@ -6,6 +6,7 @@ import {bindActionCreators} from "redux";
 import {OrganizationState} from "../../reducers/organization";
 import {OrganizationForm, FormData} from '../../forms/OrganizationForm';
 import {RootState} from "../../reducers/index";
+import {Segment, Header, Container} from 'semantic-ui-react';
 
 interface OrganizationPageState {
     organization: OrganizationState;
@@ -53,21 +54,15 @@ export class OrganizationPage extends React.Component<OrganizationPageProps, und
         } = this.props;
 
         return (
-            <div className='OrganizationPage container top-margin'>
-                <div className='row'>
-                    <div className='column'>
-                        <h1>Organization</h1>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='column'>
-                        <OrganizationForm
-                            initialValues={organization.organization}
-                            onSubmit={this.handleSubmit}
-                        />
-                    </div>
-                </div>
-            </div>
+            <Container className='OrganizationPage'>
+                <Header as='h1'>Organization</Header>
+
+                <OrganizationForm
+                    initialValues={organization.organization}
+                    onSubmit={this.handleSubmit}
+                />
+
+            </Container>
         )
     }
 

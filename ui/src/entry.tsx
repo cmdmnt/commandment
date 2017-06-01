@@ -34,16 +34,18 @@ render(
             <AppContainer>
                 <App>
                     <Route path='/config/assistant' component={AssistantPage} />
-                    <Route path='/config/scep' component={SCEPPage} />
+
                     <Route path='/config/ca' component={InternalCAPage} />
                     <Route path='/config/ssl' component={SSLPage} />
-                    <Route path='/config/organization' component={OrganizationPage} />
+
                     <Route path='/certificates' component={CertificatesPage} />
                     <Route path='/devices' exact component={DevicesPage} />
                     <Route path='/devices/:id' component={DevicePage} />
                     <Route path='/device_groups' exact component={DeviceGroupsPage} />
                     <Route path='/profiles' component={ProfilesPage} />
-                    <Route path='/settings' component={SettingsPage} />
+                    <Route exact path='/settings' component={SettingsPage} />
+                    <Route path='/settings/scep' component={SCEPPage} />
+                    <Route path='/settings/organization' component={OrganizationPage} />
                 </App>
             </AppContainer>
         </ConnectedRouter>

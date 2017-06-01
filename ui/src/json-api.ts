@@ -137,7 +137,7 @@ export interface RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse>
 export const encodeJSONAPIIndexParameters = <R>(wrappedActionCreator: WrappedIndexActionCreator<R>) => (
     size: number = 10,
     pageNumber: number = 1,
-    sort?: [String],
+    sort?: Array<string>,
     filters?: FlaskFilters
 ) => {
     let queryParameters = [];
@@ -167,7 +167,7 @@ export const encodeJSONAPIChildIndexParameters = <R>(wrappedActionCreator: Wrapp
     id: number,
     size: number = 10,
     pageNumber: number = 1,
-    sort?: [String],
+    sort?: Array<string>,
     filters?: FlaskFilters
 ) => {
     let queryParameters = [];

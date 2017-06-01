@@ -23,13 +23,17 @@ interface AssistantPageDispatchProps {
     newCertificateSigningRequest: (purpose: string) => void;
 }
 
-interface AssistantPageProps extends AssistantPageDispatchProps, AssistantPageStateProps, RouteComponentProps<any> {
+interface OwnProps {
     handleGenerateSSLCSR: () => void;
 }
 
-@connect<AssistantPageStateProps, AssistantPageDispatchProps, AssistantPageProps>(
+interface AssistantPageProps extends AssistantPageDispatchProps, AssistantPageStateProps, RouteComponentProps<any> {
+
+}
+
+@connect<AssistantPageStateProps, AssistantPageDispatchProps, OwnProps>(
     (state: RootState, ownProps?: any): AssistantPageStateProps => {
-        return state.assistant
+        return {assistant: state.assistant};
     },
     (dispatch: Dispatch<any>): AssistantPageDispatchProps => {
         return bindActionCreators({
