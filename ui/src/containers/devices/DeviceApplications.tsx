@@ -62,7 +62,8 @@ export class DeviceApplications extends React.Component<DeviceApplicationsProps,
             this.props.fetchInstalledApplications(
                 this.props.match.params.id,
                 nextGriddleState.pageSize,
-                nextGriddleState.currentPage, [],
+                nextGriddleState.currentPage,
+                [],
                 [{ name: 'name', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
         }
     }

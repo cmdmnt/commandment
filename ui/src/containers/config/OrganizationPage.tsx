@@ -39,7 +39,7 @@ interface OrganizationPageProps extends OrganizationPageState, OrganizationPageD
 )
 export class OrganizationPage extends React.Component<OrganizationPageProps, undefined> {
 
-    componentWillMount() {
+    componentWillMount?() {
         this.props.read();
     }
 

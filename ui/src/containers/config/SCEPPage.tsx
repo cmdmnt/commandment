@@ -41,7 +41,7 @@ interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentPr
 )
 export class SCEPPage extends React.Component<OwnProps, undefined> {
 
-    componentWillMount() {
+    componentWillMount?() {
         this.props.read();
     }
 

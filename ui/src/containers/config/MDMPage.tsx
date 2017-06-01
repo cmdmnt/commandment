@@ -32,7 +32,7 @@ interface MDMPageProps extends MDMPageState, MDMPageDispatchProps, RouteComponen
 )
 export class MDMPage extends React.Component<MDMPageProps & RouteComponentProps<any>, MDMPageState> {
 
-    componentWillMount(): void {
+    componentWillMount?(): void {
         this.props.fetchCertificatesForType('mdm.pushcert');
         this.props.fetchCertificatesForType('mdm.cacrt');
     }

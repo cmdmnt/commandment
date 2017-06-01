@@ -1,10 +1,14 @@
 import * as React from 'react';
 import {Table, Menu, Icon} from 'semantic-ui-react';
+import {Dispatch} from 'react-redux';
 
 interface SUIPageListProps {
     maxPages: number;
     currentPage: number;
     setPage: (pageNumber: number) => void;
+    previous: any;
+    next: any;
+    dispatch: Dispatch<any>;
 }
 
 export class SUIPageList extends React.Component<SUIPageListProps, undefined> {

@@ -1,6 +1,9 @@
 import {JSONAPI_HEADERS} from "../constants";
 import {CALL_API} from "redux-api-middleware";
-import {encodeJSONAPIChildIndexParameters, RSAAIndexActionRequest, RSAAIndexActionResponse} from "../../json-api";
+import {
+    encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
+    RSAAIndexActionResponse
+} from "../../json-api";
 import {InstalledCertificate} from "../../models";
 
 
@@ -11,7 +14,7 @@ export const CERTIFICATES_SUCCESS: CERTIFICATES_SUCCESS = 'devices/CERTIFICATES_
 export type CERTIFICATES_FAILURE = 'devices/CERTIFICATES_FAILURE';
 export const CERTIFICATES_FAILURE: CERTIFICATES_FAILURE = 'devices/CERTIFICATES_FAILURE';
 
-export type CertificatesActionRequest = RSAAIndexActionRequest<CERTIFICATES_REQUEST, CERTIFICATES_SUCCESS, CERTIFICATES_FAILURE>;
+export type CertificatesActionRequest = RSAAChildIndexActionRequest<CERTIFICATES_REQUEST, CERTIFICATES_SUCCESS, CERTIFICATES_FAILURE>;
 export type CertificatesActionResponse = RSAAIndexActionResponse<CERTIFICATES_REQUEST, CERTIFICATES_SUCCESS, CERTIFICATES_FAILURE, InstalledCertificate>;
 
 export const certificates = encodeJSONAPIChildIndexParameters((device_id: number, queryParameters: Array<String>)  => {

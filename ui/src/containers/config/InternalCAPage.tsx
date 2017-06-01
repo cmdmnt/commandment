@@ -37,7 +37,7 @@ interface CAPageProps extends CAPageState, CAPageDispatchProps, RouteComponentPr
 )
 export class InternalCAPage extends React.Component<CAPageProps, undefined> {
 
-    componentWillMount() {
+    componentWillMount?() {
         this.props.fetchCACertificates();
     }
 

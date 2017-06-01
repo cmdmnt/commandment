@@ -65,7 +65,7 @@ interface DevicesPageState {
 )
 export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageState> {
 
-    componentWillMount(): void {
+    componentWillMount?(): void {
         this.props.index();
     }
 

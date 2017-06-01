@@ -1,4 +1,6 @@
 import * as actions from '../../actions/certificates/ssl';
+import {JSONAPIListResponse, JSONAPIObject} from "../../json-api";
+import {Certificate} from "../../models";
 
 export interface SSLState {
     items?: JSONAPIListResponse<JSONAPIObject<Certificate>>;

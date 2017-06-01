@@ -47,7 +47,7 @@ interface SSLPageProps extends SSLPageState, SSLPageDispatchProps, RouteComponen
 )
 export class SSLPage extends React.Component<SSLPageProps, undefined> {
 
-    componentWillMount() {
+    componentWillMount?() {
         this.props.fetchPushCertificates();
         this.props.fetchSSLCertificates();
     }

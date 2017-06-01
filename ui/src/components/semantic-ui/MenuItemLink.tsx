@@ -10,6 +10,6 @@ interface MenuItemLinkProps {
 
 export const MenuItemLink = ({ to, children, activeOnlyWhenExact = false }: MenuItemLinkProps) => (
     <Route path={to} exact={activeOnlyWhenExact} children={({ match }) => (
-        <Menu.Item as={Link} to={to} active={match}>{children}</Menu.Item>
+        <Menu.Item as={Link} to={to} active={!!match}>{children}</Menu.Item>
     )}/>
 );

@@ -1,4 +1,6 @@
 import * as actions from '../../actions/certificates/ca';
+import {JSONAPIListResponse, JSONAPIObject} from "../../json-api";
+import {Certificate} from "../../models";
 
 export interface CAState {
     items?: JSONAPIListResponse<JSONAPIObject<Certificate>>;

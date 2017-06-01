@@ -1,6 +1,9 @@
 import {JSONAPI_HEADERS} from "../constants";
 import {CALL_API} from "redux-api-middleware";
-import {encodeJSONAPIChildIndexParameters, RSAAIndexActionRequest, RSAAIndexActionResponse} from "../../json-api";
+import {
+    encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
+    RSAAIndexActionResponse
+} from "../../json-api";
 import {InstalledApplication} from "../../models";
 
 
@@ -11,7 +14,7 @@ export const PROFILES_SUCCESS: PROFILES_SUCCESS = 'devices/PROFILES_SUCCESS';
 export type PROFILES_FAILURE = 'devices/PROFILES_FAILURE';
 export const PROFILES_FAILURE: PROFILES_FAILURE = 'devices/PROFILES_FAILURE';
 
-export type InstalledProfilesActionRequest = RSAAIndexActionRequest<PROFILES_REQUEST, PROFILES_SUCCESS, PROFILES_FAILURE>;
+export type InstalledProfilesActionRequest = RSAAChildIndexActionRequest<PROFILES_REQUEST, PROFILES_SUCCESS, PROFILES_FAILURE>;
 export type InstalledProfilesActionResponse = RSAAIndexActionResponse<PROFILES_REQUEST, PROFILES_SUCCESS, PROFILES_FAILURE, InstalledApplication>;
 
 export const profiles = encodeJSONAPIChildIndexParameters((device_id: number, queryParameters: Array<String>)  => {

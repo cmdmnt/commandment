@@ -1,4 +1,6 @@
 import * as actions from '../../actions/certificates/push';
+import {JSONAPIListResponse, JSONAPIObject} from "../../json-api";
+import {Certificate} from "../../models";
 
 export interface PushState {
     items?: JSONAPIListResponse<JSONAPIObject<Certificate>>;

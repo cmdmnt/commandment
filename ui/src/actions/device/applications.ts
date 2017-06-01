@@ -1,6 +1,8 @@
 import {JSONAPI_HEADERS} from "../constants";
 import {CALL_API} from "redux-api-middleware";
-import {encodeJSONAPIChildIndexParameters, RSAAIndexActionRequest, RSAAIndexActionResponse} from "../../json-api";
+import {
+    encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest, RSAAIndexActionResponse
+} from "../../json-api";
 import {InstalledApplication} from "../../models";
 
 
@@ -11,9 +13,13 @@ export const APPLICATIONS_SUCCESS: APPLICATIONS_SUCCESS = 'devices/APPLICATIONS_
 export type APPLICATIONS_FAILURE = 'devices/APPLICATIONS_FAILURE';
 export const APPLICATIONS_FAILURE: APPLICATIONS_FAILURE = 'devices/APPLICATIONS_FAILURE';
 
-export type InstalledApplicationsActionRequest = RSAAIndexActionRequest<APPLICATIONS_REQUEST, APPLICATIONS_SUCCESS, APPLICATIONS_FAILURE>;
+export type InstalledApplicationsActionRequest = RSAAChildIndexActionRequest<APPLICATIONS_REQUEST, APPLICATIONS_SUCCESS, APPLICATIONS_FAILURE>;
 export type InstalledApplicationsActionResponse = RSAAIndexActionResponse<APPLICATIONS_REQUEST, APPLICATIONS_SUCCESS, APPLICATIONS_FAILURE, InstalledApplication>;
 
+/**
+ *
+ * @type {(id:number, size?:number, pageNumber?:number, sort?:String[], filters?:FlaskFilters)=>R}
+ */
 export const applications = encodeJSONAPIChildIndexParameters((device_id: number, queryParameters: Array<String>)  => {
     return {
         [CALL_API]: {
