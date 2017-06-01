@@ -10,6 +10,8 @@ import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
 import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
 import {CertificateTypeIcon} from "../../components/CertificateTypeIcon";
 import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
+import {CertificateRow} from "../../components/griddle/CertificateRow";
+import {ListTableBody, ListTableContainer} from "../../components/griddle/ListTable";
 
 interface ReduxStateProps {
     installed_certificates: InstalledCertificatesState;
@@ -87,7 +89,12 @@ export class DeviceCertificates extends React.Component<DeviceCertificatesProps,
                                 }
                             }}
                             events={this.props.events}
-                            components={{Layout}}
+                            components={{
+                                Layout,
+                                Row: CertificateRow,
+                                TableContainer: ListTableContainer,
+                                TableBody: ListTableBody
+                            }}
                             pageProperties={{
                                 currentPage: griddleState.currentPage,
                                 pageSize: griddleState.pageSize,

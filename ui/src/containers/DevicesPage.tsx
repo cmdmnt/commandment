@@ -9,14 +9,13 @@ import {RootState} from "../reducers/index";
 import {RouteComponentProps} from "react-router";
 import {DevicesState} from "../reducers/devices";
 import {IndexActionRequest} from "../actions/devices";
-import {ModelIcon} from '../components/ModelIcon';
-import {DeviceLink} from '../components/griddle/DeviceLink';
 import {SinceNowUTC} from "../components/griddle/SinceNowUTC";
 import {SimpleLayout} from '../components/griddle/SimpleLayout';
 import {SelectionPlugin} from '../griddle-plugins/selection';
 import {DeviceColumn} from "../components/griddle/DeviceColumn";
 import {MultiAttrCellPlugin} from "../griddle-plugins/multiattr-cell/index";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
+import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
 
 
 const rowDataSelector = (state: any, { griddleKey }: { griddleKey: string }) => {
@@ -53,6 +52,8 @@ function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
 
 interface DevicesPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
     componentWillMount: () => void;
+    griddleState: GriddleDecoratorState;
+    events: GriddleDecoratorHandlers;
 }
 
 interface DevicesPageState {
@@ -63,44 +64,18 @@ interface DevicesPageState {
     mapStateToProps,
     mapDispatchToProps
 )
+@griddle
 export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageState> {
 
     componentWillMount?(): void {
         this.props.index();
     }
 
-    handleFilter = (filterText: string) => {
-        // TODO: debounce filter text
-    };
-
-    handleSort = (sortProperties: { id: string; }) => {
-        console.dir(sortProperties);
-    };
-
-    handleNextPage = () => {
-
-    };
-
-    handlePrevPage = () => {
-
-    };
-
-    handleGetPage = (pageNumber: number) => {
-        console.log(pageNumber);
-    };
-
     render(): JSX.Element {
         const {
+            griddleState,
             devices
         } = this.props;
-
-        const eventHandlers = {
-            onFilter: this.handleFilter,
-            onSort: this.handleSort,
-            onNext: this.handleNextPage,
-            onPrev: this.handlePrevPage,
-            onGetPage: this.handleGetPage
-        };
 
         return (
             <Container className='DevicesPage'>
@@ -111,8 +86,8 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
                         <Griddle
                             data={devices.items}
                             pageProperties={{
-                                currentPage: devices.currentPage,
-                                pageSize: devices.pageSize,
+                                currentPage: griddleState.currentPage,
+                                pageSize: griddleState.pageSize,
                                 recordCount: devices.recordCount
                             }}
                             styleConfig={{
@@ -120,7 +95,7 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
                                     Table: 'ui celled table'
                                 }
                             }}
-                            events={eventHandlers}
+                            events={this.props.events}
                             plugins={[SemanticUIPlugin(), SelectionPlugin()]}
                             components={{
                                 Layout: SimpleLayout

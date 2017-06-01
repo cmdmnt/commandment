@@ -17,23 +17,29 @@ export interface FormData {
 }
 
 interface OrganizationFormProps extends FormProps<FormData, any, any> {
-
+    loading: boolean;
 }
 
 @reduxForm<FormData, OrganizationFormProps, undefined>({
     form: 'organization'
 })
 export class OrganizationForm extends React.Component<OrganizationFormProps, undefined> {
+
+    static defaultProps = {
+        loading: false
+    };
+
     render() {
         const {
             handleSubmit,
             pristine,
             reset,
-            submitting
+            submitting,
+            loading
         } = this.props;
 
         return (
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} loading={loading}>
                 <Message attached>These details are shown in configuration profiles</Message>
                 <Segment attached>
                     <Header as='h3'><Icon name='home'/> General Information</Header>

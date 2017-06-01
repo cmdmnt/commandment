@@ -53,7 +53,6 @@ export function organization(state: OrganizationState = initialState, action: Or
                 errorDetail: action.payload
             };
         case actions.READ_SUCCESS:
-            console.dir(action);
             return {
                 ...state,
                 loading: false,

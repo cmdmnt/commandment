@@ -67,6 +67,7 @@ export class SCEPPage extends React.Component<OwnProps, undefined> {
                             SCEP service.
                         </p>
                         <SCEPPayloadForm
+                            loading={scep.loading}
                             initialValues={scep.data}
                             onSubmit={this.handleSubmit}
                             onClickTest={this.handleTest}

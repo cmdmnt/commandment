@@ -11,7 +11,10 @@ export const READ_SUCCESS: READ_SUCCESS = 'organization/READ_SUCCESS';
 export type READ_FAILURE = 'organization/READ_FAILURE';
 export const READ_FAILURE: READ_FAILURE = 'organization/READ_FAILURE';
 
-export type ReadActionRequest = RSAAReadActionRequest<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
+export interface ReadActionRequest {
+    (): RSAA<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
+}
+
 export type ReadActionResponse = RSAAReadActionResponse<READ_REQUEST, READ_SUCCESS, READ_FAILURE, Organization>;
 
 export const read: ReadActionRequest = () => {

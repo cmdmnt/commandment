@@ -59,7 +59,9 @@
     "whatwg-fetch": "^2.0.3"
   },
   "dependencies": {
+    "@types/prop-types": "^15.5.1",
     "milligram-scss": "^1.3.0",
+    "prop-types": "^15.5.10",
     "reselect": "^3.0.1",
     "semantic-ui-css": "^2.2.10",
     "semantic-ui-react": "^0.68.3"

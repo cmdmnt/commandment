@@ -12,6 +12,13 @@ export interface GriddleDecoratorState {
     sortColumnId: string;
 }
 
+export interface GriddleDecoratorHandlers {
+    handleNext: () => void;
+    handlePrevious: () => void;
+    handleFilter: (value: string) => void;
+    handleSort: (sortProperties: { id: string }) => void;
+}
+
 /**
  * This higher order component for Griddle wraps an existing component to provide handlers for paging, filtering and sorting.
  * @param WrappedComponent

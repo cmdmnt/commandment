@@ -1,5 +1,6 @@
 import {ReadActionResponse, PostActionResponse} from '../../actions/configuration/scep';
 import * as actions from "../../actions/configuration/scep";
+import {SCEPConfiguration} from "../../models";
 
 export interface SCEPState {
     data?: SCEPConfiguration;

@@ -2,7 +2,6 @@ import * as React from 'react';
 import {Field, reduxForm, FormProps} from 'redux-form';
 import {Header, Icon, Segment, Message, Input, Button, Grid, Form, Radio} from 'semantic-ui-react';
 import {SemanticInput} from "../fields/SemanticInput";
-import {SemanticDropdown} from "../fields/SemanticDropdown";
 import {SemanticField} from "../fields/SemanticField";
 
 export interface FormData {
@@ -21,12 +20,18 @@ export interface FormData {
 
 interface SCEPPayloadFormProps extends FormProps<FormData, any, any> {
     onClickTest: (url: string) => void;
+    loading: boolean;
 }
 
 @reduxForm<FormData, SCEPPayloadFormProps, undefined>({
     form: 'scep_payload'
 })
 export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undefined> {
+
+    static defaultProps = {
+        loading: false
+    };
+
     handleClickTest = (e: any) => {
         e.preventDefault();
         // TODO: dispatch test action
@@ -34,13 +39,13 @@ export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undef
 
     render() {
         const {
-            handleSubmit
+            handleSubmit,
+            loading
         } = this.props;
 
         return (
-            <Form onSubmit={handleSubmit}>
-                <Field id='url' label='URL' name='url' component={SemanticInput} type='url' placeholder='http://scep.example.com/scep' required />
-                <Button primary onClick={this.handleClickTest}>Test + Fingerprint</Button>
+            <Form onSubmit={handleSubmit} loading={loading}>
+                    <Field id='url' label='URL' name='url' component={SemanticInput} type='url' placeholder='http://scep.example.com/scep' required width={12} />
 
                 <small className='float-right'>A fingerprint ensures your devices trust this server only</small>
                 <Field label='CA Fingerprint' id='cafingerprint' name='ca_fingerprint' component={SemanticInput} type='text' />
