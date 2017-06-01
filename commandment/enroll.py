@@ -4,7 +4,7 @@ from cryptography.hazmat.backends import default_backend
 from flask import current_app, render_template, abort, Blueprint, make_response, url_for
 import os
 from .profiles.models import MDMPayload, Profile, PEMCertificatePayload, SCEPPayload
-from .profiles import PROFILE_CONTENT_TYPE, schema as profile_schema, PayloadScope
+from .profiles import PROFILE_CONTENT_TYPE, plist_schema as profile_schema, PayloadScope
 from .models import db, Organization, SCEPConfig
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from .plistlib.nonewriter import dumps as dumps_none

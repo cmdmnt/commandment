@@ -10,7 +10,7 @@ from .models import db, Certificate, RSAPrivateKey, Organization, Device, Comman
 from .profiles.models import Profile
 from .mdm import commands
 from .schema import OrganizationFlatSchema, ProfileSchema
-from .profiles.schema import ProfileSchema as ProfilePlistSchema
+from .profiles.plist_schema import ProfileSchema as ProfilePlistSchema
 
 flat_api = Blueprint('flat_api', __name__)
 

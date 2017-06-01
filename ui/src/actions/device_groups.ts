@@ -2,10 +2,11 @@
 import { CALL_API, RSAA } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
 import {
-    encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, RSAAIndexActionRequest,
+    encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIListResponse, JSONAPIObject,
+    RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse
 } from "../json-api";
-import {DeviceGroup} from "../models";
+import {Device, DeviceGroup} from "../models";
 
 
 export type INDEX_REQUEST = 'device_groups/INDEX_REQUEST';
@@ -32,3 +33,41 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String
         }
     }
 });
+
+export type POST_REQUEST = 'device_groups/POST_REQUEST';
+export const POST_REQUEST: POST_REQUEST = 'device_groups/POST_REQUEST';
+export type POST_SUCCESS = 'device_groups/POST_SUCCESS';
+export const POST_SUCCESS: POST_SUCCESS = 'device_groups/POST_SUCCESS';
+export type POST_FAILURE = 'device_groups/POST_FAILURE';
+export const POST_FAILURE: POST_FAILURE = 'device_groups/POST_FAILURE';
+
+export interface PostActionRequest {
+    (values: DeviceGroup): RSAA<POST_REQUEST, POST_SUCCESS, POST_FAILURE>;
+}
+
+export interface PostActionResponse {
+    type: POST_REQUEST | POST_FAILURE | POST_SUCCESS;
+    payload?: JSONAPIListResponse<JSONAPIObject<DeviceGroup>>;
+}
+
+export const post: PostActionRequest = (values: DeviceGroup) => {
+
+    return {
+        [CALL_API]: {
+            endpoint: `/api/v1/device_groups`,
+            method: 'POST',
+            types: [
+                POST_REQUEST,
+                POST_SUCCESS,
+                POST_FAILURE
+            ],
+            headers: JSONAPI_HEADERS,
+            body: JSON.stringify({
+                data: {
+                    type: "device_groups",
+                    attributes: values
+                }
+            })
+        }
+    }
+};

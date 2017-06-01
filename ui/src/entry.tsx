@@ -21,6 +21,7 @@ import {DevicePage} from "./containers/DevicePage";
 import {ProfilesPage} from './containers/ProfilesPage';
 import {SettingsPage} from './containers/SettingsPage';
 import {DeviceGroupsPage} from "./containers/DeviceGroupsPage";
+import {DeviceGroupPage} from "./containers/DeviceGroupPage";
 
 const initialState: RootState = {};
 
@@ -42,6 +43,7 @@ render(
                     <Route path='/devices' exact component={DevicesPage} />
                     <Route path='/devices/:id' component={DevicePage} />
                     <Route path='/device_groups' exact component={DeviceGroupsPage} />
+                    <Route path='/device_groups/add' component={DeviceGroupPage} />
                     <Route path='/profiles' component={ProfilesPage} />
                     <Route exact path='/settings' component={SettingsPage} />
                     <Route path='/settings/scep' component={SCEPPage} />

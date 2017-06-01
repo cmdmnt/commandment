@@ -60,6 +60,7 @@
   },
   "dependencies": {
     "@types/prop-types": "^15.5.1",
+    "byte-size": "^3.0.0",
     "milligram-scss": "^1.3.0",
     "prop-types": "^15.5.10",
     "reselect": "^3.0.1",

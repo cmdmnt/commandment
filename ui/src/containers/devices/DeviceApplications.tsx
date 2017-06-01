@@ -10,8 +10,14 @@ import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators} from "redux";
 import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
 import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
+import * as byteSize from 'byte-size';
 
 
+const ByteColumn = ({ value }: { value: number; }) => {
+    const size = byteSize(value);
+
+    return <span>{size.value} {size.unit}</span>;
+};
 
 interface ReduxStateProps {
     applications?: InstalledApplicationsState;
@@ -58,19 +64,32 @@ export class DeviceApplications extends React.Component<DeviceApplicationsProps,
         const {griddleState} = this.props;
         const {griddleState: nextGriddleState} = nextProps;
 
-        if (nextGriddleState.filter !== griddleState.filter || nextGriddleState.currentPage !== griddleState.currentPage) {
+        if (nextGriddleState.filter !== griddleState.filter
+            || nextGriddleState.currentPage !== griddleState.currentPage
+            || nextGriddleState.sortId !== griddleState.sortId
+            || nextGriddleState.sortAscending !== griddleState.sortAscending
+        ) {
+            let sortColumnId = '';
+            if (nextGriddleState.sortId) {
+                sortColumnId = nextGriddleState.sortId.substr('attributes.'.length);
+                if (!nextGriddleState.sortAscending) {
+                    sortColumnId = '-' + sortColumnId;
+                }
+            }
+
             this.props.fetchInstalledApplications(
                 this.props.match.params.id,
                 nextGriddleState.pageSize,
                 nextGriddleState.currentPage,
-                [],
+                [sortColumnId],
                 [{ name: 'name', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
         }
     }
 
     render() {
         const {
-            applications
+            applications,
+            griddleState
         } = this.props;
 
         return (
@@ -86,17 +105,22 @@ export class DeviceApplications extends React.Component<DeviceApplicationsProps,
                             NoResults: 'ui message'
                         }
                     }}
+                    sortProperties={{
+                        id: griddleState.sortId,
+                        sortAscending: griddleState.sortAscending
+                    }}
                     events={this.props.events}
                     components={{Layout}}
                     pageProperties={{
                         recordCount: applications.recordCount,
-                        currentPage: this.props.griddleState.currentPage,
-                        pageSize: this.props.griddleState.pageSize
+                        currentPage: griddleState.currentPage,
+                        pageSize: griddleState.pageSize
                     }}
                 >
                     <RowDefinition>
                         <ColumnDefinition title='Name' id='attributes.name' />
                         <ColumnDefinition title='Version' id="attributes.version" />
+                        <ColumnDefinition title='Size' id="attributes.bundle_size" customComponent={ByteColumn} />
                     </RowDefinition>
                 </Griddle>}
             </div>

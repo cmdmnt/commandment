@@ -9,7 +9,8 @@ export interface GriddleDecoratorState {
     currentPage: number;
     pageSize: number;
     filter: string;
-    sortColumnId: string;
+    sortId: string;
+    sortAscending: boolean;
 }
 
 export interface GriddleDecoratorHandlers {
@@ -35,7 +36,8 @@ export const griddle: GriddleDecorator = (WrappedComponent: React.Component<any,
                 currentPage: 1,
                 pageSize: 20,
                 filter: '',
-                sortColumnId: ''
+                sortId: '',
+                sortAscending: true
             }
         }
 
@@ -56,7 +58,8 @@ export const griddle: GriddleDecorator = (WrappedComponent: React.Component<any,
         };
 
         handleSort = (sortProperties: { id: string }) => {
-            this.setState({ sortColumnId: sortProperties.id });
+            const ascending = (this.state.sortId != sortProperties.id) ? true : !this.state.sortAscending;
+            this.setState({ sortId: sortProperties.id, sortAscending: ascending });
         };
 
         render() {

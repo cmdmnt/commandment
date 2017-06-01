@@ -2,8 +2,9 @@ import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 import {RootState} from "../reducers/index";
 import {bindActionCreators} from "redux";
+import {Link} from 'react-router-dom';
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import {Grid, Header, Container} from 'semantic-ui-react'
+import {Grid, Header, Container, Button} from 'semantic-ui-react'
 import {SelectionPlugin} from '../griddle-plugins/selection';
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 import {SimpleLayout} from "../components/griddle/SimpleLayout";
@@ -63,6 +64,7 @@ export class DeviceGroupsPage extends React.Component<DeviceGroupsPageProps, Dev
                 <Grid>
                     <Grid.Column>
                         <Header as="h1">Groups</Header>
+                        <Button primary as={Link} to='/device_groups/add'>New</Button>
 
                         <Griddle
                             data={device_groups.items}
@@ -70,6 +72,10 @@ export class DeviceGroupsPage extends React.Component<DeviceGroupsPageProps, Dev
                                 currentPage: griddleState.currentPage,
                                 pageSize: griddleState.pageSize,
                                 recordCount: device_groups.recordCount
+                            }}
+                            sortProperties={{
+                                id: griddleState.sortId,
+                                sortAscending: griddleState.sortAscending
                             }}
                             styleConfig={{
                                 classNames: {
@@ -83,6 +89,7 @@ export class DeviceGroupsPage extends React.Component<DeviceGroupsPageProps, Dev
                             }}
                         >
                             <RowDefinition onClick={() => console.log('fmeh')}>
+                                <ColumnDefinition title='Name' id='attributes.name' />
                             </RowDefinition>
                         </Griddle>
                     </Grid.Column>
