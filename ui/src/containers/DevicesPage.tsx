@@ -3,13 +3,13 @@ import {connect, Dispatch} from 'react-redux';
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
 import {Grid, Header, Container} from 'semantic-ui-react'
 
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Store} from "redux";
 import * as actions from '../actions/devices';
 import {RootState} from "../reducers/index";
 import {RouteComponentProps} from "react-router";
 import {DevicesState} from "../reducers/devices";
 import {IndexActionRequest} from "../actions/devices";
-import {ModelIcon} from '../components/griddle/ModelIcon';
+import {ModelIcon} from '../components/ModelIcon';
 import {DeviceLink} from '../components/griddle/DeviceLink';
 import {SinceNowUTC} from "../components/griddle/SinceNowUTC";
 import {SimpleLayout} from '../components/griddle/SimpleLayout';
@@ -17,9 +17,9 @@ import {SelectionPlugin} from '../griddle-plugins/selection';
 import {DeviceColumn} from "../components/griddle/DeviceColumn";
 import {MultiAttrCellPlugin} from "../griddle-plugins/multiattr-cell/index";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
-import { connect } from 'react-redux';
 
-const rowDataSelector = (state, { griddleKey }) => {
+
+const rowDataSelector = (state: any, { griddleKey }: { griddleKey: string }) => {
     return state
         .get('data')
         .find(rowMap => rowMap.get('griddleKey') === griddleKey)

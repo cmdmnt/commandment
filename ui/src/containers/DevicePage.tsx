@@ -58,14 +58,14 @@ interface DevicePageState {
 )
 export class DevicePage extends React.Component<DevicePageProps, DevicePageState> {
 
-    handleAction = (e: SyntheticEvent<any>, {value}) => {
+    handleAction = (e: SyntheticEvent<any>, {value}: {value: string}) => {
         e.preventDefault();
         switch (value) {
             case 'push':
-                this.props.push(this.props.device.device.id);
+                this.props.push(''+this.props.device.device.id);
                 break;
             case 'inventory':
-                this.props.inventory(this.props.device.device.id);
+                this.props.inventory(''+this.props.device.device.id);
                 break;
         }
     };

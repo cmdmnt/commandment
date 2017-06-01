@@ -4,13 +4,12 @@ import {
     ReadActionResponse
 } from "../actions/devices";
 import {CertificatesActionResponse} from '../actions/device/certificates';
-import {isJSONAPIErrorResponsePayload} from "../constants";
 import {commands, DeviceCommandsState} from "./device/commands";
 import {installed_certificates, InstalledCertificatesState} from "./device/installed_certificates";
 import {installed_applications, InstalledApplicationsState} from "./device/installed_applications";
 import {InstalledApplicationsActionResponse} from "../actions/device/applications";
 import {installed_profiles, InstalledProfilesState} from "./device/installed_profiles";
-import {JSONAPIObject} from "../json-api";
+import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Device} from "../models";
 
 

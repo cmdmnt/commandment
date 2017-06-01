@@ -20,7 +20,11 @@ function mapDispatchToProps(dispatch: Dispatch<RootState>): ReduxDispatchProps {
     return bindActionCreators({}, dispatch);
 }
 
-interface SettingsPageProps extends ReduxStateProps, ReduxDispatchProps {
+interface SettingsPageProps {
+
+}
+
+interface SettingsPageState {
 
 }
 
@@ -28,7 +32,7 @@ interface SettingsPageProps extends ReduxStateProps, ReduxDispatchProps {
     mapStateToProps,
     mapDispatchToProps
 )
-export class SettingsPage extends React.Component<SettingsPageProps, undefined> {
+export class SettingsPage extends React.Component<ReduxStateProps & ReduxDispatchProps & SettingsPageProps, SettingsPageState> {
 
     render() {
         const {

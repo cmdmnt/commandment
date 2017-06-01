@@ -1,6 +1,5 @@
 import {COMMANDS_SUCCESS, CommandsActionResponse} from "../../actions/devices";
-import {isJSONAPIErrorResponsePayload} from "../../constants";
-import {JSONAPIObject} from "../../json-api";
+import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {Command} from "../../models";
 
 export interface DeviceCommandsState {

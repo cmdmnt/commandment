@@ -1,7 +1,5 @@
+/// <reference path="../typings/griddle.d.ts" />
 import * as React from 'react';
-import {ComponentDecorator} from "react-redux";
-import {Griddle, SortProperties} from "griddle-react";
-import {FlaskFilters} from "../actions/constants";
 
 interface GriddleDecorator {
     <P, S>(WrappedComponent: React.Component<P, S>): React.Component<P, S & GriddleDecoratorState>;

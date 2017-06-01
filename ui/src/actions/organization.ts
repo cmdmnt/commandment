@@ -1,7 +1,7 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
 import { CALL_API, RSAA } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, JSON_HEADERS} from './constants'
-import {RSAAReadActionRequest, RSAAReadActionResponse} from "../constants";
+import {RSAAReadActionRequest, RSAAReadActionResponse} from "../json-api";
 import {Organization} from "../models";
 
 export type READ_REQUEST = 'organization/READ_REQUEST';

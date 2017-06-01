@@ -2,8 +2,7 @@ import * as actions from '../actions/devices';
 import {
     IndexActionResponse
 } from "../actions/devices";
-import {isJSONAPIErrorResponsePayload} from "../constants";
-import {JSONAPIObject} from "../json-api";
+import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Device} from "../models";
 
 

@@ -41,7 +41,7 @@ interface ProfilesPageState {
 )
 export class ProfilesPage extends React.Component<ProfilesPageProps, ProfilesPageState> {
 
-    componentWillMount(): void {
+    componentWillMount?(): void {
         this.props.index();
     }
 

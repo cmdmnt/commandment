@@ -4,6 +4,8 @@ import {RouteComponentProps} from 'react-router';
 import { MDMConfigurationForm, FormData } from '../../forms/MDMConfigurationForm';
 import {FetchCertificateTypeActionRequest, fetchCertificatesForType} from "../../actions/certificates";
 import {bindActionCreators} from "redux";
+import {JSONAPIDetailResponse} from "../../json-api";
+import {Certificate} from "../../models";
 
 
 interface MDMPageState {

@@ -1,6 +1,6 @@
 import {JSONAPI_HEADERS} from "../constants";
 import {CALL_API} from "redux-api-middleware";
-import {encodeJSONAPIChildIndexParameters, RSAAIndexActionRequest, RSAAIndexActionResponse} from "../../constants";
+import {encodeJSONAPIChildIndexParameters, RSAAIndexActionRequest, RSAAIndexActionResponse} from "../../json-api";
 import {InstalledCertificate} from "../../models";
 
 

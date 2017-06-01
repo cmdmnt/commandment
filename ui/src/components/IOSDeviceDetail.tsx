@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {Device} from "../models";
 
 interface IOSDeviceDetailState {
 

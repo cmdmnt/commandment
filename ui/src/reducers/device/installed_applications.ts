@@ -2,8 +2,7 @@ import {
     APPLICATIONS_SUCCESS,
     InstalledApplicationsActionResponse
 } from "../../actions/device/applications";
-import {isJSONAPIErrorResponsePayload} from "../../constants";
-import {JSONAPIObject} from "../../json-api";
+import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledApplication} from "../../models";
 
 export interface InstalledApplicationsState {

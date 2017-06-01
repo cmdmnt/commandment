@@ -16,12 +16,12 @@ interface CertificateDetailProps {
 export class CertificateDetail extends React.Component<CertificateDetailProps, undefined> {
 
     handleClickDelete = (event: any): void => {
-        this.props.onClickDelete(this.props.certificate.id);
+        this.props.onClickDelete(''+this.props.certificate.id);
     };
 
     handleClickDownload = (event: any): void => {
         event.preventDefault();
-        this.props.onClickDownload(this.props.certificate.id);
+        this.props.onClickDownload(''+this.props.certificate.id);
     };
 
     render() {

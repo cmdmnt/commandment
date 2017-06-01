@@ -1,15 +1,13 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
 import { CALL_API, RSAA } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from './constants'
-import {ThunkAction} from "redux-thunk";
-import {RootState} from "../reducers/index";
 import {
     RSAAIndexActionRequest, RSAAIndexActionResponse, encodeJSONAPIIndexParameters,
     RSAAReadActionRequest, RSAAReadActionResponse
-} from "../constants";
+} from "../json-api";
 import {Profile} from "../models";
 import {JSONAPIDetailResponse} from "../json-api";
-import {Dispatch} from "redux";
+
 
 
 export type INDEX_REQUEST = 'profiles/INDEX_REQUEST';
@@ -68,25 +66,3 @@ export const read: ReadActionRequest = (id: number, include?: Array<string>) => 
     }
 };
 
-export type NEXT_PAGE = 'profiles/NEXT_PAGE';
-export const NEXT_PAGE: NEXT_PAGE = 'profiles/NEXT_PAGE';
-export const nextPage = () => {
-    return {
-        type: NEXT_PAGE
-    };
-};
-
-export type PREV_PAGE = 'profiles/PREV_PAGE';
-export const PREV_PAGE: PREV_PAGE = 'profiles/PREV_PAGE';
-export const prevPage = () => {
-    return {
-        type: PREV_PAGE
-    };
-};
-
-export type SET_PAGE = 'profiles/SET_PAGE';
-export const SET_PAGE: SET_PAGE = 'profiles/SET_PAGE';
-export const setPage: ThunkAction<any, RootState, undefined> = (pageNumber: number) => (dispatch: Dispatch<RootState>, getState) => {
-    
-    // Dispatch index w page
-};

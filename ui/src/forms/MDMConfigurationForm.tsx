@@ -1,5 +1,7 @@
 import * as React from 'react';
 import {Field, reduxForm, FormProps} from 'redux-form';
+import {JSONAPIDetailResponse} from "../json-api";
+import {Certificate} from "../models";
 
 export interface FormData {
     prefix: string;

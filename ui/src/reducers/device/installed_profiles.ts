@@ -2,8 +2,7 @@ import {
     PROFILES_SUCCESS,
     InstalledProfilesActionResponse
 } from "../../actions/device/profiles";
-import {isJSONAPIErrorResponsePayload} from "../../constants";
-import {JSONAPIObject} from "../../json-api";
+import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledProfile} from "../../models";
 
 

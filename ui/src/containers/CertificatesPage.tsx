@@ -17,11 +17,13 @@ interface ReduxDispatchProps {
     index: IndexActionRequest;
 }
 
-interface CertificatesPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
+interface CertificatesPageProps {
+    handleFilter: (filterText: string) => void;
 }
 
 interface CertificatesPageState {
     filter: string;
+
 }
 
 @connect<ReduxStateProps, ReduxDispatchProps, CertificatesPageProps>(
@@ -34,9 +36,9 @@ interface CertificatesPageState {
         }, dispatch);
     }
 )
-export class CertificatesPage extends React.Component<CertificatesPageProps, CertificatesPageState> {
+export class CertificatesPage extends React.Component<CertificatesPageProps & ReduxStateProps & ReduxDispatchProps & RouteComponentProps<any>, CertificatesPageState> {
 
-    componentWillMount(): void {
+    componentWillMount?(): void {
         this.props.index();
     }
 

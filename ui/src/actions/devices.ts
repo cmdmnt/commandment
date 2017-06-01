@@ -4,7 +4,7 @@ import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './consta
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse
-} from "../constants";
+} from "../json-api";
 import {Command, Device} from "../models";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../json-api";
 

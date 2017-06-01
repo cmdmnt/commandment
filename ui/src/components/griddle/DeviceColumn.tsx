@@ -1,10 +1,12 @@
 import * as React from 'react';
 import {ModelIcon} from "../ModelIcon";
 import {Link} from 'react-router-dom';
+import {Device} from "../../models";
+import {JSONAPIObject} from "../../json-api";
 
 
 interface DeviceColumnProps {
-
+    rowData: JSONAPIObject<Device>;
 }
 
 export class DeviceColumn extends React.Component<DeviceColumnProps, undefined> {
@@ -12,9 +14,6 @@ export class DeviceColumn extends React.Component<DeviceColumnProps, undefined> 
         const {
             rowData
         } = this.props;
-
-        console.log('props follow');
-        console.dir(this.props);
 
         return (
             <div>
