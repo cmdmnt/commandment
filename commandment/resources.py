@@ -1,8 +1,9 @@
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
     CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, InstalledApplicationSchema, ProfileSchema, \
-    InstalledCertificateSchema, DeviceGroupSchema, InstalledProfileSchema
+    InstalledCertificateSchema, DeviceGroupSchema, InstalledProfileSchema, TagSchema
 from .models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
-    SSLCertificate, Organization, Command, InstalledApplication, InstalledProfile, InstalledCertificate, DeviceGroup
+    SSLCertificate, Organization, Command, InstalledApplication, InstalledProfile, InstalledCertificate, DeviceGroup, \
+    Tag
 from .profiles.models import Profile
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
@@ -217,4 +218,20 @@ class InstalledProfileDetail(ResourceDetail):
     data_layer = {
         'session': db.session,
         'model': InstalledProfile
+    }
+
+
+class TagsList(ResourceList):
+    schema = TagSchema
+    data_layer = {
+        'session': db.session,
+        'model': Tag
+    }
+
+
+class TagDetail(ResourceDetail):
+    schema = TagSchema
+    data_layer = {
+        'session': db.session,
+        'model': Tag
     }

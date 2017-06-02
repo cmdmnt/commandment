@@ -91,6 +91,16 @@ def download_installed_certificate(installed_certificate_id: int):
     return send_file(bio, 'application/x-x509-ca-cert', True, 'certificate.crt')
 
 
+@flat_api.route('/v1/devices/test/<int:device_id>')
+def device_test(device_id: int):
+    """Testing endpoint for quick and dirty command checking"""
+    d = db.session.query(Device).filter(Device.id == device_id).one()
+
+
+    db.session.commit()
+
+    return 'OK'
+
 @flat_api.route('/v1/devices/inventory/<int:device_id>')
 def device_inventory(device_id: int):
     """Tell a device to produce a full inventory immediately.

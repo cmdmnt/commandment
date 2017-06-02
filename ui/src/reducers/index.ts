@@ -11,6 +11,7 @@ import {device, DeviceState} from "./device";
 import {commands, CommandsState} from './commands';
 import {profiles, ProfilesState} from './profiles';
 import {device_groups, DeviceGroupsState} from "./device_groups";
+import {tags, TagsState} from "./tags";
 
 export interface RootState {
     router?: RouterState;
@@ -24,6 +25,7 @@ export interface RootState {
     commands?: CommandsState;
     profiles?: ProfilesState;
     device_groups?: DeviceGroupsState;
+    tags?: TagsState;
 }
 
 
@@ -38,7 +40,8 @@ export const rootReducer = combineReducers<RootState>({
     device,
     commands,
     profiles,
-    device_groups
+    device_groups,
+    tags
 });
 
 export default rootReducer;

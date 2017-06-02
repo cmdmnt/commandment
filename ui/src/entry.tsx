@@ -44,6 +44,7 @@ render(
                     <Route path='/devices/:id' component={DevicePage} />
                     <Route path='/device_groups' exact component={DeviceGroupsPage} />
                     <Route path='/device_groups/add' component={DeviceGroupPage} />
+                    <Route path='/device_groups/:id' component={DeviceGroupPage} />
                     <Route path='/profiles' component={ProfilesPage} />
                     <Route exact path='/settings' component={SettingsPage} />
                     <Route path='/settings/scep' component={SCEPPage} />

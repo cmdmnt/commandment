@@ -734,3 +734,11 @@ class SubjectAlternativeName(db.Model):
     octet_value = Column(LargeBinary)  # For IPAddress
     
 
+class Tag(db.Model):
+    """This table holds tags, which are categories that are many-to-many and polymorphic to different types of
+    objects."""
+    __tablename__ = 'tags'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    color = Column(String(6), default='888888')

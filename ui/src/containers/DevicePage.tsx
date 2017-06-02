@@ -5,7 +5,7 @@ import {bindActionCreators} from "redux";
 import * as actions from '../actions/devices';
 import {RootState} from "../reducers/index";
 import {Route, RouteComponentProps} from "react-router";
-import {InventoryActionRequest, PushActionRequest, ReadActionRequest} from "../actions/devices";
+import {InventoryActionRequest, PushActionRequest, ReadActionRequest, TestActionRequest} from "../actions/devices";
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
 import {DeviceState} from "../reducers/device";
 import {Container, Grid, Menu, Button, Segment, Dropdown} from 'semantic-ui-react';
@@ -15,14 +15,19 @@ import {DeviceCertificates} from "./devices/DeviceCertificates";
 import {DeviceCommands} from "./devices/DeviceCommands";
 import {DeviceApplications} from "./devices/DeviceApplications";
 import {DeviceProfiles} from "./devices/DeviceProfiles";
+import {TagDropdown} from "../components/TagDropdown";
+import {TagsState} from "../reducers/tags";
+import {index as fetchTags, IndexActionRequest} from '../actions/tags';
 
 interface ReduxStateProps {
     device: DeviceState;
+    tags: TagsState;
 }
 
 function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
     return {
-        device: state.device
+        device: state.device,
+        tags: state.tags
     };
 }
 
@@ -30,13 +35,17 @@ interface ReduxDispatchProps {
     read: ReadActionRequest;
     push: PushActionRequest;
     inventory: InventoryActionRequest;
+    test: TestActionRequest;
+    fetchTags: IndexActionRequest;
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
     return bindActionCreators({
         read: actions.read,
         push: actions.push,
-        inventory: actions.inventory
+        inventory: actions.inventory,
+        test: actions.test,
+        fetchTags
     }, dispatch);
 }
 
@@ -67,11 +76,15 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
             case 'inventory':
                 this.props.inventory(''+this.props.device.device.id);
                 break;
+            case 'test':
+                this.props.test(''+this.props.device.device.id);
+                break;
         }
     };
 
     componentDidMount(): void {
         this.props.read(this.props.match.params.id, []);
+        this.props.fetchTags();
     }
 
     render(): JSX.Element {
@@ -87,8 +100,10 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
                         <Grid.Column>
                             <Dropdown inline text="action" onChange={this.handleAction} options={[
                                 {text: 'Force Push', value: 'push'},
-                                {text: 'Inventory', value: 'inventory'}
+                                {text: 'Inventory', value: 'inventory'},
+                                {text: 'Test', value: 'test'}
                             ]}></Dropdown>
+                            <TagDropdown />
                             <Segment>
                                 {device && <MacOSDeviceDetail device={device}/>}
                             </Segment>

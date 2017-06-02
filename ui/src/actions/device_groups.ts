@@ -2,7 +2,8 @@
 import { CALL_API, RSAA } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
 import {
-    encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIListResponse, JSONAPIObject,
+    encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIDetailResponse, JSONAPIListResponse,
+    JSONAPIObject,
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse
 } from "../json-api";
@@ -33,6 +34,38 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String
         }
     }
 });
+
+export type READ_REQUEST = 'device_groups/READ_REQUEST';
+export const READ_REQUEST: READ_REQUEST = 'device_groups/READ_REQUEST';
+export type READ_SUCCESS = 'device_groups/READ_SUCCESS';
+export const READ_SUCCESS: READ_SUCCESS = 'device_groups/READ_SUCCESS';
+export type READ_FAILURE = 'device_groups/READ_FAILURE';
+export const READ_FAILURE: READ_FAILURE = 'device_groups/READ_FAILURE';
+
+export type ReadActionRequest = RSAAReadActionRequest<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
+export type ReadActionResponse = RSAAReadActionResponse<READ_REQUEST, READ_SUCCESS, READ_FAILURE, JSONAPIDetailResponse<DeviceGroup, undefined>>;
+
+export const read: ReadActionRequest = (id: number, include?: Array<string>) => {
+
+    let inclusions = '';
+    if (include && include.length) {
+        inclusions = 'include=' + include.join(',')
+    }
+
+    return {
+        [CALL_API]: {
+            endpoint: `/api/v1/device_groups/${id}?${inclusions}`,
+            method: 'GET',
+            types: [
+                READ_REQUEST,
+                READ_SUCCESS,
+                READ_FAILURE
+            ],
+            headers: JSONAPI_HEADERS
+        }
+    }
+};
+
 
 export type POST_REQUEST = 'device_groups/POST_REQUEST';
 export const POST_REQUEST: POST_REQUEST = 'device_groups/POST_REQUEST';

@@ -396,3 +396,16 @@ class ProfileSchema(Schema):
         self_view = 'api_app.profile_detail'
         self_view_kwargs = {'profile_id': '<id>'}
         self_view_many = 'api_app.profiles_list'
+
+
+class TagSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+    color = fields.Str()
+
+    class Meta:
+        type_ = 'tags'
+        self_view = 'api_app.tag_detail'
+        self_view_kwargs = {'tag_id': '<tag_id>'}
+        self_view_many = 'api_app.tags_list'
+

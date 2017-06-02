@@ -46,7 +46,8 @@ interface ReduxDispatchProps {
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
     return bindActionCreators({
-        index: actions.index
+        index: actions.index,
+        fetchDevicesIfRequired: actions.fetchDevicesIfRequired
     }, dispatch);
 }
 
@@ -68,7 +69,8 @@ interface DevicesPageState {
 export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageState> {
 
     componentWillMount?(): void {
-        this.props.index();
+        // this.props.index();
+        this.props.fetchDevicesIfRequired();
     }
 
     render(): JSX.Element {

@@ -7,6 +7,10 @@ import {
 } from "../json-api";
 import {Command, Device} from "../models";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../json-api";
+import {ThunkAction} from "redux-thunk";
+import {RootState} from "../reducers/index";
+
+
 
 
 
@@ -34,6 +38,26 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String
         }
     }
 });
+
+export const fetchDevicesIfRequired: ThunkAction<void, RootState, {}> = (
+        size: number = 10,
+        pageNumber: number = 1,
+        sort?: Array<string>,
+        filters?: FlaskFilters
+    ) => (dispatch, getState) => {
+
+    const { devices } = getState();
+    if (devices.lastReceived) {
+        const now = new Date();
+        const seconds = 10;
+        if ((now.getTime() - devices.lastReceived.getTime()) / 1000 < seconds) {
+            console.log('cache hit');
+            return;
+        }
+    }
+
+    dispatch(index(size, pageNumber, sort, filters));
+};
 
 
 export type READ_REQUEST = 'devices/READ_REQUEST';
@@ -124,6 +148,38 @@ export const inventory: InventoryActionRequest = (id: string) => {
                 INVENTORY_REQUEST,
                 INVENTORY_SUCCESS,
                 INVENTORY_FAILURE
+            ],
+            headers: JSON_HEADERS
+        }
+    }
+};
+
+
+export type TEST_REQUEST = 'devices/TEST_REQUEST';
+export const TEST_REQUEST: TEST_REQUEST = 'devices/TEST_REQUEST';
+export type TEST_SUCCESS = 'devices/TEST_SUCCESS';
+export const TEST_SUCCESS: TEST_SUCCESS = 'devices/TEST_SUCCESS';
+export type TEST_FAILURE = 'devices/TEST_FAILURE';
+export const TEST_FAILURE: TEST_FAILURE = 'devices/TEST_FAILURE';
+
+export interface TestActionRequest {
+    (id: string): RSAA<TEST_REQUEST, TEST_SUCCESS, TEST_FAILURE>;
+}
+
+export interface TestActionResponse {
+    type: TEST_REQUEST | TEST_SUCCESS | TEST_FAILURE;
+    payload?: JSONAPIDetailResponse<any, undefined> | JSONAPIErrorResponse;
+}
+
+export const test: TestActionRequest = (id: string) => {
+    return {
+        [CALL_API]: {
+            endpoint: `/api/v1/devices/test/${id}`,
+            method: 'POST',
+            types: [
+                TEST_REQUEST,
+                TEST_SUCCESS,
+                TEST_FAILURE
             ],
             headers: JSON_HEADERS
         }

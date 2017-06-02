@@ -51,6 +51,12 @@ export interface DeviceGroup {
     name: string;
 }
 
+export interface Tag {
+    id?: string;
+    name: string;
+    color: string;
+}
+
 export interface Organization {
     name: string;
     payload_prefix: string;

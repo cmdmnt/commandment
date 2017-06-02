@@ -11,6 +11,7 @@ import {SimpleLayout} from "../components/griddle/SimpleLayout";
 import {DeviceGroupsState} from "../reducers/device_groups";
 import {index, IndexActionRequest} from '../actions/device_groups';
 import {griddle, GriddleDecoratorState} from "../hoc/griddle";
+import {RouteLinkColumn} from "../components/griddle/RouteLinkColumn";
 
 interface ReduxStateProps {
     device_groups: DeviceGroupsState;
@@ -73,10 +74,6 @@ export class DeviceGroupsPage extends React.Component<DeviceGroupsPageProps, Dev
                                 pageSize: griddleState.pageSize,
                                 recordCount: device_groups.recordCount
                             }}
-                            sortProperties={{
-                                id: griddleState.sortId,
-                                sortAscending: griddleState.sortAscending
-                            }}
                             styleConfig={{
                                 classNames: {
                                     Table: 'ui celled table',
@@ -89,6 +86,7 @@ export class DeviceGroupsPage extends React.Component<DeviceGroupsPageProps, Dev
                             }}
                         >
                             <RowDefinition onClick={() => console.log('fmeh')}>
+                                <ColumnDefinition title='ID' id='id' customComponent={RouteLinkColumn} urlPrefix='/device_groups/' />
                                 <ColumnDefinition title='Name' id='attributes.name' />
                             </RowDefinition>
                         </Griddle>
