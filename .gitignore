@@ -160,6 +160,3 @@ scep_settings.cfg
 
 # UWSGi config
 uwsgi.ini
-
-# Alembic config (local)
-/alembic.ini
