@@ -152,6 +152,11 @@ class CellularTechnology(IntEnum):
     Both = 3
 
 
+device_tags = Table('device_tags', db.metadata,
+                    db.Column('device_id', Integer, ForeignKey('devices.id')),
+                    db.Column('tag_id', Integer, ForeignKey('tags.id')),
+                    )
+
 class Device(db.Model):
     """An enrolled device.
     
@@ -292,6 +297,12 @@ class Device(db.Model):
 
     certificate_id = Column(Integer, ForeignKey('certificates.id'))
     certificate = relationship('Certificate', backref='devices')
+
+    tags = db.relationship(
+        'Tag',
+        secondary=device_tags,
+        back_populates='devices'
+    )
 
     @property
     def unlock_token(self):
@@ -742,3 +753,10 @@ class Tag(db.Model):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     color = Column(String(6), default='888888')
+
+    devices = db.relationship(
+        "Device",
+        secondary=device_tags,
+        back_populates="tags",
+    )
+

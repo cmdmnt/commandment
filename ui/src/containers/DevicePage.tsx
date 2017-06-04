@@ -119,7 +119,7 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
     };
 
     componentDidMount(): void {
-        this.props.fetchDeviceIfRequired(''+this.props.match.params.id, []);
+        this.props.fetchDeviceIfRequired(''+this.props.match.params.id, ['tags']);
         this.props.fetchTags();
     }
 
