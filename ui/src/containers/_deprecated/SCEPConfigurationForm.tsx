@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {Field, reduxForm, FormProps} from 'redux-form';
 import {Header, Icon, Segment, Message, Input, Button, Grid, Form} from 'semantic-ui-react';
-import {SemanticInput} from "./fields/SemanticInput";
-import {SemanticDropdown} from "./fields/SemanticUISelect";
+import {SemanticInput} from "../../forms/fields/SemanticInput";
+import {SemanticDropdown} from "../../forms/fields/SemanticUISelect";
 
 export interface FormData {
     scep_type: 'internal' | 'external';

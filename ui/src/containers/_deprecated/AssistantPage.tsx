@@ -6,10 +6,10 @@ import {Assistant} from '../../components/Assistant';
 import {nextStep, prevStep} from '../../actions/assistant';
 import {newCertificateSigningRequest} from '../../actions/signing_requests';
 import {NextStepAction, PrevStepAction} from "../../actions/assistant";
-import {APNSConfiguration} from '../../components/assistant/APNSConfiguration';
-import {SSLConfiguration} from "../../components/assistant/SSLConfiguration";
-import {SCEPConfiguration} from "../../components/assistant/SCEPConfiguration";
-import {FinalStep} from "../../components/assistant/FinalStep";
+import {APNSConfiguration} from './assistant/APNSConfiguration';
+import {SSLConfiguration} from "./assistant/SSLConfiguration";
+import {SCEPConfiguration} from "./assistant/SCEPConfiguration";
+import {FinalStep} from "./assistant/FinalStep";
 import {RootState} from "../../reducers/index";
 import {AssistantState} from "../../reducers/assistant";
 

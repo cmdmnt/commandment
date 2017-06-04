@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {Field, reduxForm, FormProps} from 'redux-form';
 
-import './OrganizationForm.scss';
 import {required, reverseDns} from "../validations";
 import {Header, Icon, Segment, Message, Divider, Grid, Form} from 'semantic-ui-react';
 import {SemanticInput} from "./fields/SemanticInput";
@@ -99,7 +98,7 @@ export class OrganizationForm extends React.Component<OrganizationFormProps, und
 
                     <Form.Group>
                         <Form.Button type='button' disabled={pristine || submitting} onClick={reset}>
-                            Undo Changes
+                            Revert
                         </Form.Button>
                         <Form.Button type='submit' disabled={pristine || submitting} primary>
                             Save

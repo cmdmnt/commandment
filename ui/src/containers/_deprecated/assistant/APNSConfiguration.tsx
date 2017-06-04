@@ -1,4 +1,4 @@
-/// <reference path="../../typings/rc-upload.d.ts"/>
+/// <reference path="../../../typings/rc-upload.d.ts"/>
 import * as React from 'react';
 import * as Upload from 'rc-upload';
 

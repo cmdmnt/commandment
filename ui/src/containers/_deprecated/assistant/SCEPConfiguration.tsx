@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {SCEPConfigurationForm} from '../../forms/SCEPConfigurationForm';
+import {SCEPConfigurationForm} from '../SCEPConfigurationForm';
 
 interface SCEPConfigurationProps {
 
