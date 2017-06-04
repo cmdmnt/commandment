@@ -50,7 +50,7 @@ export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undef
         } = this.props;
 
         return (
-            <Form onSubmit={handleSubmit} loading={loading} success={pristine && submitted}>
+            <Form onSubmit={handleSubmit} loading={loading} success={submitted}>
                 <Message attached>These details explain how devices will contact your SCEP server.</Message>
                 <Segment attached>
                     <Form.Group>
@@ -105,6 +105,12 @@ export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undef
                            type='number'/>
                     <p>The number of seconds to wait between subsequent retries. The first retry is attempted without
                         this delay</p>
+
+                    <Message
+                        success
+                        header='Form Completed'
+                        content="SCEP details saved"
+                    />
 
                     <Form.Group>
                     <Form.Button type='button' disabled={pristine || submitting} onClick={reset}>

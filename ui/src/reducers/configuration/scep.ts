@@ -5,6 +5,7 @@ import {SCEPConfiguration} from "../../models";
 export interface SCEPState {
     data?: SCEPConfiguration;
     loading: boolean;
+    submitted: boolean;
     error: boolean;
     errorDetail?: any;
 }
@@ -34,6 +35,24 @@ export function scep(state: SCEPState = initialState, action: SCEPAction): SCEPS
                 ...state,
                 loading: false,
                 error: true
+            };
+        case actions.POST_REQUEST:
+            return {
+                ...state,
+                loading: true
+            };
+        case actions.POST_FAILURE:
+            return {
+                ...state,
+                error: true,
+                loading: false
+            };
+        case actions.POST_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                submitted: true
             };
 
         default:
