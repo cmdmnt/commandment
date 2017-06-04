@@ -14,6 +14,6 @@ export const SemanticUISelect: StatelessComponent<FieldProps> = ({ input, meta: 
         label={label}
         error={touched && !!error}
         options={options}
-        onChange={(e: React.SyntheticEvent, { value }) => input.onChange(value)}
+        onChange={(e: React.SyntheticEvent<any>, { value }: { value: string }) => input.onChange(value)}
     />
 );

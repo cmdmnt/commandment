@@ -120,7 +120,7 @@ export interface RSAAChildIndexActionRequest<TRequest, TSuccess, TFailure> {
 }
 
 export interface RSAAReadActionRequest<TRequest, TSuccess, TFailure> {
-    (id: number, include?: Array<string>): RSAA<TRequest, TSuccess, TFailure>;
+    (id: string, include?: Array<string>): RSAA<TRequest, TSuccess, TFailure>;
 }
 
 export interface RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> {

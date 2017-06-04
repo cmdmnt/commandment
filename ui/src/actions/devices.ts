@@ -9,9 +9,7 @@ import {Command, Device} from "../models";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../json-api";
 import {ThunkAction} from "redux-thunk";
 import {RootState} from "../reducers/index";
-
-
-
+import {Dispatch} from "react-redux";
 
 
 export type INDEX_REQUEST = 'devices/INDEX_REQUEST';
@@ -39,12 +37,13 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String
     }
 });
 
-export const fetchDevicesIfRequired: ThunkAction<void, RootState, {}> = (
+
+export const fetchDevicesIfRequired = (
         size: number = 10,
         pageNumber: number = 1,
         sort?: Array<string>,
         filters?: FlaskFilters
-    ) => (dispatch, getState) => {
+    ) => (dispatch: Dispatch<RootState>, getState: () => RootState): ThunkAction<void, RootState, {}> => {
 
     const { devices } = getState();
     if (devices.lastReceived) {
@@ -70,7 +69,7 @@ export const READ_FAILURE: READ_FAILURE = 'devices/READ_FAILURE';
 export type ReadActionRequest = RSAAReadActionRequest<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
 export type ReadActionResponse = RSAAReadActionResponse<READ_REQUEST, READ_SUCCESS, READ_FAILURE, JSONAPIDetailResponse<Device, undefined>>;
 
-export const read: ReadActionRequest = (id: number, include?: Array<string>) => {
+export const read: ReadActionRequest = (id: string, include?: Array<string>) => {
 
     let inclusions = '';
     if (include && include.length) {
