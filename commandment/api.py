@@ -7,7 +7,7 @@ from .resources import CertificatesList, CertificateDetail, CertificateSigningRe
     OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationsList, ProfilesList, ProfileDetail, \
     InstalledCertificatesList, InstalledCertificateDetail, InstalledApplicationDetail, \
     DeviceGroupList, DeviceGroupDetail, DeviceRelationship, CommandRelationship, InstalledProfilesList, \
-    InstalledProfileDetail, TagsList, TagDetail
+    InstalledProfileDetail, TagsList, TagDetail, TagRelationship
 
 # PayloadsList, PayloadDetail,
 
@@ -30,7 +30,8 @@ api.route(PrivateKeyDetail, 'private_key_detail', '/v1/rsa_private_keys/<int:pri
 # Devices
 api.route(DeviceList, 'devices_list', '/v1/devices', '/v1/device_groups/<int:device_group_id>/devices')
 api.route(DeviceDetail, 'device_detail', '/v1/devices/<int:device_id>')
-api.route(CommandRelationship, 'device_commands', '/v1/devices/<int:device_id>/relationship/commands')
+api.route(DeviceRelationship, 'device_commands', '/v1/devices/<int:device_id>/relationships/commands')
+api.route(DeviceRelationship, 'device_tags', '/v1/devices/<int:id>/relationships/tags')
 
 api.route(DeviceGroupList, 'device_groups_list', '/v1/device_groups', '/v1/devices/<int:device_id>/groups')
 api.route(DeviceGroupDetail, 'device_group_detail', '/v1/device_groups/<int:device_group_id>')
@@ -69,4 +70,6 @@ api.route(InstalledProfileDetail, 'installed_profile_detail', '/v1/installed_pro
 
 
 api.route(TagsList, 'tags_list', '/v1/tags')
-api.route(TagDetail, 'tag_detail', 'v1/tags/<tag_id>')
+api.route(TagDetail, 'tag_detail', '/v1/tags/<tag_id>')
+api.route(TagRelationship, 'tag_devices', '/v1/tags/<tag_id>/relationships/devices')
+

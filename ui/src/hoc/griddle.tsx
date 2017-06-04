@@ -1,8 +1,8 @@
-/// <reference path="../typings/griddle.d.ts" />
+/// <reference path="../typings/griddle-react.d.ts" />
 import * as React from 'react';
 
-interface GriddleDecorator {
-    <P, S>(WrappedComponent: React.Component<P, S>): React.Component<P, S & GriddleDecoratorState>;
+interface GriddleDecoratorFactory {
+    <P>(WrappedComponent: React.ComponentClass<P>): React.ComponentClass<P>;
 }
 
 export interface GriddleDecoratorState {
@@ -25,8 +25,8 @@ export interface GriddleDecoratorHandlers {
  * @param WrappedComponent
  * @returns React.Component
  */
-export const griddle: GriddleDecorator = (WrappedComponent: React.Component<any, any>) => {
-    class GriddleDecorator extends React.Component<any, GriddleDecoratorState> {
+export const griddle: GriddleDecoratorFactory = (WrappedComponent: React.ComponentClass<any>) => {
+    class GriddleDecorator extends React.Component<any, GriddleDecoratorState> implements React.ComponentClass<{}> {
 
         displayName: string;
 

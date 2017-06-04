@@ -44,7 +44,7 @@ export class OrganizationPage extends React.Component<OrganizationPageProps, und
         this.props.read();
     }
 
-    handleSubmit = (values: FormData): void => {
+    private handleSubmit: (values: FormData) => void = (values) => {
         this.props.post(values);
     };
 

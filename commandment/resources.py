@@ -235,3 +235,11 @@ class TagDetail(ResourceDetail):
         'session': db.session,
         'model': Tag
     }
+
+
+class TagRelationship(ResourceRelationship):
+    schema = TagSchema
+    data_layer = {
+        'session': db.session,
+        'model': Tag
+    }

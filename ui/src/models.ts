@@ -46,6 +46,9 @@ export interface Device {
     sip_enabled: boolean;
 }
 
+// Valid JSON-API relationships
+export type DeviceRelationship = 'commands' | 'tags' | 'groups' | 'profiles';
+
 export interface DeviceGroup {
     id?: string;
     name: string;

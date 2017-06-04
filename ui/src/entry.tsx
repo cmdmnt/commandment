@@ -9,12 +9,12 @@ import {configureStore} from './store/configureStore';
 import {RootState} from './reducers';
 
 import {App} from './containers/App';
-import {AssistantPage} from './containers/_deprecated/AssistantPage';
+import {AssistantPage} from '../_deprecated/AssistantPage';
 import {SCEPPage} from './containers/config/SCEPPage';
 import '../sass/app.scss';
-import {SSLPage} from "./containers/config/SSLPage";
+import {SSLPage} from "../_deprecated/SSLPage";
 import {CertificatesPage} from './containers/CertificatesPage';
-import {InternalCAPage} from './containers/_deprecated/InternalCAPage';
+import {InternalCAPage} from '../_deprecated/InternalCAPage';
 import {OrganizationPage} from './containers/config/OrganizationPage';
 import {DevicesPage} from "./containers/DevicesPage";
 import {DevicePage} from "./containers/DevicePage";

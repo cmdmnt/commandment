@@ -4,14 +4,14 @@ import {RouteComponentProps} from 'react-router';
 import {
     IndexActionRequest, index,
     DeleteCertificateActionRequest, remove
-} from "../../actions/certificates";
-import * as pushActions from '../../actions/certificates/push';
-import * as sslActions from '../../actions/certificates/ssl';
+} from "../src/actions/certificates";
+import * as pushActions from '../src/actions/certificates/push';
+import * as sslActions from '../src/actions/certificates/ssl';
 import {bindActionCreators} from "redux";
-import {CertificateDetail} from '../../components/CertificateDetail';
+import {CertificateDetail} from '../src/components/CertificateDetail';
 import * as Upload from 'rc-upload';
-import {PushState} from "../../reducers/certificates/push";
-import {SSLState} from "../../reducers/certificates/ssl";
+import {PushState} from "../src/reducers/certificates/push";
+import {SSLState} from "../src/reducers/certificates/ssl";
 
 
 

@@ -2,16 +2,16 @@ import * as React from 'react';
 import { connect, Dispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {RouteComponentProps} from 'react-router';
-import {Assistant} from '../../components/Assistant';
-import {nextStep, prevStep} from '../../actions/assistant';
-import {newCertificateSigningRequest} from '../../actions/signing_requests';
-import {NextStepAction, PrevStepAction} from "../../actions/assistant";
+import {Assistant} from '../src/components/Assistant';
+import {nextStep, prevStep} from '../src/actions/assistant';
+import {newCertificateSigningRequest} from '../src/actions/signing_requests';
+import {NextStepAction, PrevStepAction} from "../src/actions/assistant";
 import {APNSConfiguration} from './assistant/APNSConfiguration';
 import {SSLConfiguration} from "./assistant/SSLConfiguration";
 import {SCEPConfiguration} from "./assistant/SCEPConfiguration";
 import {FinalStep} from "./assistant/FinalStep";
-import {RootState} from "../../reducers/index";
-import {AssistantState} from "../../reducers/assistant";
+import {RootState} from "../src/reducers/index";
+import {AssistantState} from "../src/reducers/assistant";
 
 interface AssistantPageStateProps {
     assistant: AssistantState;
