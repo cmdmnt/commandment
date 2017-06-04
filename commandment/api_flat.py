@@ -5,7 +5,7 @@ import io
 from flask import Blueprint, send_file, abort, current_app, jsonify, request, make_response
 from sqlalchemy.orm.exc import NoResultFound
 import plistlib
-from .plistlib.nonewriter import dumps as dumps_none
+from .plistutil.nonewriter import dumps as dumps_none
 from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
 from .profiles.models import Profile
 from .mdm import commands

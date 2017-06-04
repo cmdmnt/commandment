@@ -3,9 +3,9 @@ import {Field, reduxForm, FormProps} from 'redux-form';
 
 import './OrganizationForm.scss';
 import {required, reverseDns} from "../validations";
-import {Header, Icon, Segment, Message, Input, Button, Grid, Form} from 'semantic-ui-react';
+import {Header, Icon, Segment, Message, Divider, Grid, Form} from 'semantic-ui-react';
 import {SemanticInput} from "./fields/SemanticInput";
-import {SemanticDropdown} from "./fields/SemanticDropdown";
+import {SemanticUISelect} from "./fields/SemanticUISelect";
 
 export interface FormData {
     name: string;
@@ -18,6 +18,7 @@ export interface FormData {
 
 interface OrganizationFormProps extends FormProps<FormData, any, any> {
     loading: boolean;
+    submitted: boolean;
 }
 
 @reduxForm<FormData, OrganizationFormProps, undefined>({
@@ -35,11 +36,12 @@ export class OrganizationForm extends React.Component<OrganizationFormProps, und
             pristine,
             reset,
             submitting,
+            submitted,
             loading
         } = this.props;
 
         return (
-            <Form onSubmit={handleSubmit} loading={loading}>
+            <Form onSubmit={handleSubmit} loading={loading} success={pristine && submitted}>
                 <Message attached>These details are shown in configuration profiles</Message>
                 <Segment attached>
                     <Header as='h3'><Icon name='home'/> General Information</Header>
@@ -75,19 +77,34 @@ export class OrganizationForm extends React.Component<OrganizationFormProps, und
                                    type='text' id='x509-st'/>
                         </Grid.Column>
                         <Grid.Column>
-                            <Field name='x509_c' label='Country Code' component={SemanticDropdown} id='x509-c'>
-                                <option value='US'>United States</option>
-                                <option value='AU'>Australia</option>
+                            <Field name='x509_c'
+                                   label='Country Code'
+                                   component={SemanticUISelect}
+                                   id='x509-c'
+                                   options={[
+                                       { key: 'au', text: 'Australia', value: 'AU' },
+                                       { key: 'us', text: 'United States', value: 'US' }
+                                   ]}
+                            >
                             </Field>
                         </Grid.Column>
                     </Grid>
-                    
-                    <Button type='button' disabled={pristine || submitting} onClick={reset}>
-                        Undo Changes
-                    </Button>
-                    <Button type='submit' disabled={pristine || submitting} primary>
-                        Save
-                    </Button>
+
+                    <Message
+                        success
+                        header='Form Completed'
+                        content="Organization details saved"
+                    />
+                    <Divider hidden />
+
+                    <Form.Group>
+                        <Form.Button type='button' disabled={pristine || submitting} onClick={reset}>
+                            Undo Changes
+                        </Form.Button>
+                        <Form.Button type='submit' disabled={pristine || submitting} primary>
+                            Save
+                        </Form.Button>
+                    </Form.Group>
                 </Segment>
             </Form>
         )

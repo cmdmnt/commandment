@@ -59,6 +59,7 @@ export class OrganizationPage extends React.Component<OrganizationPageProps, und
 
                 <OrganizationForm
                     loading={organization.loading}
+                    submitted={organization.submitted}
                     initialValues={organization.organization}
                     onSubmit={this.handleSubmit}
                 />
