@@ -289,7 +289,7 @@ export type RPOST_FAILURE = typeof RPOST_FAILURE;
 export interface PostRelationshipActionRequest {
     (parent_id: string, relationship: DeviceRelationship, data: Array<JSONAPIRelationship>): RSAA<RPOST_REQUEST, RPOST_SUCCESS, RPOST_FAILURE>;
 }
-export type PostRelationshipActionResponse = RSAAReadActionResponse<PATCH_REQUEST, PATCH_SUCCESS, PATCH_FAILURE, JSONAPIDetailResponse<Device, undefined>>;
+export type PostRelationshipActionResponse = RSAAReadActionResponse<RPOST_REQUEST, RPOST_SUCCESS, RPOST_FAILURE, JSONAPIDetailResponse<Device, undefined>>;
 
 export const postRelationship: PostRelationshipActionRequest = (id: string, relationship: DeviceRelationship, data: Array<JSONAPIRelationship>) => {
     return {
@@ -300,6 +300,35 @@ export const postRelationship: PostRelationshipActionRequest = (id: string, rela
                 RPOST_REQUEST,
                 RPOST_SUCCESS,
                 RPOST_FAILURE
+            ],
+            headers: JSONAPI_HEADERS,
+            body: JSON.stringify({ data })
+        }
+    }
+};
+
+
+export const RPATCH_REQUEST = 'devices/RPATCH_REQUEST';
+export type RPATCH_REQUEST = typeof RPATCH_REQUEST;
+export const RPATCH_SUCCESS = 'devices/RPATCH_SUCCESS';
+export type RPATCH_SUCCESS = typeof RPATCH_SUCCESS;
+export const RPATCH_FAILURE = 'devices/RPATCH_FAILURE';
+export type RPATCH_FAILURE = typeof RPATCH_FAILURE;
+
+export interface PatchRelationshipActionRequest {
+    (parent_id: string, relationship: DeviceRelationship, data: Array<JSONAPIRelationship>): RSAA<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE>;
+}
+export type PatchRelationshipActionResponse = RSAAReadActionResponse<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE, JSONAPIDetailResponse<Device, undefined>>;
+
+export const patchRelationship: PatchRelationshipActionRequest = (id: string, relationship: DeviceRelationship, data: Array<JSONAPIRelationship>) => {
+    return {
+        [CALL_API]: {
+            endpoint: `/api/v1/devices/${id}/relationships/${relationship}`,
+            method: 'PATCH',
+            types: [
+                RPATCH_REQUEST,
+                RPATCH_SUCCESS,
+                RPATCH_FAILURE
             ],
             headers: JSONAPI_HEADERS,
             body: JSON.stringify({ data })

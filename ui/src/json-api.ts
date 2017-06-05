@@ -39,10 +39,7 @@ export interface JSONAPIRelationship {
 
 export interface JSONAPIRelationships {
     [relationshipName: string]: {
-        data: {
-            id: string;
-            type: string;
-        },
+        data: Array<JSONAPIRelationship> | JSONAPIRelationship,
         links?: {
             related?: string;
         }

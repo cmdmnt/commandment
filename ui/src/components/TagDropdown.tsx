@@ -2,10 +2,12 @@ import * as React from 'react';
 import { Dropdown, Input } from 'semantic-ui-react';
 import {Tag} from "../models";
 import {SyntheticEvent} from "react";
+import {JSONAPIObject} from "../json-api";
 
 interface TagDropdownProps {
     loading: boolean;
     tags: Array<Tag>;
+    value?: Array<any>;
     onAddItem: (event: SyntheticEvent<any>, data: object) => void;
     onSearch: (value: string) => void;
     onChange: (event: SyntheticEvent<any>, values: Array<string>) => void;
@@ -39,7 +41,8 @@ export class TagDropdown extends React.Component<TagDropdownProps, {}> {
     };
 
     render() {
-        const { tags, loading, onAddItem } = this.props;
+        const { tags, loading, onAddItem, value } = this.props;
+
         return (
             <Dropdown placeholder='Add Tag(s)'
                       multiple
@@ -52,6 +55,7 @@ export class TagDropdown extends React.Component<TagDropdownProps, {}> {
                       onAddItem={onAddItem}
                       onSearchChange={this.handleSearchChange}
                       onChange={this.props.onChange}
+                      value={value}
             />
         );
     }

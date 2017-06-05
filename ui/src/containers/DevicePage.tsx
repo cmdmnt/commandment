@@ -9,7 +9,7 @@ import {
     push, PushActionRequest,
     test, TestActionRequest,
     fetchDeviceIfRequired, CacheFetchActionRequest,
-    postRelationship, PostRelationshipActionRequest
+    patchRelationship, PatchRelationshipActionRequest
 } from "../actions/devices";
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
 import {DeviceState} from "../reducers/device";
@@ -27,7 +27,7 @@ import {
     post as createTag, PostActionRequest as PostTagActionRequest
 } from '../actions/tags';
 import {Tag} from "../models";
-import {JSONAPIObject} from "../json-api";
+import {JSONAPIObject, JSONAPIRelationship} from "../json-api";
 
 interface ReduxStateProps {
     device: DeviceState;
@@ -48,7 +48,7 @@ interface ReduxDispatchProps {
     fetchTags: IndexActionRequest;
     fetchDeviceIfRequired: CacheFetchActionRequest;
     createTag: PostTagActionRequest;
-    postRelationship: PostRelationshipActionRequest;
+    patchRelationship: PatchRelationshipActionRequest;
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
@@ -59,7 +59,7 @@ function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
         fetchTags,
         fetchDeviceIfRequired,
         createTag,
-        postRelationship
+        patchRelationship
     }, dispatch);
 }
 
@@ -114,7 +114,7 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
             return {"id": ''+v, "type": "tags"};
         });
 
-        this.props.postRelationship(
+        this.props.patchRelationship(
             ''+this.props.match.params.id, 'tags', relationships);
     };
 
@@ -134,6 +134,12 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
             return {name: item.attributes.name, text: item.attributes.name, value: item.id};
         });
 
+        let deviceTags: Array<number> = [];
+        if (device.device && device.device.relationships) {
+            deviceTags = device.device.relationships.tags &&
+                device.device.relationships.tags.data.map((t: JSONAPIRelationship) => parseInt(t.id, 0));
+        }
+
         return (
             <Container className='DevicePage'>
                 <Grid>
@@ -145,8 +151,9 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
                                 {text: 'Test', value: 'test'}
                             ]}></Dropdown>
                             <TagDropdown
-                                loading={false}
+                                loading={device.tagsLoading}
                                 tags={tagChoices}
+                                value={deviceTags}
                                 onAddItem={this.handleAddTag}
                                 onSearch={this.handleSearchTag}
                                 onChange={this.handleApplyTags}

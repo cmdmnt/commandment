@@ -1,6 +1,6 @@
 import * as actions from '../actions/devices';
 import {
-    CommandsActionResponse,
+    CommandsActionResponse, PatchRelationshipActionResponse,
     ReadActionResponse
 } from "../actions/devices";
 import {CertificatesActionResponse} from '../actions/device/certificates';
@@ -10,7 +10,7 @@ import {installed_applications, InstalledApplicationsState} from "./device/insta
 import {InstalledApplicationsActionResponse} from "../actions/device/applications";
 import {installed_profiles, InstalledProfilesState} from "./device/installed_profiles";
 import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
-import {Device} from "../models";
+import {Device, Tag} from "../models";
 
 
 export interface DeviceState {
@@ -26,11 +26,14 @@ export interface DeviceState {
     installed_certificates?: InstalledCertificatesState;
     installed_applications?: InstalledApplicationsState;
     installed_profiles?: InstalledProfilesState;
+    tags?: Array<JSONAPIObject<Tag>>;
+    tagsLoading: boolean;
 }
 
 const initialState: DeviceState = {
     device: null,
     loading: false,
+    tagsLoading: false,
     error: false,
     errorDetail: null,
     lastReceived: null,
@@ -39,7 +42,7 @@ const initialState: DeviceState = {
 };
 
 type DevicesAction = ReadActionResponse | InstalledApplicationsActionResponse | CommandsActionResponse |
-    CertificatesActionResponse;
+    CertificatesActionResponse | PatchRelationshipActionResponse;
 
 export function device(state: DeviceState = initialState, action: DevicesAction): DeviceState {
     switch (action.type) {
@@ -64,13 +67,53 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                     errorDetail: action.payload
                 }
             } else {
+                let tags: Array<JSONAPIObject<Tag>> = [];
+
+                if (action.payload.included) {
+                    tags = action.payload.included.filter((included: JSONAPIObject<any>) => (included.type === 'tags'));
+                }
+
                 return {
                     ...state,
                     device: action.payload.data,
                     lastReceived: new Date,
                     loading: false,
+                    tags
                 };
             }
+        case actions.RPATCH_REQUEST:
+            return {
+                ...state,
+                tagsLoading: true
+            };
+        case actions.RPATCH_SUCCESS:
+            if (isJSONAPIErrorResponsePayload(action.payload)) {
+                return {
+                    ...state,
+                    error: true,
+                    errorDetail: action.payload
+                }
+            } else {
+                const device: JSONAPIObject<Device> = {
+                    ...state.device,
+                    relationships: {
+                        ...state.device.relationships,
+                        tags: action.payload.data.relationships.tags
+                    }
+                };
+
+                return {
+                    ...state,
+                    device,
+                    tagsLoading: false
+                };
+            }
+
+        case actions.RPATCH_FAILURE:
+            return {
+                ...state,
+                tagsLoading: false
+            };
             
         default:
             return {
