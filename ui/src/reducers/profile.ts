@@ -2,7 +2,7 @@
 import * as actions from '../actions/profiles';
 import {Profile, Tag} from "../models";
 import {isJSONAPIErrorResponsePayload, JSONAPIObject} from "../json-api";
-import {ReadActionResponse} from "../actions/profiles";
+import {PatchRelationshipActionResponse, ReadActionResponse} from "../actions/profiles";
 
 export interface ProfileState {
     profile?: JSONAPIObject<Profile>;
@@ -21,7 +21,7 @@ const initialState: ProfileState = {
     errorDetail: null
 };
 
-type ProfileAction = ReadActionResponse;
+type ProfileAction = ReadActionResponse | PatchRelationshipActionResponse;
 
 
 export function profile(state: ProfileState = initialState, action: ProfileAction): ProfileState {
@@ -61,6 +61,39 @@ export function profile(state: ProfileState = initialState, action: ProfileActio
                     tags
                 };
             }
+        case actions.RPATCH_REQUEST:
+            return {
+                ...state,
+                tagsLoading: true
+            };
+        case actions.RPATCH_SUCCESS:
+            if (isJSONAPIErrorResponsePayload(action.payload)) {
+                return {
+                    ...state,
+                    error: true,
+                    errorDetail: action.payload
+                }
+            } else {
+                const profile: JSONAPIObject<Profile> = {
+                    ...state.profile,
+                    relationships: {
+                        ...state.profile.relationships,
+                        tags: action.payload.data.relationships.tags
+                    }
+                };
+
+                return {
+                    ...state,
+                    profile,
+                    tagsLoading: false
+                };
+            }
+
+        case actions.RPATCH_FAILURE:
+            return {
+                ...state,
+                tagsLoading: false
+            };
         default:
             return state;
     }

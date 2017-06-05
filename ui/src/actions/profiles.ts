@@ -5,7 +5,7 @@ import {
     RSAAIndexActionRequest, RSAAIndexActionResponse, encodeJSONAPIIndexParameters,
     RSAAReadActionRequest, RSAAReadActionResponse, JSONAPIRelationship
 } from "../json-api";
-import {Profile, Tag} from "../models";
+import {Profile, ProfileRelationship, Tag} from "../models";
 import {JSONAPIDetailResponse} from "../json-api";
 
 

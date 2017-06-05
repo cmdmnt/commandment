@@ -21,6 +21,7 @@ plr = PlistRouter(mdm_app, '/checkin')
 command_router = CommandRouter(mdm_app)
 from .mdm.handlers import *
 
+
 @plr.route('MessageType', 'Authenticate')
 def authenticate(plist_data):
     """Handle the `Authenticate` message.
