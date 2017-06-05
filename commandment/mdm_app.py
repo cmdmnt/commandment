@@ -252,7 +252,9 @@ def mdm():
                                 command.request_type, device.id)
 
         # convert to plist and send
-        resp = make_response(plistlib.dumps(output_dict))
+        plist_data = plistlib.dumps(output_dict)
+        current_app.logger.debug(plist_data)
+        resp = make_response(plist_data)
         resp.headers['Content-Type'] = 'application/xml'
 
         # finally set as sent

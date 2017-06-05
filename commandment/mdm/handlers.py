@@ -1,7 +1,10 @@
 from flask import current_app
-from ..models import db, Device, InstalledCertificate, InstalledProfile
+
+from commandment.mdm import commands
+from ..models import db, Device, InstalledCertificate, InstalledProfile, Command as DBCommand
 from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse
-from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList
+from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList, \
+    InstallProfile
 from ..mdm_app import command_router
 from .util import queryresponses_to_query_set
 from cryptography import x509
@@ -54,7 +57,14 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
           void: Reserved for future use
     """
     profiles = response['ProfileList']
-    
+    for p in device.installed_profiles:
+        db.session.delete(p)
+
+    desired_profiles = {}
+    for tag in device.tags:
+        for p in tag.profiles:
+            desired_profiles[p.uuid] = p
+
     for profile in profiles:
         ip = InstalledProfile()
         ip.device = device
@@ -73,6 +83,17 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
         # TODO: SignerCertificates
         # TODO: Payloads
         db.session.add(ip)
+
+        # Reconcile profiles which should be installed
+        if ip.payload_uuid in desired_profiles:
+            del desired_profiles[ip.payload_uuid]
+
+    # Queue up some desired profiles
+    for puuid, p in desired_profiles.items():
+        c = commands.InstallProfile(None, profile=p)
+        dbc = DBCommand.from_model(c)
+        dbc.device = device
+        db.session.add(dbc)
 
     db.session.commit()
 
@@ -138,3 +159,9 @@ def ack_installed_app_list(request: InstalledApplicationList, device: Device, re
 
     db.session.commit()
 
+
+@command_router.route('InstallProfile')
+def ack_install_profile(request: InstallProfile, device: Device, response: dict):
+    """Acknowledge a response to ``InstallProfile``."""
+    if response.get('Status', None) == 'Error':
+        pass

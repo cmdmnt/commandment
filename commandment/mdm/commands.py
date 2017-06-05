@@ -2,6 +2,7 @@ from enum import Enum
 from uuid import uuid4
 from typing import Set, List
 import semver
+from base64 import urlsafe_b64encode, urlsafe_b64decode
 from . import AccessRights, Platform
 
 
@@ -333,6 +334,20 @@ class InstallProfile(Command):
     def __init__(self, uuid=None, **kwargs):
         super(InstallProfile, self).__init__(uuid)
         self._attrs = kwargs
+
+        if 'profile' in kwargs:
+            profile_data = kwargs['profile'].data
+            self._attrs['Payload'] = urlsafe_b64encode(profile_data).decode('utf-8')
+            del self._attrs['profile']
+
+    def to_dict(self) -> dict:
+        return {
+            'CommandUUID': str(self._uuid),
+            'Command': {
+                'RequestType': type(self).request_type,
+                'Payload': urlsafe_b64decode(self._attrs['Payload']),
+            }
+        }
 
 
 class RemoveProfile(Command):
