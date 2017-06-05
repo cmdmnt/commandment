@@ -120,12 +120,25 @@ export interface RSAAChildIndexActionRequest<TRequest, TSuccess, TFailure> {
 }
 
 export interface RSAAReadActionRequest<TRequest, TSuccess, TFailure> {
-    (id: number, include?: Array<string>): RSAA<TRequest, TSuccess, TFailure>;
+    (id: string, include?: Array<string>): RSAA<TRequest, TSuccess, TFailure>;
 }
 
 export interface RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> {
     type: TRequest | TSuccess | TFailure;
     payload: TResponse | JSONAPIErrorResponse;
+}
+
+export interface RSAAPostActionRequest<TRequest, TSuccess, TFailure, TValues> {
+    (values: TValues): RSAA<TRequest, TSuccess, TFailure>;
+}
+
+export interface RSAAPostActionResponse<TRequest, TSuccess, TFailure, TResponse> {
+    type: TRequest | TSuccess | TFailure;
+    payload: TResponse | JSONAPIErrorResponse;
+}
+
+export interface RSAAPatchActionRequest<TRequest, TSuccess, TFailure, TValues> {
+    (id: string, values: TValues): RSAA<TRequest, TSuccess, TFailure>;
 }
 
 /**

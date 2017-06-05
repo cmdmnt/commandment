@@ -2,13 +2,18 @@ import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 
 import {bindActionCreators} from "redux";
-import * as actions from '../actions/devices';
 import {RootState} from "../reducers/index";
 import {Route, RouteComponentProps} from "react-router";
-import {InventoryActionRequest, PushActionRequest, ReadActionRequest, TestActionRequest} from "../actions/devices";
+import {
+    inventory, InventoryActionRequest,
+    push, PushActionRequest,
+    test, TestActionRequest,
+    fetchDeviceIfRequired, CacheFetchActionRequest,
+    postRelationship, PostRelationshipActionRequest
+} from "../actions/devices";
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
 import {DeviceState} from "../reducers/device";
-import {Container, Grid, Menu, Button, Segment, Dropdown} from 'semantic-ui-react';
+import {Container, Grid, Menu, Segment, Dropdown} from 'semantic-ui-react';
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {SyntheticEvent} from "react";
 import {DeviceCertificates} from "./devices/DeviceCertificates";
@@ -17,7 +22,12 @@ import {DeviceApplications} from "./devices/DeviceApplications";
 import {DeviceProfiles} from "./devices/DeviceProfiles";
 import {TagDropdown} from "../components/TagDropdown";
 import {TagsState} from "../reducers/tags";
-import {index as fetchTags, IndexActionRequest} from '../actions/tags';
+import {
+    index as fetchTags, IndexActionRequest,
+    post as createTag, PostActionRequest as PostTagActionRequest
+} from '../actions/tags';
+import {Tag} from "../models";
+import {JSONAPIObject} from "../json-api";
 
 interface ReduxStateProps {
     device: DeviceState;
@@ -32,20 +42,24 @@ function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
 }
 
 interface ReduxDispatchProps {
-    read: ReadActionRequest;
     push: PushActionRequest;
     inventory: InventoryActionRequest;
     test: TestActionRequest;
     fetchTags: IndexActionRequest;
+    fetchDeviceIfRequired: CacheFetchActionRequest;
+    createTag: PostTagActionRequest;
+    postRelationship: PostRelationshipActionRequest;
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
     return bindActionCreators({
-        read: actions.read,
-        push: actions.push,
-        inventory: actions.inventory,
-        test: actions.test,
-        fetchTags
+        push,
+        inventory,
+        test,
+        fetchTags,
+        fetchDeviceIfRequired,
+        createTag,
+        postRelationship
     }, dispatch);
 }
 
@@ -82,16 +96,43 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
         }
     };
 
+    handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value: string }) => {
+        const tag: Tag = {
+            name: value,
+            color: '888888'
+        };
+
+        this.props.createTag(tag);
+    };
+
+    handleSearchTag = (value: string) => {
+        this.props.fetchTags(10, 1, [], [{'name': 'name', 'op': 'ilike', 'val': `%${value}%`}]);
+    };
+
+    handleApplyTags = (event: SyntheticEvent<any>, { value: values }) => {
+        const relationships = values.map((v: number) => {
+            return {"id": ''+v, "type": "tags"};
+        });
+
+        this.props.postRelationship(
+            ''+this.props.match.params.id, 'tags', relationships);
+    };
+
     componentDidMount(): void {
-        this.props.read(this.props.match.params.id, []);
+        this.props.fetchDeviceIfRequired(''+this.props.match.params.id, ['tags']);
         this.props.fetchTags();
     }
 
     render(): JSX.Element {
         const {
             device,
-            match: {params: {id: device_id}}
+            match: {params: {id: device_id}},
+            tags
         } = this.props;
+
+        const tagChoices = tags.items.map((item: JSONAPIObject<Tag>) => {
+            return {name: item.attributes.name, text: item.attributes.name, value: item.id};
+        });
 
         return (
             <Container className='DevicePage'>
@@ -103,7 +144,13 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
                                 {text: 'Inventory', value: 'inventory'},
                                 {text: 'Test', value: 'test'}
                             ]}></Dropdown>
-                            <TagDropdown />
+                            <TagDropdown
+                                loading={false}
+                                tags={tagChoices}
+                                onAddItem={this.handleAddTag}
+                                onSearch={this.handleSearchTag}
+                                onChange={this.handleApplyTags}
+                            />
                             <Segment>
                                 {device && <MacOSDeviceDetail device={device}/>}
                             </Segment>

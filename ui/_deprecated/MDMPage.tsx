@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { connect, Dispatch } from 'react-redux';
 import {RouteComponentProps} from 'react-router';
-import { MDMConfigurationForm, FormData } from '../../forms/MDMConfigurationForm';
-import {FetchCertificateTypeActionRequest, fetchCertificatesForType} from "../../actions/certificates";
+import { MDMConfigurationForm, FormData } from '../src/forms/MDMConfigurationForm';
+import {FetchCertificateTypeActionRequest, fetchCertificatesForType} from "../src/actions/certificates";
 import {bindActionCreators} from "redux";
-import {JSONAPIDetailResponse} from "../../json-api";
-import {Certificate} from "../../models";
+import {JSONAPIDetailResponse} from "../src/json-api";
+import {Certificate} from "../src/models";
 
 
 interface MDMPageState {

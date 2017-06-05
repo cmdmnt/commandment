@@ -6,8 +6,14 @@ import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Device} from "../models";
 
 
+export interface DeviceIdMap {
+    [deviceId: string]: JSONAPIObject<Device>;
+}
+
 export interface DevicesState {
     items: Array<JSONAPIObject<Device>>;
+    byId: DeviceIdMap;
+    allIds: Array<number>;
     loading: boolean;
     error: boolean;
     errorDetail?: any
@@ -19,6 +25,8 @@ export interface DevicesState {
 
 const initialState: DevicesState = {
     items: [],
+    byId: {},
+    allIds: [],
     loading: false,
     error: false,
     errorDetail: null,
@@ -53,8 +61,17 @@ export function devices(state: DevicesState = initialState, action: DevicesActio
                     errorDetail: action.payload
                 }
             } else {
+                let allIds: number[] = [];
+                const byId: DeviceIdMap = action.payload.data.reduce((memo: DeviceIdMap, device: JSONAPIObject<Device>) => {
+                    memo[device.id] = device;
+                    allIds.push(device.id);
+                    return memo;
+                }, {});
+
                 return {
                     ...state,
+                    byId,
+                    allIds,
                     items: action.payload.data,
                     lastReceived: new Date,
                     loading: false,

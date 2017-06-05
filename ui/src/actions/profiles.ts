@@ -45,7 +45,7 @@ export const READ_FAILURE: READ_FAILURE = 'profiles/READ_FAILURE';
 export type ReadActionRequest = RSAAReadActionRequest<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
 export type ReadActionResponse = RSAAReadActionResponse<READ_REQUEST, READ_SUCCESS, READ_FAILURE, JSONAPIDetailResponse<Profile, undefined>>;
 
-export const read: ReadActionRequest = (id: number, include?: Array<string>) => {
+export const read: ReadActionRequest = (id: string, include?: Array<string>) => {
 
     let inclusions = '';
     if (include && include.length) {

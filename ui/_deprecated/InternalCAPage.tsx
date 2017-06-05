@@ -4,12 +4,12 @@ import {RouteComponentProps} from 'react-router';
 import {
     IndexActionRequest, index,
     DeleteCertificateActionRequest, remove
-} from "../../actions/certificates";
-import * as caActions from '../../actions/certificates/ca';
+} from "../src/actions/certificates";
+import * as caActions from '../src/actions/certificates/ca';
 import {bindActionCreators} from "redux";
-import {CertificateDetail} from '../../components/CertificateDetail';
-import {CAState} from "../../reducers/certificates/ca";
-import {CAConfigurationForm} from '../../forms/CAConfigurationForm';
+import {CertificateDetail} from '../src/components/CertificateDetail';
+import {CAState} from "../src/reducers/certificates/ca";
+import {CAConfigurationForm} from '../src/forms/CAConfigurationForm';
 
 interface CAPageState {
     ca: CAState;

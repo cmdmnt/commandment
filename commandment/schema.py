@@ -86,6 +86,14 @@ class DeviceSchema(Schema):
         type_='device_groups'
     )
 
+    tags = Relationship(
+        related_view='api_app.tag_detail',
+        related_view_kwargs={'tag_id': '<id>'},
+        many=True,
+        schema='TagSchema',
+        type_='tags'
+    )
+
     class Meta:
         type_ = 'devices'
         self_view = 'api_app.device_detail'
@@ -406,6 +414,6 @@ class TagSchema(Schema):
     class Meta:
         type_ = 'tags'
         self_view = 'api_app.tag_detail'
-        self_view_kwargs = {'tag_id': '<tag_id>'}
+        self_view_kwargs = {'tag_id': '<id>'}
         self_view_many = 'api_app.tags_list'
 

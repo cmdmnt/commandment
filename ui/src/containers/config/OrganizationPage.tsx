@@ -44,7 +44,7 @@ export class OrganizationPage extends React.Component<OrganizationPageProps, und
         this.props.read();
     }
 
-    handleSubmit = (values: FormData): void => {
+    private handleSubmit: (values: FormData) => void = (values) => {
         this.props.post(values);
     };
 
@@ -56,9 +56,11 @@ export class OrganizationPage extends React.Component<OrganizationPageProps, und
         return (
             <Container className='OrganizationPage'>
                 <Header as='h1'>Organization</Header>
-
+                <p>Many parts of the system rely on showing your organization name in certain user facing scenarios.
+                    Configure these details here</p>
                 <OrganizationForm
                     loading={organization.loading}
+                    submitted={organization.submitted}
                     initialValues={organization.organization}
                     onSubmit={this.handleSubmit}
                 />

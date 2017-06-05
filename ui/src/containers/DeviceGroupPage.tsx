@@ -3,7 +3,7 @@ import {connect, Dispatch} from 'react-redux';
 import {RootState} from "../reducers/index";
 import {bindActionCreators} from "redux";
 import {Container, Segment, Header} from 'semantic-ui-react';
-import {DeviceGroupForm} from "../forms/DeviceGroupForm";
+import {DeviceGroupForm, FormData as DeviceGroupFormData} from "../forms/DeviceGroupForm";
 import {
     post, PostActionRequest,
     read, ReadActionRequest
@@ -44,11 +44,15 @@ function mapDispatchToProps(dispatch: Dispatch<RootState>) {
 interface OwnProps extends RouteComponentProps<RouteProps> {
 }
 
+interface Smeh {
+    handleSubmit: (values: DeviceGroupFormData) => void;
+}
+
 @connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
     mapStateToProps,
     mapDispatchToProps
 )
-export class DeviceGroupPage extends React.Component<ReduxStateProps & ReduxDispatchProps & OwnProps, void> {
+export class DeviceGroupPage extends React.Component<ReduxStateProps & ReduxDispatchProps & OwnProps, void> implements Smeh {
 
     componentWillMount?() {
         if (this.props.match.params.id) {
@@ -56,7 +60,7 @@ export class DeviceGroupPage extends React.Component<ReduxStateProps & ReduxDisp
         }
     }
 
-    handleSubmit = (values: FormData) => {
+    handleSubmit = (values: DeviceGroupFormData) => {
         if (this.props.match.params.id) {
             // this.props.patch()
         } else {

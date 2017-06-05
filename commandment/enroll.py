@@ -7,7 +7,7 @@ from .profiles.models import MDMPayload, Profile, PEMCertificatePayload, SCEPPay
 from .profiles import PROFILE_CONTENT_TYPE, plist_schema as profile_schema, PayloadScope
 from .models import db, Organization, SCEPConfig
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from .plistlib.nonewriter import dumps as dumps_none
+from .plistutil.nonewriter import dumps as dumps_none
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 

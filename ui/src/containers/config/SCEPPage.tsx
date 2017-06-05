@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {connect, Dispatch, MapStateToProps} from 'react-redux';
 import {RouteComponentProps} from 'react-router';
-import { SCEPConfigurationForm, FormData } from '../../forms/SCEPConfigurationForm';
+import { SCEPConfigurationForm, FormData } from '../../../_deprecated/SCEPConfigurationForm';
 import {SCEPPayloadForm} from '../../forms/payloads/SCEPPayloadForm';
 import * as actions from '../../actions/configuration/scep';
 import {RootState} from "../../reducers/index";
@@ -67,6 +67,7 @@ export class SCEPPage extends React.Component<OwnProps, undefined> {
                             SCEP service.
                         </p>
                         <SCEPPayloadForm
+                            submitted={scep.submitted}
                             loading={scep.loading}
                             initialValues={scep.data}
                             onSubmit={this.handleSubmit}
