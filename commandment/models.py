@@ -10,7 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 import datetime
 from enum import Enum, IntEnum
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum as DBEnum, text, \
+from sqlalchemy import Integer, String, ForeignKey, Table, Text, Boolean, DateTime, Enum as DBEnum, text, \
     BigInteger, and_, or_, LargeBinary, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
@@ -69,24 +69,24 @@ class Certificate(db.Model):
     """
     __tablename__ = 'certificates'
 
-    id = Column(Integer, primary_key=True)
-    pem_data = Column(Text, nullable=False)
-    rsa_private_key_id = Column(Integer, ForeignKey('rsa_private_keys.id'))
+    id = db.Column(Integer, primary_key=True)
+    pem_data = db.Column(Text, nullable=False)
+    rsa_private_key_id = db.Column(Integer, ForeignKey('rsa_private_keys.id'))
 
-    x509_cn = Column(String(64), nullable=True)
-    x509_ou = Column(String(32))
-    x509_o = Column(String(64))
-    x509_c = Column(String(2))
-    x509_st = Column(String(128))
+    x509_cn = db.Column(String(64), nullable=True)
+    x509_ou = db.Column(String(32))
+    x509_o = db.Column(String(64))
+    x509_c = db.Column(String(2))
+    x509_st = db.Column(String(128))
 
-    not_before = Column(DateTime(timezone=False), nullable=False)
-    not_after = Column(DateTime(timezone=False), nullable=False)
+    not_before = db.Column(DateTime(timezone=False), nullable=False)
+    not_after = db.Column(DateTime(timezone=False), nullable=False)
     # SHA-256 hash of DER-encoded certificate
-    fingerprint = Column(String(64), nullable=False, index=True, unique=True)  # Unique
+    fingerprint = db.Column(String(64), nullable=False, index=True, unique=True)  # Unique
 
-    push_topic = Column(String, nullable=True)  # Only required for push certificate
+    push_topic = db.Column(String, nullable=True)  # Only required for push certificate
 
-    discriminator = Column(String(20))
+    discriminator = db.Column(String(20))
 
     __mapper_args__ = {
         'polymorphic_on': discriminator,
@@ -98,9 +98,9 @@ class RSAPrivateKey(db.Model):
     """RSA Private Key Model"""
     __tablename__ = 'rsa_private_keys'
 
-    #: id column
-    id = Column(Integer, primary_key=True)
-    pem_data = Column(Text, nullable=False)
+    #: id db.Column
+    id = db.Column(Integer, primary_key=True)
+    pem_data = db.Column(Text, nullable=False)
 
     certificates = db.relationship(
         'Certificate',
@@ -183,89 +183,89 @@ class Device(db.Model):
     __tablename__ = 'devices'
 
     # Common attributes
-    id = Column(Integer, primary_key=True)
-    udid = Column(String, index=True, nullable=True)
-    last_seen = Column(DateTime, nullable=True)
-    is_enrolled = Column(Boolean, default=False)
+    id = db.Column(Integer, primary_key=True)
+    udid = db.Column(String, index=True, nullable=True)
+    last_seen = db.Column(DateTime, nullable=True)
+    is_enrolled = db.Column(Boolean, default=False)
 
     # APNS / Push
-    topic = Column(String, nullable=True)
-    push_magic = Column(String, nullable=True)
+    topic = db.Column(String, nullable=True)
+    push_magic = db.Column(String, nullable=True)
     # The APNS device token is stored in base64 format. Descriptors are added to handle this encoding and decoding
     # to bytes automatically.
-    _token = Column(String, nullable=True)
-    tokenupdate_at = Column(DateTime)
+    _token = db.Column(String, nullable=True)
+    tokenupdate_at = db.Column(DateTime)
 
     # Table 5
-    last_cloud_backup_date = Column(DateTime)
-    awaiting_configuration = Column(Boolean)
+    last_cloud_backup_date = db.Column(DateTime)
+    awaiting_configuration = db.Column(Boolean)
 
     # Table 6
-    itunes_store_account_is_active = Column(Boolean)
-    itunes_store_account_hash = Column(String)
+    itunes_store_account_is_active = db.Column(Boolean)
+    itunes_store_account_hash = db.Column(String)
 
     # DeviceInformation : Table 7
-    device_name = Column(String)  # Authenticate
-    os_version = Column(String)  # Authenticate
-    build_version = Column(String)  # Authenticate
-    model_name = Column(String)  # Authenticate
-    model = Column(String)  # Authenticate
-    product_name = Column(String)  # Authenticate
-    serial_number = Column(String(64), index=True, nullable=True)  # Authenticate
+    device_name = db.Column(String)  # Authenticate
+    os_version = db.Column(String)  # Authenticate
+    build_version = db.Column(String)  # Authenticate
+    model_name = db.Column(String)  # Authenticate
+    model = db.Column(String)  # Authenticate
+    product_name = db.Column(String)  # Authenticate
+    serial_number = db.Column(String(64), index=True, nullable=True)  # Authenticate
 
-    device_capacity = Column(Float, nullable=True)
-    available_device_capacity = Column(Float, nullable=True)  # TODO: Float
-    battery_level = Column(Integer)
-    cellular_technology = Column(DBEnum(CellularTechnology))
-    imei = Column(String)
-    meid = Column(String)
-    modem_firmware_version = Column(String)
-    is_supervised = Column(String)
-    is_device_locator_service_enabled = Column(Boolean)
-    is_activation_lock_enabled = Column(Boolean)
-    is_do_not_disturb_in_effect = Column(Boolean)
-    device_id = Column(String)  # ATV
-    eas_device_identifier = Column(String)
-    is_cloud_backup_enabled = Column(Boolean)
+    device_capacity = db.Column(Float, nullable=True)
+    available_device_capacity = db.Column(Float, nullable=True)  # TODO: Float
+    battery_level = db.Column(Integer)
+    cellular_technology = db.Column(DBEnum(CellularTechnology))
+    imei = db.Column(String)
+    meid = db.Column(String)
+    modem_firmware_version = db.Column(String)
+    is_supervised = db.Column(String)
+    is_device_locator_service_enabled = db.Column(Boolean)
+    is_activation_lock_enabled = db.Column(Boolean)
+    is_do_not_disturb_in_effect = db.Column(Boolean)
+    device_id = db.Column(String)  # ATV
+    eas_device_identifier = db.Column(String)
+    is_cloud_backup_enabled = db.Column(Boolean)
     # TODO: OSUpdateSettings
-    local_hostname = Column(String, nullable=True)
-    hostname = Column(String, nullable=True)
-    sip_enabled = Column(Boolean)
+    local_hostname = db.Column(String, nullable=True)
+    hostname = db.Column(String, nullable=True)
+    sip_enabled = db.Column(Boolean)
     # TODO: ActiveManagedUsers
-    is_mdm_lost_mode_enabled = Column(Boolean)
-    maximum_resident_users = Column(Integer)
+    is_mdm_lost_mode_enabled = db.Column(Boolean)
+    maximum_resident_users = db.Column(Integer)
 
     # NetworkInfo : Table 9
-    iccid = Column(String)
-    bluetooth_mac = Column(String)
-    wifi_mac = Column(String)
+    iccid = db.Column(String)
+    bluetooth_mac = db.Column(String)
+    wifi_mac = db.Column(String)
     # TODO: EthernetMACs
-    current_carrier_network = Column(String)
-    sim_carrier_network = Column(String)
-    subscriber_carrier_network = Column(String)
-    carrier_settings_version = Column(String)
-    phone_number = Column(String)
-    voice_roaming_enabled = Column(Boolean)
-    data_roaming_enabled = Column(Boolean)
-    is_roaming = Column(Boolean)
-    personal_hotspot_enabled = Column(Boolean)
-    subscriber_mcc = Column(String)
-    subscriber_mnc = Column(String)
-    current_mcc = Column(String)
-    current_mnc = Column(String)
+    current_carrier_network = db.Column(String)
+    sim_carrier_network = db.Column(String)
+    subscriber_carrier_network = db.Column(String)
+    carrier_settings_version = db.Column(String)
+    phone_number = db.Column(String)
+    voice_roaming_enabled = db.Column(Boolean)
+    data_roaming_enabled = db.Column(Boolean)
+    is_roaming = db.Column(Boolean)
+    personal_hotspot_enabled = db.Column(Boolean)
+    subscriber_mcc = db.Column(String)
+    subscriber_mnc = db.Column(String)
+    current_mcc = db.Column(String)
+    current_mnc = db.Column(String)
 
     # SecurityInfo
-    # hardware_encryption_caps = Column(DBEnum(HardwareEncryptionCaps))
-    passcode_present = Column(Boolean)
-    passcode_compliant = Column(Boolean)
-    passcode_compliant_with_profiles = Column(Boolean)
-    passcode_lock_grace_period_enforced = Column(Boolean)
-    fde_enabled = Column(Boolean)
-    fde_has_prk = Column(Boolean)
-    fde_has_irk = Column(Boolean)
-    firewall_enabled = Column(Boolean)
-    block_all_incoming = Column(Boolean)
-    stealth_mode_enabled = Column(Boolean)
+    # hardware_encryption_caps = db.Column(DBEnum(HardwareEncryptionCaps))
+    passcode_present = db.Column(Boolean)
+    passcode_compliant = db.Column(Boolean)
+    passcode_compliant_with_profiles = db.Column(Boolean)
+    passcode_lock_grace_period_enforced = db.Column(Boolean)
+    fde_enabled = db.Column(Boolean)
+    fde_has_prk = db.Column(Boolean)
+    fde_has_irk = db.Column(Boolean)
+    firewall_enabled = db.Column(Boolean)
+    block_all_incoming = db.Column(Boolean)
+    stealth_mode_enabled = db.Column(Boolean)
     # TODO: Blocked Applications
 
     @hybrid_property
@@ -286,15 +286,15 @@ class Device(db.Model):
 
     # if null there are no outstanding push notifications. If this contains anything then dont attempt to deliver
     # another APNS push.
-    last_push_at = Column(DateTime, nullable=True)
-    last_apns_id = Column(Integer, nullable=True)
+    last_push_at = db.Column(DateTime, nullable=True)
+    last_apns_id = db.Column(Integer, nullable=True)
 
     # if the time delta between last_push_at and last_seen is >= several days to a week,
     # this should count as a failed push, and potentially declare the device as dead.
-    failed_push_count = Column(Integer, default=0, nullable=False)
-    _unlock_token = Column(String(), name='unlock_token', nullable=True)
+    failed_push_count = db.Column(Integer, default=0, nullable=False)
+    _unlock_token = db.Column(String(), name='unlock_token', nullable=True)
 
-    certificate_id = Column(Integer, ForeignKey('certificates.id'))
+    certificate_id = db.Column(Integer, ForeignKey('certificates.id'))
     certificate = relationship('Certificate', backref='devices')
 
     tags = db.relationship(
@@ -328,16 +328,16 @@ class Device(db.Model):
 
 
 device_group_devices = Table('device_group_devices', db.metadata,
-                             Column('device_group_id', ForeignKey('device_groups.id'), primary_key=True),
-                             Column('device_id', ForeignKey('devices.id'), primary_key=True),
+                             db.Column('device_group_id', ForeignKey('device_groups.id'), primary_key=True),
+                             db.Column('device_id', ForeignKey('devices.id'), primary_key=True),
                              )
 
 
 class DeviceGroup(db.Model):
     __tablename__ = 'device_groups'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    id = db.Column(Integer, primary_key=True)
+    name = db.Column(String, nullable=False)
 
 
 class InstalledApplication(db.Model):
@@ -352,19 +352,19 @@ class InstalledApplication(db.Model):
     """
     __tablename__ = 'installed_applications'
 
-    id = Column(Integer, primary_key=True)
-    device_udid = Column(GUID, index=True, nullable=False)
-    device_id = Column(ForeignKey('devices.id'), nullable=True)
+    id = db.Column(Integer, primary_key=True)
+    device_udid = db.Column(GUID, index=True, nullable=False)
+    device_id = db.Column(ForeignKey('devices.id'), nullable=True)
     device = relationship('Device', backref='installed_applications')
 
     # Many of these can be empty, so there is no valid composite key
-    bundle_identifier = Column(String, index=True)
-    version = Column(String, index=True)
-    short_version = Column(String)
-    name = Column(String)
-    bundle_size = Column(BigInteger)
-    dynamic_size = Column(BigInteger)
-    is_validated = Column(Boolean)
+    bundle_identifier = db.Column(String, index=True)
+    version = db.Column(String, index=True)
+    short_version = db.Column(String)
+    name = db.Column(String)
+    bundle_size = db.Column(BigInteger)
+    dynamic_size = db.Column(BigInteger)
+    is_validated = db.Column(Boolean)
 
 
 class InstalledCertificate(db.Model):
@@ -378,17 +378,17 @@ class InstalledCertificate(db.Model):
     """
     __tablename__ = 'installed_certificates'
 
-    id = Column(Integer, primary_key=True)
-    device_udid = Column(GUID, index=True, nullable=False)
-    device_id = Column(ForeignKey('devices.id'), nullable=True)
+    id = db.Column(Integer, primary_key=True)
+    device_udid = db.Column(GUID, index=True, nullable=False)
+    device_id = db.Column(ForeignKey('devices.id'), nullable=True)
     device = relationship('Device', backref='installed_certificates')
 
-    x509_cn = Column(String)
-    is_identity = Column(Boolean)
-    der_data = Column(LargeBinary, nullable=False)
+    x509_cn = db.Column(String)
+    is_identity = db.Column(Boolean)
+    der_data = db.Column(LargeBinary, nullable=False)
     
     # SHA-256 hash of DER-encoded certificate
-    fingerprint_sha256 = Column(String(64), nullable=False, index=True)
+    fingerprint_sha256 = db.Column(String(64), nullable=False, index=True)
 
 
 class InstalledProfile(db.Model):
@@ -401,20 +401,20 @@ class InstalledProfile(db.Model):
     """
     __tablename__ = 'installed_profiles'
 
-    id = Column(Integer, primary_key=True)
-    device_udid = Column(GUID, index=True, nullable=False)
-    device_id = Column(ForeignKey('devices.id'), nullable=True)
+    id = db.Column(Integer, primary_key=True)
+    device_udid = db.Column(GUID, index=True, nullable=False)
+    device_id = db.Column(ForeignKey('devices.id'), nullable=True)
     device = relationship('Device', backref='installed_profiles')
 
-    has_removal_password = Column(Boolean)
-    is_encrypted = Column(Boolean)
+    has_removal_password = db.Column(Boolean)
+    is_encrypted = db.Column(Boolean)
 
-    payload_description = Column(String)
-    payload_display_name = Column(String)
-    payload_identifier = Column(String)
-    payload_organization = Column(String)
-    payload_removal_disallowed = Column(Boolean)
-    payload_uuid = Column(GUID, index=True)
+    payload_description = db.Column(String)
+    payload_display_name = db.Column(String)
+    payload_identifier = db.Column(String)
+    payload_organization = db.Column(String)
+    payload_removal_disallowed = db.Column(Boolean)
+    payload_uuid = db.Column(GUID, index=True)
     # SignerCertificates
     
 
@@ -427,7 +427,7 @@ class CommandSequence(db.Model):
     """
     __tablename__ = 'command_sequences'
 
-    id = Column(Integer, primary_key=True)
+    id = db.Column(Integer, primary_key=True)
     
 
 class Command(db.Model):
@@ -454,29 +454,29 @@ class Command(db.Model):
     """
     __tablename__ = 'commands'
 
-    id = Column(Integer, primary_key=True)
+    id = db.Column(Integer, primary_key=True)
 
-    request_type = Column(String, nullable=False)  # string representation of our local command handler
-    # request_type = Column(String, index=True, nullable=False) # actual command name
-    uuid = Column(GUID, index=True, unique=True, nullable=False)
-    parameters = Column(MutableDict.as_mutable(JSONEncodedDict),
+    request_type = db.Column(String, nullable=False)  # string representation of our local command handler
+    # request_type = db.Column(String, index=True, nullable=False) # actual command name
+    uuid = db.Column(GUID, index=True, unique=True, nullable=False)
+    parameters = db.Column(MutableDict.as_mutable(JSONEncodedDict),
                         nullable=True)  # JSON add'l data as input to command builder
-    status = Column(String(1), index=True, nullable=False, default=CommandStatus.Queued.value)
+    status = db.Column(String(1), index=True, nullable=False, default=CommandStatus.Queued.value)
 
-    queued_at = Column(DateTime, default=datetime.datetime.utcnow(), server_default=text('CURRENT_TIMESTAMP'))
-    sent_at = Column(DateTime, nullable=True)
-    acknowledged_at = Column(DateTime, nullable=True)
+    queued_at = db.Column(DateTime, default=datetime.datetime.utcnow(), server_default=text('CURRENT_TIMESTAMP'))
+    sent_at = db.Column(DateTime, nullable=True)
+    acknowledged_at = db.Column(DateTime, nullable=True)
 
     # command must only be sent after this date
-    after = Column(DateTime, nullable=True)
+    after = db.Column(DateTime, nullable=True)
 
     # number of retries remaining until dead
-    ttl = Column(Integer, nullable=False, default=5)
+    ttl = db.Column(Integer, nullable=False, default=5)
 
-    device_id = Column(ForeignKey('devices.id'), nullable=True)
+    device_id = db.Column(ForeignKey('devices.id'), nullable=True)
     device = relationship('Device', backref='commands')
 
-    # device_user_id = Column(ForeignKey('device_users.id'), nullable=True)
+    # device_user_id = db.Column(ForeignKey('device_users.id'), nullable=True)
     # device_user = relationship('DeviceUser', backref='commands')
     @classmethod
     def from_model(cls, cmd: commands.Command):
@@ -513,21 +513,21 @@ class Command(db.Model):
 class App(db.Model):
     __tablename__ = 'apps'
 
-    id = Column(Integer, primary_key=True)
+    id = db.Column(Integer, primary_key=True)
 
-    filename = Column(String, nullable=False, unique=True)
-    filesize = Column(Integer, nullable=False)
+    filename = db.Column(String, nullable=False, unique=True)
+    filesize = db.Column(Integer, nullable=False)
 
-    md5_hash = Column(String(32), nullable=False)  # MD5 hash of the entire file
+    md5_hash = db.Column(String(32), nullable=False)  # MD5 hash of the entire file
 
     # MDM clients support a chunked method of retrival of the download file
     # presumably to best support OTA download of large updates. These fields
     # are in support of that mechanism
-    md5_chunk_size = Column(Integer, nullable=False)
-    md5_chunk_hashes = Column(Text, nullable=True)  # colon (:) separated list of MD5 chunk hashes
+    md5_chunk_size = db.Column(Integer, nullable=False)
+    md5_chunk_hashes = db.Column(Text, nullable=True)  # colon (:) separated list of MD5 chunk hashes
 
-    bundle_ids_json = Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
-    pkg_ids_json = Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
+    bundle_ids_json = db.Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
+    pkg_ids_json = db.Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
 
     def path_format(self):
         return '%010d.dat' % self.id
@@ -539,21 +539,21 @@ class App(db.Model):
 # class DEPConfig(db.Model):
 #     __tablename__ = 'dep_config'
 #
-#     id = Column(Integer, primary_key=True)
+#     id = db.Column(Integer, primary_key=True)
 #
 #     # certificate for PKI of server token
-#     certificate_id = Column(ForeignKey('certificates.id'))
+#     certificate_id = db.Column(ForeignKey('certificates.id'))
 #     certificate = relationship('Certificate', backref='dep_configs')
 #
-#     server_token = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-#     auth_session_token = Column(String, nullable=True)
+#     server_token = db.Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
+#     auth_session_token = db.Column(String, nullable=True)
 #
-#     initial_fetch_complete = Column(Boolean, nullable=False, default=False)
-#     next_check = Column(DateTime(timezone=False), nullable=True)
-#     device_cursor = Column(String)
-#     device_cursor_recevied = Column(DateTime(timezone=False), nullable=True)  # shouldn't use if more than 7 days old
+#     initial_fetch_complete = db.Column(Boolean, nullable=False, default=False)
+#     next_check = db.Column(DateTime(timezone=False), nullable=True)
+#     device_cursor = db.Column(String)
+#     device_cursor_recevied = db.Column(DateTime(timezone=False), nullable=True)  # shouldn't use if more than 7 days old
 #
-#     url_base = Column(String, nullable=True)  # testing server environment if used
+#     url_base = db.Column(String, nullable=True)  # testing server environment if used
 #
 #     def last_check_delta(self):
 #         if self.next_check:
@@ -565,18 +565,18 @@ class App(db.Model):
 # class DEPProfile(db.Model):
 #     __tablename__ = 'dep_profile'
 #
-#     id = Column(Integer, primary_key=True)
+#     id = db.Column(Integer, primary_key=True)
 #
-#     mdm_config_id = Column(ForeignKey('mdm_config.id'), nullable=False)
+#     mdm_config_id = db.Column(ForeignKey('mdm_config.id'), nullable=False)
 #     mdm_config = relationship('MDMConfig', backref='dep_profiles')
 #
-#     dep_config_id = Column(ForeignKey('dep_config.id'), nullable=False)
+#     dep_config_id = db.Column(ForeignKey('dep_config.id'), nullable=False)
 #     dep_config = relationship('DEPConfig', backref='dep_profiles')
 #
 #     # DEP-assigned UUID for this DEP profile
-#     uuid = Column(String(36), index=True, nullable=True)  # should be unique but it's assigned to us so can't be null
+#     uuid = db.Column(String(36), index=True, nullable=True)  # should be unique but it's assigned to us so can't be null
 #
-#     profile_data = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=False)
+#     profile_data = db.Column(MutableDict.as_mutable(JSONEncodedDict), nullable=False)
 #
 #     def profile_name(self):
 #         return self.profile_data['profile_name']
@@ -585,10 +585,10 @@ class App(db.Model):
 class User(db.Model):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    fullname = Column(String)
-    password = Column(String)
+    id = db.Column(Integer, primary_key=True)
+    name = db.Column(String)
+    fullname = db.Column(String)
+    password = db.Column(String)
 
 
 class DeviceUser(db.Model):
@@ -603,16 +603,16 @@ class DeviceUser(db.Model):
     """
     __tablename__ = 'device_users'
 
-    id = Column(Integer, primary_key=True)
+    id = db.Column(Integer, primary_key=True)
 
-    udid = Column(GUID, nullable=False)
-    user_id = Column(GUID, nullable=False)
-    long_name = Column(String)
-    short_name = Column(String)
-    need_sync_response = Column(Boolean)  # This is kind of transitive but added anyway.
-    user_configuration = Column(Boolean)
-    digest_challenge = Column(String)
-    auth_token = Column(String)
+    udid = db.Column(GUID, nullable=False)
+    user_id = db.Column(GUID, nullable=False)
+    long_name = db.Column(String)
+    short_name = db.Column(String)
+    need_sync_response = db.Column(Boolean)  # This is kind of transitive but added anyway.
+    user_configuration = db.Column(Boolean)
+    digest_challenge = db.Column(String)
+    auth_token = db.Column(String)
 
 
 class Organization(db.Model):
@@ -633,17 +633,17 @@ class Organization(db.Model):
     """
     __tablename__ = 'organizations'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    payload_prefix = Column(String)
+    id = db.Column(Integer, primary_key=True)
+    name = db.Column(String)
+    payload_prefix = db.Column(String)
 
     # http://www.ietf.org/rfc/rfc5280.txt
     # maximum string lengths are well defined by this RFC and this schema follows those recommendations
     # this x.509 name is used in the subject of the internal CA and issued certificates
-    x509_ou = Column(String(32))
-    x509_o = Column(String(64))
-    x509_st = Column(String(128))
-    x509_c = Column(String(2))
+    x509_ou = db.Column(String(32))
+    x509_o = db.Column(String(64))
+    x509_st = db.Column(String(128))
+    x509_c = db.Column(String(2))
 
 
 class AppSourceType(Enum):
@@ -671,18 +671,18 @@ class ApplicationSource(db.Model):
     """
     __tablename__ = 'application_sources'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    source_type = Column(DBEnum(AppSourceType), default=AppSourceType.Munki)
+    id = db.Column(Integer, primary_key=True)
+    name = db.Column(String)
+    source_type = db.Column(DBEnum(AppSourceType), default=AppSourceType.Munki)
 
-    endpoint = Column(String)
-    mount_uri = Column(String)
-    use_ssl = Column(Boolean)
+    endpoint = db.Column(String)
+    mount_uri = db.Column(String)
+    use_ssl = db.Column(Boolean)
 
     # For S3 / Minio
-    access_key = Column(String)
-    secret_key = Column(String)
-    bucket = Column(String)
+    access_key = db.Column(String)
+    secret_key = db.Column(String)
+    bucket = db.Column(String)
     
 
 class SCEPConfig(db.Model):
@@ -695,20 +695,20 @@ class SCEPConfig(db.Model):
     """
     __tablename__ = 'scep_config'
 
-    id = Column(Integer, primary_key=True)
-    url = Column(String, nullable=False)
+    id = db.Column(Integer, primary_key=True)
+    url = db.Column(String, nullable=False)
 
-    challenge_enabled = Column(Boolean, default=False)
-    challenge = Column(String)
-    ca_fingerprint = Column(String)
-    subject = Column(String, nullable=False)  # eg. O=x/OU=y/CN=z
-    key_size = Column(Integer, default=2048, nullable=False)
-    key_type = Column(String, default='RSA', nullable=False)
-    key_usage = Column(DBEnum(KeyUsage), default=KeyUsage.All)
+    challenge_enabled = db.Column(Boolean, default=False)
+    challenge = db.Column(String)
+    ca_fingerprint = db.Column(String)
+    subject = db.Column(String, nullable=False)  # eg. O=x/OU=y/CN=z
+    key_size = db.Column(Integer, default=2048, nullable=False)
+    key_type = db.Column(String, default='RSA', nullable=False)
+    key_usage = db.Column(DBEnum(KeyUsage), default=KeyUsage.All)
 
-    retries = Column(Integer, default=3, nullable=False)
-    retry_delay = Column(Integer, default=10, nullable=False)
-    certificate_renewal_time_interval = Column(Integer, default=14, nullable=False)
+    retries = db.Column(Integer, default=3, nullable=False)
+    retry_delay = db.Column(Integer, default=10, nullable=False)
+    certificate_renewal_time_interval = db.Column(Integer, default=14, nullable=False)
 
 
 class SubjectAlternativeNameType(Enum):
@@ -737,11 +737,11 @@ class SubjectAlternativeName(db.Model):
     """
     __tablename__ = 'subject_alternative_names'
 
-    id = Column(Integer, primary_key=True)
-    discriminator = Column(DBEnum(SubjectAlternativeNameType), nullable=False)
+    id = db.Column(Integer, primary_key=True)
+    discriminator = db.Column(DBEnum(SubjectAlternativeNameType), nullable=False)
 
-    str_value = Column(String)
-    octet_value = Column(LargeBinary)  # For IPAddress
+    str_value = db.Column(String)
+    octet_value = db.Column(LargeBinary)  # For IPAddress
     
 
 class Tag(db.Model):
@@ -749,9 +749,9 @@ class Tag(db.Model):
     objects."""
     __tablename__ = 'tags'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    color = Column(String(6), default='888888')
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    color = db.Column(db.String(6), default='888888')
 
     devices = db.relationship(
         "Device",
