@@ -9,12 +9,9 @@ import {configureStore} from './store/configureStore';
 import {RootState} from './reducers';
 
 import {App} from './containers/App';
-import {AssistantPage} from '../_deprecated/AssistantPage';
 import {SCEPPage} from './containers/config/SCEPPage';
-import '../sass/app.scss';
-import {SSLPage} from "../_deprecated/SSLPage";
+
 import {CertificatesPage} from './containers/CertificatesPage';
-import {InternalCAPage} from '../_deprecated/InternalCAPage';
 import {OrganizationPage} from './containers/config/OrganizationPage';
 import {DevicesPage} from "./containers/DevicesPage";
 import {DevicePage} from "./containers/DevicePage";
@@ -22,6 +19,9 @@ import {ProfilesPage} from './containers/ProfilesPage';
 import {SettingsPage} from './containers/SettingsPage';
 import {DeviceGroupsPage} from "./containers/DeviceGroupsPage";
 import {DeviceGroupPage} from "./containers/DeviceGroupPage";
+import {ProfilePage} from "./containers/ProfilePage";
+
+import '../sass/app.scss';
 
 const initialState: RootState = {};
 
@@ -34,18 +34,17 @@ render(
         <ConnectedRouter history={history}>
             <AppContainer>
                 <App>
-                    <Route path='/config/assistant' component={AssistantPage} />
-
-                    <Route path='/config/ca' component={InternalCAPage} />
-                    <Route path='/config/ssl' component={SSLPage} />
-
                     <Route path='/certificates' component={CertificatesPage} />
-                    <Route path='/devices' exact component={DevicesPage} />
+                    <Route exact path='/devices' component={DevicesPage} />
                     <Route path='/devices/:id' component={DevicePage} />
-                    <Route path='/device_groups' exact component={DeviceGroupsPage} />
+
+                    <Route exact path='/device_groups' component={DeviceGroupsPage} />
                     <Route path='/device_groups/add' component={DeviceGroupPage} />
                     <Route path='/device_groups/:id' component={DeviceGroupPage} />
-                    <Route path='/profiles' component={ProfilesPage} />
+
+                    <Route exact path='/profiles' component={ProfilesPage} />
+                    <Route path='/profiles/:id' component={ProfilePage} />
+
                     <Route exact path='/settings' component={SettingsPage} />
                     <Route path='/settings/scep' component={SCEPPage} />
                     <Route path='/settings/organization' component={OrganizationPage} />

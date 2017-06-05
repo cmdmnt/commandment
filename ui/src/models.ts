@@ -15,6 +15,7 @@ export interface Profile {
     consent_en?: string;
 }
 
+export type ProfileRelationship = 'tags';
 
 export interface Command {
     id?: number;

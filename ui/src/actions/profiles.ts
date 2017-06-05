@@ -3,9 +3,9 @@ import { CALL_API, RSAA } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from './constants'
 import {
     RSAAIndexActionRequest, RSAAIndexActionResponse, encodeJSONAPIIndexParameters,
-    RSAAReadActionRequest, RSAAReadActionResponse
+    RSAAReadActionRequest, RSAAReadActionResponse, JSONAPIRelationship
 } from "../json-api";
-import {Profile} from "../models";
+import {Profile, Tag} from "../models";
 import {JSONAPIDetailResponse} from "../json-api";
 
 
@@ -62,6 +62,35 @@ export const read: ReadActionRequest = (id: string, include?: Array<string>) => 
                 READ_FAILURE
             ],
             headers: JSONAPI_HEADERS
+        }
+    }
+};
+
+
+export const RPATCH_REQUEST = 'profiles/RPATCH_REQUEST';
+export type RPATCH_REQUEST = typeof RPATCH_REQUEST;
+export const RPATCH_SUCCESS = 'profiles/RPATCH_SUCCESS';
+export type RPATCH_SUCCESS = typeof RPATCH_SUCCESS;
+export const RPATCH_FAILURE = 'profiles/RPATCH_FAILURE';
+export type RPATCH_FAILURE = typeof RPATCH_FAILURE;
+
+export interface PatchRelationshipActionRequest {
+    (parent_id: string, relationship: ProfileRelationship, data: Array<JSONAPIRelationship>): RSAA<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE>;
+}
+export type PatchRelationshipActionResponse = RSAAReadActionResponse<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE, JSONAPIDetailResponse<Profile, Tag>>;
+
+export const patchRelationship: PatchRelationshipActionRequest = (id: string, relationship: ProfileRelationship, data: Array<JSONAPIRelationship>) => {
+    return {
+        [CALL_API]: {
+            endpoint: `/api/v1/profiles/${id}/relationships/${relationship}`,
+            method: 'PATCH',
+            types: [
+                RPATCH_REQUEST,
+                RPATCH_SUCCESS,
+                RPATCH_FAILURE
+            ],
+            headers: JSONAPI_HEADERS,
+            body: JSON.stringify({ data })
         }
     }
 };

@@ -7,7 +7,7 @@ from .resources import CertificatesList, CertificateDetail, CertificateSigningRe
     OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationsList, ProfilesList, ProfileDetail, \
     InstalledCertificatesList, InstalledCertificateDetail, InstalledApplicationDetail, \
     DeviceGroupList, DeviceGroupDetail, DeviceRelationship, CommandRelationship, InstalledProfilesList, \
-    InstalledProfileDetail, TagsList, TagDetail, TagRelationship
+    InstalledProfileDetail, TagsList, TagDetail, TagRelationship, ProfileRelationship
 
 # PayloadsList, PayloadDetail,
 
@@ -56,6 +56,7 @@ api.route(InstalledCertificateDetail, 'installed_certificate_detail',
 # Profiles (Different to profiles returned by inventory)
 api.route(ProfilesList, 'profiles_list', '/v1/profiles')
 api.route(ProfileDetail, 'profile_detail', '/v1/profiles/<int:profile_id>')
+api.route(ProfileRelationship, 'profile_tags', '/v1/profiles/<int:profile_id>/relationships/tags')
 # api.route(PayloadsList, 'payloads_list', '/v1/payloads')
 # api.route(PayloadDetail, 'payload_detail', '/v1/payloads/<int:payload_id>')
 

@@ -105,23 +105,23 @@ export const fetchDeviceIfRequired = (
 ) => {
     const { devices } = getState();
 
-    if (devices.lastReceived) {
-        const now = new Date();
-        const seconds = 10;
-        if ((now.getTime() - devices.lastReceived.getTime()) / 1000 < seconds) {
-            if (devices.byId.hasOwnProperty(id)) {
-                dispatch({type: READ_CACHE_HIT, id});
-                const payload = {
-                    type: READ_SUCCESS,
-                    payload: {
-                        data: devices.byId[id]
-                    }
-                };
-                dispatch(payload);
-                return;
-            }
-        }
-    }
+    // if (devices.lastReceived) {
+    //     const now = new Date();
+    //     const seconds = 10;
+    //     if ((now.getTime() - devices.lastReceived.getTime()) / 1000 < seconds) {
+    //         if (devices.byId.hasOwnProperty(id)) {
+    //             dispatch({type: READ_CACHE_HIT, id});
+    //             const payload = {
+    //                 type: READ_SUCCESS,
+    //                 payload: {
+    //                     data: devices.byId[id]
+    //                 }
+    //             };
+    //             dispatch(payload);
+    //             return;
+    //         }
+    //     }
+    // }
 
     dispatch(read(id, include));
 };

@@ -399,6 +399,14 @@ class ProfileSchema(Schema):
     duration_until_removal = fields.Int()
     consent_en = fields.Str()
 
+    tags = Relationship(
+        related_view='api_app.tag_detail',
+        related_view_kwargs={'tag_id': '<id>'},
+        many=True,
+        schema='TagSchema',
+        type_='tags'
+    )
+
     class Meta:
         type_ = 'profiles'
         self_view = 'api_app.profile_detail'

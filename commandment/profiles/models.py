@@ -105,6 +105,12 @@ profile_payloads = db.Table('profile_payloads', db.metadata,
                             Column('payload_id', Integer, ForeignKey('payloads.id')))
 
 
+profile_tags = db.Table('profile_tags', db.metadata,
+                    db.Column('profile_id', Integer, ForeignKey('profiles.id')),
+                    db.Column('tag_id', Integer, ForeignKey('tags.id')),
+                    )
+
+
 class Profile(db.Model):
     """Top level profile.
 
@@ -138,3 +144,8 @@ class Profile(db.Model):
     payloads = db.relationship('Payload',
                                secondary=profile_payloads,
                                backref='profiles')
+
+    tags = db.relationship('Tag',
+                           secondary=profile_tags,
+                           backref='profiles')
+

@@ -12,17 +12,33 @@ import {IndexActionRequest} from "../actions/profiles";
 import {PayloadScopeIcon} from '../components/griddle/PayloadScopeIcon';
 import {SimpleLayout as Layout} from "../components/griddle/SimpleLayout";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
+import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
+import {RouteLinkColumn} from "../components/griddle/RouteLinkColumn";
 
 interface ReduxStateProps {
     profiles: ProfilesState;
+}
+
+function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+    return {
+        profiles: state.profiles
+    }
 }
 
 interface ReduxDispatchProps {
     index: IndexActionRequest;
 }
 
+function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: any): ReduxDispatchProps {
+    return bindActionCreators({
+        index: actions.index
+    }, dispatch);
+}
+
 interface ProfilesPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
     componentWillMount: () => void;
+    griddleState: GriddleDecoratorState;
+    events: GriddleDecoratorHandlers;
 }
 
 interface ProfilesPageState {
@@ -30,33 +46,46 @@ interface ProfilesPageState {
 }
 
 @connect<ReduxStateProps, ReduxDispatchProps, ProfilesPageProps>(
-    (state: RootState, ownProps?: any): ReduxStateProps => {
-        return { profiles: state.profiles };
-    },
-    (dispatch: Dispatch<any>): ReduxDispatchProps => {
-        return bindActionCreators({
-            index: actions.index
-        }, dispatch);
-    }
+    mapStateToProps,
+    mapDispatchToProps
 )
+@griddle
 export class ProfilesPage extends React.Component<ProfilesPageProps, ProfilesPageState> {
 
     componentWillMount?(): void {
-        this.props.index();
+        this.props.index(this.props.griddleState.pageSize, this.props.griddleState.currentPage);
     }
 
-    handleFilter = (filterText: string) => {
-        // TODO: debounce filter text
-    };
+    componentWillUpdate?(nextProps: ProfilesPageProps, nextState: void | Readonly<{}>) {
+        const {griddleState} = this.props;
+        const {griddleState: nextGriddleState} = nextProps;
+
+        if (nextGriddleState.filter !== griddleState.filter
+            || nextGriddleState.currentPage !== griddleState.currentPage
+            || nextGriddleState.sortId !== griddleState.sortId
+            || nextGriddleState.sortAscending !== griddleState.sortAscending
+        ) {
+            let sortColumnId = '';
+            if (nextGriddleState.sortId) {
+                sortColumnId = nextGriddleState.sortId.substr('attributes.'.length);
+                if (!nextGriddleState.sortAscending) {
+                    sortColumnId = '-' + sortColumnId;
+                }
+            }
+
+            this.props.index(
+                nextGriddleState.pageSize,
+                nextGriddleState.currentPage,
+                [sortColumnId],
+                [{ name: 'display_name', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
+        }
+    }
 
     render(): JSX.Element {
         const {
+            griddleState,
             profiles
         } = this.props;
-
-        const eventHandlers = {
-            onFilter: this.handleFilter
-        };
 
         return (
             <Container className='ProfilesPage'>
@@ -72,19 +101,27 @@ export class ProfilesPage extends React.Component<ProfilesPageProps, ProfilesPag
                         <Griddle
                             data={profiles.items}
                             plugins={[SemanticUIPlugin()]}
-                            pageProperties={profiles.pageProperties}
+                            pageProperties={{
+                                currentPage: griddleState.currentPage,
+                                pageSize: griddleState.pageSize,
+                                recordCount: profiles.recordCount
+                            }}
                             styleConfig={{
                                 classNames: {
-                                    Table: 'ui celled table'
+                                    Table: 'ui celled table',
+                                    NoResults: 'ui message'
                                 }
                             }}
-                            events={eventHandlers}
+                            events={this.props.events}
+                            components={{
+                                Layout
+                            }}
                         >
                             <RowDefinition>
-                                <ColumnDefinition id="id" />
+                                <ColumnDefinition id="id" customComponent={RouteLinkColumn} urlPrefix="/profiles/" />
+                                <ColumnDefinition title="Name" id="attributes.display_name" />
                                 <ColumnDefinition title="Scope" id="attributes.scope" component={PayloadScopeIcon} />
                                 <ColumnDefinition title="UUID" id="attributes.uuid" />
-                                <ColumnDefinition title="Name" id="attributes.display_name" />
                             </RowDefinition>
                         </Griddle>
                     </Grid.Column>

@@ -15,7 +15,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.hybrid import hybrid_property
-
 from .mutablelist import MutableList
 from .dbtypes import GUID, JSONEncodedDict
 from .mdm import CommandStatus, Platform, commands
@@ -759,4 +758,10 @@ class Tag(db.Model):
         secondary=device_tags,
         back_populates="tags",
     )
+
+    # profiles = db.relationship(
+    #     "Tag",
+    #     secondary=profile_tags,
+    #     back_populates="tags",
+    # )
 

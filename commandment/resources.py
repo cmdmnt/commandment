@@ -201,7 +201,17 @@ class ProfileDetail(ResourceDetail):
     schema = ProfileSchema
     data_layer = {
         'session': db.session,
-        'model': Profile
+        'model': Profile,
+        'url_field': 'profile_id'
+    }
+
+
+class ProfileRelationship(ResourceRelationship):
+    schema = ProfileSchema
+    data_layer = {
+        'session': db.session,
+        'model': Profile,
+        'url_field': 'profile_id'
     }
 
 
@@ -241,5 +251,6 @@ class TagRelationship(ResourceRelationship):
     schema = TagSchema
     data_layer = {
         'session': db.session,
-        'model': Tag
+        'model': Tag,
+        'url_field': 'tag_id'
     }
