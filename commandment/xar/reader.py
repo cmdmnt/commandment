@@ -1,4 +1,5 @@
 import os
+from typing import List
 import zlib
 from struct import *
 from collections import namedtuple
@@ -9,9 +10,10 @@ class XarArchive(object):
 
     Header = Struct('>4sHHQQI')
 
-    def __init__(self, path: str, toc: ET.Element):
+    def __init__(self, path: str, toc: ET.Element, header=None):
         self.path = path
         self.toc = toc
+        self.header = header
 
     @classmethod
     def load(cls, path: str) -> any:
@@ -31,6 +33,10 @@ class XarArchive(object):
             raise ValueError('Unexpected TOC Length does not match header')
 
         toc = ET.parse(toc_uncompressed)
-        result = XarArchive(path, toc)
+        result = XarArchive(path, toc, header=hdr)
 
         return result
+
+    def list(self, verbose: bool):
+        for file in self.toc.iter('file'):
+            print(file.findtext('name'))

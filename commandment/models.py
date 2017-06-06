@@ -20,10 +20,9 @@ from .dbtypes import GUID, JSONEncodedDict
 from .mdm import CommandStatus, Platform, commands
 import base64
 from binascii import hexlify
-from biplist import Data as NSData, readPlistFromString
-from uuid import uuid4
+from biplist import Data as NSData
 from .profiles.certificates import KeyUsage
-from .profiles import PayloadScope
+
 
 db = SQLAlchemy()
 
