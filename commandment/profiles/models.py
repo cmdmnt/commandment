@@ -16,7 +16,7 @@ class Payload(db.Model):
 
     id = Column(Integer, primary_key=True)
     type = Column(String, index=True, nullable=False)
-    version = Column(Integer)
+    version = Column(Integer, default=1)
     identifier = Column(String)
     uuid = Column(GUID, index=True, default=uuid4(), nullable=False)
     display_name = Column(String)
