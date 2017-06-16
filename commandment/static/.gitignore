@@ -2,3 +2,5 @@ app.js
 *.map
 fonts/*
 css/*
+images/*
+
