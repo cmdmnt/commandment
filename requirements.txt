@@ -14,7 +14,6 @@ click==6.7
 cryptography==1.8.1
 decorator==4.0.11
 docutils==0.13.1
-duo-web==1.2.0
 factory-boy==2.8.1
 Faker==0.7.11
 Flask==0.12
@@ -42,7 +41,6 @@ marshmallow==2.13.1
 marshmallow-enum==1.0
 marshmallow-jsonapi==0.11.0
 marshmallow-sqlalchemy==0.13.0
-minio==2.2.1
 mock==2.0.0
 oauth2==1.9.0.post1
 oauth2client==4.0.0

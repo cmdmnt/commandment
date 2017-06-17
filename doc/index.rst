@@ -11,7 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   guides/developer
+   guides/index
 
    rest/index.rst
    api/index.rst
