@@ -3,5 +3,6 @@ services:
   commandment:
     build:
       context: .
+      dockerfile: .docker/Dockerfile
     image: commandment:latest
     
