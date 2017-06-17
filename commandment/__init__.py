@@ -16,6 +16,8 @@ from .sso.oauth import oauth_app
 from .sso.saml import saml_app
 from .models import db
 from .auth import authenticate, identity
+from .ac2.ac2_app import ac2_app
+from .omdm import omdm_app
 
 
 def create_app() -> Flask:
@@ -43,6 +45,8 @@ def create_app() -> Flask:
     app.register_blueprint(ota_app, url_prefix='/ota')
     app.register_blueprint(oauth_app, url_prefix='/oauth')
     app.register_blueprint(saml_app, url_prefix='/saml')
+    app.register_blueprint(omdm_app, url_prefix='/omdm')
+    app.register_blueprint(ac2_app)
 
     # SPA Entry Point
     @app.route('/')

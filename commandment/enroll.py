@@ -4,7 +4,7 @@ from uuid import uuid4
 from asn1crypto.cms import CertificateSet, SignerIdentifier
 from flask import current_app, render_template, abort, Blueprint, make_response, url_for, request
 import os
-from .profiles.models import MDMPayload, Profile, PEMCertificatePayload, SCEPPayload
+from .profiles.models import MDMPayload, Profile, PEMCertificatePayload, DERCertificatePayload, SCEPPayload
 from .profiles import PROFILE_CONTENT_TYPE, plist_schema as profile_schema, PayloadScope
 from .models import db, Organization, SCEPConfig
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
@@ -12,7 +12,7 @@ from .plistutil.nonewriter import dumps as dumps_none
 
 from cryptography.x509.oid import NameOID
 from asn1crypto import cms
-from base64 import b64decode
+from base64 import b64decode, b64encode
 from cryptography import x509
 from cryptography.exceptions import UnsupportedAlgorithm, InvalidSignature
 from cryptography.hazmat.backends import default_backend
@@ -88,7 +88,9 @@ def enroll():
                 identifier=org.payload_prefix + '.ca',
                 payload_content=pem_data,
                 display_name='Certificate Authority',
+                description='Required for your device to trust the server',
                 type='com.apple.security.pem',
+                version=1
             )
             profile.payloads.append(pem_payload)
 
@@ -98,14 +100,25 @@ def enroll():
         basepath = os.path.dirname(__file__)
         certpath = os.path.join(basepath, current_app.config['SSL_CERTIFICATE'])
         with open(certpath, 'rb') as fd:
-            pem_data = fd.read()
+
+            # ssl_certificate = x509.load_pem_x509_certificate(fd.read(), backend=default_backend())
+            # der_payload = PEMCertificatePayload(
+            #     uuid=uuid4(),
+            #     identifier=org.payload_prefix + '.ssl',
+            #     payload_content=ssl_certificate.public_bytes(serialization.Encoding.DER),
+            #     display_name='Web Server Certificate',
+            #     description='Required for your device to trust the server',
+            #     type='com.apple.security.pem',
+            # )
+            # profile.payloads.append(der_payload)
             pem_payload = PEMCertificatePayload(
                 uuid=uuid4(),
                 identifier=org.payload_prefix + '.ssl',
-                payload_content=pem_data,
+                payload_content=fd.read(),
                 display_name='Web Server Certificate',
                 description='Required for your device to trust the server',
                 type='com.apple.security.pem',
+                version=1
             )
             profile.payloads.append(pem_payload)
 
@@ -120,7 +133,8 @@ def enroll():
         key_type='RSA',
         key_usage=scep_config.key_usage,
         display_name='MDM SCEP',
-        description='Requests a certificate to identify your device'
+        description='Requests a certificate to identify your device',
+        version=1
     )
 
     profile.payloads.append(scep_payload)

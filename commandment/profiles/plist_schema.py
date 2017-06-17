@@ -35,8 +35,8 @@ def register_payload_schema(payload_type: str) -> Callable[[Type[Schema]], Type[
 
 
 class Payload(Schema):
-    PayloadType = fields.Str(attribute='type')
-    PayloadVersion = fields.Integer(attribute='version')
+    PayloadType = fields.Str(attribute='type', required=True)
+    PayloadVersion = fields.Integer(attribute='version', default=1)
     PayloadIdentifier = fields.String(attribute='identifier')
     PayloadUUID = fields.UUID(attribute='uuid')
     PayloadDisplayName = fields.String(attribute='display_name')
