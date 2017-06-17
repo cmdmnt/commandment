@@ -345,6 +345,19 @@ class InstalledApplication(db.Model):
     inverse of that).
     
     :table: installed_applications
+
+    Attributes:
+        id (int): Identifier
+        device_udid (GUID): Unique device identifier
+        device_id (int): Parent relationship ID of the device
+        device (db.relationship): SQLAlchemy relationship to the device.
+        bundle_identifier (str): The com.xxx.yyy bundle identifier for the application. May be empty.
+        version (str): The long version for the application. May be empty.
+        short_version (str): The short version for the application. May be empty.
+        name (str): The application name
+        bundle_size (int): The application size
+        dynamic_size (int): The dynamic data size (for iOS containers).
+        is_validated (bool):
     """
     __tablename__ = 'installed_applications'
 
@@ -375,17 +388,21 @@ class InstalledCertificate(db.Model):
     __tablename__ = 'installed_certificates'
 
     id = db.Column(db.Integer, primary_key=True)
+    """(int): Installed Certificate ID"""
     device_udid = db.Column(GUID, index=True, nullable=False)
+    """(GUID): Unique Device Identifier"""
     device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
+    """(int): Device foreign key ID."""
     device = db.relationship('Device', backref='installed_certificates')
-
+    """(db.relationship): Device relationship"""
     x509_cn = db.Column(db.String)
+    """(str): The X.509 Common Name of the certificate."""
     is_identity = db.Column(db.Boolean)
+    """(bool): Is the certificate an identity certificate?"""
     der_data = db.Column(db.LargeBinary, nullable=False)
-    
-    # SHA-256 hash of DER-encoded certificate
+    """(bytes): The DER encoded certificate data."""
     fingerprint_sha256 = db.Column(db.String(64), nullable=False, index=True)
-
+    """(str): SHA-256 fingerprint of the certificate."""
 
 class InstalledProfile(db.Model):
     """This model represents a single installed profile on an enrolled device as returned by the ``ProfileList`` query.
@@ -398,14 +415,21 @@ class InstalledProfile(db.Model):
     __tablename__ = 'installed_profiles'
 
     id = db.Column(db.Integer, primary_key=True)
+    """(int): Installed Profile ID"""
     device_udid = db.Column(GUID, index=True, nullable=False)
+    """(GUID): Unique Device Identifier"""
     device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
+    """(int): Device foreign key ID."""
     device = db.relationship('Device', backref='installed_profiles')
+    """(db.relationship): Device relationship"""
 
     has_removal_password = db.Column(db.Boolean)
+    """(bool): Does the installed profile have a removal password?"""
     is_encrypted = db.Column(db.Boolean)
+    """(bool): Is the installed profile encrypted?"""
 
     payload_description = db.Column(db.String)
+    """(str): Payload description (value of PayloadDescription)"""
     payload_display_name = db.Column(db.String)
     payload_identifier = db.Column(db.String)
     payload_organization = db.Column(db.String)
