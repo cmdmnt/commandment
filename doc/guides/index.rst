@@ -6,6 +6,6 @@ Guides
     :maxdepth: 2
 
     user/index
-    developer
+    developer/index
 
     

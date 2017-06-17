@@ -1,21 +1,18 @@
-Developer Guide
-===============
+Dependencies
+============
 
-This guide explains how to get commandment set up for development.
 
-.. note:: The guide only covers macOS at this point in time.
+Installing backend dependencies
+-------------------------------
 
-Installing dependencies
------------------------
-
-Python 3.5+
+Python 3.6+
 ^^^^^^^^^^^
 
 Commandment is written using Python 3.6, and uses type annotations as provided by the
 `typing <https://docs.python.org/3/library/typing.html>`_ module.
 
 macOS ships with Python 2.7, so you will need to have a separate instance of Python 3.6 installed on your system.
-You can use `Homebrew <https://brew.sh>`_ to install Python 3.6 along side the system provided Python 2.7.
+You can use `Homebrew <https://brew.sh>`_ to install Python 3.6 alongside the system provided Python 2.7.
 
 It's as easy as::
 
@@ -77,6 +74,24 @@ Run this command to fetch all of the Python dependencies::
 
 Now you're done with all the backend, you can move on to the front end build process.
 
-Front end
----------
+Front end dependencies
+----------------------
+
+All of the front end code is contained within the **ui** subdirectory, so make that your current working directory.
+
+.. note:: The Python virtualenv has zero impact on the front end build
+
+First, you need to install all of the **node** dependencies. For this i recommend `yarn <https://yarnpkg.com>`_, which you
+can install by running::
+
+    $ brew install yarn
+
+Then, to install all front end dependencies you can run::
+
+    $ yarn install
+
+From the ui directory.
+
+You now have the tools to develop both the backend and front end code.
+
 

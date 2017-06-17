@@ -39,6 +39,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinxcontrib.autohttp.flask',
+    'sphinxcontrib.autohttp.flaskqref',
     'sphinxcontrib.plantuml',
 ]
 

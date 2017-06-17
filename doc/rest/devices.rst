@@ -1,12 +1,19 @@
 Devices
 =======
 
+.. autoflask:: commandment:create_app()
+    :blueprints: api_app
+
 .. http:get:: /api/v1/devices
 
-   Get information about a device
+   Get a list of devices
 
    :reqheader Accept: application/vnd.api+json
    :resheader Content-Type: application/vnd.api+json
+
+.. http:get:: /api/v1/devices/(int:device_id)
+
+   Get information about a specific device.
 
 .. http:post:: /api/v1/devices
 
@@ -23,3 +30,8 @@ Devices
 .. http:get:: /api/v1/devices/(int:device_id)/commands
 
    Get MDM commands associated with this device.
+
+.. http:get:: /api/v1/devices/(int:device_id)/tags
+
+   Get tags associated with this device.
+

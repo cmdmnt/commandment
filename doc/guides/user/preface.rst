@@ -7,9 +7,9 @@ Setting up an MDM requires a few different certificates:
 - To prove that your MDM isn't being impersonated (TLS).
 - To prove that someone isn't impersonating an Apple Device connecting to your MDM (SCEP/Identity Certificate).
 
-.. note:: I'm glossing over a lot of detail to give you an overview.
+.. note:: I'm glossing over a lot of detail to give you a general sense of the requirements.
 
-By far, the best explanation is the MicroMDM Blog post by Jesse Peterson on
+By far, the best in-depth explanation is the MicroMDM Blog post by Jesse Peterson on
 `Understanding MDM Certificates <https://micromdm.io/blog/certificates/>`_.
 
 APNS MDM Certificate
@@ -26,10 +26,10 @@ There are several ways to get one:
   enabling the MDM Vendor option. You can then use this account to sign push certificate requests.
 - Have an MDM vendor, or someone with that account sign the CSR for you. `mdmcert.download <https://mdmcert.download>`_
   is one such service.
-- Server.app
+- Server.app                           
 
 
 
 .. rubric:: Footnotes
 
-.. [#f1] `Push Notification Guide <https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html#//apple_ref/doc/uid/TP40008194-CH8-SW1>`_.
+.. [#f1] `Push Notification Developer Guide <https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html#//apple_ref/doc/uid/TP40008194-CH8-SW1>`_.
