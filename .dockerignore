@@ -204,3 +204,4 @@ testdata
 # ui output should already be in commandment/static
 ui
 
+.git
