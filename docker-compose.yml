@@ -3,3 +3,5 @@ services:
   commandment:
     build:
       context: .
+    image: commandment:latest
+    
