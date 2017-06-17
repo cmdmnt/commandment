@@ -1,4 +1,4 @@
-FROM python:3.5
+FROM python:3.6
 
 # Adapted from tiangolo-uwsgi-flask
 # Install uWSGI
@@ -33,7 +33,8 @@ RUN apt-get update && apt-get install -y supervisor \
 # Custom Supervisord config
 COPY .docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN pip install flask
+# No need for this since it is a listed dependency
+# RUN pip install flask
 
 COPY . /commandment
 WORKDIR /commandment
