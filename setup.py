@@ -20,7 +20,7 @@ setup(
         'biplist>=1.0.1',
         'cryptography>=1.8.1',
         'Flask',
-        'Flask_REST_JSONAPI',
+        'Flask-REST-JSONAPI',
         'Flask-Cors',
         'flask-marshmallow',
         'Flask-OAuthlib',

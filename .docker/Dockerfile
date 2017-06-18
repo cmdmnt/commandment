@@ -36,7 +36,7 @@ COPY .docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY . /commandment
 WORKDIR /commandment
 RUN pip install -r /commandment/requirements.txt
-# RUN python /commandment/setup.py install
 COPY ./uwsgi.ini /commandment/uwsgi.ini
+COPY .docker/entry.sh /entry.sh
 
-CMD ["/usr/bin/supervisord"]
+CMD ["/entry.sh"]
