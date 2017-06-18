@@ -178,6 +178,7 @@ class Device(db.Model):
 
     # Table 5
     last_cloud_backup_date = db.Column(db.DateTime)
+    """last_cloud_backup_date (datetime): The date of the last iCloud backup."""
     awaiting_configuration = db.Column(db.Boolean)
     """awaiting_configuration (bool): True if device is waiting at Setup Assistant"""
     
@@ -390,6 +391,9 @@ class InstalledApplication(db.Model):
     inverse of that).
     
     :table: installed_applications
+
+    See Also:
+          - `InstalledApplicationList Command <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/3-MDM_Protocol/MDM_Protocol.html#//apple_ref/doc/uid/TP40017387-CH3-SW14>`_.
     """
     __tablename__ = 'installed_applications'
 
@@ -427,6 +431,9 @@ class InstalledCertificate(db.Model):
     outside of a profile.
     
     :table: installed_certificates
+
+    See Also:
+          - `CertificateList Command <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/3-MDM_Protocol/MDM_Protocol.html#//apple_ref/doc/uid/TP40017387-CH3-SW13>`_.
     """
     __tablename__ = 'installed_certificates'
 
@@ -453,8 +460,11 @@ class InstalledProfile(db.Model):
     
     The response does not contain the entire contents of the profiles installed therefore the UUIDs returned are joined
     against our profiles table to ascertain whether profiles have been installed or not.
-    
+
     :table: installed_profiles
+
+    See Also:
+          - `ProfileList Command <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/3-MDM_Protocol/MDM_Protocol.html#//apple_ref/doc/uid/TP40017387-CH3-SW7>`_.
     """
     __tablename__ = 'installed_profiles'
 
