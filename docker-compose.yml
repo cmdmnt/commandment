@@ -7,5 +7,7 @@ services:
     image: commandment:latest
     volumes:
       - "./.docker/settings.cfg.docker:/settings.cfg"
+      - "./ssl.crt:/etc/nginx/ssl.crt"
+      - "./ssl.key:/etc/nginx/ssl.key"
     ports:
-      - "8120:80"
+      - "8445:443"
