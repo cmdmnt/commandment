@@ -1,8 +1,3 @@
-from enum import Enum
-
-from sqlalchemy import Column, Integer, LargeBinary, String, Text, Enum as DBEnum, Boolean, ForeignKey, DateTime, \
-    BigInteger
-
 from commandment.profiles import PayloadScope
 from commandment.profiles.certificates import KeyUsage
 from ..dbtypes import GUID, JSONEncodedDict
@@ -14,14 +9,14 @@ from ..models import db
 class Payload(db.Model):
     __tablename__ = 'payloads'
 
-    id = Column(Integer, primary_key=True)
-    type = Column(String, index=True, nullable=False)
-    version = Column(Integer, default=1)
-    identifier = Column(String)
-    uuid = Column(GUID, index=True, default=uuid4(), nullable=False)
-    display_name = Column(String)
-    description = Column(Text)
-    organization = Column(String)
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String, index=True, nullable=False)
+    version = db.Column(db.Integer, default=1)
+    identifier = db.Column(db.String)
+    uuid = db.Column(GUID, index=True, default=uuid4(), nullable=False)
+    display_name = db.Column(db.String)
+    description = db.Column(db.Text)
+    organization = db.Column(db.String)
 
     # Dependencies should be tracked in cases where the payload refers to another required payload.
     # eg. a reference to certificate payload in an 802.1x configuration.
@@ -36,16 +31,16 @@ class Payload(db.Model):
 
 
 class MDMPayload(Payload):
-    id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
-    identity_certificate_uuid = Column(GUID, nullable=False)
-    topic = Column(String, nullable=False)
-    server_url = Column(String, nullable=False)
-    server_capabilities = Column(String)
-    sign_message = Column(Boolean)
-    check_in_url = Column(String)
-    check_out_when_removed = Column(Boolean)
-    access_rights = Column(Integer)
-    use_development_apns = Column(Boolean)
+    id = db.Column(db.Integer, db.ForeignKey('payloads.id'), primary_key=True)
+    identity_certificate_uuid = db.Column(GUID, nullable=False)
+    topic = db.Column(db.String, nullable=False)
+    server_url = db.Column(db.String, nullable=False)
+    server_capabilities = db.Column(db.String)
+    sign_message = db.Column(db.Boolean)
+    check_in_url = db.Column(db.String)
+    check_out_when_removed = db.Column(db.Boolean)
+    access_rights = db.Column(db.Integer)
+    use_development_apns = db.Column(db.Boolean)
 
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.mdm'
@@ -53,19 +48,19 @@ class MDMPayload(Payload):
 
 
 class SCEPPayload(Payload):
-    id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
-    url = Column(String, nullable=False)
-    name = Column(String, nullable=True)
-    subject = Column(JSONEncodedDict, nullable=False)  # eg. O=x/OU=y/CN=z
-    challenge = Column(String, nullable=True)
-    key_size = Column(Integer, default=2048, nullable=False)
-    ca_fingerprint = Column(LargeBinary, nullable=True)
-    key_type = Column(String, default='RSA', nullable=False)
-    key_usage = Column(DBEnum(KeyUsage), default=KeyUsage.All)
-    subject_alt_name = Column(String, nullable=True)
-    retries = Column(Integer, default=3, nullable=False)
-    retry_delay = Column(Integer, default=10, nullable=False)
-    certificate_renewal_time_interval = Column(Integer, default=14, nullable=False)
+    id = db.Column(db.Integer, db.ForeignKey('payloads.id'), primary_key=True)
+    url = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=True)
+    subject = db.Column(JSONEncodedDict, nullable=False)  # eg. O=x/OU=y/CN=z
+    challenge = db.Column(db.String, nullable=True)
+    key_size = db.Column(db.Integer, default=2048, nullable=False)
+    ca_fingerprint = db.Column(db.LargeBinary, nullable=True)
+    key_type = db.Column(db.String, default='RSA', nullable=False)
+    key_usage = db.Column(db.Enum(KeyUsage), default=KeyUsage.All)
+    subject_alt_name = db.Column(db.String, nullable=True)
+    retries = db.Column(db.Integer, default=3, nullable=False)
+    retry_delay = db.Column(db.Integer, default=10, nullable=False)
+    certificate_renewal_time_interval = db.Column(db.Integer, default=14, nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'com.apple.security.scep',
@@ -73,10 +68,10 @@ class SCEPPayload(Payload):
 
 
 class CertificatePayload(Payload):
-    id = Column(Integer, ForeignKey('payloads.id'), primary_key=True)
-    certificate_file_name = Column(String)
-    payload_content = Column(LargeBinary)
-    password = Column(String)
+    id = db.Column(db.Integer, db.ForeignKey('payloads.id'), primary_key=True)
+    certificate_file_name = db.Column(db.String)
+    payload_content = db.Column(db.LargeBinary)
+    password = db.Column(db.String)
     __mapper_args__ = {
         'polymorphic_identity': 'certificate'
     }
@@ -101,13 +96,13 @@ class PKCS12CertificatePayload(CertificatePayload):
 
 
 profile_payloads = db.Table('profile_payloads', db.metadata,
-                            Column('profile_id', Integer, ForeignKey('profiles.id')),
-                            Column('payload_id', Integer, ForeignKey('payloads.id')))
+                            db.Column('profile_id', db.Integer, db.ForeignKey('profiles.id')),
+                            db.Column('payload_id', db.Integer, db.ForeignKey('payloads.id')))
 
 
 profile_tags = db.Table('profile_tags', db.metadata,
-                    db.Column('profile_id', Integer, ForeignKey('profiles.id')),
-                    db.Column('tag_id', Integer, ForeignKey('tags.id')),
+                    db.Column('profile_id',  db.Integer, db.ForeignKey('profiles.id')),
+                    db.Column('tag_id',  db.Integer, db.ForeignKey('tags.id')),
                     )
 
 
@@ -123,23 +118,23 @@ class Profile(db.Model):
     """
     __tablename__ = 'profiles'
 
-    id = Column(Integer, primary_key=True)
-    data = Column(LargeBinary)
+    id = db.Column(db.Integer, primary_key=True)
+    data = db.Column(db.LargeBinary)
 
-    description = Column(Text)
-    display_name = Column(String)
-    expiration_date = Column(DateTime)  # Only for old style OTA
-    identifier = Column(String, nullable=False)
-    organization = Column(String)
-    uuid = Column(GUID, index=True, default=uuid4())
-    removal_disallowed = Column(Boolean)
-    version = Column(Integer, default=1)
-    payload_type = Column(String, default='Configuration')
-    scope = Column(DBEnum(PayloadScope), default=PayloadScope.User.value)
-    removal_date = Column(DateTime)
-    duration_until_removal = Column(BigInteger)
-    consent_en = Column(Text)
-    is_encrypted = Column(Boolean, default=False)
+    description = db.Column(db.Text)
+    display_name = db.Column(db.String)
+    expiration_date = db.Column(db.DateTime)  # Only for old style OTA
+    identifier = db.Column(db.String, nullable=False)
+    organization = db.Column(db.String)
+    uuid = db.Column(GUID, index=True, default=uuid4())
+    removal_disallowed = db.Column(db.Boolean)
+    version = db.Column(db.Integer, default=1)
+    payload_type = db.Column(db.String, default='Configuration')
+    scope = db.Column(db.Enum(PayloadScope), default=PayloadScope.User.value)
+    removal_date = db.Column(db.DateTime)
+    duration_until_removal = db.Column(db.BigInteger)
+    consent_en = db.Column(db.Text)
+    is_encrypted = db.Column(db.Boolean, default=False)
 
     payloads = db.relationship('Payload',
                                secondary=profile_payloads,
