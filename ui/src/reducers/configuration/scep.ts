@@ -12,7 +12,8 @@ export interface SCEPState {
 
 const initialState: SCEPState = {
     loading: false,
-    error: false
+    error: false,
+    submitted: false
 };
 
 type SCEPAction = ReadActionResponse | PostActionResponse;

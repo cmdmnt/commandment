@@ -4,6 +4,7 @@ import {
 } from "../../actions/device/profiles";
 import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledProfile} from "../../models";
+import {OtherAction} from "../../actions/constants";
 
 
 export interface InstalledProfilesState {
@@ -16,7 +17,7 @@ const initialState: InstalledProfilesState = {
     recordCount: 0
 };
 
-type InstalledProfilesAction = InstalledProfilesActionResponse;
+type InstalledProfilesAction = InstalledProfilesActionResponse | OtherAction;
 
 export function installed_profiles(state: InstalledProfilesState = initialState, action: InstalledProfilesAction): InstalledProfilesState {
     switch (action.type) {

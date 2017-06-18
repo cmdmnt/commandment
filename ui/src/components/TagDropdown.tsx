@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { Dropdown, Input } from 'semantic-ui-react';
+import {Dropdown, DropdownItemProps, Input} from 'semantic-ui-react';
 import {Tag} from "../models";
 import {SyntheticEvent} from "react";
-import {JSONAPIObject} from "../json-api";
 
 interface TagDropdownProps {
     loading: boolean;
-    tags: Array<Tag>;
+    tags: Array<DropdownItemProps>;
     value?: Array<any>;
     onAddItem: (event: SyntheticEvent<any>, data: object) => void;
     onSearch: (value: string) => void;
@@ -14,7 +13,11 @@ interface TagDropdownProps {
     searchTimeout: number;
 }
 
-export class TagDropdown extends React.Component<TagDropdownProps, {}> {
+interface TagDropdownState {
+    value?: string;
+}
+
+export class TagDropdown extends React.Component<TagDropdownProps, TagDropdownState> {
 
     _timeout: number;
 

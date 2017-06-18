@@ -13,7 +13,7 @@ export interface DeviceIdMap {
 export interface DevicesState {
     items: Array<JSONAPIObject<Device>>;
     byId: DeviceIdMap;
-    allIds: Array<number>;
+    allIds: Array<string>;
     loading: boolean;
     error: boolean;
     errorDetail?: any
@@ -61,10 +61,10 @@ export function devices(state: DevicesState = initialState, action: DevicesActio
                     errorDetail: action.payload
                 }
             } else {
-                let allIds: number[] = [];
+                let allIds: string[] = [];
                 const byId: DeviceIdMap = action.payload.data.reduce((memo: DeviceIdMap, device: JSONAPIObject<Device>) => {
                     memo[device.id] = device;
-                    allIds.push(device.id);
+                    allIds.push(''+device.id);
                     return memo;
                 }, {});
 

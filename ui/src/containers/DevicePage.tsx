@@ -13,7 +13,7 @@ import {
 } from "../actions/devices";
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
 import {DeviceState} from "../reducers/device";
-import {Container, Grid, Menu, Segment, Dropdown} from 'semantic-ui-react';
+import {Container, Grid, Menu, Segment, Dropdown, DropdownItemProps} from 'semantic-ui-react';
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {SyntheticEvent} from "react";
 import {DeviceCertificates} from "./devices/DeviceCertificates";
@@ -130,7 +130,7 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
             tags
         } = this.props;
 
-        const tagChoices = tags.items.map((item: JSONAPIObject<Tag>) => {
+        const tagChoices: Array<DropdownItemProps> = tags.items.map((item: JSONAPIObject<Tag>) => {
             return {name: item.attributes.name, text: item.attributes.name, value: item.id};
         });
 

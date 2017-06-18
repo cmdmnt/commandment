@@ -4,6 +4,11 @@ import {bindActionCreators} from 'redux';
 import {RootState} from "../reducers/index";
 import { Container, Card, Icon } from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
+import {RouteComponentProps} from "react-router";
+
+interface RouteProps {
+
+}
 
 interface ReduxStateProps {
 
@@ -21,7 +26,7 @@ function mapDispatchToProps(dispatch: Dispatch<RootState>): ReduxDispatchProps {
     return bindActionCreators({}, dispatch);
 }
 
-interface SettingsPageProps {
+interface SettingsPageProps extends RouteComponentProps<RouteProps> {
 
 }
 

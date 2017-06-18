@@ -52,7 +52,7 @@ interface DeviceCertificatesState {
 @griddle
 export class DeviceCertificates extends React.Component<DeviceCertificatesProps, any> {
 
-    componentWillMount() {
+    componentWillMount?() {
         this.props.fetchInstalledCertificates(this.props.match.params.id, this.props.griddleState.pageSize);
     }
 

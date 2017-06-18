@@ -122,6 +122,11 @@ export interface RSAAReadActionRequest<TRequest, TSuccess, TFailure> {
 
 export interface RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> {
     type: TRequest | TSuccess | TFailure;
+    payload: TResponse;
+}
+
+export interface RSAAJSONAPIReadActionResponse<TRequest, TSuccess, TFailure, TResponse> {
+    type: TRequest | TSuccess | TFailure;
     payload: TResponse | JSONAPIErrorResponse;
 }
 

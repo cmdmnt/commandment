@@ -4,6 +4,7 @@ import {
 } from "../../actions/device/certificates";
 import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledCertificate} from "../../models";
+import {OtherAction} from "../../actions/constants";
 
 export interface InstalledCertificatesState {
     items?: Array<JSONAPIObject<InstalledCertificate>>;
@@ -15,7 +16,7 @@ const initialState: InstalledCertificatesState = {
     recordCount: 0
 };
 
-type InstalledCertificatesAction = CertificatesActionResponse;
+type InstalledCertificatesAction = CertificatesActionResponse | OtherAction;
 
 export function installed_certificates(state: InstalledCertificatesState = initialState, action: InstalledCertificatesAction): InstalledCertificatesState {
     switch (action.type) {

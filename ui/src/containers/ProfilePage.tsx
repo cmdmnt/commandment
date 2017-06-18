@@ -78,7 +78,7 @@ export class ProfilePage extends React.Component<OwnProps & ReduxStateProps & Re
         this.props.fetchTags(10, 1, [], [{'name': 'name', 'op': 'ilike', 'val': `%${value}%`}]);
     };
 
-    handleApplyTags = (event: SyntheticEvent<any>, { value: values }) => {
+    handleApplyTags = (event: SyntheticEvent<any>, { value: values }: { value: number[] }) => {
         const relationships = values.map((v: number) => {
             return {"id": ''+v, "type": "tags"};
         });
@@ -99,9 +99,11 @@ export class ProfilePage extends React.Component<OwnProps & ReduxStateProps & Re
         });
 
         let profileTags: Array<number> = [];
-        if (profile && profile.relationships) {
-            profileTags = profile.relationships.tags &&
-                profile.relationships.tags.data.map((t: JSONAPIRelationship) => parseInt(t.id, 0));
+        if (profile && profile.relationships && profile.relationships.tags) {
+            if (profile.relationships.tags.data.length) {
+                profileTags = profile.relationships.tags.data.map((t: JSONAPIRelationship) => parseInt(t.id, 0));
+            }
+                
         }
 
         return (

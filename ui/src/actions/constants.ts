@@ -25,3 +25,8 @@ export interface FlaskFilter {
 }
 
 export type FlaskFilters = Array<FlaskFilter>;
+
+export interface OtherAction {
+    type: string;
+    payload?: any;
+}
