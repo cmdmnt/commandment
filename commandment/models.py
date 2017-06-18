@@ -42,8 +42,6 @@ class Certificate(db.Model):
     Note that X.509 name attributes have fixed lengths as defined in `RFC5280`_. 
     
     :table: certificates
-    
-          discriminator (str): The polymorphic identity, used for subclasses.
            
     .. _RFC5280:
        http://www.ietf.org/rfc/rfc5280.txt 
@@ -75,8 +73,8 @@ class Certificate(db.Model):
     """fingerprint (str): SHA-256 hash of certificate"""
     push_topic = db.Column(db.String, nullable=True)  # Only required for push certificate
     """push_topic (str): Only present for Push Certificates, the x.509 User ID field value"""
-
     discriminator = db.Column(db.String(20))
+    """discriminator (str): The type of certificate"""
 
     __mapper_args__ = {
         'polymorphic_on': discriminator,

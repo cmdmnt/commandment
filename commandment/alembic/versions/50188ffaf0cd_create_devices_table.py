@@ -50,6 +50,8 @@ def upgrade():
                     sa.Column('fde_enabled', sa.Boolean(), nullable=True),
                     sa.Column('fde_has_prk', sa.Boolean(), nullable=True),
                     sa.Column('fde_has_irk', sa.Boolean(), nullable=True),
+                    sa.Column('fde_personal_recovery_key_cms', sa.LargeBinary(), nullable=True),
+                    sa.Column('fde_personal_recovery_key_device_key', sa.String(), nullable=True),
                     sa.Column('firewall_enabled', sa.Boolean(), nullable=True),
                     sa.Column('block_all_incoming', sa.Boolean(), nullable=True),
                     sa.Column('stealth_mode_enabled', sa.Boolean(), nullable=True),
