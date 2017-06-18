@@ -33,13 +33,10 @@ RUN apt-get update && apt-get install -y supervisor \
 # Custom Supervisord config
 COPY .docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# No need for this since it is a listed dependency
-# RUN pip install flask
-
 COPY . /commandment
 WORKDIR /commandment
-# RUN pip install -r /commandment/requirements.txt
-RUN python /commandment/setup.py install
+RUN pip install -r /commandment/requirements.txt
+# RUN python /commandment/setup.py install
 COPY ./uwsgi.ini /commandment/uwsgi.ini
 
 CMD ["/usr/bin/supervisord"]

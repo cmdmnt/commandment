@@ -5,4 +5,5 @@ services:
       context: .
       dockerfile: .docker/Dockerfile
     image: commandment:latest
-    
+    ports:
+      - "8120:80"
