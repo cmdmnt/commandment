@@ -155,38 +155,30 @@ device_tags = db.Table('device_tags', db.metadata,
 class Device(db.Model):
     """An enrolled device.
     
-    Attributes:
-          id (int):
-          udid (str): Unique Device Identifier
-          topic (str): The APNS topic the device is listening on.
-          last_seen (datetime.datetime): When the device last contacted the MDM.
-          is_enrolled (bool): Whether the MDM should consider this device enrolled.
-          build_version (str): DeviceInformation BuildVersion
-          device_name (str): Name of the device
-          model (str): Name of the hardware model
-          model_name (str): Longer name of the hardware model
-          os_version (str): The operating system version number.
-          product_name (str): The base product name of the hardware
-          serial_number (str): The hardware serial number
-          awaiting_configuration (bool): True if device is waiting at Setup Assistant
-          push_magic (str): The UUID that establishes a unique relationship between the device and the MDM.
           token (str): The hex string representing the Device Token, required to push with APNS.
-          last_push_at (datetime.datetime): The datetime when the last push was sent to APNS for this device.
-          last_apns_id (str): The UUID of the last apns command sent.
+
+
           certificate_id (int): The ID of the certificate that this device is using to authenticate itself. May be null
-            
+
+    :table: devices
     """
     __tablename__ = 'devices'
 
     # Common attributes
     id = db.Column(db.Integer, primary_key=True)
+    """id (int):"""
     udid = db.Column(db.String, index=True, nullable=True)
+    """udid (str): Unique Device Identifier"""
     last_seen = db.Column(db.DateTime, nullable=True)
+    """last_seen (datetime.datetime): When the device last contacted the MDM."""
     is_enrolled = db.Column(db.Boolean, default=False)
+    """is_enrolled (bool): Whether the MDM should consider this device enrolled."""
 
     # APNS / Push
     topic = db.Column(db.String, nullable=True)
+    """topic (str): The APNS topic the device is listening on."""
     push_magic = db.Column(db.String, nullable=True)
+    """push_magic (str): The UUID that establishes a unique relationship between the device and the MDM."""
     # The APNS device token is stored in base64 format. Descriptors are added to handle this encoding and decoding
     # to bytes automatically.
     _token = db.Column(db.String, nullable=True)
@@ -195,73 +187,124 @@ class Device(db.Model):
     # Table 5
     last_cloud_backup_date = db.Column(db.DateTime)
     awaiting_configuration = db.Column(db.Boolean)
-
+    """awaiting_configuration (bool): True if device is waiting at Setup Assistant"""
+    
     # Table 6
     itunes_store_account_is_active = db.Column(db.Boolean)
+    """itunes_store_account_is_active (bool): the user is currently logged into an active iTunes Store account."""
     itunes_store_account_hash = db.Column(db.String)
+    """itunes_store_account_hash (str): a hash of the iTunes Store account currently logged in."""
 
     # DeviceInformation : Table 7
     device_name = db.Column(db.String)  # Authenticate
+    """device_name (str): Name of the device"""
     os_version = db.Column(db.String)  # Authenticate
+    """os_version (str): The operating system version number."""
     build_version = db.Column(db.String)  # Authenticate
+    """build_version (str): DeviceInformation BuildVersion"""
     model_name = db.Column(db.String)  # Authenticate
+    """model_name (str): Longer name of the hardware model"""
     model = db.Column(db.String)  # Authenticate
+    """model (str): Name of the hardware model"""
     product_name = db.Column(db.String)  # Authenticate
+    """product_name (str): The base product name of the hardware"""
     serial_number = db.Column(db.String(64), index=True, nullable=True)  # Authenticate
-
+    """serial_number (str): The hardware serial number"""
     device_capacity = db.Column(db.Float, nullable=True)
-    available_device_capacity = db.Column(db.Float, nullable=True)  # TODO: Float
-    battery_level = db.Column(db.Integer)
+    """device_capacity (float): total capacity (base 1024 gigabytes)"""
+    available_device_capacity = db.Column(db.Float, nullable=True)
+    """device_available_capacity (float): available capacity (base 1024 gigabytes)"""
+    battery_level = db.Column(db.Float, default=-1.0)
+    """battery_level (float): battery level, between 0.0 and 1.0. -1.0 if information is not available."""
     cellular_technology = db.Column(db.Enum(CellularTechnology))
+    """cellular_technology (CellularTechnology): cellular technology."""
     imei = db.Column(db.String)
+    """imei (str): IMEI number (if device is GSM)."""
     meid = db.Column(db.String)
+    """meid (str): MEID number (if device is CSMA)."""
     modem_firmware_version = db.Column(db.String)
-    is_supervised = db.Column(db.String)
+    """modem_firmware_version (str): The baseband firmware version."""
+    is_supervised = db.Column(db.Boolean)
+    """is_supervised (bool): Device is supervised"""
     is_device_locator_service_enabled = db.Column(db.Boolean)
+    """is_device_locator_service_enabled (bool): Find My iPhone/Mac enabled."""
     is_activation_lock_enabled = db.Column(db.Boolean)
+    """is_activation_lock_enabled (bool): Device has Activation Lock enabled."""
     is_do_not_disturb_in_effect = db.Column(db.Boolean)
+    """is_do_not_disturb_in_effect (bool): Device has DND enabled."""
     device_id = db.Column(db.String)  # ATV
+    """device_id (str): Device ID (ATV)"""
     eas_device_identifier = db.Column(db.String)
+    """eas_device_identifier (str): Exchange ActiveSync Identifier"""
     is_cloud_backup_enabled = db.Column(db.Boolean)
+    """is_cloud_backup_enabled (bool): iCloud backup is enabled."""
     # TODO: OSUpdateSettings
-    local_hostname = db.Column(db.String, nullable=True)
-    hostname = db.Column(db.String, nullable=True)
+    local_hostname = db.Column(db.String)
+    """local_hostname (str): """
+    hostname = db.Column(db.String)
+    """hostname (str): """
     sip_enabled = db.Column(db.Boolean)
+    """sip_enabled (bool): System Integrity Protection is enabled."""
     # TODO: ActiveManagedUsers
     is_mdm_lost_mode_enabled = db.Column(db.Boolean)
+    """is_mdm_lost_mode_enabled (bool): MDM Lost mode is enabled."""
     maximum_resident_users = db.Column(db.Integer)
+    """maximum_resident_users (int): Maximum number of users that can use Shared iPad."""
 
     # NetworkInfo : Table 9
     iccid = db.Column(db.String)
+    """iccid (str): The ICC identifier for the SIM card."""
     bluetooth_mac = db.Column(db.String)
+    """bluetooth_mac (str): The bluetooth MAC address"""
     wifi_mac = db.Column(db.String)
+    """wifi_mac (str): The WiFi MAC address"""
     # TODO: EthernetMACs
     current_carrier_network = db.Column(db.String)
+    """current_carrier_network (str): Name of the current carrier network."""
     sim_carrier_network = db.Column(db.String)
+    """sim_carrier_network (str): Name of the home carrier network."""
     subscriber_carrier_network = db.Column(db.String)
+    """subscriber_carrier_network (str): Name of the home carrier network (replaces sim_carrier_network)."""
     carrier_settings_version = db.Column(db.String)
+    """carrier_settings_version (str): Version of the current carrier settings file."""
     phone_number = db.Column(db.String)
+    """phone_number (str): Raw phone number without punctuation."""
     voice_roaming_enabled = db.Column(db.Boolean)
+    """voice_roaming_enabled (bool): Voice Roaming is enabled in settings."""
     data_roaming_enabled = db.Column(db.Boolean)
+    """data_roaming_enabled (bool): Data Roaming is enabled in settings."""
     is_roaming = db.Column(db.Boolean)
+    """is_roaming (bool): The device is currently roaming."""
     personal_hotspot_enabled = db.Column(db.Boolean)
+    """personal_hotspot_enabled (bool): Personal HotSpot is currently turned on."""
     subscriber_mcc = db.Column(db.String)
+    """subscriber_mcc (str): Home Mobile Country Code (numeric)"""
     subscriber_mnc = db.Column(db.String)
+    """subscriber_mnc (str): Home Mobile Network Code (numeric)"""
     current_mcc = db.Column(db.String)
+    """current_mcc (str): Current Mobile Country Code (numeric)"""
     current_mnc = db.Column(db.String)
+    """current_mnc (str): Current Mobile Network Code (numeric)"""
 
     # SecurityInfo
     # hardware_encryption_caps = db.Column(DBEnum(HardwareEncryptionCaps))
     passcode_present = db.Column(db.Boolean)
+    """passcode_present (bool): Device has a passcode."""
     passcode_compliant = db.Column(db.Boolean)
+    """passcode_compliant (bool): The passcode is compliant with all requirements (incl Exchange accounts)."""
     passcode_compliant_with_profiles = db.Column(db.Boolean)
     passcode_lock_grace_period_enforced = db.Column(db.Boolean)
     fde_enabled = db.Column(db.Boolean)
     fde_has_prk = db.Column(db.Boolean)
     fde_has_irk = db.Column(db.Boolean)
+    fde_personal_recovery_key_cms = db.Column(db.LargeBinary)  # 10.13
+    fde_personal_recovery_key_device_key = db.Column(db.String)  # 10.13
     firewall_enabled = db.Column(db.Boolean)
+    """firewall_enabled (bool): Application firewall is enabled."""
     block_all_incoming = db.Column(db.Boolean)
+    """block_all_incoming (bool): All incoming connections are blocked."""
     stealth_mode_enabled = db.Column(db.Boolean)
+    """stealth_mode_enabled (bool): Stealth mode is enabled."""
     # TODO: Blocked Applications
 
     @hybrid_property
@@ -283,7 +326,9 @@ class Device(db.Model):
     # if null there are no outstanding push notifications. If this contains anything then dont attempt to deliver
     # another APNS push.
     last_push_at = db.Column(db.DateTime, nullable=True)
+    """last_push_at (datetime.datetime): The datetime when the last push was sent to APNS for this device."""
     last_apns_id = db.Column(db.Integer, nullable=True)
+    """last_apns_id (str): The UUID of the last apns command sent."""
 
     # if the time delta between last_push_at and last_seen is >= several days to a week,
     # this should count as a failed push, and potentially declare the device as dead.
@@ -345,35 +390,33 @@ class InstalledApplication(db.Model):
     inverse of that).
     
     :table: installed_applications
-
-    Attributes:
-        id (int): Identifier
-        device_udid (GUID): Unique device identifier
-        device_id (int): Parent relationship ID of the device
-        device (db.relationship): SQLAlchemy relationship to the device.
-        bundle_identifier (str): The com.xxx.yyy bundle identifier for the application. May be empty.
-        version (str): The long version for the application. May be empty.
-        short_version (str): The short version for the application. May be empty.
-        name (str): The application name
-        bundle_size (int): The application size
-        dynamic_size (int): The dynamic data size (for iOS containers).
-        is_validated (bool):
     """
     __tablename__ = 'installed_applications'
 
     id = db.Column(db.Integer, primary_key=True)
+    """id (int): Identifier"""
     device_udid = db.Column(GUID, index=True, nullable=False)
+    """device_udid (GUID): Unique device identifier"""
     device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
+    """device_id (int): Parent relationship ID of the device"""
     device = db.relationship('Device', backref='installed_applications')
+    """device (db.relationship): SQLAlchemy relationship to the device."""
 
     # Many of these can be empty, so there is no valid composite key
     bundle_identifier = db.Column(db.String, index=True)
+    """bundle_identifier (str): The com.xxx.yyy bundle identifier for the application. May be empty."""
     version = db.Column(db.String, index=True)
+    """version (str): The long version for the application. May be empty."""
     short_version = db.Column(db.String)
+    """short_version (str): The short version for the application. May be empty."""
     name = db.Column(db.String)
+    """name (str): The application name"""
     bundle_size = db.Column(db.BigInteger)
+    """bundle_size (int): The application size"""
     dynamic_size = db.Column(db.BigInteger)
+    """dynamic_size (int): The dynamic data size (for iOS containers)."""
     is_validated = db.Column(db.Boolean)
+    """is_validated (bool):"""
 
 
 class InstalledCertificate(db.Model):
@@ -404,6 +447,7 @@ class InstalledCertificate(db.Model):
     fingerprint_sha256 = db.Column(db.String(64), nullable=False, index=True)
     """(str): SHA-256 fingerprint of the certificate."""
 
+
 class InstalledProfile(db.Model):
     """This model represents a single installed profile on an enrolled device as returned by the ``ProfileList`` query.
     
@@ -431,6 +475,7 @@ class InstalledProfile(db.Model):
     payload_description = db.Column(db.String)
     """(str): Payload description (value of PayloadDescription)"""
     payload_display_name = db.Column(db.String)
+    """(str): Payload display name"""
     payload_identifier = db.Column(db.String)
     payload_organization = db.Column(db.String)
     payload_removal_disallowed = db.Column(db.Boolean)
