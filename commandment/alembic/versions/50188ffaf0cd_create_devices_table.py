@@ -81,7 +81,7 @@ def upgrade():
                     sa.Column('maximum_resident_users', sa.Integer(), nullable=True),
                     sa.Column('meid', sa.String(), nullable=True),
                     sa.Column('modem_firmware_version', sa.String(), nullable=True),
-                    sa.Column('passcode_lock_grace_period_enforced', sa.Boolean(), nullable=True),
+                    sa.Column('passcode_lock_grace_period_enforced', sa.Integer(), nullable=True),
                     sa.Column('personal_hotspot_enabled', sa.Boolean(), nullable=True),
                     sa.Column('phone_number', sa.String(), nullable=True),
                     sa.Column('sim_carrier_network', sa.String(), nullable=True),

@@ -285,12 +285,20 @@ class Device(db.Model):
     passcode_compliant = db.Column(db.Boolean)
     """passcode_compliant (bool): The passcode is compliant with all requirements (incl Exchange accounts)."""
     passcode_compliant_with_profiles = db.Column(db.Boolean)
-    passcode_lock_grace_period_enforced = db.Column(db.Boolean)
+    """passcode_compliant_with_profiles (bool): The passcode is compliant with profile requirements."""
+    passcode_lock_grace_period_enforced = db.Column(db.Integer)
+    """passcode_lock_grace_period_enforced (int): The current enforced time in seconds before unlock passcode will 
+    be required."""
     fde_enabled = db.Column(db.Boolean)
+    """fde_enabled (bool): Whether full disk encryption is enabled or not."""
     fde_has_prk = db.Column(db.Boolean)
+    """fde_has_prk (bool): Whether FDE has a personal recovery key set."""
     fde_has_irk = db.Column(db.Boolean)
+    """fde_has_irk (bool): Whether FDE has an institutional recovery key set."""
     fde_personal_recovery_key_cms = db.Column(db.LargeBinary)  # 10.13
+    """fde_personal_recovery_key_cms (bytes): If Escrow is enabled, contains the encrypted PRK"""
     fde_personal_recovery_key_device_key = db.Column(db.String)  # 10.13
+    """fde_personal_recovery_key_device_key (str):"""
     firewall_enabled = db.Column(db.Boolean)
     """firewall_enabled (bool): Application firewall is enabled."""
     block_all_incoming = db.Column(db.Boolean)
