@@ -6,6 +6,6 @@ services:
       dockerfile: .docker/Dockerfile
     image: commandment:latest
     volumes:
-      - "./settings.cfg:/settings.cfg"
+      - "./.docker/settings.docker.cfg:/settings.cfg"
     ports:
       - "8120:80"

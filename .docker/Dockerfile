@@ -38,5 +38,6 @@ WORKDIR /commandment
 RUN pip install -r /commandment/requirements.txt
 COPY ./uwsgi.ini /commandment/uwsgi.ini
 COPY .docker/entry.sh /entry.sh
+RUN touch /commandment/commandment.db
 
 CMD ["/entry.sh"]
