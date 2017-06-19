@@ -32,19 +32,24 @@ const enhancedWithRowData = connect((state, props) => {
     };
 });
 
+interface OwnProps {
+    
+}
+
 interface ReduxStateProps {
     devices: DevicesState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: RootState, ownProps?: OwnProps): ReduxStateProps {
     return {devices: state.devices};
 }
 
 interface ReduxDispatchProps {
     index: IndexActionRequest;
+    fetchDevicesIfRequired: any;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps): ReduxDispatchProps {
     return bindActionCreators({
         index: actions.index,
         fetchDevicesIfRequired: actions.fetchDevicesIfRequired
@@ -52,7 +57,6 @@ function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
 }
 
 interface DevicesPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
-    componentWillMount: () => void;
     griddleState: GriddleDecoratorState;
     events: GriddleDecoratorHandlers;
 }
@@ -61,12 +65,8 @@ interface DevicesPageState {
     filter: string;
 }
 
-@connect<ReduxStateProps, ReduxDispatchProps, DevicesPageProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)
 @griddle
-export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageState> {
+class BaseDevicesPage extends React.Component<DevicesPageProps, DevicesPageState> {
 
     componentWillMount?(): void {
         // this.props.index();
@@ -117,3 +117,8 @@ export class DevicesPage extends React.Component<DevicesPageProps, DevicesPageSt
         );
     }
 }
+
+export const DevicesPage = connect<ReduxStateProps, ReduxDispatchProps, DevicesPageProps>(
+    mapStateToProps,
+    mapDispatchToProps
+)(BaseDevicesPage);

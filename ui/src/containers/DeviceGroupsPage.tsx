@@ -43,12 +43,8 @@ interface DeviceGroupsPageState {
     
 }
 
-@connect<ReduxStateProps, ReduxDispatchProps, DeviceGroupsPageProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)
 @griddle
-export class DeviceGroupsPage extends React.Component<DeviceGroupsPageProps, DeviceGroupsPageState> {
+class BaseDeviceGroupsPage extends React.Component<DeviceGroupsPageProps, DeviceGroupsPageState> {
 
     componentWillMount?() {
         this.props.index();
@@ -96,3 +92,8 @@ export class DeviceGroupsPage extends React.Component<DeviceGroupsPageProps, Dev
         );
     }
 }
+
+export const DeviceGroupsPage = connect<ReduxStateProps, ReduxDispatchProps, DeviceGroupsPageProps>(
+    mapStateToProps,
+    mapDispatchToProps
+)(BaseDeviceGroupsPage);

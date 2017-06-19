@@ -42,7 +42,7 @@ interface DeviceCommandsProps extends ReduxStateProps, ReduxDispatchProps, Route
     events: any;
 }
 
-interface DeviceCommandsState {
+interface DeviceCommandsComponentState {
 
 }
 
@@ -52,13 +52,13 @@ interface DeviceCommandsState {
     mapDispatchToProps
 )
 @griddle
-export class DeviceCommands extends React.Component<DeviceCommandsProps, DeviceCommandsState> {
+export class DeviceCommands extends React.Component<DeviceCommandsProps, DeviceCommandsComponentState> {
 
     componentWillMount?() {
         this.props.fetchCommands(this.props.match.params.id, 10, 1, ['-sent_at']);
     }
 
-    componentWillUpdate?(nextProps: DeviceCommandsProps, nextState: void | Readonly<DeviceCommandsState>) {
+    componentWillUpdate?(nextProps: DeviceCommandsProps, nextState: void | Readonly<DeviceCommandsComponentState>) {
         const {griddleState} = this.props;
         const {griddleState: nextGriddleState} = nextProps;
 

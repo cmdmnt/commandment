@@ -1,5 +1,5 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
-import { CALL_API, RSAA } from 'redux-api-middleware';
+import {CALL_API, HTTPVerb, RSAA} from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIDetailResponse, JSONAPIListResponse,
@@ -24,7 +24,7 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String
     return {
         [CALL_API]: {
             endpoint: '/api/v1/device_groups?' + queryParameters.join('&'),
-            method: 'GET',
+            method: (<HTTPVerb>'GET'),
             types: [
                 INDEX_REQUEST,
                 INDEX_SUCCESS,

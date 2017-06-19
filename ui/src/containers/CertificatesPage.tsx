@@ -11,12 +11,26 @@ import {RouteComponentProps} from "react-router";
 import * as webpack from "webpack";
 import Filter = webpack.BannerPlugin.Filter;
 
+interface OwnProps {
+
+}
+
 interface ReduxStateProps {
     certificates: CertificatesState;
 }
 
+function mapStateToProps(state: RootState, ownProps: OwnProps): ReduxStateProps {
+    return { certificates: state.certificates };
+}
+
 interface ReduxDispatchProps {
     index: IndexActionRequest;
+}
+
+function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps: OwnProps): ReduxDispatchProps {
+    return bindActionCreators({
+        index: apiActions.index
+    }, dispatch);
 }
 
 interface CertificatesPageProps {
@@ -28,17 +42,7 @@ interface CertificatesPageState {
 
 }
 
-@connect<ReduxStateProps, ReduxDispatchProps, CertificatesPageProps>(
-    (state: RootState, ownProps?: any): ReduxStateProps => {
-        return { certificates: state.certificates };
-    },
-    (dispatch: Dispatch<any>): ReduxDispatchProps => {
-        return bindActionCreators({
-            index: apiActions.index
-        }, dispatch);
-    }
-)
-export class CertificatesPage extends React.Component<CertificatesPageProps & ReduxStateProps & ReduxDispatchProps & RouteComponentProps<any>, CertificatesPageState> {
+class BaseCertificatesPage extends React.Component<CertificatesPageProps & ReduxStateProps & ReduxDispatchProps & RouteComponentProps<any>, CertificatesPageState> {
 
     componentWillMount?(): void {
         this.props.index();
@@ -87,3 +91,8 @@ export class CertificatesPage extends React.Component<CertificatesPageProps & Re
         );
     }
 }
+
+export const CertificatesPage = connect<ReduxStateProps, ReduxDispatchProps, CertificatesPageProps>(
+    mapStateToProps,
+    mapDispatchToProps
+)(BaseCertificatesPage);

@@ -19,11 +19,15 @@ interface RouteProps {
     id?: string;
 }
 
+interface OwnProps extends RouteComponentProps<RouteProps> {
+    handleSubmit: (values: DeviceGroupFormData) => void;
+}
+
 interface ReduxStateProps {
     device_group: JSONAPIDetailResponse<DeviceGroup, Device>;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: RootState, ownProps?: OwnProps): ReduxStateProps {
     return {
         device_group: state.device_groups.editing
     };
@@ -34,25 +38,15 @@ interface ReduxDispatchProps {
     read: ReadActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>) {
+function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps) {
     return bindActionCreators({
         post,
         read
     }, dispatch);
 }
 
-interface OwnProps extends RouteComponentProps<RouteProps> {
-}
 
-interface Smeh {
-    handleSubmit: (values: DeviceGroupFormData) => void;
-}
-
-@connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-export class DeviceGroupPage extends React.Component<ReduxStateProps & ReduxDispatchProps & OwnProps, void> implements Smeh {
+class BaseDeviceGroupPage extends React.Component<ReduxStateProps & ReduxDispatchProps & OwnProps, void> {
 
     componentWillMount?() {
         if (this.props.match.params.id) {
@@ -99,3 +93,6 @@ export class DeviceGroupPage extends React.Component<ReduxStateProps & ReduxDisp
         )
     }
 }
+
+export const DeviceGroupPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
+    mapStateToProps, mapDispatchToProps)(BaseDeviceGroupPage);

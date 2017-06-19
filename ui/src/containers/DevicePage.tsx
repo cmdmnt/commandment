@@ -29,12 +29,16 @@ import {
 import {Tag} from "../models";
 import {JSONAPIObject, JSONAPIRelationship} from "../json-api";
 
+interface OwnProps {
+
+}
+
 interface ReduxStateProps {
     device: DeviceState;
     tags: TagsState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: RootState, ownProps?: OwnProps): ReduxStateProps {
     return {
         device: state.device,
         tags: state.tags
@@ -51,7 +55,7 @@ interface ReduxDispatchProps {
     patchRelationship: PatchRelationshipActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps): ReduxDispatchProps {
     return bindActionCreators({
         push,
         inventory,
@@ -75,11 +79,8 @@ interface DevicePageState {
     filter: string;
 }
 
-@connect<ReduxStateProps, ReduxDispatchProps, DevicePageProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-export class DevicePage extends React.Component<DevicePageProps, DevicePageState> {
+
+class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
 
     handleAction = (e: SyntheticEvent<any>, {value}: {value: string}) => {
         e.preventDefault();
@@ -182,3 +183,8 @@ export class DevicePage extends React.Component<DevicePageProps, DevicePageState
         );
     }
 }
+
+export const DevicePage = connect<ReduxStateProps, ReduxDispatchProps, DevicePageProps>(
+    mapStateToProps,
+    mapDispatchToProps
+)(BaseDevicePage);

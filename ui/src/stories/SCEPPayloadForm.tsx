@@ -4,5 +4,5 @@ import {SCEPPayloadForm} from '../forms/payloads/SCEPPayloadForm';
 
 storiesOf('SCEPPayloadForm', module)
     .add('default', () => {
-        <SCEPPayloadForm onClickTest={action('test')} />
+        <SCEPPayloadForm onClickTest={action('test')} loading={false} submitted={false} />
     });
