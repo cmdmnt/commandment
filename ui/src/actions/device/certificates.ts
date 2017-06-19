@@ -1,5 +1,5 @@
 import {JSONAPI_HEADERS} from "../constants";
-import {CALL_API} from "redux-api-middleware";
+import {CALL_API, HTTPVerb} from "redux-api-middleware";
 import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
     RSAAIndexActionResponse
@@ -21,7 +21,7 @@ export const certificates = encodeJSONAPIChildIndexParameters((device_id: number
     return {
         [CALL_API]: {
             endpoint: `/api/v1/devices/${device_id}/installed_certificates?${queryParameters.join('&')}`,
-            method: 'GET',
+            method: (<HTTPVerb>'GET'),
             types: [
                 CERTIFICATES_REQUEST,
                 CERTIFICATES_SUCCESS,

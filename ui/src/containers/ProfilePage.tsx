@@ -60,12 +60,12 @@ interface OwnProps extends RouteComponentProps<RouteProps> {
 export class ProfilePage extends React.Component<OwnProps & ReduxStateProps & ReduxDispatchProps, void | {}> {
 
     componentWillMount?() {
-        const { params: { id } } = this.props.match;
+        const {params: {id}} = this.props.match;
         this.props.read(id, ['tags']);
         this.props.fetchTags();
     }
 
-    handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value: string }) => {
+    handleAddTag = (event: SyntheticEvent<MouseEvent>, {value}: { value: string }) => {
         const tag: Tag = {
             name: value,
             color: '888888'
@@ -78,13 +78,13 @@ export class ProfilePage extends React.Component<OwnProps & ReduxStateProps & Re
         this.props.fetchTags(10, 1, [], [{'name': 'name', 'op': 'ilike', 'val': `%${value}%`}]);
     };
 
-    handleApplyTags = (event: SyntheticEvent<any>, { value: values }: { value: number[] }) => {
+    handleApplyTags = (event: SyntheticEvent<any>, {value: values}: { value: number[] }) => {
         const relationships = values.map((v: number) => {
-            return {"id": ''+v, "type": "tags"};
+            return {"id": '' + v, "type": "tags"};
         });
 
         this.props.patchRelationship(
-            ''+this.props.match.params.id, 'tags', relationships);
+            '' + this.props.match.params.id, 'tags', relationships);
     };
 
 
@@ -103,7 +103,7 @@ export class ProfilePage extends React.Component<OwnProps & ReduxStateProps & Re
             if (profile.relationships.tags.data.length) {
                 profileTags = profile.relationships.tags.data.map((t: JSONAPIRelationship) => parseInt(t.id, 0));
             }
-                
+
         }
 
         return (
@@ -117,22 +117,21 @@ export class ProfilePage extends React.Component<OwnProps & ReduxStateProps & Re
                     onChange={this.handleApplyTags}
                 />
                 <Segment>
-                <Grid columns={2}>
+                    <Grid columns={2}>
 
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Header as="h1">{profile && profile.attributes.display_name}</Header>
-                            <p>{profile && profile.attributes.description || 'No Description'}</p>
-                        </Grid.Column>
-                        <Grid.Column>
-                            <Header as="h1" color="grey" textAlign='right'>{profile && profile.attributes.uuid}</Header>
-                        </Grid.Column>
-                    </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column>
+                                <Header as="h1">{profile && profile.attributes.display_name}</Header>
+                                <p>{profile && profile.attributes.description || 'No Description'}</p>
+                            </Grid.Column>
+                            <Grid.Column>
+                                <Header as="h1" color="grey"
+                                        textAlign='right'>{profile && profile.attributes.uuid}</Header>
+                            </Grid.Column>
+                        </Grid.Row>
 
 
-
-
-                </Grid>
+                    </Grid>
                 </Segment>
 
             </Container>

@@ -14,7 +14,7 @@ import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
 
 
 interface ReduxStateProps {
-    applications?: InstalledProfilesState;
+    profiles?: InstalledProfilesState;
 }
 
 function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
