@@ -31,7 +31,8 @@ def create_app() -> Flask:
     app.config.from_envvar('COMMANDMENT_SETTINGS', True)
 
     db.init_app(app)
-    db.create_all(app=app)
+    # Use alembic to perform migrations
+    # db.create_all(app=app)
 
     jwt = JWT(app, authenticate, identity)
 

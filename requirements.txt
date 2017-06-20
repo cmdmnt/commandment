@@ -17,6 +17,7 @@ docutils==0.13.1
 factory-boy==2.8.1
 Faker==0.7.11
 Flask==0.12
+Flask-Alembic==2.0.1
 Flask-Cors==3.0.2
 Flask-JWT==0.3.2
 flask-marshmallow==0.7.0
