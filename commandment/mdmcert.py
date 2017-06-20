@@ -1,38 +1,55 @@
 """
-Copyright (c) 2015 Jesse Peterson
+Copyright (c) 2015 Jesse Peterson, 2017 Mosen
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 
-from flask import Blueprint, Response, render_template, request, make_response
-from flask import redirect
-# Response, request, current_app, abort, make_response
-from .models import (Certificate as DBCertificate,
-                     RSAPrivateKey as DBPrivateKey,
-                     CertificateSigningRequest as DBCertificateRequest)
-
+from typing import Dict
+from flask import Blueprint, Response
 import json
 from base64 import b64encode
 import urllib.request, urllib.error, urllib.parse
 from cryptography import x509
-import datetime
+from cryptography.hazmat.primitives import serialization
 
 MDMCERT_REQ_URL = 'https://mdmcert.download/api/v1/signrequest'
 
+# PLEASE! Do not take this key and use it for another product/project. It's
+# only for Commandment's use. If you'd like to get your own (free!) key
+# contact the mdmcert.download administrators and get your own key for your
+# own project/product.  We're trying to keep statistics on which products are
+# requesting certs (per Apple T&C). Don't force Apple's hand and
+# ruin it for everyone!
+MDMCERT_API_KEY = 'b742461ff981756ca3f924f02db5a12e1f6639a9109db047ead1814aafc058dd'
 
 CERT_REQ_TYPE = 'mdmcert.pushcert'
 
 
-def submit_mdmcert_request(email: str, api_key: str, pem_csr: x509.CertificateSigningRequest, pem_enc):
+def submit_mdmcert_request(email: str, csr: x509.CertificateSigningRequest,
+                           encrypt_with: x509.Certificate, api_key: str = MDMCERT_API_KEY) -> Dict:
+    """Submit a CSR signing request to mdmcert.download.
+
+    Args:
+          email (str): Your registered mdmcert.download e-mail address.
+          api_key (str): Your reigstered mdmcert.download API key.
+          csr (cryptography.x509.CertificateSigningRequest): The MDM CSR to sign.
+          encrypt_with (cryptography.x509.Certificate): The certificate which will be used to encrypt the response.
+
+    Returns:
+          dict: Response from the mdmcert.download service.
+    """
+    base64_csr = b64encode(csr.public_bytes(serialization.Encoding.PEM))
+    base64_recipient = b64encode(encrypt_with.public_bytes(serialization.Encoding.PEM))
+
     mdmcert_dict = {
-        'csr': b64encode(pem_csr),
+        'csr': base64_csr.decode('utf8'),
         'email': email,
         'key': api_key,
-        'encrypt': b64encode(pem_enc),
+        'encrypt': base64_recipient.decode('utf8'),
     }
 
     req = urllib.request.Request(
         MDMCERT_REQ_URL,
-        json.dumps(mdmcert_dict),
+        json.dumps(mdmcert_dict).encode('utf8'),
         {'Content-Type': 'application/json',
          'User-Agent': 'coMmanDMent/0.1'})
 

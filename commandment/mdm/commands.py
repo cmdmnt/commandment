@@ -14,13 +14,21 @@ class CommandRegistry(type):
         klass = type.__new__(cls, name, bases, ns)
         if 'request_type' in ns:
             CommandRegistry.command_classes[ns['request_type']] = klass
-            
+
         return klass
 
 
 class Command(metaclass=CommandRegistry):
 
     request_type = None
+    """request_type (str): The MDM RequestType, as specified in the MDM Specification."""
+
+    require_access = {}
+    """require_access (Set[AccessRights]): Access required for the MDM to execute the command on this device."""
+
+    require_platforms = dict()
+    """require_platforms (Dict): A dict of Platform : version predicate string, to indicate which platforms will accept
+    the command"""
 
     def __init__(self, uuid=None):
         if uuid is None:
@@ -40,9 +48,9 @@ class Command(metaclass=CommandRegistry):
     @classmethod
     def new_request_type(cls, request_type: str, parameters: dict, uuid: str = None):
         """Factory method for instantiating a command based on its class attribute ``request_type``.
-        
+
         Additionally, the dict given in parameters will be applied to the command instance.
-        
+
         Args:
               request_type (str): The command request type, as defined in the class attribute ``request_type``.
               parameters (dict): The parameters of this command instance.
@@ -60,7 +68,7 @@ class Command(metaclass=CommandRegistry):
 
     def to_dict(self) -> dict:
         """Convert the command into a dict that will be serializable by plistlib.
-        
+
         This default implementation will work for command types that have no parameters.
         """
         command = {'RequestType': type(self).request_type}
@@ -262,11 +270,12 @@ class DeviceInformation(Command):
                 if req_platform != platform:
                     continue
 
+                # TODO: version checking
                 return True  # semver only takes maj.min.patch
                 #return semver.match(min_os_version, req_min_version)
-                
+
             return False
-            
+
         if queries is None:
             supported_queries = filter(supported, [q.value for q in cls.Queries])
         else:
