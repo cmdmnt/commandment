@@ -73,4 +73,12 @@ declare module "redux-api-middleware" {
         }
     }
 
+
+
 }
+
+// declare module "redux" {
+//     export interface Dispatch<S> {
+//         <R, E>(rsaa: RSAA<R, S, E>): R;
+//     }
+// }
