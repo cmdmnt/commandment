@@ -1,13 +1,18 @@
 from marshmallow import Schema, fields
+from . import SetupAssistantStep
 
 
 class ProfileRequest(Schema):
-    profile_name = fields.String()
-    url = fields.Url()
-    allow_pairing = fields.Boolean()
-    is_supervised = fields.Boolean()
-    is_multi_user = fields.Boolean()
-    is_mandatory = fields.Boolean()
+    profile_name = fields.String(required=True)
+    """A human-readable name for the profile."""
+    url = fields.Url(required=True)
+    """The URL of the MDM server."""
+    allow_pairing = fields.Boolean(default=True)
+    is_supervised = fields.Boolean(default=False)
+    """If true, the device must be supervised"""
+    is_multi_user = fields.Boolean(default=False)
+    """If true, tells the device to configure for Shared iPad."""
+    is_mandatory = fields.Boolean(default=False)
     await_device_configured = fields.Boolean()
     is_mdm_removable = fields.Boolean()
     support_phone_number = fields.String()
@@ -16,7 +21,7 @@ class ProfileRequest(Schema):
     org_magic = fields.String()
     anchor_certs = fields.List(fields.String())
     supervising_host_certs = fields.List(fields.String())
-    skip_setup_items = fields.String()
+    skip_setup_items = fields.Nested(SetupAssistantStep, many=True)
     department = fields.String()
     devices = fields.List(fields.String())
 

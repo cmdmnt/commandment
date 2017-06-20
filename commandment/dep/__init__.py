@@ -1,3 +1,4 @@
+from typing import Set
 from enum import Enum
 
 
@@ -22,3 +23,5 @@ class SetupAssistantStep(Enum):
     # ATV
     TapToSetup = 'TapToSetup'
     ScreenSaver = 'ScreenSaver'
+
+SkipSetupSteps = Set[SetupAssistantStep]

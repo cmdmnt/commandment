@@ -46,6 +46,7 @@ def authenticate(plist_data):
         device.product_name = plist_data.get('ProductName')
         device.serial_number = plist_data.get('SerialNumber')
         device.topic = plist_data.get('Topic')
+        device.last_seen = datetime.now()
 
     # Authenticate message is not enough to be enrolled
     device.is_enrolled = False
@@ -99,6 +100,7 @@ def token_update(plist_data):
     if 'UnlockToken' in plist_data:
         device.unlock_token = plist_data['UnlockToken']
 
+    device.last_seen = datetime.now()
     db.session.commit()
 
     # TODO: Can return next command here, no need to wait for Idle
