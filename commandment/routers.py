@@ -1,3 +1,6 @@
+"""This module contains routers which direct the request towards a certain module or function based upon the CONTENT
+of the request, rather than the URL."""
+
 from typing import Union
 from flask import Flask, app, Blueprint, request, abort, current_app
 from functools import wraps
@@ -49,7 +52,6 @@ class CommandRouter(object):
 
             return wrapped
         return decorator
-
 
 
 class PlistRouter(object):

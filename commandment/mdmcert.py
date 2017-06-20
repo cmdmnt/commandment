@@ -68,30 +68,6 @@ class FixedLocationResponse(Response):
 admin_mdmcert_app = Blueprint('admin_mdmcert_app', __name__)
 
 
-# @admin_mdmcert_app.route('/submit', methods=['POST'])
-# def submit():
-#     mdm_ca = get_ca()
-#
-#     csr, csr_pk = CertificateRequest.with_new_private_key(CN='mdmcert.download')
-#
-#     db_csr = DBCertificateRequest.from_x509(csr, CERT_REQ_TYPE)
-#     db_pk = DBPrivateKey.from_x509(csr_pk)
-#
-#     db_pk.certificate_requests.append(db_csr)
-#
-#     db_session.add(db_csr)
-#     db_session.add(db_pk)
-#
-#     db_session.commit()
-#
-#     email = request.form.get('email')
-#
-#     res = submit_mdmcert_request(email, csr.to_pem(), mdm_ca.get_cacert().to_pem())
-#     print(res.get('result'))
-#     if res.get('result') != 'success':
-#         return 'Error! ' + res.get('reason', '')
-#
-#     return 'Submitted!'
 #
 # from binascii import unhexlify
 #

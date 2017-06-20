@@ -101,6 +101,7 @@ def device_test(device_id: int):
 
     return 'OK'
 
+
 @flat_api.route('/v1/devices/inventory/<int:device_id>')
 def device_inventory(device_id: int):
     """Tell a device to produce a full inventory immediately.
@@ -117,7 +118,7 @@ def device_inventory(device_id: int):
     db_command.device = d
     db.session.add(db_command)
 
-    # InstalledApplicationList
+    # InstalledApplicationList - Pretty taxing so don't run often
     # ial = commands.InstalledApplicationList()
     # db_command_ial = Command.from_model(ial)
     # db_command_ial.device = d

@@ -1,3 +1,8 @@
+"""
+    This module contains schema definitions for Marshmallow-JSONAPI and therefore Flask-REST-JSONAPI.
+    It also contains non subpackage specific JSON schema definitions.
+"""
+
 from marshmallow_jsonapi import fields
 from marshmallow_jsonapi.flask import Relationship, Schema
 from marshmallow import Schema as FlatSchema, post_load
@@ -5,7 +10,6 @@ from .models import db, Organization, SCEPConfig
 
 
 class DeviceSchema(Schema):
-    """marshmallow-jsonapi schema for Device objects."""
     id = fields.Int(dump_only=True)
     udid = fields.Str(dump_only=True)
     topic = fields.Str()
@@ -203,7 +207,6 @@ class PrivateKeySchema(Schema):
     
 
 class CertificateSchema(Schema):
-    """marshmallow-jsonapi schema for Certificate objects."""
     id = fields.Int(dump_only=True)
     type = fields.Str(attribute='type')
     x509_cn = fields.Str(dump_only=True)
@@ -231,7 +234,6 @@ class CertificateSchema(Schema):
 
 
 class CertificateSigningRequestSchema(Schema):
-    """marshmallow-jsonapi schema for CertificateRequest objects."""
     id = fields.Int(dump_only=True)
     purpose = fields.Str(load_only=True, attribute='req_type')
     subject = fields.Str()
@@ -319,46 +321,6 @@ class PushResponseFlatSchema(FlatSchema):
     reason = fields.Str()
     timestamp = fields.DateTime()
 
-#
-# class PayloadSchema(Schema):
-#     """marshmallow-jsonapi schema for Payload SQLAlchemy models."""
-#     id = fields.Int(dump_only=True)
-#     type = fields.Str()
-#     version = fields.Int()
-#     uuid = fields.UUID()
-#     display_name = fields.Str()
-#     description = fields.Str()
-#     organization = fields.Str()
-    
-#
-# class ProfileSchema(Schema):
-#     """marshmallow-jsonapi schema for Profile SQLAlchemy models."""
-#     id = fields.Int(dump_only=True)
-#     description = fields.Str()
-#     display_name = fields.Str()
-#     expiration_date = fields.DateTime()
-#     identifier = fields.Str()
-#     organization = fields.Str()
-#     uuid = fields.UUID()
-#     removal_disallowed = fields.Boolean()
-#     version = fields.Int()
-#     scope = fields.Str()
-#     removal_date = fields.DateTime()
-#     duration_until_removal = fields.Int()
-#     consent_en = fields.Str()
-#
-#     payloads = Relationship(
-#         related_view='api_app.payload_detail',
-#         related_view_kwargs={'payload_id': '<id>'},
-#         type_='payloads',
-#     )
-#
-#     class Meta:
-#         type_ = 'profiles'
-#         self_view = 'api_app.profile_detail'
-#         self_view_kwargs = {'profile_id': '<id>'}
-#         self_view_many = 'api_app.profiles_list'
-
 
 class InstalledProfileSchema(Schema):
     """marshmallow-jsonapi schema for Profile SQLAlchemy models."""
@@ -382,7 +344,6 @@ class InstalledProfileSchema(Schema):
 
 
 class ProfileSchema(Schema):
-    """marshmallow-jsonapi schema for Profile SQLAlchemy models."""
     id = fields.Int(dump_only=True)
     data = fields.String()
 

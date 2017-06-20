@@ -6,7 +6,6 @@ from flask import Flask, render_template
 from flask_jwt import JWT
 from .configuration import configuration_app
 from .mdm_app import mdm_app
-from .mdmcert import admin_mdmcert_app
 from .api import api_app
 from .api_push import api_push_app
 from .api_flat import flat_api
@@ -38,7 +37,6 @@ def create_app() -> Flask:
 
     app.register_blueprint(enroll_app, url_prefix='/enroll')
     app.register_blueprint(mdm_app)
-    app.register_blueprint(admin_mdmcert_app, url_prefix='/admin/mdmcert')
     app.register_blueprint(configuration_app, url_prefix='/api/v1/configuration')
     app.register_blueprint(api_app, url_prefix='/api')
     app.register_blueprint(api_push_app, url_prefix='/api')

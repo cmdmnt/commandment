@@ -144,6 +144,7 @@ device_tags = db.Table('device_tags', db.metadata,
                     db.Column('tag_id', db.Integer, db.ForeignKey('tags.id')),
                     )
 
+
 class Device(db.Model):
     """An enrolled device.
     
@@ -175,6 +176,15 @@ class Device(db.Model):
     # to bytes automatically.
     _token = db.Column(db.String, nullable=True)
     tokenupdate_at = db.Column(db.DateTime)
+    # if null there are no outstanding push notifications. If this contains anything then dont attempt to deliver
+    # another APNS push.
+    last_push_at = db.Column(db.DateTime, nullable=True)
+    """last_push_at (datetime.datetime): The datetime when the last push was sent to APNS for this device."""
+    last_apns_id = db.Column(db.Integer, nullable=True)
+    """last_apns_id (str): The UUID of the last apns command sent."""
+    # if the time delta between last_push_at and last_seen is >= several days to a week,
+    # this should count as a failed push, and potentially declare the device as dead.
+    failed_push_count = db.Column(db.Integer, default=0, nullable=False)
 
     # Table 5
     last_cloud_backup_date = db.Column(db.DateTime)
@@ -324,18 +334,6 @@ class Device(db.Model):
         else:
             return hexlify(self.token).decode('utf8')
 
-    # if null there are no outstanding push notifications. If this contains anything then dont attempt to deliver
-    # another APNS push.
-    last_push_at = db.Column(db.DateTime, nullable=True)
-    """last_push_at (datetime.datetime): The datetime when the last push was sent to APNS for this device."""
-    last_apns_id = db.Column(db.Integer, nullable=True)
-    """last_apns_id (str): The UUID of the last apns command sent."""
-
-    # if the time delta between last_push_at and last_seen is >= several days to a week,
-    # this should count as a failed push, and potentially declare the device as dead.
-    failed_push_count = db.Column(db.Integer, default=0, nullable=False)
-    _unlock_token = db.Column(db.String(), name='unlock_token', nullable=True)
-
     certificate_id = db.Column(db.Integer, db.ForeignKey('certificates.id'))
     certificate = db.relationship('Certificate', backref='devices')
 
@@ -344,6 +342,8 @@ class Device(db.Model):
         secondary=device_tags,
         back_populates='devices'
     )
+
+    _unlock_token = db.Column(db.String(), name='unlock_token', nullable=True)
 
     @property
     def unlock_token(self):
@@ -493,7 +493,6 @@ class InstalledProfile(db.Model):
     # SignerCertificates
     
 
-
 class CommandSequence(db.Model):
     """A command sequence represents a series of commands where all members must succeed in order for the sequence to
     succeed. I.E a single failure or timeout in the sequence stops the delivery of every other member.
@@ -547,8 +546,17 @@ class Command(db.Model):
 
     # device_user_id = db.Column(ForeignKey('device_users.id'), nullable=True)
     # device_user = relationship('DeviceUser', backref='commands')
+
     @classmethod
     def from_model(cls, cmd: commands.Command):
+        """This method turns a subclass of commands.Command into an SQLAlchemy model.
+        The parameters of the command are encoded as a JSON dictionary inside the parameters column.
+
+        Args:
+              cmd (commands.Command): The command to be turned into a database model.
+        Returns:
+              Command: The database model, ready to be committed.
+        """
         c = cls()
         c.request_type = cmd.request_type
         c.uuid = cmd.uuid
@@ -557,7 +565,7 @@ class Command(db.Model):
         return c
 
     @classmethod
-    def find_by_uuid(cls, uuid):
+    def find_by_uuid(cls, uuid: str):
         """Find and return an instance of the Command model matching the given UUID string.
         
         Args:
@@ -569,7 +577,17 @@ class Command(db.Model):
         return cls.query.filter(cls.uuid == uuid).one()
 
     @classmethod
-    def get_next_device_command(cls, device):
+    def get_next_device_command(cls, device: Device):
+        """Get the next available command in the queue for the specified device.
+
+        TODO: Explain this process here
+
+        Args:
+            device (Device): The database model matching the device checking in.
+
+        Returns:
+            Command: The next command model to be processed.
+        """
         # d == d AND (q_status == Q OR (q_status == R AND result == 'NotNow'))
         return cls.query.filter(db.and_(
                 cls.device == device,
@@ -666,9 +684,6 @@ class DeviceUser(db.Model):
     It exists to support the macOS user channel extension.
 
     :table: device_users
-
-    Attributes:
-          user_id (GUID): Local user's GUID, or network user's GUID from Open Directory Record.
     """
     __tablename__ = 'device_users'
 
@@ -676,6 +691,7 @@ class DeviceUser(db.Model):
 
     udid = db.Column(GUID, nullable=False)
     user_id = db.Column(GUID, nullable=False)
+    """user_id (GUID): Local user's GUID, or network user's GUID from Directory Record."""
     long_name = db.Column(db.String)
     short_name = db.Column(db.String)
     need_sync_response = db.Column(db.Boolean)  # This is kind of transitive but added anyway.
@@ -688,6 +704,7 @@ class Organization(db.Model):
     """The MDM home organization configuration.
     
     These attributes are used as the defaults for several other services where an org name is required.
+    Such as Certificate requests and Profile detail.
     
     :table: organizations
     """

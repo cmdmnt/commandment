@@ -1,3 +1,7 @@
+"""
+    This module defines resources, as required by the Flask-REST-JSONAPI package. This represents most of the REST API.
+"""
+
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
     CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, InstalledApplicationSchema, ProfileSchema, \
     InstalledCertificateSchema, DeviceGroupSchema, InstalledProfileSchema, TagSchema

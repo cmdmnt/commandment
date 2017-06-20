@@ -17,6 +17,10 @@ def push(device_id: int):
     """Send a (Blank) push notification to the specified device by its Commandment ID.
     
     This causes the device to check back with the MDM for pending commands.
+
+    :statuscode 400: impossible to push to device (no token or invalid token)
+    :statuscode 404: device does not exist
+    :statuscode 200: push complete
     """
     device = db.session.query(Device).filter(Device.id == device_id).one()
     if device.token is None or device.push_magic is None:
@@ -68,8 +72,6 @@ def upload_push_certificate_public():
     else:
         abort(400, 'cannot determine certificate encoding type')
 
-    
-
     try:
         c = db.session.query(Certificate).filter(Certificate.cert_type == 'mdm.pushcert').one()
     except NoResultFound:
@@ -104,12 +106,12 @@ def upload_push_certificate_private():
         abort(400, 'Invalid Content-Type supplied for private key')
 
     if request.headers['Content-Type'] == 'application/x-pem-file':
-        pk = PrivateKey(
+        pk = RSAPrivateKey(
             pem_key=request.data
         )
     else:
         crypto_key = serialization.rsa_from_der(request.data)
-        pk = PrivateKey(
+        pk = RSAPrivateKey(
             pem_key=serialization.rsa_to_pem(crypto_key)
         )
 

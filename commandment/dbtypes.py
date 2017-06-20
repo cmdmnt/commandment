@@ -45,7 +45,7 @@ def json_datetime_serializer(o):
     """Serialize datetime objects into ISO format string dates
 
     Raises:
-        TypeError: If the object cannot be serialized.
+        TypeError: If the https://mdmcert.download/api/v1/signrequestobject cannot be serialized.
     """
 
     if isinstance(o, datetime):

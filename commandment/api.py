@@ -1,5 +1,7 @@
-import io
-from flask import Blueprint, send_file, current_app, abort, jsonify
+"""
+    This module contains all of the API generated using the Flask-REST-JSONAPI extension.
+"""
+from flask import Blueprint
 from flask_rest_jsonapi import Api
 from .resources import CertificatesList, CertificateDetail, CertificateSigningRequestList, \
     CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
