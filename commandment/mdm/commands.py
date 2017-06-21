@@ -500,3 +500,6 @@ class PlayLostModeSound(Command):
     require_supervised = True
 
 
+class AvailableOSUpdates(Command):
+    request_type = 'AvailableOSUpdates'
+    require_platforms = {Platform.macOS: '>=10.11', Platform.iOS: '>=4'}

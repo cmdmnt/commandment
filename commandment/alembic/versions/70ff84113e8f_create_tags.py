@@ -1,4 +1,4 @@
-"""create_tags
+"""Create tags table and join tables
 
 Revision ID: 70ff84113e8f
 Revises: 7ae48ae412d7
