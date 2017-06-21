@@ -8,6 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from commandment.mdm import CommandStatus
 from commandment.mdm.commands import Command
 from commandment.decorators import verify_mdm_signature, parse_plist_input_data
+from commandment.models import DeviceUser
 from commandment.routers import CommandRouter, PlistRouter
 import plistlib
 from datetime import datetime
@@ -65,14 +66,17 @@ def authenticate(plist_data):
 @plr.route('MessageType', 'TokenUpdate')
 def token_update(plist_data):
     current_app.logger.info('TokenUpdate received')
+    # TODO: check to make sure device == UDID == cert, etc.
+    device = db.session.query(Device).filter(Device.udid == plist_data['UDID']).one()
 
     # TODO: a TokenUpdate can either be for a device or a user (per OS X extensions)
     if 'UserID' in plist_data:
-        current_app.logger.warn('per-user TokenUpdate not yet implemented, skipping')
+        device_user = DeviceUser(
+            
+        )
         return 'OK'
 
-    # TODO: check to make sure device == UDID == cert, etc.
-    device = db.session.query(Device).filter(Device.udid == plist_data['UDID']).one()
+
 
     if not device.token:  # First contact
         device.is_enrolled = True

@@ -643,11 +643,18 @@ class DeviceUser(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    udid = db.Column(GUID, nullable=False)
+    device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
+    """(int): Device foreign key ID."""
+    device = db.relationship('Device', backref='device_users')
+    """(db.relationship): Device relationship"""
+    device_udid = db.Column(GUID, nullable=False)
+    """(GUID): Device UDID"""
     user_id = db.Column(GUID, nullable=False)
     """user_id (GUID): Local user's GUID, or network user's GUID from Directory Record."""
     long_name = db.Column(db.String)
+    """long_name (str): The full name of the user"""
     short_name = db.Column(db.String)
+    """short_name (str): The short (username) of the user"""
     need_sync_response = db.Column(db.Boolean)  # This is kind of transitive but added anyway.
     user_configuration = db.Column(db.Boolean)
     digest_challenge = db.Column(db.String)
