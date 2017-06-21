@@ -4,11 +4,11 @@ from uuid import uuid4
 from asn1crypto.cms import CertificateSet, SignerIdentifier
 from flask import current_app, render_template, abort, Blueprint, make_response, url_for, request
 import os
-from .profiles.models import MDMPayload, Profile, PEMCertificatePayload, DERCertificatePayload, SCEPPayload
-from .profiles import PROFILE_CONTENT_TYPE, plist_schema as profile_schema, PayloadScope
-from .models import db, Organization, SCEPConfig
+from commandment.profiles.models import MDMPayload, Profile, PEMCertificatePayload, DERCertificatePayload, SCEPPayload
+from commandment.profiles import PROFILE_CONTENT_TYPE, plist_schema as profile_schema, PayloadScope
+from commandment.models import db, Organization, SCEPConfig
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from .plistutil.nonewriter import dumps as dumps_none
+from commandment.plistutil.nonewriter import dumps as dumps_none
 
 from cryptography.x509.oid import NameOID
 from asn1crypto import cms
@@ -69,7 +69,6 @@ def enroll():
     if not org.payload_prefix:
         abort(500, 'MDM configuration has no profile prefix')
 
-    # profile = Profile(org.payload_prefix + '.enroll', PayloadDisplayName=org.name)
     profile = Profile(
         identifier=org.payload_prefix + '.enroll',
         uuid=uuid4(),
@@ -89,7 +88,7 @@ def enroll():
                 payload_content=pem_data,
                 display_name='Certificate Authority',
                 description='Required for your device to trust the server',
-                type='com.apple.security.pem',
+                type='com.apple.security.root',
                 version=1
             )
             profile.payloads.append(pem_payload)
@@ -100,7 +99,6 @@ def enroll():
         basepath = os.path.dirname(__file__)
         certpath = os.path.join(basepath, current_app.config['SSL_CERTIFICATE'])
         with open(certpath, 'rb') as fd:
-
             # ssl_certificate = x509.load_pem_x509_certificate(fd.read(), backend=default_backend())
             # der_payload = PEMCertificatePayload(
             #     uuid=uuid4(),
@@ -117,7 +115,7 @@ def enroll():
                 payload_content=fd.read(),
                 display_name='Web Server Certificate',
                 description='Required for your device to trust the server',
-                type='com.apple.security.pem',
+                type='com.apple.security.pkcs1',
                 version=1
             )
             profile.payloads.append(pem_payload)
@@ -134,13 +132,15 @@ def enroll():
         key_usage=scep_config.key_usage,
         display_name='MDM SCEP',
         description='Requests a certificate to identify your device',
+        retries=scep_config.retries,
+        retry_delay=scep_config.retry_delay,
         version=1
     )
 
     profile.payloads.append(scep_payload)
     cert_uuid = scep_payload.uuid
 
-    from .mdm import AccessRights
+    from commandment.mdm import AccessRights
 
     push_topics = push_certificate.subject.get_attributes_for_oid(NameOID.USER_ID)
     if len(push_topics) != 1:
@@ -171,7 +171,8 @@ def enroll():
 
     return plist_data, 200, {'Content-Type': PROFILE_CONTENT_TYPE}
 
-def _find_signer_sid(certificates: CertificateSet, sid: SignerIdentifier) -> Union[cms.Certificate,None]:
+
+def _find_signer_sid(certificates: CertificateSet, sid: SignerIdentifier) -> Union[cms.Certificate, None]:
     """Find a signer certificate by its SignerIdentifier.
 
     Args:
@@ -229,19 +230,19 @@ def dep_enroll():
 
 
 
-        # def device_first_post_enroll(device, awaiting=False):
-#     print('enroll:', 'UpdateInventoryDevInfoCommand')
-#     db.session.add(UpdateInventoryDevInfoCommand.new_queued_command(device))
-#
-#     # install all group profiles
-#     for group in device.mdm_groups:
-#         for profile in group.profiles:
-#             db.session.add(InstallProfile.new_queued_command(device, {'id': profile.id}))
-#
-#     if awaiting:
-#         # in DEP Await state, send DeviceConfigured to proceed with setup
-#         db.session.add(DeviceConfigured.new_queued_command(device))
-#
-#     db.session.commit()
-#
-#     push_to_device(device)
+    # def device_first_post_enroll(device, awaiting=False):
+    #     print('enroll:', 'UpdateInventoryDevInfoCommand')
+    #     db.session.add(UpdateInventoryDevInfoCommand.new_queued_command(device))
+    #
+    #     # install all group profiles
+    #     for group in device.mdm_groups:
+    #         for profile in group.profiles:
+    #             db.session.add(InstallProfile.new_queued_command(device, {'id': profile.id}))
+    #
+    #     if awaiting:
+    #         # in DEP Await state, send DeviceConfigured to proceed with setup
+    #         db.session.add(DeviceConfigured.new_queued_command(device))
+    #
+    #     db.session.commit()
+    #
+    #     push_to_device(device)

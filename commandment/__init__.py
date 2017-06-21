@@ -4,19 +4,20 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 from flask import Flask, render_template
 from flask_jwt import JWT
-from .configuration import configuration_app
-from .mdm_app import mdm_app
+
+from commandment.mdm.app import mdm_app
+from .ac2.ac2_app import ac2_app
 from .api import api_app
-from .api_push import api_push_app
 from .api_flat import flat_api
-from .enroll import enroll_app
+from .api_push import api_push_app
+from .auth import authenticate, identity
+from .configuration import configuration_app
+from .enroll.app import enroll_app
+from .models import db
+from .omdm import omdm_app
 from .ota import ota_app
 from .sso.oauth import oauth_app
 from .sso.saml import saml_app
-from .models import db
-from .auth import authenticate, identity
-from .ac2.ac2_app import ac2_app
-from .omdm import omdm_app
 
 
 def create_app() -> Flask:

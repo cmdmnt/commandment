@@ -1,16 +1,16 @@
+from binascii import hexlify
+
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
 from flask import current_app
 
 from commandment.mdm import commands
-from ..models import db, Device, InstalledCertificate, InstalledProfile, Command as DBCommand
-from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse
+from commandment.mdm.app import command_router
 from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList, \
     InstallProfile
-from ..mdm_app import command_router
-from .util import queryresponses_to_query_set
-from cryptography import x509
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization, hashes
-from binascii import hexlify
+from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse
+from ..models import db, Device, InstalledCertificate, InstalledProfile, Command as DBCommand
 
 Queries = DeviceInformation.Queries
 

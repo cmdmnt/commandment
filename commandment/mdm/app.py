@@ -3,23 +3,22 @@ Copyright (c) 2015 Jesse Peterson, 2017 Mosen
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 from flask import Blueprint, make_response, abort
-from flask import current_app, g
+from flask import g
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from .models import db, Device, Command as DBCommand
-from .mdm import CommandStatus
-from .mdm.commands import Command
-from .decorators import verify_mdm_signature, parse_plist_input_data
-from .routers import CommandRouter, PlistRouter
+from commandment.mdm import CommandStatus
+from commandment.mdm.commands import Command
+from commandment.decorators import verify_mdm_signature, parse_plist_input_data
+from commandment.routers import CommandRouter, PlistRouter
 import plistlib
 from datetime import datetime
-from .signals import device_enrolled
+from commandment.signals import device_enrolled
 
 
 mdm_app = Blueprint('mdm_app', __name__)
 
 plr = PlistRouter(mdm_app, '/checkin')
 command_router = CommandRouter(mdm_app)
-from .mdm.handlers import *
+from .handlers import *
 
 
 @plr.route('MessageType', 'Authenticate')

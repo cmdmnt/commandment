@@ -25,10 +25,11 @@ def schema_for(payload_type: str) -> Union[None, Type[Schema]]:
     return _schemas.get(payload_type, None)
 
 
-def register_payload_schema(payload_type: str) -> Callable[[Type[Schema]], Type[Schema]]:
+def register_payload_schema(*args) -> Callable[[Type[Schema]], Type[Schema]]:
     """Decorate a Payload schema to register its type. For use with schema_for."""
     def wrapper(cls: Type[Schema]) -> Type[Schema]:
-        _schemas[payload_type] = cls
+        for payload_type in args:
+            _schemas[payload_type] = cls
         return cls
         
     return wrapper
@@ -48,7 +49,7 @@ class ConsentTextSchema(Schema):
     en = fields.String(attribute='consent_en')
 
 
-@register_payload_schema('com.apple.security.pem')
+@register_payload_schema('com.apple.security.pem', 'com.apple.security.root', 'com.apple.security.pkcs1')
 class CertificatePayloadSchema(Payload):
     PayloadCertificateFileName = fields.Str(attribute='certificate_file_name')
     PayloadContent = fields.Raw(attribute='payload_content')
@@ -65,7 +66,7 @@ class SCEPPayload(Payload):
     Keysize = fields.Integer(attribute='key_size')
     CAFingerprint = fields.String(attribute='ca_fingerprint')
     KeyType = fields.String(attribute='key_type')
-    KeyUsage = EnumField(KeyUsage, attribute='key_usage')
+    KeyUsage = EnumField(KeyUsage, attribute='key_usage', by_value=True)
     # SubjectAltName = fields.Dict(attribute='subject_alt_name')
     Retries = fields.Integer(attribute='retries')
     RetryDelay = fields.Integer(attribute='retry_delay')
