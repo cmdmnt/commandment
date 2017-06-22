@@ -30,6 +30,8 @@ def main():
     parser.add_argument('source',
                         help='Source pkg [REQUIRED!]',
                         metavar='filename')
+    parser.add_argument('-u',
+                        help='url prefix, for where the package will be downloaded from. package name will be appended')
 
     args = parser.parse_args()
 
@@ -61,11 +63,11 @@ def main():
             'kind': 'software-package',
             'md5-size': MD5_CHUNK_SIZE,
             'md5s': chunks,
-            'url': 'https://package/url/here.pkg'
+            'url': '{}{}'.format(args.u, os.path.basename(args.source)) if args.u else 'https://package/url/here.pkg'
         }],
         'metadata': {
             'kind': 'software',
-            'title': 'filename',
+            'title': os.path.basename(args.source),
             'sizeInBytes': file_size,
             'bundle-identifier': '',
             'bundle-version': ''
@@ -76,7 +78,7 @@ def main():
     manifest['metadata'].update(pkgs_bundles[0])
 
     if len(bundles) > 1:
-        manifest['metadata']['items'] = bundles
+        manifest['metadata']['items'] = [{'bundle-identifier': i[0], 'bundle-version': i[1]} for i in bundles]
 
     print(plistlib.dumps(manifest).decode('utf8'))
 
