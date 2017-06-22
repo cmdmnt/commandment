@@ -54,6 +54,7 @@ setup(
     entry_points={
         'console_scripts': [
             'commandment=commandment.cli:server',
+            'appmanifest=commandment.pkg.appmanifest:main',
         ]
     },
     zip_safe=False
