@@ -9,6 +9,9 @@ import {
 } from "../json-api";
 import {Tag} from "../models";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../json-api";
+import {ThunkAction} from "redux-thunk";
+import {RootState} from "../reducers/index";
+import {Dispatch} from "redux";
 
 
 export type INDEX_REQUEST = 'tags/INDEX_REQUEST';
@@ -67,4 +70,11 @@ export const post: PostActionRequest = (values: Tag) => {
             })
         }
     }
+};
+
+export type CreateAndApplyRequest = (values: Tag) => ThunkAction<void, RootState, void>;
+
+export const createAndApply: CreateAndApplyRequest = (values) => (dispatch, getState) => {
+    dispatch(post(values));
+
 };

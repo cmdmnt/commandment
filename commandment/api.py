@@ -73,6 +73,6 @@ api.route(InstalledProfileDetail, 'installed_profile_detail', '/v1/installed_pro
 
 
 api.route(TagsList, 'tags_list', '/v1/tags')
-api.route(TagDetail, 'tag_detail', '/v1/tags/<tag_id>')
-api.route(TagRelationship, 'tag_devices', '/v1/tags/<tag_id>/relationships/devices')
+api.route(TagDetail, 'tag_detail', '/v1/tags/<int:tag_id>')
+api.route(TagRelationship, 'tag_devices', '/v1/tags/<int:tag_id>/relationships/devices')
 

@@ -95,7 +95,7 @@ export class DeviceApplications extends React.Component<DeviceApplicationsProps,
         return (
             <div className='DeviceApplications container'>
 
-                {applications &&
+                {applications && applications.items &&
                 <Griddle
                     data={applications.items}
                     plugins={[SemanticUIPlugin()]}
@@ -105,10 +105,10 @@ export class DeviceApplications extends React.Component<DeviceApplicationsProps,
                             NoResults: 'ui message'
                         }
                     }}
-                    sortProperties={{
-                        id: griddleState.sortId,
-                        sortAscending: griddleState.sortAscending
-                    }}
+                    // sortProperties={{
+                    //     id: griddleState.sortId,
+                    //     sortAscending: griddleState.sortAscending
+                    // }}
                     events={this.props.events}
                     components={{Layout}}
                     pageProperties={{

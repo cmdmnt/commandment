@@ -43,7 +43,11 @@ class DeviceGroupDetail(ResourceDetail):
 
 class DeviceRelationship(ResourceRelationship):
     schema = DeviceSchema
-    data_layer = {'session': db.session, 'model': Device}
+    data_layer = {
+        'session': db.session,
+        'model': Device,
+        'url_field': 'device_id'
+    }
 
 
 class CertificatesList(ResourceList):
@@ -247,7 +251,8 @@ class TagDetail(ResourceDetail):
     schema = TagSchema
     data_layer = {
         'session': db.session,
-        'model': Tag
+        'model': Tag,
+        'url_field': 'tag_id'
     }
 
 

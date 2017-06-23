@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import {DeviceState} from "../reducers/device";
 import {ModelIcon} from "./ModelIcon";
 import { Button, Header, Icon, Grid, List } from 'semantic-ui-react';
+import './MacOSDeviceDetail.scss';
 
 interface MacOSDeviceDetailState {
 
@@ -33,7 +34,8 @@ export class MacOSDeviceDetail extends React.Component<MacOSDeviceDetailProps, M
             <Grid columns={2} className='MacOSDeviceDetail'>
                 <Grid.Row>
                     <Grid.Column>
-                        <Header as="h1"><ModelIcon value={attributes.model_name} title={attributes.product_name} /> {name}</Header>
+                        <Header as="h1">{name} <Button content='Rename' /></Header>
+                        <p>{attributes.hostname}</p>
                     </Grid.Column>
                     <Grid.Column>
                         <Header as="h1" color="grey" textAlign='right'>{attributes.serial_number}</Header>
