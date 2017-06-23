@@ -22,7 +22,7 @@ Flask-Cors==3.0.2
 Flask-JWT==0.3.2
 flask-marshmallow==0.8.0
 Flask-OAuthlib==0.9.4
-Flask-REST-JSONAPI==0.11.4
+Flask-REST-JSONAPI==0.12.5
 Flask-RESTful==0.3.6
 Flask-SQLAlchemy==2.2
 future==0.16.0

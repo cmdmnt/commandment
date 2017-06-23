@@ -14,7 +14,7 @@ from .resources import CertificatesList, CertificateDetail, CertificateSigningRe
 # PayloadsList, PayloadDetail,
 
 api_app = Blueprint('api_app', __name__)
-api = Api(api_app)
+api = Api(blueprint=api_app)
 
 # Certificates
 api.route(CertificatesList, 'certificates_list', '/v1/certificates/')
