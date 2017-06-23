@@ -182,3 +182,25 @@ class CertificateListResponse(CommandResponse):
     CertificateList = fields.Nested(CertificateListItem, many=True)
 
 
+class AvailableOSUpdate(Schema):
+    AllowsInstallLater = fields.Boolean(attribute='allows_install_later')
+    AppIdentifiersToClose = fields.String(attribute='app_identifiers_to_close', many=True)
+    HumanReadableName = fields.String(attribute='human_readable_name')
+    HumanReadableNameLocale = fields.String(attribute='human_readable_name_locale')
+    IsConfigDataUpdate = fields.Boolean(attribute='is_config_data_update')
+    IsCritical = fields.Boolean(attribute='is_critical')
+    IsFirmwareUpdate = fields.Boolean(attribute='is_firmware_update')
+    MetadataURL = fields.String(attribute='metadata_url')
+    ProductKey = fields.String(attribute='product_key')
+    RestartRequired = fields.String(attribute='restart_required')
+    Version = fields.String(attribute='version')
+
+    @post_load
+    def make_available_os_update(self, data: dict) -> models.AvailableOSUpdate:
+        return models.AvailableOSUpdate(**data)
+
+
+class AvailableOSUpdateListResponse(CommandResponse):
+    AvailableOSUpdates = fields.Nested(AvailableOSUpdate, many=True)
+
+

@@ -817,7 +817,7 @@ class AvailableOSUpdate(db.Model):
 
     device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
     """(int): Device foreign key ID."""
-    device = db.relationship('Device', backref='device_users')
+    device = db.relationship('Device', backref='available_os_updates')
     """(db.relationship): Device relationship"""
     
     allows_install_later = db.Column(db.Boolean)

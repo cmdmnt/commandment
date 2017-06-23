@@ -8,8 +8,8 @@ from flask import current_app
 from commandment.mdm import commands
 from commandment.mdm.app import command_router
 from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList, \
-    InstallProfile
-from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse
+    InstallProfile, AvailableOSUpdates
+from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse, AvailableOSUpdateListResponse
 from ..models import db, Device, InstalledCertificate, InstalledProfile, Command as DBCommand
 
 Queries = DeviceInformation.Queries
@@ -165,3 +165,19 @@ def ack_install_profile(request: InstallProfile, device: Device, response: dict)
     """Acknowledge a response to ``InstallProfile``."""
     if response.get('Status', None) == 'Error':
         pass
+
+
+@command_router.route('AvailableOSUpdates')
+def ack_available_os_updates(request: AvailableOSUpdates, device: Device, response: dict):
+    """Acknowledge a response to AvailableOSUpdates"""
+    for au in device.available_os_updates:
+        db.session.delete(au)
+
+    schema = AvailableOSUpdateListResponse()
+    result = schema.load(response)
+
+    for upd in result.data['AvailableOSUpdate']:
+        upd.device = device
+        db.session.add(upd)
+
+    db.session.commit()
