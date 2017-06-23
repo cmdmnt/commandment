@@ -51,3 +51,21 @@ class CommandStatus(Enum):
     #  str: This command is considered dead because it timed out, the device timed out, or was orphaned by a
     #  removed device.
     Expired = 'E'
+
+
+class SettingsItem(Enum):
+    """A list of possible values for Managed Settings items.
+
+    See Also:
+          - `Managed Settings <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/3-MDM_Protocol/MDM_Protocol.html#//apple_ref/doc/uid/TP40017387-CH3-SW59>`_._
+    """
+    VoiceRoaming = 'VoiceRoaming'
+    PersonalHotspot = 'PersonalHotspot'
+    Wallpaper = 'Wallpaper'
+    DataRoaming = 'DataRoaming'
+    ApplicationAttributes = 'ApplicationAttributes'
+    DeviceName = 'DeviceName'
+    HostName = 'HostName'
+    MDMOptions = 'MDMOptions'
+    PasscodeLockGracePeriod = 'PasscodeLockGracePeriod'
+    MaximumResidentUsers = 'MaximumResidentUsers'

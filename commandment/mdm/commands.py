@@ -503,3 +503,23 @@ class PlayLostModeSound(Command):
 class AvailableOSUpdates(Command):
     request_type = 'AvailableOSUpdates'
     require_platforms = {Platform.macOS: '>=10.11', Platform.iOS: '>=4'}
+
+
+class Settings(Command):
+    request_type = 'Settings'
+    require_platforms = {Platform.macOS: '>=10.9', Platform.iOS: '>=5.0'}
+    require_access = {AccessRights.ChangeSettings}
+
+    def __init__(self, uuid=None, **kwargs):
+        super(Settings, self).__init__(uuid)
+
+    def to_dict(self) -> dict:
+        return {
+            'CommandUUID': str(self._uuid),
+            'Command': {
+                'RequestType': type(self).request_type,
+                'Settings': {
+                    
+                }
+            }
+        }
