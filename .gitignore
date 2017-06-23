@@ -157,4 +157,6 @@ scep_settings.cfg
 *.cer
 *.crt
 *.key
+*.csr
+
 
