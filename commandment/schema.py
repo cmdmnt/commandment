@@ -10,6 +10,13 @@ from .models import db, Organization, SCEPConfig
 
 
 class DeviceSchema(Schema):
+    class Meta:
+        type_ = 'devices'
+        self_view = 'api_app.device_detail'
+        self_view_kwargs = {'device_id': '<id>'}
+        self_view_many = 'api_app.devices_list'
+        strict = True
+
     id = fields.Int(dump_only=True)
     udid = fields.Str(dump_only=True)
     topic = fields.Str()
@@ -98,12 +105,6 @@ class DeviceSchema(Schema):
         type_='tags'
     )
 
-    class Meta:
-        type_ = 'devices'
-        self_view = 'api_app.device_detail'
-        self_view_kwargs = {'device_id': '<id>'}
-        self_view_many = 'api_app.devices_list'
-        strict = True
 
 
 class DeviceGroupSchema(Schema):

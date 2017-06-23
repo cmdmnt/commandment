@@ -33,7 +33,7 @@ api.route(PrivateKeyDetail, 'private_key_detail', '/v1/rsa_private_keys/<int:pri
 api.route(DeviceList, 'devices_list', '/v1/devices', '/v1/device_groups/<int:device_group_id>/devices')
 api.route(DeviceDetail, 'device_detail', '/v1/devices/<int:device_id>')
 api.route(DeviceRelationship, 'device_commands', '/v1/devices/<int:device_id>/relationships/commands')
-api.route(DeviceRelationship, 'device_tags', '/v1/devices/<int:id>/relationships/tags')
+api.route(DeviceRelationship, 'device_tags', '/v1/devices/<int:device_id>/relationships/tags')
 
 api.route(DeviceGroupList, 'device_groups_list', '/v1/device_groups', '/v1/devices/<int:device_id>/groups')
 api.route(DeviceGroupDetail, 'device_group_detail', '/v1/device_groups/<int:device_group_id>')
