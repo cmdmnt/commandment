@@ -45,6 +45,13 @@ class Payload(Schema):
     PayloadOrganization = fields.String(attribute='organization')
 
 
+@register_payload_schema('Profile Service')
+class ProfileServicePayload(Schema):
+    URL = fields.URL()
+    DeviceAttributes = fields.String(many=True)
+    Challenge = fields.String()
+    
+
 class ConsentTextSchema(Schema):
     en = fields.String(attribute='consent_en')
 
@@ -109,6 +116,7 @@ class MDMPayload(Payload):
     @post_load
     def make_payload(self, data: dict) -> models.MDMPayload:
         return models.MDMPayload(**data)
+
 
 
 class ProfileSchema(Schema):

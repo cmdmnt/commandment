@@ -4,6 +4,8 @@ from uuid import uuid4
 from asn1crypto.cms import CertificateSet, SignerIdentifier
 from flask import current_app, render_template, abort, Blueprint, make_response, url_for, request
 import os
+
+from commandment.enroll import AllDeviceAttributes
 from commandment.profiles.models import MDMPayload, Profile, PEMCertificatePayload, DERCertificatePayload, SCEPPayload
 from commandment.profiles import PROFILE_CONTENT_TYPE, plist_schema as profile_schema, PayloadScope
 from commandment.models import db, Organization, SCEPConfig
@@ -246,3 +248,32 @@ def dep_enroll():
     #     db.session.commit()
     #
     #     push_to_device(device)
+
+
+@enroll_app.route('/ota/enroll')
+def ota_enroll():
+    try:
+        org = db.session.query(Organization).one()
+    except NoResultFound:
+        abort(500, 'No organization is configured, cannot generate enrollment profile.')
+    except MultipleResultsFound:
+        abort(500, 'Multiple organizations, backup your database and start again')
+
+    profile = {
+        'PayloadType': 'Profile Service',
+        'PayloadIdentifier': org.payload_prefix + '.ota.enroll',
+        'PayloadDisplayName': 'Commandment Profile Service',
+        'PayloadDescription': 'Enrolls your device with Commandment',
+        'PayloadContent': [{
+            'URL': 'https://{}:{}/ota/profile'.format(current_app.config['PUBLIC_HOSTNAME'], current_app.config['PORT']),
+            'DeviceAttributes': list(AllDeviceAttributes),
+            'Challenge': 'TODO',
+        }],
+    }
+
+
+
+
+@enroll_app.route('/ota/profile')
+def ota_profile():
+    pass
