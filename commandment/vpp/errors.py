@@ -1,3 +1,8 @@
+class VPPTokenInvalid(Exception):
+    """When an invalid token is given to VPP"""
+    pass
+
+
 class VPPTokenExpired(Exception):
     """When an expired token is given to VPP"""
     pass

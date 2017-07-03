@@ -2,11 +2,24 @@ import requests
 from enum import Enum
 from typing import Tuple, Set, List
 from collections.abc import Iterator
+import json
+import base64
 
-from commandment.vpp.errors import VPPTransportError
+from commandment.vpp.errors import VPPTransportError, VPPTokenInvalid
 
 SERVICE_CONFIG_URL = 'https://vpp.itunes.apple.com/WebObjects/MZFinance.woa/wa/VPPServiceConfigSrv'
 
+
+def encode_stoken(token: dict) -> bytes:
+    """Encode a dict containing the sToken properties into a base64 token for use with VPP.
+
+    Args:
+          token (dict): Token containing the 'token', 'expDate', and 'orgName' fields.
+
+    Returns:
+          bytes: Base64 encoded token.
+    """
+    return base64.urlsafe_b64encode(json.dumps(token, separators=(',', ':')).encode('utf8'))
 
 
 class VPPCursor(object):
@@ -32,11 +45,21 @@ class VPPLicenseCursor(VPPCursor):
     pass
 
 
+class VPPUserStatus(Enum):
+    Registered = 'Registered'
+    Associated = 'Associated'
+    Retired = 'Retired'
+    Deleted = 'Deleted'
+    
+
+AdamID = str
+
+
 class LicenseAssociationType(Enum):
     ClientUserID = 'ClientUserID'
     SerialNumber = 'SerialNumber'
 
-LicenseAssociation = Tuple[LicenseAssociationType, str]
+LicenseAssociation = Tuple[LicenseAssociationType, AdamID]
 
 
 class LicenseDisassociationType(Enum):
@@ -44,7 +67,7 @@ class LicenseDisassociationType(Enum):
     SerialNumber = 'SerialNumber'
     LicenseID = 'LicenseID'
 
-LicenseDisassociation = Tuple[LicenseDisassociationType, str]
+LicenseDisassociation = Tuple[LicenseDisassociationType, AdamID]
 
 
 class VPPLicenseOperation(object):
@@ -69,19 +92,25 @@ class VPPLicenseOperation(object):
 
 class VPP(object):
 
-    def __init__(self, stoken: str, vpp_service_config_url: str = SERVICE_CONFIG_URL):
+    def __init__(self, stoken: str, vpp_service_config_url: str = SERVICE_CONFIG_URL, service_config: dict = None):
         """
         The VPP class is a wrapper around a requests session and provides an API for interacting with Apple's VPP
         service.
         
         Args:
             stoken (str): Service Token
+            vpp_service_config_url (str): URL to the VPPServiceConfigSrv endpoint. defaults to Apple's live server.
+            service_config (dict): Dictionary containing service config, if you do not want to fetch it (testing only).
         """
         self._session = requests.Session()
+        self._session.headers.update({'Content-Type': 'application/json'})
         self._stoken = stoken
-        
-        service_config = self._fetch_config(vpp_service_config_url)
-        self._service_config = service_config
+
+        if not service_config:
+            fetched_service_config = self._fetch_config(vpp_service_config_url)
+            self._service_config = fetched_service_config
+        else:
+            self._service_config = service_config
 
     def _fetch_config(self, service_config_url: str) -> dict:
         """Fetch the service configuration from Apple, which contains all of the URLs required for VPP.
@@ -95,37 +124,81 @@ class VPP(object):
 
         return res.json()
         
-    def register_user(self, user_id: str, email: str = None, facilitator_member_id: str = None,
+    def register_user(self, client_user_id: str, email: str = None, facilitator_member_id: str = None,
                       managed_apple_id: str = None):
         """
         Register an MDM user with VPP.
 
         Args:
-            user_id (str): A unique string, usually a UUID to identify the user in the MDM.
+            client_user_id (str): A unique string, usually a UUID to identify the user in the MDM.
             email (str): The e-mail address of the user.
-            facilitator_member_id (str):
-            managed_apple_id (str):
+            facilitator_member_id (str): Currently unused
+            managed_apple_id (str): Currently unused
 
         Returns:
+            dict: Containing the decoded body of the reply from the VPP service, eg::
 
+                        { "status": 0,
+                            "user": {
+                              "userId": 2878111686099947,
+                              "email": "vpp-test@localhost",
+                              "status": "Registered",
+                              "inviteUrl": "http://localhost:8080/D1971F9DD5F8E67BDD",
+                              "inviteCode": "D1971F9DD5F8E67BDD",
+                              "clientUserIdStr": "F33D9E0F-CDE3-427E-A444-B137BEF9EFA2"
+                            }
+                        }
         """
-        pass
+        res = self._session.post(self._service_config['registerUserSrvUrl'], data=json.dumps({
+            'clientUserIdStr': client_user_id,
+            'email': email,
+            'sToken': self._stoken,
+        }))
+        
+        if res.status_code < 200 or res.status_code > 299:
+            raise VPPTransportError('registerVPPUserSrv returned non 2xx status')
 
-    def get_user(self, client_user_id: str = None, its_id: str = None, facilitator_member_id: str = None,
-                 user_id: str = None):
+        reply = res.json()
+        
+        if 'status' in reply and reply['status'] == -1:  # VPP Error occurred
+            raise VPPTokenInvalid('{} ({})'.format(reply['errorMessage'], reply['errorNumber']))
+
+        return reply
+        
+    def get_user(self, client_user_id: str = None, its_id_hash: str = None, facilitator_member_id: str = None,
+                 user_id: int = None):
         """
         Get the status of a user by their unique ID.
         
         Args:
-            client_user_id:
-            its_id:
+            client_user_id (str): A unique string, usually a UUID to identify the user in the MDM. You can use this OR
+                the user_id to identify the user.
+            its_id_hash (str): (Optional) iTunes Store ID hash
             facilitator_member_id:
-            user_id:
+            user_id (int): User ID which uniquely identifies the user with the iTunes store.
 
         Returns:
-
+            dict: Containing the reply from the service.
         """
-        pass
+        request_body = {'sToken': self._stoken}
+        if user_id is not None:
+            request_body['userId'] = user_id
+        else:
+            request_body['clientUserIdStr'] = client_user_id
+            if its_id_hash is not None:
+                request_body['itsIdHash'] = its_id_hash
+
+        res = self._session.post(self._service_config['getUserSrvUrl'], data=json.dumps(request_body))
+
+        if res.status_code < 200 or res.status_code > 299:
+            raise VPPTransportError('getUserSrvUrl returned non 2xx status')
+
+        reply = res.json()
+
+        if 'status' in reply and reply['status'] == -1:  # VPP Error occurred
+            raise VPPTokenInvalid('{} ({})'.format(reply['errorMessage'], reply['errorNumber']))
+
+        return reply
 
     def retire_user(self, client_user_id: str = None, facilitator_member_id: str = None,
                     user_id: str = None):
@@ -133,14 +206,31 @@ class VPP(object):
         Unregister a user from VPP.
         
         Args:
-            client_user_id:
-            facilitator_member_id:
-            user_id:
+            client_user_id (str): A unique string, usually a UUID to identify the user in the MDM. You can use this OR
+                the user_id to identify the user.
+            facilitator_member_id: Currently unused
+            user_id (int): User ID which uniquely identifies the user with the iTunes store.
 
         Returns:
-
+            dict: Containing the reply from the service.
         """
-        pass
+        request_body = {'sToken': self._stoken}
+        if user_id is not None:
+            request_body['userId'] = user_id
+        else:
+            request_body['clientUserIdStr'] = client_user_id
+
+        res = self._session.post(self._service_config['retireUserSrvUrl'], data=json.dumps(request_body))
+
+        if res.status_code < 200 or res.status_code > 299:
+            raise VPPTransportError('getUserSrvUrl returned non 2xx status')
+
+        reply = res.json()
+
+        if 'status' in reply and reply['status'] == -1:  # VPP Error occurred
+            raise VPPTokenInvalid('{} ({})'.format(reply['errorMessage'], reply['errorNumber']))
+
+        return reply
 
     def get_assets(self, include_license_counts: bool = True, facilitator_member_id: str = None):
         """
