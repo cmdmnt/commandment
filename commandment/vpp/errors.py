@@ -18,6 +18,6 @@ class VPPTransportError(Exception):
     pass
 
 
-class VPPServiceError(Exception):
-    """When the service returns an errorNumber"""
+class VPPError(Exception):
+    """Generic error used when the service returns an error of any kind"""
     pass

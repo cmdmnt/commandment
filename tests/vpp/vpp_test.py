@@ -36,6 +36,7 @@ SERVICE_CONFIG = {
 VPP_MOCK_USER_CID = 'F33D9E0F-CDE3-427E-A444-B137BEF9EFA2'
 VPP_MOCK_USER_ID = 2878111686099947
 VPP_MOCK_USER_EMAIL = 'vpp-test@localhost'
+VPP_MOCK_USER_EMAIL_2 = 'vpp-test-2@localhost'
 
 
 @pytest.fixture()
@@ -74,12 +75,19 @@ class TestVPP:
         reply = vpp.retire_user(client_user_id=VPP_MOCK_USER_CID)
         assert reply['status'] == 0
 
-    def test_already_retired_by_client_id(self, vpp: VPP):
-        reply = vpp.retire_user(client_user_id=VPP_MOCK_USER_CID)
-        assert reply['status'] == 0
+    # def test_already_retired_by_client_id(self, vpp: VPP):
+    #     reply = vpp.retire_user(client_user_id=VPP_MOCK_USER_CID)
+    #     assert reply['status'] == 0
 
     # def test_retireuser_by_user_id(self, vpp: VPP):
     #     reply = vpp.retire_user(client_user_id=VPP_MOCK_USER_CID)
     #     assert reply['status'] == 0
 
-    
+    def test_edit_user_by_client_id(self, vpp: VPP):
+        reply = vpp.edit_user(client_user_id=VPP_MOCK_USER_CID, email=VPP_MOCK_USER_EMAIL_2)
+        assert reply['status'] == 0
+        assert reply['user']['email'] == VPP_MOCK_USER_EMAIL_2
+
+    def test_get_licenses(self, vpp: VPP):
+        licenses = vpp.licenses()
+        print(licenses)

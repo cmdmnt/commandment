@@ -1,11 +1,12 @@
 import requests
 from enum import Enum
-from typing import Tuple, Set, List
+from typing import Tuple, Set, List, Union
 from collections.abc import Iterator
 import json
 import base64
 
-from commandment.vpp.errors import VPPTransportError, VPPTokenInvalid
+from commandment.vpp.decorators import raise_error_replies
+from commandment.vpp.errors import VPPTransportError, VPPTokenInvalid, VPPError
 
 SERVICE_CONFIG_URL = 'https://vpp.itunes.apple.com/WebObjects/MZFinance.woa/wa/VPPServiceConfigSrv'
 
@@ -21,6 +22,10 @@ def encode_stoken(token: dict) -> bytes:
     """
     return base64.urlsafe_b64encode(json.dumps(token, separators=(',', ':')).encode('utf8'))
 
+class VPPPricingParam(Enum):
+    StandardQuality = 'STDQ'
+    HighQuality = 'PLUS'
+
 
 class VPPCursor(object):
     """Generic base class for operations on endpoints that require a token to retrieve multiple pages of records."""
@@ -34,7 +39,7 @@ class VPPCursor(object):
         return ''
 
     def __init__(self):
-        pass
+        self._current = []  # Current set of results
 
 
 class VPPUserCursor(VPPCursor):
@@ -119,11 +124,9 @@ class VPP(object):
             service_config_url (str): The VPPServiceConfigSrv URL to use
         """
         res = self._session.get(service_config_url)
-        if res.status_code < 200 or res.status_code > 299:
-            raise VPPTransportError('VPPServiceConfigSrv returned non 2xx status')
-
         return res.json()
-        
+
+    @raise_error_replies
     def register_user(self, client_user_id: str, email: str = None, facilitator_member_id: str = None,
                       managed_apple_id: str = None):
         """
@@ -154,17 +157,9 @@ class VPP(object):
             'email': email,
             'sToken': self._stoken,
         }))
-        
-        if res.status_code < 200 or res.status_code > 299:
-            raise VPPTransportError('registerVPPUserSrv returned non 2xx status')
+        return res.json()
 
-        reply = res.json()
-        
-        if 'status' in reply and reply['status'] == -1:  # VPP Error occurred
-            raise VPPTokenInvalid('{} ({})'.format(reply['errorMessage'], reply['errorNumber']))
-
-        return reply
-        
+    @raise_error_replies
     def get_user(self, client_user_id: str = None, its_id_hash: str = None, facilitator_member_id: str = None,
                  user_id: int = None):
         """
@@ -189,17 +184,9 @@ class VPP(object):
                 request_body['itsIdHash'] = its_id_hash
 
         res = self._session.post(self._service_config['getUserSrvUrl'], data=json.dumps(request_body))
+        return res.json()
 
-        if res.status_code < 200 or res.status_code > 299:
-            raise VPPTransportError('getUserSrvUrl returned non 2xx status')
-
-        reply = res.json()
-
-        if 'status' in reply and reply['status'] == -1:  # VPP Error occurred
-            raise VPPTokenInvalid('{} ({})'.format(reply['errorMessage'], reply['errorNumber']))
-
-        return reply
-
+    @raise_error_replies
     def retire_user(self, client_user_id: str = None, facilitator_member_id: str = None,
                     user_id: str = None):
         """
@@ -221,16 +208,40 @@ class VPP(object):
             request_body['clientUserIdStr'] = client_user_id
 
         res = self._session.post(self._service_config['retireUserSrvUrl'], data=json.dumps(request_body))
+        return res.json()
 
-        if res.status_code < 200 or res.status_code > 299:
-            raise VPPTransportError('getUserSrvUrl returned non 2xx status')
+    @raise_error_replies
+    def edit_user(self, client_user_id: str = None, facilitator_member_id: str = None,
+                  email: str = None, managed_apple_id: str = None,
+                  user_id: str = None):
+        """
+        Edit a user's VPP record.
+        
+        Args:
+            client_user_id (str): A unique string, usually a UUID to identify the user in the MDM. You can use this OR
+                the user_id to identify the user.
+            facilitator_member_id: Currently unused
+            email (str): Supply an E-mail address to update the current address.
+            user_id (int): User ID which uniquely identifies the user with the iTunes store.
+            managed_apple_id (str): Managed Apple ID
 
-        reply = res.json()
+        Returns:
+            dict: Containing the reply from the service.
+        """
+        request_body = {'sToken': self._stoken}
+        if user_id is not None:
+            request_body['userId'] = user_id
+        else:
+            request_body['clientUserIdStr'] = client_user_id
 
-        if 'status' in reply and reply['status'] == -1:  # VPP Error occurred
-            raise VPPTokenInvalid('{} ({})'.format(reply['errorMessage'], reply['errorNumber']))
+        if email is not None:
+            request_body['email'] = email
 
-        return reply
+        if managed_apple_id is not None:
+            request_body['managedAppleIDStr'] = managed_apple_id
+
+        res = self._session.post(self._service_config['editUserSrvUrl'], data=json.dumps(request_body))
+        return res.json()
 
     def get_assets(self, include_license_counts: bool = True, facilitator_member_id: str = None):
         """
@@ -261,3 +272,40 @@ class VPP(object):
         op._vpp = self
         return op
 
+    def licenses(self,
+                 adam_id: str = None,
+                 pricing_param: Union[VPPPricingParam, None] = None,
+                 assigned_only: bool = False,
+                 facilitator_member_id: str = None,
+                 batch_token: str = None,
+                 since_modified_token: str = None) -> VPPLicenseCursor:
+        """Retrieve a list of licenses matching the supplied criteria.
+
+        Args:
+              adam_id (str): Get licenses that match this Adam ID
+              pricing_param (Union[VPPPricingParam, None]): Get licenses that match this 'Quality' param.
+              assigned_only (bool): Return only licenses that are assigned to users, if this value is true.
+              facilitator_member_id (str): Currently unused
+              batch_token (str): Supplied if there are more results to fetch.
+              since_modified_token (str): Supplied if you want to fetch results modified since a certain date. This will
+                be supplied on the last page of your most recent set of results.
+        """
+        request_body = {'sToken': self._stoken}
+        if assigned_only:
+            request_body['assignedOnly'] = True
+        if batch_token:
+            request_body['batchToken'] = batch_token
+        if since_modified_token:
+            request_body['sinceModifiedToken'] = since_modified_token
+
+        # These parameters are normally ignored if a batch/modified token is supplied.
+        if batch_token is None and since_modified_token is None:
+            if adam_id is not None:
+                request_body['adamId'] = adam_id
+            if pricing_param is not None:
+                request_body['pricingParam'] = pricing_param.value
+
+        res = self._session.post(self._service_config['getLicensesSrvUrl'], data=json.dumps(request_body))
+        reply = res.json()
+
+        return reply
