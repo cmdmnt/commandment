@@ -67,10 +67,30 @@ class VPPUserCursor(VPPCursor):
 
 
 class VPPLicenseCursor(VPPCursor):
-    pass
+
+    @property
+    def licenses(self) -> List[dict]:
+        return self._current['licenses'] if 'licenses' in self._current else None
+
+    def __init__(self, vpp=None):
+        super(VPPLicenseCursor, self).__init__(vpp=vpp)
+
+    def next(self):
+        """
+
+        Returns:
+            next VPPLicenseCursor or None when batch is exhausted
+        """
+        if self.batch_token is not None:
+            next_cursor = self._vpp.licenses(batch_token=self.batch_token)
+            return next_cursor
+        else:
+            return None
 
 
 class VPPLicenseOperation(object):
+    """VPPLicenseOperation represents a number of license operations on a single Adam ID (iTunes Store Product).
+    """
     def __init__(self, adam_id: str, pricing_param: str = 'STDQ'):
         self._adam_id = adam_id
         self._pricing_param = pricing_param
@@ -134,16 +154,16 @@ class VPP(object):
         Returns:
             dict: Containing the decoded body of the reply from the VPP service, eg::
 
-                        { "status": 0,
-                            "user": {
-                              "userId": 2878111686099947,
-                              "email": "vpp-test@localhost",
-                              "status": "Registered",
-                              "inviteUrl": "http://localhost:8080/D1971F9DD5F8E67BDD",
-                              "inviteCode": "D1971F9DD5F8E67BDD",
-                              "clientUserIdStr": "F33D9E0F-CDE3-427E-A444-B137BEF9EFA2"
-                            }
-                        }
+                { "status": 0,
+                    "user": {
+                      "userId": 2878111686099947,
+                      "email": "vpp-test@localhost",
+                      "status": "Registered",
+                      "inviteUrl": "http://localhost:8080/D1971F9DD5F8E67BDD",
+                      "inviteCode": "D1971F9DD5F8E67BDD",
+                      "clientUserIdStr": "F33D9E0F-CDE3-427E-A444-B137BEF9EFA2"
+                    }
+                }
         """
         res = self._session.post(self._service_config['registerUserSrvUrl'], data=json.dumps({
             'clientUserIdStr': client_user_id,
@@ -208,8 +228,6 @@ class VPP(object):
         cursor._vpp = self
 
         return cursor
-
-        
 
     @raise_error_replies
     def retire_user(self, client_user_id: str = None, facilitator_member_id: str = None,
@@ -321,6 +339,10 @@ class VPP(object):
               batch_token (str): Supplied if there are more results to fetch.
               since_modified_token (str): Supplied if you want to fetch results modified since a certain date. This will
                 be supplied on the last page of your most recent set of results.
+
+        Returns:
+              VPPLicenseCursor: A cursor that can be used to fetch all remaining results, pre-populated with the first
+                page.
         """
         request_body = {'sToken': self._stoken}
         if assigned_only:
@@ -339,5 +361,7 @@ class VPP(object):
 
         res = self._session.post(self._service_config['getLicensesSrvUrl'], data=json.dumps(request_body))
         reply = res.json()
+        cursor = VPPLicenseCursor(vpp=self)
+        cursor._current = reply
 
-        return reply
+        return cursor
