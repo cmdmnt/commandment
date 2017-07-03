@@ -1,5 +1,5 @@
 from typing import Tuple
-from enum import Enum
+from enum import Enum, IntEnum
 
 
 class VPPPricingParam(Enum):
@@ -31,3 +31,8 @@ class LicenseDisassociationType(Enum):
 
 LicenseDisassociation = Tuple[LicenseDisassociationType, AdamID]
 
+
+class VPPProductType(IntEnum):
+    Software = 7
+    Application = 8
+    Publication = 10
