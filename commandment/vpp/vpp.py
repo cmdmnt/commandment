@@ -1,12 +1,11 @@
 import requests
-from enum import Enum
 from typing import Tuple, Set, List, Union
-from collections.abc import Iterator
 import json
 import base64
 
 from commandment.vpp.decorators import raise_error_replies
-from commandment.vpp.errors import VPPTransportError, VPPTokenInvalid, VPPError
+from commandment.vpp.enum import LicenseAssociation, LicenseDisassociation, LicenseAssociationType, \
+    LicenseDisassociationType, VPPPricingParam
 
 SERVICE_CONFIG_URL = 'https://vpp.itunes.apple.com/WebObjects/MZFinance.woa/wa/VPPServiceConfigSrv'
 
@@ -21,10 +20,6 @@ def encode_stoken(token: dict) -> bytes:
           bytes: Base64 encoded token.
     """
     return base64.urlsafe_b64encode(json.dumps(token, separators=(',', ':')).encode('utf8'))
-
-class VPPPricingParam(Enum):
-    StandardQuality = 'STDQ'
-    HighQuality = 'PLUS'
 
 
 class VPPCursor(object):
@@ -50,33 +45,7 @@ class VPPLicenseCursor(VPPCursor):
     pass
 
 
-class VPPUserStatus(Enum):
-    Registered = 'Registered'
-    Associated = 'Associated'
-    Retired = 'Retired'
-    Deleted = 'Deleted'
-    
-
-AdamID = str
-
-
-class LicenseAssociationType(Enum):
-    ClientUserID = 'ClientUserID'
-    SerialNumber = 'SerialNumber'
-
-LicenseAssociation = Tuple[LicenseAssociationType, AdamID]
-
-
-class LicenseDisassociationType(Enum):
-    ClientUserID = 'ClientUserID'
-    SerialNumber = 'SerialNumber'
-    LicenseID = 'LicenseID'
-
-LicenseDisassociation = Tuple[LicenseDisassociationType, AdamID]
-
-
 class VPPLicenseOperation(object):
-
     def __init__(self, adam_id: str, pricing_param: str = 'STDQ'):
         self._adam_id = adam_id
         self._pricing_param = pricing_param
@@ -96,7 +65,6 @@ class VPPLicenseOperation(object):
 
 
 class VPP(object):
-
     def __init__(self, stoken: str, vpp_service_config_url: str = SERVICE_CONFIG_URL, service_config: dict = None):
         """
         The VPP class is a wrapper around a requests session and provides an API for interacting with Apple's VPP
@@ -243,18 +211,25 @@ class VPP(object):
         res = self._session.post(self._service_config['editUserSrvUrl'], data=json.dumps(request_body))
         return res.json()
 
-    def get_assets(self, include_license_counts: bool = True, facilitator_member_id: str = None):
+    @raise_error_replies
+    def assets(self, include_license_counts: bool = True, facilitator_member_id: str = None) -> List[dict]:
         """
         Get assets for which the organization has licenses.
         
         Args:
-            include_license_counts:
-            facilitator_member_id:
+            include_license_counts (bool): Include counts of total/assigned/unassigned licenses.
+            facilitator_member_id: Currently unused
 
         Returns:
-
+            List[dict]: List of VPP assets for which this organization has licenses.
         """
-        pass
+        request_body = {
+            'sToken': self._stoken,
+            'includeLicenseCounts': include_license_counts,
+        }
+
+        res = self._session.post(self._service_config['getVPPAssetsSrvUrl'], data=json.dumps(request_body))
+        return res.json()
 
     def manage(self, adam_id: str, pricing_param: str = 'STDQ') -> VPPLicenseOperation:
         """Manage VPP licenses for the given Adam ID.

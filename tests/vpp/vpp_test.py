@@ -88,6 +88,10 @@ class TestVPP:
         assert reply['status'] == 0
         assert reply['user']['email'] == VPP_MOCK_USER_EMAIL_2
 
-    def test_get_licenses(self, vpp: VPP):
-        licenses = vpp.licenses()
-        print(licenses)
+    def test_get_assets(self, vpp: VPP):
+        reply = vpp.assets()
+        assert 'assets' in reply
+
+    # def test_get_licenses(self, vpp: VPP):
+    #     licenses = vpp.licenses()
+    #     print(licenses)
