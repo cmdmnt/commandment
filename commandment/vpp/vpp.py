@@ -27,18 +27,43 @@ class VPPCursor(object):
 
     @property
     def batch_token(self) -> str:
-        return ''
+        return self._current['batchToken'] if 'batchToken' in self._current else None
 
     @property
     def since_modified_token(self) -> str:
-        return ''
+        return self._current['sinceModifiedToken'] if 'sinceModifiedToken' in self._current else None
 
-    def __init__(self):
-        self._current = []  # Current set of results
+    def __init__(self, since_modified_token: str = None, vpp=None):
+        self._current = {}  # Current set of results
+        if since_modified_token is not None:
+            self._current['sinceModifiedToken'] = since_modified_token
+
+        self._vpp = vpp
 
 
 class VPPUserCursor(VPPCursor):
-    pass
+
+    @property
+    def users(self) -> List[dict]:
+        return self._current['users'] if 'users' in self._current else None
+
+    def __init__(self, includes_retired: bool = True, vpp=None):
+        super(VPPUserCursor, self).__init__(vpp=vpp)
+        self.includes_retired = includes_retired
+
+    def next(self):
+        """
+
+        Returns:
+            next VPPUserCursor or None when batch is exhausted
+        """
+        if self.batch_token is not None:
+            next_cursor = self._vpp.users(batch_token=self.batch_token)
+            next_cursor.includes_retired = self.includes_retired
+
+            return next_cursor
+        else:
+            return None
 
 
 class VPPLicenseCursor(VPPCursor):
@@ -153,6 +178,38 @@ class VPP(object):
 
         res = self._session.post(self._service_config['getUserSrvUrl'], data=json.dumps(request_body))
         return res.json()
+
+    def users(self, include_retired: int = 1, facilitator_member_id: str = None,
+              batch_token: str = None, since_modified_token: str = None) -> VPPUserCursor:
+        """
+
+        Args:
+            include_retired (int): 0 - do not include retired users, 1 - include retired users
+            facilitator_member_id: Currently unused
+            batch_token (str): Batch token (if being called from a cursor)
+            since_modified_token (str): Since modified token (if requesting a time delta)
+
+        Returns:
+
+        """
+        request_body = {'sToken': self._stoken}
+        if include_retired == 1:
+            request_body['includeRetired'] = 1
+
+        if batch_token is not None:
+            request_body['batchToken'] = batch_token
+        elif since_modified_token is not None:
+            request_body['sinceModifiedToken'] = since_modified_token
+
+        res = self._session.post(self._service_config['getUsersSrvUrl'], data=json.dumps(request_body))
+        results = res.json()
+        cursor = VPPUserCursor(includes_retired=(include_retired == 1))
+        cursor._current = results
+        cursor._vpp = self
+
+        return cursor
+
+        
 
     @raise_error_replies
     def retire_user(self, client_user_id: str = None, facilitator_member_id: str = None,

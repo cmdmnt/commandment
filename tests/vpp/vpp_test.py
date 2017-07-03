@@ -1,17 +1,9 @@
 import pytest
-import json
-import base64
 from commandment.vpp.vpp import VPP, encode_stoken
 
 SIMULATOR_STOKEN = {
-    'token': 'VGhpcyBpcyBhIHNhbXBsZSB0ZXh0IHdoaWNoIHdhcyB1c2VkIHRvIGNyZWF0ZSB0aGUgc2ltdWxhdG9yIHRva2VuCg==',
-    'expDate': '2018-07-03T13:48:31+10:00',
-    'orgName': 'Example Inc.'
+   "token":"VGhpcyBpcyBhIHNhbXBsZSB0ZXh0IHdoaWNoIHdhcyB1c2VkIHRvIGNyZWF0ZSB0aGUgc2ltdWxhdG9yIHRva2VuCg==","expDate":"2018-07-03T16:59:28+10:00","orgName":"Example Inc."
 }
-
-# expect:
-# {"token":"VGhpcyBpcyBhIHNhbXBsZSB0ZXh0IHdoaWNoIHdhcyB1c2VkIHRvIGNyZWF0ZSB0aGUgc2ltdWxhdG9yIHRva2VuCg==","expDate":"2018-07-03T13:48:31+10:00","orgName":"Example Inc."}
-# {"token": "VGhpcyBpcyBhIHNhbXBsZSB0ZXh0IHdoaWNoIHdhcyB1c2VkIHRvIGNyZWF0ZSB0aGUgc2ltdWxhdG9yIHRva2VuCg==", "expDate": "2018-07-03T13:48:31+10:00", "orgName": "Example Inc."}
 
 SERVICE_CONFIG = {
     "associateLicenseSrvUrl": "http://localhost:8080/associateVPPLicenseSrv",
@@ -95,3 +87,11 @@ class TestVPP:
     # def test_get_licenses(self, vpp: VPP):
     #     licenses = vpp.licenses()
     #     print(licenses)
+
+    def test_users(self, vpp: VPP):
+        cursor = vpp.users()
+        while cursor.next():
+            users = cursor.users
+            print(users)
+
+        print('cursor exhausted')
