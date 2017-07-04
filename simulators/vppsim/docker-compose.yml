@@ -4,3 +4,8 @@ services:
     image: vppsim
     build:
       context: .
+    ports:
+      - 8080:8080
+    volumes:
+      - "./config.json:/etc/vppsim/config.json:ro"
+    command: ["start", "/etc/vppsim/config.json"]

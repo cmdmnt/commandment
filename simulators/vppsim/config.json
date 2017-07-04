@@ -1,0 +1,15 @@
+{
+  "license_insertions": [{
+    "license": {
+      "adamId": 525463029
+    },
+    "licenses_per_event": 2000,
+    "interval_in_seconds": 1,
+    "max_event_count": 1
+  }],
+  "associate_users": {
+    "users_per_event": 2000,
+    "interval_in_seconds": 1,
+    "max_event_count": 1
+  }
+}

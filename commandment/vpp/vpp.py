@@ -4,7 +4,7 @@ Volume Purchase Programme Support
 """
 
 import requests
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Iterator, Tuple
 import json
 import base64
 
@@ -37,15 +37,25 @@ class VPPCursor(object):
     """
 
     @property
+    def batch_count(self) -> Optional[int]:
+        """Optional[int]: Number of records returned in this batch."""
+        return self._current.get('batchCount', None)
+
+    @property
+    def total(self) -> Optional[int]:
+        """Optional[int]: Number of records in total that will be returned."""
+        return self._current.get('totalCount', None)
+
+    @property
     def batch_token(self) -> Optional[str]:
         """Optional[str]: The batch token, if a batch fetch is in progress and is not complete."""
-        return self._current['batchToken'] if 'batchToken' in self._current else None
+        return self._current.get('batchToken', None)
 
     @property
     def since_modified_token(self) -> Optional[str]:
         """Optional[str]: The since modified token, if a batch fetch is not in progress, but a fetch has been
         made."""
-        return self._current['sinceModifiedToken'] if 'sinceModifiedToken' in self._current else None
+        return self._current.get('sinceModifiedToken', None)
 
     def __init__(self, since_modified_token: str = None, vpp=None):
         self._current = {}
@@ -65,7 +75,7 @@ class VPPUserCursor(VPPCursor):
     @property
     def users(self) -> Optional[List[dict]]:
         """Optional[List[dict]]: The current set of users in the cursor result, or None if there are no results."""
-        return self._current['users'] if 'users' in self._current else None
+        return self._current.get('users', None)
 
     def __init__(self, includes_retired: bool = True, vpp=None):
         super(VPPUserCursor, self).__init__(vpp=vpp)
@@ -95,10 +105,10 @@ class VPPLicenseCursor(VPPCursor):
     def licenses(self) -> Optional[List[dict]]:
         """Optional[List[dict]]: The current set of licenses in the cursor result, or None if there are
         no results."""
-        return self._current['licenses'] if 'licenses' in self._current else None
+        return self._current.get('licenses', None)
 
-    def __init__(self, vpp=None):
-        super(VPPLicenseCursor, self).__init__(vpp=vpp)
+    def __init__(self, *args, **kwargs):
+        super(VPPLicenseCursor, self).__init__(*args, **kwargs)
 
     def next(self):
         """
@@ -108,30 +118,81 @@ class VPPLicenseCursor(VPPCursor):
         """
         if self.batch_token is not None:
             next_cursor = self._vpp.licenses(batch_token=self.batch_token)
-            return next_cursor
+            self._current = next_cursor._current
+            return self
         else:
             return None
 
 
 class VPPLicenseOperation(object):
     """VPPLicenseOperation represents a number of license operations on a single Adam ID (iTunes Store Product).
+
+    Attributes:
+          _association_type (LicenseAssociationType): This specifies the type of association this license operation
+            represents. The API only accepts one of these in a single request.
+          _disassociation_type (LicenseDisassociationType): This specifies the type of disassociation this license
+            operation represents. The API only accepts one of these in a single request.
     """
-    def __init__(self, adam_id: str, pricing_param: str = 'STDQ'):
+
+    @property
+    def adam_id(self) -> int:
+        return self._adam_id
+
+    @property
+    def pricing_param(self) -> str:
+        return self._pricing_param
+
+    def __init__(self, adam_id: int, pricing_param: str = 'STDQ',
+                 license_association_type: Optional[LicenseAssociationType] = None,
+                 license_disassociation_type: Optional[LicenseDisassociationType] = None):
         self._adam_id = adam_id
         self._pricing_param = pricing_param
         self._associate: List[LicenseAssociation] = []
         self._disassociate: List[LicenseDisassociation] = []
+        self._association_type = license_association_type
+        self._disassociation_type = license_disassociation_type
 
     def add(self, association_type: LicenseAssociationType, value: str):
-        # TODO: Duplicate checking
+        if self._association_type is None:
+            self._association_type = association_type
+        elif association_type != self._association_type:
+            raise ValueError('You cannot specify two different types of association in a license operation.')
+
         self._associate.append((association_type, value))
 
+    def additions(self, association_type: LicenseAssociationType) -> Iterator[LicenseAssociation]:
+        return filter(lambda x: x[0] == association_type, self._associate)
+
     def remove(self, disassociation_type: LicenseDisassociationType, value: str):
-        # TODO: Duplicate checking
+        if self._disassociation_type is None:
+            self._disassociation_type = disassociation_type
+        elif disassociation_type != self._disassociation_type:
+            raise ValueError('You cannot specify two different types of disassociation in a license operation.')
+
         self._disassociate.append((disassociation_type, value))
 
-    def save(self):
-        pass
+    def removals(self, disassociation_type: LicenseDisassociationType) -> Iterator[LicenseDisassociation]:
+        return filter(lambda x: x[0] == disassociation_type, self._disassociate)
+
+
+class VPPUserLicenseOperation(VPPLicenseOperation):
+    """This object represents a batch operation on a license which will be associated to or disassociated from an
+    MDM user. AKA VPP User License Assignment."""
+
+    def __init__(self, *args, **kwargs):
+        super(VPPUserLicenseOperation, self).__init__(*args, **kwargs)
+        self._association_type = LicenseAssociationType.ClientUserID
+        self._disassociation_type = LicenseDisassociationType.ClientUserID
+
+
+class VPPDeviceLicenseOperation(VPPLicenseOperation):
+    """This object represents a batch operation on a license which will be associated to or disassociated from a
+    Device Serial Number. AKA VPP Device License Assignment."""
+
+    def __init__(self, *args, **kwargs):
+        super(VPPDeviceLicenseOperation, self).__init__(*args, **kwargs)
+        self._association_type = LicenseAssociationType.SerialNumber
+        self._disassociation_type = LicenseDisassociationType.SerialNumber
 
 
 class VPP(object):
@@ -331,7 +392,7 @@ class VPP(object):
         res = self._session.post(self._service_config['getVPPAssetsSrvUrl'], data=json.dumps(request_body))
         return res.json()
 
-    def manage(self, adam_id: str, pricing_param: str = 'STDQ') -> VPPLicenseOperation:
+    def manage(self, adam_id: int, pricing_param: str = 'STDQ') -> VPPLicenseOperation:
         """Manage VPP licenses for the given Adam ID.
 
         Args:
@@ -347,8 +408,13 @@ class VPP(object):
         op._vpp = self
         return op
 
+    def manage_user_licenses(self, adam_id: int, pricing_param: str = 'STDQ') -> VPPUserLicenseOperation:
+        op = VPPUserLicenseOperation(adam_id, pricing_param)
+        op._vpp = self
+        return op
+
     def licenses(self,
-                 adam_id: str = None,
+                 adam_id: int = None,
                  pricing_param: Optional[VPPPricingParam] = None,
                  assigned_only: bool = False,
                  facilitator_member_id: str = None,
@@ -357,7 +423,7 @@ class VPP(object):
         """Retrieve a list of licenses matching the supplied criteria.
 
         Args:
-              adam_id (str): Get licenses that match this Adam ID
+              adam_id (int): Get licenses that match this Adam ID
               pricing_param (Optional[VPPPricingParam]): Get licenses that match this 'Quality' param.
               assigned_only (bool): Return only licenses that are assigned to users, if this value is true.
               facilitator_member_id (str): Currently unused
@@ -390,3 +456,57 @@ class VPP(object):
         cursor._current = reply
 
         return cursor
+
+    def bulk_update_licenses(self,
+                             adam_id: int,
+                             association_type: Optional[LicenseAssociationType] = None,
+                             associate: Optional[List[str]] = None,
+                             disassociation_type: Optional[LicenseDisassociationType] = None,
+                             disassociate: Optional[List[str]] = None,
+                             pricing_param: str = 'STDQ',
+                             notify: bool = False):
+        """Perform a batch operation of license associations and disassociations.
+
+        Args:
+              adam_id (int): Adam ID - The iTunes Store Product for which licenses will be managed.
+              association_type (Optional[LicenseAssociationType]): Provide an association type if associate length > 0
+              associate (Optional[List[str]]): A list of values that will be used to associate licenses, corresponding
+                to the association_type
+              disassociation_type (Optional[LicenseDisassociationType]): Provide a disassociation type if disassociate
+                length > 0.
+              disassociate (Optional[List[str]]): A list of values that will be used to disassociate licenses,
+                corresponding to the association_type
+              pricing_param (str): Defaults to Standard Quality 'STDQ'
+              notify (bool): Notify disassociation, default is False
+
+        See Also:
+            - manageVPPLicensesByAdamIdSrv
+        """
+        request_body = {
+            'sToken': self._stoken,
+            'adamIdStr': adam_id,
+            'pricingParam': pricing_param,
+            'notifyDisassociation': notify,
+        }
+
+        association_properties = {
+            LicenseAssociationType.ClientUserID: 'associateClientUserIdStrs',
+            LicenseAssociationType.SerialNumber: 'associateSerialNumbers'
+        }
+
+        if association_type in association_properties:
+            request_body[association_properties[association_type]] = associate
+
+        disassociation_properties = {
+            LicenseDisassociationType.SerialNumber: 'disassociateSerialNumbers',
+            LicenseDisassociationType.ClientUserID: 'disassociateClientUserIdStrs',
+            LicenseDisassociationType.LicenseID: 'disassociateLicenseIdStrs',
+        }
+
+        if disassociation_type in disassociation_properties:
+            request_body[disassociation_properties[disassociation_type]] = disassociate
+
+        res = self._session.post(self._service_config['manageVPPLicensesByAdamIdSrvUrl'], data=json.dumps(request_body))
+        reply = res.json()
+
+        return reply
