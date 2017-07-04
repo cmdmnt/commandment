@@ -1,0 +1,6 @@
+version: '3'
+services:
+  vppsim:
+    image: vppsim
+    build:
+      context: .

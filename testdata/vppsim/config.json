@@ -1,7 +1,10 @@
 {
-  "associate_users": {
-    "users_per_event": 200,
-    "interval_in_seconds": 2,
+  "license_insertions": {
+    "license": {
+      "adamId": 525463029
+    },
+    "licenses_per_event": 200,
+    "interval_in_seconds": 1,
     "max_event_count": 1
   }
 }
