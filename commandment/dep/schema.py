@@ -2,7 +2,13 @@ from marshmallow import Schema, fields
 from . import SetupAssistantStep
 
 
-class ProfileRequest(Schema):
+class DEPProfileSchema(Schema):
+    """marshmallow schema for a DEP profile.
+
+    See Also:
+          - `/profile endpoint <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/4-Profile_Management/ProfileManagement.html#//apple_ref/doc/uid/TP40017387-CH7-SW6>`_.
+    """
+    
     profile_name = fields.String(required=True)
     """A human-readable name for the profile."""
     url = fields.Url(required=True)
@@ -13,7 +19,9 @@ class ProfileRequest(Schema):
     is_multi_user = fields.Boolean(default=False)
     """If true, tells the device to configure for Shared iPad."""
     is_mandatory = fields.Boolean(default=False)
+    """If true, the user may not skip applying the profile returned by the MDM server"""
     await_device_configured = fields.Boolean()
+    """If true, Setup Assistant does not continue until the MDM server sends DeviceConfigured."""
     is_mdm_removable = fields.Boolean()
     support_phone_number = fields.String()
     auto_advance_setup = fields.Boolean()
@@ -26,7 +34,7 @@ class ProfileRequest(Schema):
     devices = fields.List(fields.String())
 
 
-class Device(Schema):
+class DEPDeviceSchema(Schema):
     """The Device dictionary returned by the DEP Devices fetch endpoint.
 
     See Also:
@@ -53,7 +61,7 @@ class MDMServiceURL(Schema):
     # limit
 
 
-class AccountDetails(Schema):
+class DEPAccountDetailsSchema(Schema):
     """DEP Account Details"""
     server_name = fields.String()
     server_uuid = fields.UUID()

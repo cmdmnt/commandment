@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 Volume Purchase Programme Support
+
+TODO:
+    - Not all error conditions are unit tested.
+    - Only the license cursor has been tested.
+    - The license assignment method remains untested.
 """
 
 import requests
@@ -505,7 +510,16 @@ class VPP(object):
         return cursor
 
     def save(self, operation: VPPLicenseOperation, notify: bool = False) -> dict:
-        """Execute a license management operation, represented by a VPPLicenseOperation or subclass."""
+        """Execute a license management operation, represented by a VPPLicenseOperation or subclass.
+
+        This provides a more convenient interface than bulk_update_licenses.
+
+        Args:
+              operation (VPPLicenseOperation): The license operation to perform.
+              notify (bool): Optional. Notify devices of license disassociation.
+        Returns:
+              dict: Reply from the license endpoint.
+        """
         atype, associations = operation.associations
         dtype, disassociations = operation.disassociations
 

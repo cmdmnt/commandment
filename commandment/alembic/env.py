@@ -16,6 +16,7 @@ fileConfig(config.config_file_name)
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from commandment.models import db
+import commandment.vpp.models
 target_metadata = db.metadata
 
 
