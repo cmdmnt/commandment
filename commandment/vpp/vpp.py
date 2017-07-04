@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Volume Purchase Programme Support
+"""
+
 import requests
-from typing import Tuple, Set, List, Union
+from typing import List, Union, Optional
 import json
 import base64
 
@@ -8,6 +13,7 @@ from commandment.vpp.enum import LicenseAssociation, LicenseDisassociation, Lice
     LicenseDisassociationType, VPPPricingParam
 
 SERVICE_CONFIG_URL = 'https://vpp.itunes.apple.com/WebObjects/MZFinance.woa/wa/VPPServiceConfigSrv'
+"""str: The default production URL to fetch VPP service configuration from."""
 
 
 def encode_stoken(token: dict) -> bytes:
@@ -23,18 +29,26 @@ def encode_stoken(token: dict) -> bytes:
 
 
 class VPPCursor(object):
-    """Generic base class for operations on endpoints that require a token to retrieve multiple pages of records."""
+    """Generic base class for operations on endpoints that require a token to retrieve multiple pages of records.
+
+    Attributes:
+          _current (dict): Current results.
+          _vpp (VPP): Instance of the VPP object that generated this cursor.
+    """
 
     @property
-    def batch_token(self) -> str:
+    def batch_token(self) -> Optional[str]:
+        """Optional[str]: The batch token, if a batch fetch is in progress and is not complete."""
         return self._current['batchToken'] if 'batchToken' in self._current else None
 
     @property
-    def since_modified_token(self) -> str:
+    def since_modified_token(self) -> Optional[str]:
+        """Optional[str]: The since modified token, if a batch fetch is not in progress, but a fetch has been
+        made."""
         return self._current['sinceModifiedToken'] if 'sinceModifiedToken' in self._current else None
 
     def __init__(self, since_modified_token: str = None, vpp=None):
-        self._current = {}  # Current set of results
+        self._current = {}
         if since_modified_token is not None:
             self._current['sinceModifiedToken'] = since_modified_token
 
@@ -42,9 +56,15 @@ class VPPCursor(object):
 
 
 class VPPUserCursor(VPPCursor):
+    """VPPUserCursor represents a batch fetch operation on the `getVPPUsersSrv` endpoint.
+
+    Attributes:
+          includes_retired (bool): This fetch operation includes users that have been marked as *Retired*.
+    """
 
     @property
-    def users(self) -> List[dict]:
+    def users(self) -> Optional[List[dict]]:
+        """Optional[List[dict]]: The current set of users in the cursor result, or None if there are no results."""
         return self._current['users'] if 'users' in self._current else None
 
     def __init__(self, includes_retired: bool = True, vpp=None):
@@ -67,9 +87,14 @@ class VPPUserCursor(VPPCursor):
 
 
 class VPPLicenseCursor(VPPCursor):
+    """VPPLicenseCursor represents a batch fetch operation on the `getVPPLicensesSrv` endpoint.
+
+    """
 
     @property
-    def licenses(self) -> List[dict]:
+    def licenses(self) -> Optional[List[dict]]:
+        """Optional[List[dict]]: The current set of licenses in the cursor result, or None if there are
+        no results."""
         return self._current['licenses'] if 'licenses' in self._current else None
 
     def __init__(self, vpp=None):
@@ -324,7 +349,7 @@ class VPP(object):
 
     def licenses(self,
                  adam_id: str = None,
-                 pricing_param: Union[VPPPricingParam, None] = None,
+                 pricing_param: Optional[VPPPricingParam] = None,
                  assigned_only: bool = False,
                  facilitator_member_id: str = None,
                  batch_token: str = None,
@@ -333,7 +358,7 @@ class VPP(object):
 
         Args:
               adam_id (str): Get licenses that match this Adam ID
-              pricing_param (Union[VPPPricingParam, None]): Get licenses that match this 'Quality' param.
+              pricing_param (Optional[VPPPricingParam]): Get licenses that match this 'Quality' param.
               assigned_only (bool): Return only licenses that are assigned to users, if this value is true.
               facilitator_member_id (str): Currently unused
               batch_token (str): Supplied if there are more results to fetch.

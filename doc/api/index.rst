@@ -11,5 +11,7 @@ Internal Documentation
 
     profiles/index.rst
 
+    vpp/index.rst
+
     push.rst
     runner.rst
