@@ -142,6 +142,14 @@ class VPPLicenseOperation(object):
     def pricing_param(self) -> str:
         return self._pricing_param
 
+    @property
+    def associations(self) -> Tuple[LicenseAssociationType, List[LicenseAssociation]]:
+        return self._association_type, self._associate
+
+    @property
+    def disassociations(self) -> Tuple[LicenseDisassociationType, List[LicenseDisassociation]]:
+        return self._disassociation_type, self._disassociate
+
     def __init__(self, adam_id: int, pricing_param: str = 'STDQ',
                  license_association_type: Optional[LicenseAssociationType] = None,
                  license_disassociation_type: Optional[LicenseDisassociationType] = None):
@@ -160,7 +168,7 @@ class VPPLicenseOperation(object):
 
         self._associate.append((association_type, value))
 
-    def additions(self, association_type: LicenseAssociationType) -> Iterator[LicenseAssociation]:
+    def additions_for_type(self, association_type: LicenseAssociationType) -> Iterator[LicenseAssociation]:
         return filter(lambda x: x[0] == association_type, self._associate)
 
     def remove(self, disassociation_type: LicenseDisassociationType, value: str):
@@ -171,7 +179,7 @@ class VPPLicenseOperation(object):
 
         self._disassociate.append((disassociation_type, value))
 
-    def removals(self, disassociation_type: LicenseDisassociationType) -> Iterator[LicenseDisassociation]:
+    def removals_for_type(self, disassociation_type: LicenseDisassociationType) -> Iterator[LicenseDisassociation]:
         return filter(lambda x: x[0] == disassociation_type, self._disassociate)
 
 
@@ -196,6 +204,18 @@ class VPPDeviceLicenseOperation(VPPLicenseOperation):
 
 
 class VPP(object):
+
+    AssociationProperties = {
+        LicenseAssociationType.ClientUserID: 'associateClientUserIdStrs',
+        LicenseAssociationType.SerialNumber: 'associateSerialNumbers'
+    }
+
+    DisassociationProperties = {
+        LicenseDisassociationType.SerialNumber: 'disassociateSerialNumbers',
+        LicenseDisassociationType.ClientUserID: 'disassociateClientUserIdStrs',
+        LicenseDisassociationType.LicenseID: 'disassociateLicenseIdStrs',
+    }
+
     def __init__(self, stoken: str, vpp_service_config_url: str = SERVICE_CONFIG_URL, service_config: dict = None):
         """
         The VPP class is a wrapper around a requests session and provides an API for interacting with Apple's VPP
@@ -409,7 +429,34 @@ class VPP(object):
         return op
 
     def manage_user_licenses(self, adam_id: int, pricing_param: str = 'STDQ') -> VPPUserLicenseOperation:
+        """Manage VPP User License Assignment.
+
+        Args:
+            adam_id (str): The Adam ID
+            pricing_param (str): The pricing param defaults to 'STDQ' but may be 'PLUS' for things which aren't
+            software.
+
+        Returns:
+            VPPUserLicenseOperation: an instance of a VPP license operation which can be modified to add or remove license
+                associations by user client id
+            """
         op = VPPUserLicenseOperation(adam_id, pricing_param)
+        op._vpp = self
+        return op
+
+    def manage_device_licenses(self, adam_id: int, pricing_param: str = 'STDQ') -> VPPDeviceLicenseOperation:
+        """Manage VPP Device License Assignment.
+
+        Args:
+            adam_id (str): The Adam ID
+            pricing_param (str): The pricing param defaults to 'STDQ' but may be 'PLUS' for things which aren't
+            software.
+
+        Returns:
+            VPPDeviceLicenseOperation: an instance of a VPP license operation which can be modified to add or remove
+                license associations by device serial number
+        """
+        op = VPPDeviceLicenseOperation(adam_id, pricing_param)
         op._vpp = self
         return op
 
@@ -457,6 +504,25 @@ class VPP(object):
 
         return cursor
 
+    def save(self, operation: VPPLicenseOperation, notify: bool = False) -> dict:
+        """Execute a license management operation, represented by a VPPLicenseOperation or subclass."""
+        atype, associations = operation.associations
+        dtype, disassociations = operation.disassociations
+
+        request_body = {
+            'sToken': self._stoken,
+            'adamIdStr': operation.adam_id,
+            'pricingParam': operation.pricing_param,
+            'notifyDisassociation': notify,
+            VPP.AssociationProperties[atype]: associations,
+            VPP.DisassociationProperties[dtype]: disassociations,
+        }
+
+        res = self._session.post(self._service_config['manageVPPLicensesByAdamIdSrvUrl'], data=json.dumps(request_body))
+        reply = res.json()
+
+        return reply
+
     def bulk_update_licenses(self,
                              adam_id: int,
                              association_type: Optional[LicenseAssociationType] = None,
@@ -464,7 +530,7 @@ class VPP(object):
                              disassociation_type: Optional[LicenseDisassociationType] = None,
                              disassociate: Optional[List[str]] = None,
                              pricing_param: str = 'STDQ',
-                             notify: bool = False):
+                             notify: bool = False) -> dict:
         """Perform a batch operation of license associations and disassociations.
 
         Args:
@@ -489,22 +555,11 @@ class VPP(object):
             'notifyDisassociation': notify,
         }
 
-        association_properties = {
-            LicenseAssociationType.ClientUserID: 'associateClientUserIdStrs',
-            LicenseAssociationType.SerialNumber: 'associateSerialNumbers'
-        }
+        if association_type in VPP.AssociationProperties:
+            request_body[VPP.AssociationProperties[association_type]] = associate
 
-        if association_type in association_properties:
-            request_body[association_properties[association_type]] = associate
-
-        disassociation_properties = {
-            LicenseDisassociationType.SerialNumber: 'disassociateSerialNumbers',
-            LicenseDisassociationType.ClientUserID: 'disassociateClientUserIdStrs',
-            LicenseDisassociationType.LicenseID: 'disassociateLicenseIdStrs',
-        }
-
-        if disassociation_type in disassociation_properties:
-            request_body[disassociation_properties[disassociation_type]] = disassociate
+        if disassociation_type in VPP.DisassociationProperties:
+            request_body[VPP.DisassociationProperties[disassociation_type]] = disassociate
 
         res = self._session.post(self._service_config['manageVPPLicensesByAdamIdSrvUrl'], data=json.dumps(request_body))
         reply = res.json()
