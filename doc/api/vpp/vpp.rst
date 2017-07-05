@@ -1,6 +1,8 @@
-VPP
-===
+VPP Client
+==========
 
-.. automodule:: commandment.vpp
+The main VPP API wrapper class
+
+.. autoclass:: commandment.vpp.vpp.VPP
     :members:
 

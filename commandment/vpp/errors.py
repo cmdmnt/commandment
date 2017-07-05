@@ -2,6 +2,8 @@ from enum import IntEnum
 
 
 class VPPErrorType(IntEnum):
+    """An enumeration representation of all (currently) possible error codes returned by the VPP API."""
+    
     MissingArgument = 9600
     LoginRequired = 9601
     InvalidArgument = 9602

@@ -9,9 +9,7 @@ Internal Documentation
 
     models/index.rst
 
-    profiles/index.rst
-
     vpp/index.rst
+    workers/index
 
     push.rst
-    runner.rst
