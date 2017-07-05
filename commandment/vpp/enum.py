@@ -14,7 +14,9 @@ class VPPUserStatus(Enum):
     Deleted = 'Deleted'
 
 
-AdamID = str
+AdamID = int
+PricingParam = str
+VPPAsset = Tuple[AdamID, PricingParam]
 
 
 class LicenseAssociationType(Enum):

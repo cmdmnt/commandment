@@ -9,7 +9,7 @@ TODO:
 """
 
 import requests
-from typing import List, Union, Optional, Iterator, Tuple
+from typing import List, Optional, Iterator, Tuple
 import json
 import base64
 
@@ -190,7 +190,12 @@ class VPPLicenseOperation(object):
 
 class VPPUserLicenseOperation(VPPLicenseOperation):
     """This object represents a batch operation on a license which will be associated to or disassociated from an
-    MDM user. AKA VPP User License Assignment."""
+    MDM user. AKA VPP User License Assignment.
+
+    Args:
+          adam_id (int): The Adam ID of the iTunes Store asset to manage.
+          pricing_param (str): The pricing parameter, defaults to 'STDQ' (Standard Quality)
+    """
 
     def __init__(self, *args, **kwargs):
         super(VPPUserLicenseOperation, self).__init__(*args, **kwargs)
@@ -200,7 +205,12 @@ class VPPUserLicenseOperation(VPPLicenseOperation):
 
 class VPPDeviceLicenseOperation(VPPLicenseOperation):
     """This object represents a batch operation on a license which will be associated to or disassociated from a
-    Device Serial Number. AKA VPP Device License Assignment."""
+    Device Serial Number. AKA VPP Device License Assignment.
+
+    Args:
+          adam_id (int): The Adam ID of the iTunes Store asset to manage.
+          pricing_param (str): The pricing parameter, defaults to 'STDQ' (Standard Quality)
+    """
 
     def __init__(self, *args, **kwargs):
         super(VPPDeviceLicenseOperation, self).__init__(*args, **kwargs)
@@ -209,6 +219,15 @@ class VPPDeviceLicenseOperation(VPPLicenseOperation):
 
 
 class VPP(object):
+    """
+    VPP Object. The main VPP API wrapper class.
+
+    Attributes:
+        VPP.AssociationProperties (dict): Mapping of the LicenseAssociationType enum to the expected JSON keys in
+            the request.
+        VPP.DisassociationProperties (dict): Mapping of the LicenseDisassociationType enum to the expected JSON keys
+            in the request.
+    """
 
     AssociationProperties = {
         LicenseAssociationType.ClientUserID: 'associateClientUserIdStrs',
@@ -225,7 +244,7 @@ class VPP(object):
         """
         The VPP class is a wrapper around a requests session and provides an API for interacting with Apple's VPP
         service.
-        
+
         Args:
             stoken (str): Service Token
             vpp_service_config_url (str): URL to the VPPServiceConfigSrv endpoint. defaults to Apple's live server.
