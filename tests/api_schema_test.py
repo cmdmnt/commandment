@@ -1,4 +1,5 @@
-from commandment.api_schema import CertificateSchema
+import pytest
+from commandment.schema import CertificateSchema
 from commandment.models import Certificate
 
 @pytest.fixture()

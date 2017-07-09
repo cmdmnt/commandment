@@ -46,7 +46,7 @@ def encryption_cert() -> x509.Certificate:
 
 
 class TestMDMCert:
-
-    def test_submit_mdmcert_request(self, csr: x509.CertificateSigningRequest, encryption_cert: x509.Certificate):
-        res = submit_mdmcert_request("admin@localhost", csr, encryption_cert)
-        assert res['result'] == 'success'
+    pass
+    # def test_submit_mdmcert_request(self, csr: x509.CertificateSigningRequest, encryption_cert: x509.Certificate):
+    #     res = submit_mdmcert_request("admin@localhost", csr, encryption_cert)
+    #     assert res['result'] == 'success'

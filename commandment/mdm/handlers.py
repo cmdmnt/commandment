@@ -176,7 +176,7 @@ def ack_available_os_updates(request: AvailableOSUpdates, device: Device, respon
     schema = AvailableOSUpdateListResponse()
     result = schema.load(response)
 
-    for upd in result.data['AvailableOSUpdate']:
+    for upd in result.data['AvailableOSUpdates']:
         upd.device = device
         db.session.add(upd)
 
