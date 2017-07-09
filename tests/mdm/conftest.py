@@ -9,6 +9,7 @@ from sqlalchemy.orm import scoped_session
 from tests.client import MDMClient
 
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
+TEST_DATA_DIR = os.path.realpath(TEST_DIR + '/../../testdata')
 
 
 @pytest.fixture(scope='session')
@@ -73,7 +74,7 @@ def device(session: scoped_session):
 
 @pytest.fixture()
 def authenticate_request() -> str:
-    with open(os.path.join(TEST_DIR, '../testdata/Authenticate/10.12.2.xml'), 'r') as fd:
+    with open(os.path.join(TEST_DATA_DIR, 'Authenticate/10.12.2.xml'), 'r') as fd:
         plist_data = fd.read()
 
     return plist_data
@@ -81,7 +82,7 @@ def authenticate_request() -> str:
 
 @pytest.fixture()
 def tokenupdate_request() -> str:
-    with open(os.path.join(TEST_DIR, '../testdata/TokenUpdate/10.12.2.xml'), 'r') as fd:
+    with open(os.path.join(TEST_DATA_DIR, 'TokenUpdate/10.12.2.xml'), 'r') as fd:
         plist_data = fd.read()
 
     return plist_data
@@ -89,7 +90,7 @@ def tokenupdate_request() -> str:
 
 @pytest.fixture()
 def tokenupdate_user_request() -> str:
-    with open(os.path.join(TEST_DIR, '../testdata/TokenUpdate/10.12.2-user.xml'), 'r') as fd:
+    with open(os.path.join(TEST_DATA_DIR, 'TokenUpdate/10.12.2-user.xml'), 'r') as fd:
         plist_data = fd.read()
 
     return plist_data
@@ -97,7 +98,7 @@ def tokenupdate_user_request() -> str:
 
 @pytest.fixture()
 def checkout_request() -> str:
-    with open(os.path.join(TEST_DIR, '../testdata/CheckOut/10.11.x.xml'), 'r') as fd:
+    with open(os.path.join(TEST_DATA_DIR, 'CheckOut/10.11.x.xml'), 'r') as fd:
         plist_data = fd.read()
 
     return plist_data
