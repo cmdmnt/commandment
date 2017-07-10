@@ -8,7 +8,7 @@ from .fixtures import simulator_token
 logger = logging.getLogger(__name__)
 
 SIMULATOR_STOKEN = {
-   "token":"VGhpcyBpcyBhIHNhbXBsZSB0ZXh0IHdoaWNoIHdhcyB1c2VkIHRvIGNyZWF0ZSB0aGUgc2ltdWxhdG9yIHRva2VuCg==","expDate":"2018-07-03T16:59:28+10:00","orgName":"Example Inc."
+   "token": "VGhpcyBpcyBhIHNhbXBsZSB0ZXh0IHdoaWNoIHdhcyB1c2VkIHRvIGNyZWF0ZSB0aGUgc2ltdWxhdG9yIHRva2VuCg==","expDate":"2018-07-03T16:59:28+10:00","orgName":"Example Inc."
 }
 
 SERVICE_CONFIG = {
