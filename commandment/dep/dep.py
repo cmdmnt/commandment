@@ -1,8 +1,21 @@
 from typing import Union, List
-from requests_oauthlib import OAuth1Session
+import requests
+from requests.auth import AuthBase
+from requests_oauthlib import OAuth1
+
 
 class DEPCursor:
     pass
+
+
+class DEPAuth(AuthBase):
+    """Attach X-ADM-Auth-Session token to the request"""
+    def __init__(self, token: str):
+        self.token = token
+
+    def __call__(self, r):
+        r.headers['X-ADM-Auth-Session'] = self.token
+        return r
 
 
 class DEP:
@@ -17,24 +30,33 @@ class DEP:
                  url: str = "https://mdmenrollment.apple.com"):
 
         self._auth_session_token = None
-        self._dep = OAuth1Session(
+        self._oauth = OAuth1(
             consumer_key,
             client_secret=consumer_secret,
             resource_owner_key=access_token,
             resource_owner_secret=access_secret,
         )
         self._url = url
+        self._session = requests.session()
+        self._session.headers.update({
+            "X-Server-Protocol-Version": "2",
+            "Content-Type": "application/json;charset=UTF8",
+            "User-Agent": DEP.UserAgent,
+        })
+        self._token = None
 
-    def fetch_token(self, path: str = "/session"):
-        token = self._dep.fetch_request_token("{}{}".format(self._url, path))
+    def fetch_token(self, path: str = "/session") -> Union[str, None]:
+        res = self._session.get(self._url + path, auth=self._oauth)
 
+        self._token = res.json().get("auth_session_token", None)
+        return self._token
 
     def account(self, path: str = "/account") -> Union[None, dict]:
-        pass
+        res = self._session.get(self._url + path, auth=DEPAuth(self._token))
+        return res.json()
 
     def devices(self) -> DEPCursor:
         pass
-
 
     def device_detail(self, *serial_numbers: List[str]):
         pass

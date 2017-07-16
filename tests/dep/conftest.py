@@ -18,6 +18,7 @@ def dep(simulator_token: dict) -> DEP:
         consumer_secret=simulator_token['consumer_secret'],
         access_token=simulator_token['access_token'],
         access_secret=simulator_token['access_secret'],
+        url=SIMULATOR_URL,
     )
 
     return d
