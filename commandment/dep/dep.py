@@ -19,14 +19,14 @@ class DEP:
         self._auth_session_token = None
         self._dep = OAuth1Session(
             consumer_key,
-            client_key=consumer_secret,
+            client_secret=consumer_secret,
             resource_owner_key=access_token,
             resource_owner_secret=access_secret,
         )
         self._url = url
 
     def fetch_token(self, path: str = "/session"):
-        token = self._dep.fetch_access_token("{}{}".format(self._url, path))
+        token = self._dep.fetch_request_token("{}{}".format(self._url, path))
 
 
     def account(self, path: str = "/account") -> Union[None, dict]:
