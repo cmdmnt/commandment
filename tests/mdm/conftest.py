@@ -1,6 +1,6 @@
 import pytest
 import os
-from commandment.models import db as _db, Device
+from commandment.models import Device
 from sqlalchemy.orm import scoped_session
 
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))

@@ -1,0 +1,3 @@
+class DEPSessionTokenExpired(Exception):
+    pass
+
