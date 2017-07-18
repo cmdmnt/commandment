@@ -4,9 +4,10 @@ import requests
 from requests.auth import AuthBase
 from requests_oauthlib import OAuth1
 import re
-from datetime import timedelta
+from datetime import timedelta, datetime
 from .exceptions import DEPError
 from enum import Enum
+from email.utils import parsedate  # Necessary for HTTP-Date
 
 
 class DEPProfileRemovalStatus(Enum):
@@ -71,28 +72,30 @@ class DEP:
             "User-Agent": DEP.UserAgent,
         })
         self._token = None
+        self._retry_after = None
 
-    def _set_token_from_header(self, r: requests.Response, *args, **kwargs):
-        """This method is added as a `response` hook to the request. If the service replies with a header
-        **X-ADM-Auth-Session**, then that token will replace the current token.
-
-        Args:
-              r (requests.Response): The response object
+    def _response_hook(self, r: requests.Response, *args, **kwargs):
+        """This method always exists as a response hook in order to keep some of the state returned by the
+        DEP service internally such as:
+            - The last value of the `X-ADM-Auth-Session` header, which is used on subsequent requests.
+            - The last value of the `Retry-After` header, which is used to set an instance variable to indicate
+                when we may make another request.
 
         See Also:
             - `Footnote about **X-ADM-Auth-Session** under Response Payload <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/4-Profile_Management/ProfileManagement.html#//apple_ref/doc/uid/TP40017387-CH7-SW2>`_.
         """
+        # If the service gives us another session token, that replaces our current token.
         if 'X-ADM-Auth-Session' in r.headers:
             self._token = r.headers['X-ADM-Auth-Session']
 
-    def _set_retry_after(self, r: requests.Response, *args, **kwargs):
-        """This method inspects the response headers for a `Retry-After` header."""
+        # If the service wants to rate limit us, store that information locally.
         if 'Retry-After' in r.headers:
             after = r.headers['Retry-After']
             if re.compile(r"/[0-9]+").match(after):
                 d = timedelta(seconds=after)
+                self._retry_after = datetime.utcnow() + d
             else:  # HTTP Date
-                pass
+                self._retry_after = datetime(*parsedate(after)[:6])
 
     def send(self, req: requests.Request, **kwargs) -> requests.Response:
         """Send a request to the DEP service.
@@ -104,7 +107,7 @@ class DEP:
         Returns:
               requests.Response: The response
         """
-        req.hooks = dict(response=self._set_token_from_header)
+        req.hooks = dict(response=self._response_hook)
         req.auth = DEPAuth(self._token)
 
         prepared = self._session.prepare_request(req)

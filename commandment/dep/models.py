@@ -1,3 +1,4 @@
+from commandment.dep import SkipSetupSteps
 from commandment.models import db, Certificate, CertificateType
 from commandment.dbtypes import GUID
 
@@ -16,32 +17,15 @@ class DEPConfiguration(db.Model):
     # certificate for PKI of server token
     certificate_id = db.Column(db.ForeignKey('certificates.id'))
     certificate = db.relationship('DEPServerTokenCertificate', backref='dep_configurations')
-    
 
-# class DEPConfig(db.Model):
-#     __tablename__ = 'dep_config'
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#
-#     # certificate for PKI of server token
-#     certificate_id = db.Column(ForeignKey('certificates.id'))
-#     certificate = relationship('Certificate', backref='dep_configs')
-#
-#     server_token = db.Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-#     auth_session_token = db.Column(db.String, nullable=True)
-#
-#     initial_fetch_complete = db.Column(Boolean, nullable=False, default=False)
-#     next_check = db.Column(db.DateTime(timezone=False), nullable=True)
-#     device_cursor = db.Column(db.String)
-#     device_cursor_recevied = db.Column(db.DateTime(timezone=False), nullable=True)  # shouldn't use if more than 7 days old
-#
-#     url_base = db.Column(db.String, nullable=True)  # testing server environment if used
-#
-#     def last_check_delta(self):
-#         if self.next_check:
-#             return str(self.next_check - datetime.datetime.utcnow())
-#         else:
-#             return ''
+    # OAuth creds
+    consumer_key = db.String()
+    consumer_secret = db.String()
+    access_token = db.String()
+    access_secret = db.String()
+
+    url = db.String()
+    
 
 class DEPAnchorCertificate(Certificate):
     """DEP Anchor Certificate"""
@@ -88,7 +72,7 @@ class DEPProfile(db.Model):
     auto_advance_setup = db.Boolean()
     support_email_address = db.String()
     org_magic = db.String()
-    # skip_setup_items
+    skip_setup_items = db.Enum(SkipSetupSteps)
     department = db.String()
 
     anchor_certs = db.relationship(

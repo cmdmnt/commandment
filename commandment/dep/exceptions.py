@@ -14,7 +14,7 @@ class DEPError(HTTPError):
         super(DEPError, self).__init__(*args, **kwargs)
         if 'response' in kwargs:
             # Quote characters (") must be stripped, because the body may contain the reason inside double quotes.
-            self.text = kwargs.get('response').content.strip('"')
+            self.text = kwargs.get('response').content.strip("\"\n\r")
         else:
             self.text = "NO_REASON_GIVEN"
 
