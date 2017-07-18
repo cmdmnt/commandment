@@ -1,5 +1,5 @@
 from collections.abc import Iterator
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Optional
 import requests
 from requests.auth import AuthBase
 from requests_oauthlib import OAuth1
@@ -17,19 +17,6 @@ class DEPProfileRemovalStatus(Enum):
 
 SerialNumber = str
 DEPProfileRemovals = Dict[SerialNumber, DEPProfileRemovalStatus]
-
-
-class DEPCursor(Iterator):
-
-    def __init__(self, owner: DEP):
-        self.owner = owner
-
-    def __iter__(self):
-        pass
-
-    def __next__(self):
-        pass
-        
 
 
 class DEPAuth(AuthBase):
@@ -91,7 +78,7 @@ class DEP:
         # If the service wants to rate limit us, store that information locally.
         if 'Retry-After' in r.headers:
             after = r.headers['Retry-After']
-            if re.compile(r"/[0-9]+").match(after):
+            if re.compile(r"/[0-9]+/").match(after):
                 d = timedelta(seconds=after)
                 self._retry_after = datetime.utcnow() + d
             else:  # HTTP Date
@@ -142,15 +129,43 @@ class DEP:
         Returns:
                Union[None, dict]: The account information, or None if it failed.
         """
-        res = self.send(requests.Request("GET", self._url + "/accounts"))
+        res = self.send(requests.Request("GET", self._url + "/account"))
         return res.json()
 
-    def devices(self, limit: int = 100, cursor: Union[str, None] = None) -> dict:
+    def fetch_devices(self, cursor: Union[str, None] = None, limit: int = 100) -> dict:
         """Fetch a list of DEP devices
         """
         req = requests.Request("POST", self._url + "/server/devices", json={'limit': limit, 'cursor': cursor})
         res = self.send(req)
         return res.json()
+
+    def sync_devices(self, cursor: str, limit: int = 100) -> dict:
+        """Fetch devices changed since the cursor was issued.
+
+        Args:
+              cursor (str): The cursor from the last sync (must be younger than 7 days).
+              limit (int): Limit the number of records in the response. Default is 100
+        Returns:
+              dict: Response as per the sync devices documentation.
+        """
+        req = requests.Request("POST", self._url + "/devices/sync", json={'limit': limit, 'cursor': cursor})
+        res = self.send(req)
+        return res.json()
+
+    def devices(self, cursor: Union[str, None] = None) -> Iterator:
+        """Get an iterable object which calls fetch or sync to retrieve all device records.
+
+        Args:
+              cursor (str): If supplied, the cursor returned will perform the sync operation. Otherwise you will
+                receive a cursor that performs a fetch for each iteration, until the fetch cursor is exhausted.
+
+        Returns:
+              Union[DEPSyncCursor, DEPFetchCursor]: A cursor that is iterable
+        """
+        if cursor is not None:
+            return DEPSyncCursor(self, cursor)
+        else:
+            return DEPFetchCursor(self)
 
     def device_detail(self, *serial_numbers: List[str]):
         """Fetch detail about a list of devices
@@ -166,7 +181,15 @@ class DEP:
         return res.json()
 
     def define_profile(self, profile: dict):
-        pass
+        """Define a DEP profile
+
+        Args:
+              profile (dict): A DEP profile.
+
+        """
+        req = requests.Request("POST", self._url + "/profile", json=profile)
+        res = self.send(req)
+        return res.json()
 
     def assign_profile(self, profile_uuid: str, *serial_numbers: List[str]) -> dict:
         """Assign an existing profile to device(s)
@@ -210,5 +233,63 @@ class DEP:
         res = self.send(req)
         return res.json()
 
-    def activation_lock(self, serial_number: str, escrow_key: Union[str, None] = None, lost_message: Union[str, None] = None):
+    def activation_lock(self, serial_number: str,
+                        escrow_key: Union[str, None] = None,
+                        lost_message: Union[str, None] = None):
         pass
+
+
+class DEPBaseCursor(object):
+    """DEPCursor is the base class for DEP Fetch and Sync cursors.
+
+    Attributes:
+          owner (DEP): The DEP instance that created this iterator.
+          results (dict): The current response results.
+    """
+
+    def __init__(self, owner: DEP, results: Optional[dict] = None):
+        self.owner = owner
+        self.results = results
+
+    @property
+    def cursor(self) -> Optional[str]:
+        if not self.results:
+            return None
+        return self.results.get('cursor', None)
+
+    @property
+    def more_to_follow(self) -> bool:
+        if not self.results:
+            return True
+        return self.results.get('more_to_follow', False)
+
+    def __iter__(self):
+        return self
+
+
+class DEPFetchCursor(DEPBaseCursor, Iterator):
+    """DEPFetchCursor wraps the DEP device fetch cursor as an iterable object."""
+    def __next__(self):
+        if not self.more_to_follow:
+            raise StopIteration()
+
+        if self.cursor is None:
+            self.results = self.owner.fetch_devices()
+        else:
+            self.results = self.owner.fetch_devices(cursor=self.cursor)
+
+        return self.results
+
+
+class DEPSyncCursor(DEPBaseCursor, Iterator):
+    """DEPSyncCursor wraps the DEP device sync cursor as an iterable object."""
+    def __init__(self, owner: DEP, cursor: str, results: Optional[dict] = None):
+        super(DEPSyncCursor, self).__init__(owner, results)
+
+    def __next__(self):
+        if not self.more_to_follow:
+            raise StopIteration()
+
+        self.results = self.owner.fetch_devices(cursor=self.cursor)
+
+        return self.results
