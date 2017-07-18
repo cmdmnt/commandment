@@ -134,6 +134,12 @@ class DEP:
 
     def fetch_devices(self, cursor: Union[str, None] = None, limit: int = 100) -> dict:
         """Fetch a list of DEP devices
+
+        Args:
+              cursor (str): The cursor from the last fetch (must be younger than 7 days).
+              limit (int): Limit the number of records in the response. Default is 100
+        Returns:
+              dict: Response as per the sync devices documentation.
         """
         req = requests.Request("POST", self._url + "/server/devices", json={'limit': limit, 'cursor': cursor})
         res = self.send(req)
