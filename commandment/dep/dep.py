@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from typing import Union, List
 import requests
 from requests.auth import AuthBase
@@ -6,8 +7,18 @@ import re
 from datetime import timedelta
 from .errors import DEPError
 
-class DEPCursor:
-    pass
+
+class DEPCursor(Iterator):
+
+    def __init__(self, owner: DEP):
+        self.owner = owner
+
+    def __iter__(self):
+        pass
+
+    def __next__(self):
+        pass
+        
 
 
 class DEPAuth(AuthBase):
@@ -94,7 +105,7 @@ class DEP:
             res.raise_for_status()
         except requests.HTTPError as e:
             raise DEPError(response=res, request=res.request) from e
-        
+
         return res
 
     def fetch_token(self) -> Union[str, None]:
@@ -112,12 +123,22 @@ class DEP:
         self._token = res.json().get("auth_session_token", None)
         return self._token
 
-    def account(self, path: str = "/account") -> Union[None, dict]:
-        res = self.send(requests.Request("GET", self._url + path))
+    def account(self) -> Union[None, dict]:
+        """Get Account Details
+
+        Returns:
+               Union[None, dict]: The account information, or None if it failed.
+        """
+        res = self.send(requests.Request("GET", self._url + "/accounts"))
         return res.json()
 
-    def devices(self) -> DEPCursor:
-        pass
+    def devices(self, limit: int = 100, cursor: Union[str, None] = None) -> dict:
+        """Fetch a list of DEP devices
+        """
+        req = requests.Request("POST", self._url + "/server/devices", json={'limit': limit, 'cursor': cursor})
+        res = self.send(req)
+        return res.json()
+        
 
     def device_detail(self, *serial_numbers: List[str]):
         pass
@@ -128,8 +149,9 @@ class DEP:
     def assign_profile(self, profile_uuid: str, *serial_numbers: List[str]):
         pass
 
+    def unassign_profile(self, *serial_numbers: List[str]):
+        pass
+
     def profile(self, uuid: str) -> dict:
         pass
 
-    def remove_profile(self, *serial_numbers: List[str]):
-        pass
