@@ -20,17 +20,22 @@ from binascii import hexlify
 from biplist import Data as NSData
 from .profiles.certificates import KeyUsage
 
-
 db = SQLAlchemy()
 
 
 class CertificateType(Enum):
-    """A list of the polymorphic identities available for subclasses of Certificate."""
+    """A list of the polymorphic identities available for subclasses of Certificate.
+
+    The enumerated type hints what the certificate is intended to be used for.
+    """
     CSR = 'csr'
     PUSH = 'mdm.pushcert'
     WEB = 'mdm.webcrt'
     CA = 'mdm.cacert'
     DEVICE = 'mdm.device'
+    STOKEN = 'dep.stoken'
+    ANCHOR = 'dep.anchor'
+    SUPERVISION = 'dep.supervision'
 
 
 class Certificate(db.Model):
@@ -139,10 +144,12 @@ class CellularTechnology(IntEnum):
     Both = 3
 
 
-device_tags = db.Table('device_tags', db.metadata,
-                    db.Column('device_id', db.Integer, db.ForeignKey('devices.id')),
-                    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id')),
-                    )
+device_tags = db.Table(
+    'device_tags',
+    db.metadata,
+    db.Column('device_id', db.Integer, db.ForeignKey('devices.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id')),
+)
 
 
 class Device(db.Model):
@@ -191,7 +198,7 @@ class Device(db.Model):
     """last_cloud_backup_date (datetime): The date of the last iCloud backup."""
     awaiting_configuration = db.Column(db.Boolean)
     """awaiting_configuration (bool): True if device is waiting at Setup Assistant"""
-    
+
     # Table 6
     itunes_store_account_is_active = db.Column(db.Boolean)
     """itunes_store_account_is_active (bool): the user is currently logged into an active iTunes Store account."""
@@ -316,6 +323,7 @@ class Device(db.Model):
     """block_all_incoming (bool): All incoming connections are blocked."""
     stealth_mode_enabled = db.Column(db.Boolean)
     """stealth_mode_enabled (bool): Stealth mode is enabled."""
+
     # TODO: Blocked Applications
 
     @hybrid_property
@@ -369,10 +377,12 @@ class Device(db.Model):
         return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
 
 
-device_group_devices = db.Table('device_group_devices', db.metadata,
-                             db.Column('device_group_id', db.ForeignKey('device_groups.id'), primary_key=True),
-                             db.Column('device_id', db.ForeignKey('devices.id'), primary_key=True),
-                             )
+device_group_devices = db.Table(
+    'device_group_devices',
+    db.metadata,
+    db.Column('device_group_id', db.ForeignKey('device_groups.id'), primary_key=True),
+    db.Column('device_id', db.ForeignKey('devices.id'), primary_key=True),
+)
 
 
 class DeviceGroup(db.Model):
@@ -491,7 +501,7 @@ class InstalledProfile(db.Model):
     payload_removal_disallowed = db.Column(db.Boolean)
     payload_uuid = db.Column(GUID, index=True)
     # SignerCertificates
-    
+
 
 class CommandSequence(db.Model):
     """A command sequence represents a series of commands where all members must succeed in order for the sequence to
@@ -502,7 +512,7 @@ class CommandSequence(db.Model):
     __tablename__ = 'command_sequences'
 
     id = db.Column(db.Integer, primary_key=True)
-    
+
 
 class Command(db.Model):
     """The command model represents a single MDM command that should be, has been, or has failed to be delivered to
@@ -519,7 +529,7 @@ class Command(db.Model):
     uuid = db.Column(GUID, index=True, unique=True, nullable=False)
     """uuid (GUID): Globally unique command UUID"""
     parameters = db.Column(MutableDict.as_mutable(JSONEncodedDict),
-                        nullable=True)  # JSON add'l data as input to command builder
+                           nullable=True)  # JSON add'l data as input to command builder
     """parameters (str): The parameters that were used when generating the command, serialized into JSON. Omitting the
             RequestType and CommandUUID attributes."""
     status = db.Column(db.String(1), index=True, nullable=False, default=CommandStatus.Queued.value)
@@ -590,8 +600,8 @@ class Command(db.Model):
         """
         # d == d AND (q_status == Q OR (q_status == R AND result == 'NotNow'))
         return cls.query.filter(db.and_(
-                cls.device == device,
-                cls.status == CommandStatus.Queued.value)).order_by(cls.id).first()
+            cls.device == device,
+            cls.status == CommandStatus.Queued.value)).order_by(cls.id).first()
 
     def __repr__(self):
         return '<Command ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
@@ -726,7 +736,7 @@ class ApplicationSource(db.Model):
     """secret_key (db.String): The secret key for S3 / Minio that authenticates this client."""
     bucket = db.Column(db.String)
     """bucket (db.String): The bucket name that holds installation packages."""
-    
+
 
 class SCEPConfig(db.Model):
     """This table holds a single row containing information used to generate the SCEP enrollment profile.
@@ -760,10 +770,10 @@ class SubjectAlternativeNameType(Enum):
     See Also:
           - `https://tools.ietf.org/html/rfc3280.html`_.
     """
-    
+
     RFC822Name = 'RFC822Name'
     """E-mail address, see: https://tools.ietf.org/html/rfc822"""
-    
+
     DNSName = 'DNSName'
     UniformResourceIdentifier = 'UniformResourceIdentifier'
     DirectoryName = 'DirectoryName'
@@ -785,7 +795,7 @@ class SubjectAlternativeName(db.Model):
 
     str_value = db.Column(db.String)
     octet_value = db.Column(db.LargeBinary)  # For IPAddress
-    
+
 
 class Tag(db.Model):
     """This table holds tags, which are categories that are many-to-many and polymorphic to different types of
@@ -819,7 +829,7 @@ class AvailableOSUpdate(db.Model):
     """(int): Device foreign key ID."""
     device = db.relationship('Device', backref='available_os_updates')
     """(db.relationship): Device relationship"""
-    
+
     allows_install_later = db.Column(db.Boolean)
     app_identifiers_to_close = db.Column(MutableList.as_mutable(JSONEncodedDict))
     human_readable_name = db.Column(db.String)

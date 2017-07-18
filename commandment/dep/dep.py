@@ -1,11 +1,21 @@
 from collections.abc import Iterator
-from typing import Union, List
+from typing import Union, List, Dict
 import requests
 from requests.auth import AuthBase
 from requests_oauthlib import OAuth1
 import re
 from datetime import timedelta
-from .errors import DEPError
+from .exceptions import DEPError
+from enum import Enum
+
+
+class DEPProfileRemovalStatus(Enum):
+    SUCCESS = "SUCCESS"
+    NOT_ACCESSIBLE = "NOT_ACCESSIBLE"
+    FAILED = "FAILED"
+
+SerialNumber = str
+DEPProfileRemovals = Dict[SerialNumber, DEPProfileRemovalStatus]
 
 
 class DEPCursor(Iterator):
@@ -138,20 +148,64 @@ class DEP:
         req = requests.Request("POST", self._url + "/server/devices", json={'limit': limit, 'cursor': cursor})
         res = self.send(req)
         return res.json()
-        
 
     def device_detail(self, *serial_numbers: List[str]):
-        pass
+        """Fetch detail about a list of devices
+
+        Args:
+              serial_numbers (List[str]): A list of device serial numbers to fetch details for.
+
+        Returns:
+              dict: Device information
+        """
+        req = requests.Request("POST", self._url + "/devices", json={'devices': serial_numbers})
+        res = self.send(req)
+        return res.json()
 
     def define_profile(self, profile: dict):
         pass
 
-    def assign_profile(self, profile_uuid: str, *serial_numbers: List[str]):
-        pass
+    def assign_profile(self, profile_uuid: str, *serial_numbers: List[str]) -> dict:
+        """Assign an existing profile to device(s)
 
-    def unassign_profile(self, *serial_numbers: List[str]):
-        pass
+        Args:
+              profile_uuid (str): The UUID of the profile to assign.
+              serial_numbers (List[str]): A list of serial numbers to assign to that profile.
+
+        Returns:
+              dict: Assignment information
+        """
+        req = requests.Request("POST", self._url + "/profile/devices",
+                               json={'profile_uuid': profile_uuid, 'devices': serial_numbers})
+        res = self.send(req)
+        return res.json()
+
+    def remove_profile(self, *serial_numbers: List[str]) -> DEPProfileRemovals:
+        """Unassign all profiles from device(s)
+
+        Args:
+              serial_numbers (List[str]): A list of serial numbers to unassign from that profile.
+
+        Returns:
+              dict: Assignment information
+        """
+        req = requests.Request("DELETE", self._url + "/profile/devices",
+                               json={'devices': serial_numbers})
+        res = self.send(req)
+        return res.json()
 
     def profile(self, uuid: str) -> dict:
-        pass
+        """Get an existing profile by its UUID.
 
+        Args:
+              uuid (str): Profile UUID
+
+        Returns:
+              dict: Profile
+        """
+        req = requests.Request("GET", self._url + "/profile", params={'profile_uuid': uuid})
+        res = self.send(req)
+        return res.json()
+
+    def activation_lock(self, serial_number: str, escrow_key: Union[str, None] = None, lost_message: Union[str, None] = None):
+        pass

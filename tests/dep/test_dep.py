@@ -1,6 +1,5 @@
 import pytest
 from commandment.dep.dep import DEP
-from commandment.dep.errors import DEPError
 
 
 class TestDEP:
@@ -14,4 +13,6 @@ class TestDEP:
         devices = dep.devices()
         assert len(devices) == 500
         
-
+    # def test_device_details(self, dep: DEP):
+    #     dep.fetch_token()
+    #     device_details = dep.device_detail()
