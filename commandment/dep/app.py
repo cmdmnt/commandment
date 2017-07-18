@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify
 from flask_rest_jsonapi import Api
+
+from commandment.cms.decorators import verify_cms_signers
 from .resources import DEPProfileList, DEPProfileDetail, DEPProfileRelationship
 
 dep_app = Blueprint('dep_app', __name__)
@@ -12,4 +14,17 @@ api.route(DEPProfileRelationship, 'dep_profile_devices', '/v1/dep/profiles/<int:
 
 @dep_app.route('/v1/dep/account', methods=["GET"])
 def account():
+    pass
+
+
+@dep_app.route('/dep/profile', methods=["POST"])
+@verify_cms_signers
+def profile():
+    """Accept a CMS Signed DER encoded XML data containing device information.
+
+    This starts the DEP enrollment process.
+
+    See Also:
+        - **Request to a Profile URL** in the MDM Protocol Reference.
+    """
     pass
