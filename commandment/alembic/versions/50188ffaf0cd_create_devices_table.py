@@ -89,6 +89,7 @@ def upgrade():
                     sa.Column('subscriber_mcc', sa.String(), nullable=True),
                     sa.Column('subscriber_mnc', sa.String(), nullable=True),
                     sa.Column('voice_roaming_enabled', sa.Boolean(), nullable=True),
+                    sa.Column('activation_lock_escrow_key', sa.String(), nullable=True),
                     sa.ForeignKeyConstraint(['certificate_id'], ['certificates.id'], ),
                     sa.PrimaryKeyConstraint('id')
                     )

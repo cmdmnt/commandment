@@ -4,8 +4,8 @@ from .enum import VPPUserStatus, VPPPricingParam, VPPProductType
 from ..models import db
 
 
-class VPPState(db.Model):
-    __tablename__ = 'vpp_state'
+class VPPAccount(db.Model):
+    __tablename__ = 'vpp_accounts'
 
     id = db.Column(db.Integer, primary_key=True)
     stoken = db.Column(db.String, nullable=False)

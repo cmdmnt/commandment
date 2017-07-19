@@ -1,22 +1,22 @@
-"""${message}
+"""empty message
 
-Revision ID: ${up_revision}
-Revises: ${down_revision | comma,n}
-Create Date: ${create_date}
+Revision ID: 875dcce0bf8b
+Revises: a2e0af380181
+Create Date: 2017-07-19 12:56:02.203987
 
 """
 from alembic import op
 import sqlalchemy as sa
 import commandment.dbtypes
-${imports if imports else ""}
+
 
 from alembic import context
 
 # revision identifiers, used by Alembic.
-revision = ${repr(up_revision)}
-down_revision = ${repr(down_revision)}
-branch_labels = ${repr(branch_labels)}
-depends_on = ${repr(depends_on)}
+revision = '875dcce0bf8b'
+down_revision = 'a2e0af380181'
+branch_labels = None
+depends_on = None
 
 
 def upgrade():
@@ -33,12 +33,20 @@ def downgrade():
 
 def schema_upgrades():
     """schema upgrade migrations go here."""
-    ${upgrades if upgrades else "pass"}
+    op.create_table('vpp_users',
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('client_user_id', commandment.dbtypes.GUID(), nullable=False),
+    sa.Column('email', sa.String(), nullable=True),
+    sa.Column('status', sa.Enum('Registered', 'Associated', 'Retired', 'Deleted', name='vppuserstatus'), nullable=True),
+    sa.Column('invite_url', sa.String(), nullable=True),
+    sa.Column('invite_code', sa.String(), nullable=True),
+    sa.PrimaryKeyConstraint('user_id')
+    )
 
 
 def schema_downgrades():
     """schema downgrade migrations go here."""
-    ${downgrades if downgrades else "pass"}
+    op.drop_table('vpp_users')
 
 
 def data_upgrades():

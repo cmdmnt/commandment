@@ -1,22 +1,22 @@
-"""${message}
+"""empty message
 
-Revision ID: ${up_revision}
-Revises: ${down_revision | comma,n}
-Create Date: ${create_date}
+Revision ID: f029ac1af3f0
+Revises: 8c866896f76e
+Create Date: 2017-07-19 13:02:13.563903
 
 """
 from alembic import op
 import sqlalchemy as sa
 import commandment.dbtypes
-${imports if imports else ""}
+
 
 from alembic import context
 
 # revision identifiers, used by Alembic.
-revision = ${repr(up_revision)}
-down_revision = ${repr(down_revision)}
-branch_labels = ${repr(branch_labels)}
-depends_on = ${repr(depends_on)}
+revision = 'f029ac1af3f0'
+down_revision = '8c866896f76e'
+branch_labels = None
+depends_on = None
 
 
 def upgrade():
@@ -33,12 +33,20 @@ def downgrade():
 
 def schema_upgrades():
     """schema upgrade migrations go here."""
-    ${upgrades if upgrades else "pass"}
+    op.create_table('vpp_accounts',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('stoken', sa.String(), nullable=False),
+    sa.Column('licenses_since_modified_token', sa.String(), nullable=True),
+    sa.Column('licenses_batch_token', sa.String(), nullable=True),
+    sa.Column('users_since_modified_token', sa.String(), nullable=True),
+    sa.Column('users_batch_token', sa.String(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
 
 
 def schema_downgrades():
     """schema downgrade migrations go here."""
-    ${downgrades if downgrades else "pass"}
+    op.drop_table('vpp_accounts')
 
 
 def data_upgrades():

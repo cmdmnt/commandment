@@ -1,7 +1,5 @@
-from typing import Union
 from uuid import uuid4
 
-from asn1crypto.cms import CertificateSet, SignerIdentifier
 from flask import current_app, render_template, abort, Blueprint, make_response, url_for, request
 import os
 
@@ -13,13 +11,8 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from commandment.plistutil.nonewriter import dumps as dumps_none
 
 from cryptography.x509.oid import NameOID
-from asn1crypto import cms
-from base64 import b64decode, b64encode
 from cryptography import x509
-from cryptography.exceptions import UnsupportedAlgorithm, InvalidSignature
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.asymmetric import padding
 
 enroll_app = Blueprint('enroll_app', __name__)
 
@@ -174,80 +167,6 @@ def enroll():
     return plist_data, 200, {'Content-Type': PROFILE_CONTENT_TYPE}
 
 
-def _find_signer_sid(certificates: CertificateSet, sid: SignerIdentifier) -> Union[cms.Certificate, None]:
-    """Find a signer certificate by its SignerIdentifier.
-
-    Args:
-          certificates (CertificateSet): Set of certificates parsed by asn1crypto.
-          sid (SignerIdentifier): Signer Identifier, usually IssuerAndSerialNumber.
-    Returns:
-          cms.Certificate or None
-    """
-    if sid.name != 'issuer_and_serial_number':
-        return None  # Only IssuerAndSerialNumber for now
-
-    #: IssuerAndSerialNumber
-    ias = sid.chosen
-
-    for c in certificates:
-        if c.name != 'certificate':
-            continue  # we only support certificate for now
-
-        chosen = c.chosen  #: Certificate
-
-        if chosen.serial_number != ias['serial_number'].native:
-            continue
-
-        if chosen.issuer == ias['issuer']:
-            return c
-
-    return None
-
-
-@enroll_app.route('/dep', methods=['POST'])
-def dep_enroll():
-    sig = b64decode(request.data)
-    ci = cms.ContentInfo.load(sig)  # SignedData with zero length encap_content_info type: data
-    assert ci['content_type'].native == 'signed_data'
-    sd = ci['content']
-
-    for si in sd['signer_infos']:
-        sid = si['sid']
-        signer = _find_signer_sid(sd['certificates'], sid)
-        if signer is None:
-            continue  # No appropriate signer found
-
-        certificate = x509.load_der_x509_certificate(signer.dump(), default_backend())
-        verifier = certificate.public_key().verifier(
-            si['signature'].native,
-            padding.PKCS1v15(),
-            hashes.SHA1()
-        )
-        verifier.update(request.data)
-        verifier.verify()  # Raises a SigningError if not valid
-
-    eci = sd['encap_content_info']
-    device_plist = eci['content'].native
-    print(device_plist)
-
-
-
-    # def device_first_post_enroll(device, awaiting=False):
-    #     print('enroll:', 'UpdateInventoryDevInfoCommand')
-    #     db.session.add(UpdateInventoryDevInfoCommand.new_queued_command(device))
-    #
-    #     # install all group profiles
-    #     for group in device.mdm_groups:
-    #         for profile in group.profiles:
-    #             db.session.add(InstallProfile.new_queued_command(device, {'id': profile.id}))
-    #
-    #     if awaiting:
-    #         # in DEP Await state, send DeviceConfigured to proceed with setup
-    #         db.session.add(DeviceConfigured.new_queued_command(device))
-    #
-    #     db.session.commit()
-    #
-    #     push_to_device(device)
 
 
 @enroll_app.route('/ota/enroll')
