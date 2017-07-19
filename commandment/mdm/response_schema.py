@@ -18,8 +18,6 @@ class CommandResponse(Schema):
     ErrorChain = fields.Nested(ErrorChainItem, many=True)
 
 
-class ProfileListResponse(CommandResponse):
-    pass
 
 
 class OrganizationInfo(Schema):
@@ -204,3 +202,33 @@ class AvailableOSUpdateListResponse(CommandResponse):
     AvailableOSUpdates = fields.Nested(AvailableOSUpdate, many=True)
 
 
+class ProfileListPayloadItem(Schema):
+    PayloadDescription = fields.String(attribute='description')
+    PayloadDisplayName = fields.String(attribute='display_name')
+    PayloadIdentifier = fields.String(attribute='identifier')
+    PayloadOrganization = fields.String(attribute='organization')
+    PayloadType = fields.String(attribute='payload_type')
+    PayloadUUID = fields.UUID(attribute='uuid')
+    # PayloadVersion = fields.Integer(attribute='payload_version')
+
+
+class ProfileListItem(Schema):
+    HasRemovalPasscode = fields.Boolean(attribute='has_removal_password')
+    IsEncrypted = fields.Boolean(attribute='is_encrypted')
+    PayloadDescription = fields.String(attribute='payload_description')
+    PayloadDisplayName = fields.String(attribute='payload_display_name')
+    PayloadIdentifier = fields.String(attribute='payload_identifier')
+    PayloadOrganization = fields.String(attribute='payload_organization')
+    PayloadRemovalDisallowed = fields.String(attribute='payload_removal_disallowed')
+    PayloadUUID = fields.UUID(attribute='payload_uuid')
+    # PayloadVersion = fields.Integer(attribute='payload_version')
+    #SignerCertificates = fields.Nested(attribute='signer_certificates', many=True)
+    PayloadContent = fields.Nested(ProfileListPayloadItem, attribute='payload_content', many=True)
+
+    @post_load
+    def make_installed_profile(self, data: dict) -> models.InstalledProfile:
+        return models.InstalledProfile(**data)
+
+
+class ProfileListResponse(CommandResponse):
+    ProfileList = fields.Nested(ProfileListItem, many=True)

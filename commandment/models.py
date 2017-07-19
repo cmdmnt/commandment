@@ -507,6 +507,30 @@ class InstalledProfile(db.Model):
     # SignerCertificates
 
 
+class InstalledPayload(db.Model):
+    __tablename__ = 'installed_payloads'
+
+    id = db.Column(db.Integer, primary_key=True)
+    """(int): Installed Payload ID"""
+    profile_id = db.Column(db.ForeignKey('installed_profiles.id'), nullable=False)
+    """(int): InstalledProfile foreign key ID."""
+    profile = db.relationship('InstalledProfile', backref='payload_content')
+    device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
+    """(int): Device foreign key ID."""
+    device = db.relationship('Device', backref='installed_profiles')
+    """(db.relationship): Device relationship"""
+
+    """(db.relationship): InstalledProfile relationship"""
+    description = db.Column(db.String)
+    """(str): Payload description (value of PayloadDescription)"""
+    display_name = db.Column(db.String)
+    """(str): Payload display name"""
+    identifier = db.Column(db.String)
+    organization = db.Column(db.String)
+    payload_type = db.Column(db.String)
+    uuid = db.Column(GUID())
+
+
 class CommandSequence(db.Model):
     """A command sequence represents a series of commands where all members must succeed in order for the sequence to
     succeed. I.E a single failure or timeout in the sequence stops the delivery of every other member.
