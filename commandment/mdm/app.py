@@ -7,7 +7,8 @@ from flask import g
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from commandment.mdm import CommandStatus
 from commandment.mdm.commands import Command
-from commandment.decorators import verify_mdm_signature, parse_plist_input_data
+from commandment.decorators import parse_plist_input_data
+from commandment.cms.decorators import verify_cms_signers_header
 from commandment.models import DeviceUser
 from commandment.routers import CommandRouter, PlistRouter
 import plistlib
@@ -76,17 +77,14 @@ def token_update(plist_data):
         )
         return 'OK'
 
-
-
     if not device.token:  # First contact
         device.is_enrolled = True
+        device.certificate = g.signers[0]
         device_enrolled.send(device)
 
         # TODO: Queue inventory
 
     device.tokenupdate_at = datetime.utcnow()
-
-    # device.certificate = g.device_cert
 
     if 'PushMagic' in plist_data:
         device.push_magic = plist_data['PushMagic']
@@ -148,7 +146,7 @@ def check_out(plist_data):
 
 
 @mdm_app.route("/mdm", methods=['PUT'])
-@verify_mdm_signature
+@verify_cms_signers_header
 @parse_plist_input_data
 def mdm():
     """MDM connection endpoint.
@@ -165,8 +163,6 @@ def mdm():
     """
     # TODO: proper identity verification, for now just matching on UDID
     device = db.session.query(Device).filter(Device.udid == g.plist_data['UDID']).one()
-
-    #print(g.signer)
 
     # if g.device.udid != g.plist_data['UDID']:
     #     # see note in device_cert_check() about old device cert sometimes
