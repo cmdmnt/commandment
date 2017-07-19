@@ -51,7 +51,7 @@ def checkout_request() -> str:
 
 @pytest.fixture()
 def available_os_updates_request() -> str:
-    with open(os.path.join(TEST_DATA_DIR, 'AvailableOSUpdates'), 'r') as fd:
+    with open(os.path.join(TEST_DATA_DIR, 'AvailableOSUpdates/10.12.5.xml'), 'r') as fd:
         plist_data = fd.read()
 
     return plist_data

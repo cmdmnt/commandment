@@ -56,7 +56,7 @@ def session(db: SQLAlchemy) -> Generator[scoped_session, None, None]:
     options = dict(bind=connection) #  , binds={})
     session = db.create_scoped_session(options=options)
 
-    # db.session = session
+    db.session = session
 
     yield session
 
