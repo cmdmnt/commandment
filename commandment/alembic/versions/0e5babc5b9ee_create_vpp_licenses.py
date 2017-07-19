@@ -1,4 +1,4 @@
-"""empty message
+"""Create vpp_licenses table
 
 Revision ID: 0e5babc5b9ee
 Revises: 875dcce0bf8b

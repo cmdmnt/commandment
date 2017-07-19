@@ -211,6 +211,10 @@ class ProfileListPayloadItem(Schema):
     PayloadUUID = fields.UUID(attribute='uuid')
     # PayloadVersion = fields.Integer(attribute='payload_version')
 
+    @post_load
+    def make_installed_payload(self, data: dict) -> models.InstalledPayload:
+        return models.InstalledPayload(**data)
+
 
 class ProfileListItem(Schema):
     HasRemovalPasscode = fields.Boolean(attribute='has_removal_password')
@@ -219,7 +223,7 @@ class ProfileListItem(Schema):
     PayloadDisplayName = fields.String(attribute='payload_display_name')
     PayloadIdentifier = fields.String(attribute='payload_identifier')
     PayloadOrganization = fields.String(attribute='payload_organization')
-    PayloadRemovalDisallowed = fields.String(attribute='payload_removal_disallowed')
+    PayloadRemovalDisallowed = fields.Boolean(attribute='payload_removal_disallowed')
     PayloadUUID = fields.UUID(attribute='payload_uuid')
     # PayloadVersion = fields.Integer(attribute='payload_version')
     #SignerCertificates = fields.Nested(attribute='signer_certificates', many=True)

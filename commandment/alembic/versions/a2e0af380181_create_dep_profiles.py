@@ -1,4 +1,4 @@
-"""empty message
+"""Create dep_profiles table
 
 Revision ID: a2e0af380181
 Revises: 6675e981817e

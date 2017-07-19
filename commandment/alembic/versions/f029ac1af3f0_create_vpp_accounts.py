@@ -1,4 +1,4 @@
-"""empty message
+"""Create vpp_accounts table
 
 Revision ID: f029ac1af3f0
 Revises: 8c866896f76e

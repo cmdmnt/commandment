@@ -365,7 +365,19 @@ class RemoveProfile(Command):
 
     def __init__(self, uuid=None, **kwargs):
         super(RemoveProfile, self).__init__(uuid)
-        self._attrs = kwargs
+        self._attrs = {
+            'Identifier': kwargs.get('Identifier')
+        }
+
+    def to_dict(self) -> dict:
+        """Convert the command into a dict that will be serializable by plistlib."""
+        return {
+            'CommandUUID': str(self._uuid),
+            'Command': {
+                'RequestType': type(self).request_type,
+                'Identifier': self._attrs.get('Identifier', None),
+            }
+        }
 
 
 class CertificateList(Command):

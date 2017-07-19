@@ -517,7 +517,7 @@ class InstalledPayload(db.Model):
     profile = db.relationship('InstalledProfile', backref='payload_content')
     device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
     """(int): Device foreign key ID."""
-    device = db.relationship('Device', backref='installed_profiles')
+    device = db.relationship('Device', backref='installed_payloads')
     """(db.relationship): Device relationship"""
 
     """(db.relationship): InstalledProfile relationship"""

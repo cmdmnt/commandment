@@ -9,7 +9,8 @@ from commandment.mdm import commands
 from commandment.mdm.app import command_router
 from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList, \
     InstallProfile, AvailableOSUpdates
-from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse, AvailableOSUpdateListResponse
+from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse, AvailableOSUpdateListResponse, \
+    ProfileListResponse
 from ..models import db, Device, InstalledCertificate, InstalledProfile, Command as DBCommand
 
 Queries = DeviceInformation.Queries
@@ -56,7 +57,10 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
     Returns:
           void: Reserved for future use
     """
-    profiles = response['ProfileList']
+    schema = ProfileListResponse()
+    profile_list = schema.load(response)
+
+    # Impossible to calculate delta, so all profiles get wiped
     for p in device.installed_profiles:
         db.session.delete(p)
 
@@ -65,32 +69,28 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
         for p in tag.profiles:
             desired_profiles[p.uuid] = p
 
-    for profile in profiles:
-        ip = InstalledProfile()
-        ip.device = device
-        ip.device_udid = device.udid
+    remove_profiles = []
 
-        ip.has_removal_password = profile.get('HasRemovalPasscode', None)
-        ip.is_encrypted = profile.get('IsEncrypted', None)
-
-        ip.payload_description = profile.get('PayloadDescription', None)
-        ip.payload_display_name = profile.get('PayloadDisplayName', None)
-        ip.payload_identifier = profile.get('PayloadIdentifier', None)
-        ip.payload_organization = profile.get('PayloadOrganization', None)
-        ip.payload_removal_disallowed = profile.get('PayloadRemovalDisallowed', None)
-        ip.payload_uuid = profile.get('PayloadUUID', None)
-
-        # TODO: SignerCertificates
-        # TODO: Payloads
-        db.session.add(ip)
+    for profile in profile_list.data['ProfileList']:
+        profile.device = device
+        profile.device_udid = device.udid
+        db.session.add(profile)
 
         # Reconcile profiles which should be installed
-        if ip.payload_uuid in desired_profiles:
-            del desired_profiles[ip.payload_uuid]
+        if profile.payload_uuid in desired_profiles:
+            del desired_profiles[profile.payload_uuid]
+        else:
+            remove_profiles.append(profile)
 
     # Queue up some desired profiles
     for puuid, p in desired_profiles.items():
         c = commands.InstallProfile(None, profile=p)
+        dbc = DBCommand.from_model(c)
+        dbc.device = device
+        db.session.add(dbc)
+
+    for remove_profile in remove_profiles:
+        c = commands.RemoveProfile(None, Identifier=remove_profile.payload_identifier)
         dbc = DBCommand.from_model(c)
         dbc.device = device
         db.session.add(dbc)

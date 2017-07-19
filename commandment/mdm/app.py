@@ -252,6 +252,7 @@ def mdm():
         current_app.logger.info('sending %s MDM command class=%s to device=%d', cmd.request_type,
                                 command.request_type, device.id)
 
+        current_app.logger.debug(output_dict)
         # convert to plist and send
         plist_data = plistlib.dumps(output_dict)
         current_app.logger.debug(plist_data)

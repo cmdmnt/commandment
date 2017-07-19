@@ -1,4 +1,4 @@
-"""empty message
+"""Create vpp_users table
 
 Revision ID: 875dcce0bf8b
 Revises: a2e0af380181

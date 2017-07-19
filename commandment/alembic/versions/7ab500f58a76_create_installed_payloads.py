@@ -44,7 +44,7 @@ def schema_upgrades():
     sa.Column('payload_type', sa.String(), nullable=True),
     sa.Column('uuid', commandment.dbtypes.GUID(), nullable=True),
     sa.ForeignKeyConstraint(['device_id'], ['devices.id'], ),
-    sa.ForeignKeyConstraint(['profile_id'], ['installed_profiles.id'], ),
+    sa.ForeignKeyConstraint(['profile_id'], ['installed_profiles.id'], ondelete="CASCADE"),
     sa.PrimaryKeyConstraint('id')
     )
 
