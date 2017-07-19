@@ -78,11 +78,11 @@ class DEPProfile(db.Model):
     anchor_certs = db.relationship(
         'DEPAnchorCertificate',
         secondary=dep_profile_anchor_certificates,
-        back_populates='anchor_dep_profiles'
+        #  back_populates='anchor_dep_profiles'
     )
 
     supervising_host_certs = db.relationship(
         'DEPSupervisionCertificate',
         secondary=dep_profile_supervision_certificates,
-        back_populates='supervising_dep_profiles'
+        #  back_populates='supervising_dep_profiles'
     )

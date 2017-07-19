@@ -64,6 +64,36 @@ export class SettingsPage extends React.Component<ReduxStateProps & ReduxDispatc
                             </Card.Description>
                         </Card.Content>
                     </Card>
+                    <Card as={Link} to='/settings/authentication'>
+                        <Card.Content>
+                            <Card.Header>
+                                <Icon name='users' /> Authentication
+                            </Card.Header>
+                            <Card.Description>
+                                Configure authentication sources
+                            </Card.Description>
+                        </Card.Content>
+                    </Card>
+                    <Card as={Link} to='/settings/vpp'>
+                        <Card.Content>
+                            <Card.Header>
+                                <Icon name='credit card alternative' /> VPP
+                            </Card.Header>
+                            <Card.Description>
+                                Configure access to the Volume Purchasing Programme
+                            </Card.Description>
+                        </Card.Content>
+                    </Card>
+                    <Card as={Link} to='/settings/dep'>
+                        <Card.Content>
+                            <Card.Header>
+                                <Icon name='tablet' /> DEP
+                            </Card.Header>
+                            <Card.Description>
+                                Configure the Device Enrollment Programme
+                            </Card.Description>
+                        </Card.Content>
+                    </Card>
                 </Card.Group>
             </Container>
         );

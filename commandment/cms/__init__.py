@@ -1,5 +1,5 @@
 from typing import Union, Optional, Type
-from asn1crypto.cms import CertificateSet, SignerIdentifier, Certificate, SignedDigestAlgorithm
+from asn1crypto.cms import CertificateSet, SignerIdentifier, Certificate, SignedDigestAlgorithm, DigestAlgorithm
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 
@@ -34,19 +34,19 @@ def _certificate_by_signer_identifier(certificates: CertificateSet, sid: SignerI
     return None
 
 
-def _cryptography_hash_function(algorithm: SignedDigestAlgorithm) -> Union[None, Type[hashes.SHA1], Type[hashes.SHA256], Type[hashes.SHA512]]:
+def _cryptography_hash_function(algorithm: DigestAlgorithm) -> Union[None, Type[hashes.SHA1], Type[hashes.SHA256], Type[hashes.SHA512]]:
     """Find the cryptography hash function given the string output from asn1crypto SignedDigestAlgorithm.
 
     Todo: There should be a better way to do this?
 
     Args:
-          algorithm (SignedDigestAlgorithm): The asn1crypto Signed Digest Algorithm
+          algorithm (DigestAlgorithm): The asn1crypto Signed Digest Algorithm
     Returns:
         Union[Type[hashes.SHA1], Type[hashes.SHA256], Type[hashes.SHA512]] A cryptography hash function for use with
          signature verification.
     """
 
-    hash_algo = algorithm.hash_algo
+    hash_algo = algorithm['algorithm'].native
 
     if hash_algo == "sha1":
         return hashes.SHA1

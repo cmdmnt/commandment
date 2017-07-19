@@ -17,11 +17,14 @@ def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> (List[x50
     for signer in signed['signer_infos']:
         asn_certificate = _certificate_by_signer_identifier(signed['certificates'], signer['sid'])
         assert asn_certificate is not None
-        certificate = x509.load_der_x509_certificate(signer.dump(), default_backend())
+        certificate = x509.load_der_x509_certificate(asn_certificate.dump(), default_backend())
 
+        digest_algorithm = signer['digest_algorithm']
         signature_algorithm = signer['signature_algorithm']
-        hash_function = _cryptography_hash_function(signature_algorithm)
+
+        hash_function = _cryptography_hash_function(digest_algorithm)
         pad_function = _cryptography_pad_function(signature_algorithm)
+
         if hash_function is None or pad_function is None:
             raise ValueError('Unsupported signature algorithm: {}'.format(signature_algorithm))
 
