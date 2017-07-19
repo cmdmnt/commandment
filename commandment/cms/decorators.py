@@ -41,7 +41,11 @@ def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> (List[x50
         signers.append(certificate)
 
     # TODO: Don't assume that content is OctetString
-    return signers, signed['encap_content_info']['content']
+
+    if detached:
+        return signers, request.data
+    else:
+        return signers, signed['encap_content_info']['content']
 
 
 def verify_cms_signers(f):
@@ -88,7 +92,10 @@ def verify_cms_signers_header(f):
             raise TypeError('Client did not supply an Mdm-Signature header but signature is required.')
 
         detached_signature = b64decode(request.headers['Mdm-Signature'])
-        g.signers, g.signed_data = _verify_cms_signers(detached_signature, detached=True)
+        signers, signed_data = _verify_cms_signers(detached_signature, detached=True)
+
+        g.signers = signers
+        g.signed_data = signed_data
 
         return f(*args, **kwargs)
 

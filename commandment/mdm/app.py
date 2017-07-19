@@ -9,7 +9,7 @@ from commandment.mdm import CommandStatus
 from commandment.mdm.commands import Command
 from commandment.decorators import parse_plist_input_data
 from commandment.cms.decorators import verify_cms_signers_header
-from commandment.models import DeviceUser
+from commandment.models import DeviceUser, DeviceIdentityCertificate
 from commandment.routers import CommandRouter, PlistRouter
 import plistlib
 from datetime import datetime
@@ -65,6 +65,7 @@ def authenticate(plist_data):
 
 
 @plr.route('MessageType', 'TokenUpdate')
+@verify_cms_signers_header
 def token_update(plist_data):
     current_app.logger.info('TokenUpdate received')
     # TODO: check to make sure device == UDID == cert, etc.
@@ -79,7 +80,9 @@ def token_update(plist_data):
 
     if not device.token:  # First contact
         device.is_enrolled = True
-        device.certificate = g.signers[0]
+        device_certificate = DeviceIdentityCertificate.from_crypto(g.signers[0])
+        db.session.add(device_certificate)
+        device.certificate = device_certificate
         device_enrolled.send(device)
 
         # TODO: Queue inventory

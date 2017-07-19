@@ -8,6 +8,10 @@ Attributes:
 """
 from flask_sqlalchemy import SQLAlchemy
 
+from cryptography import x509
+from cryptography.hazmat.primitives import serialization
+from cryptography.x509.oid import NameOID
+from cryptography.hazmat.primitives import hashes
 import datetime
 from enum import Enum, IntEnum
 from sqlalchemy.ext.mutable import MutableDict
@@ -135,6 +139,25 @@ class DeviceIdentityCertificate(Certificate):
     __mapper_args__ = {
         'polymorphic_identity': CertificateType.DEVICE.value
     }
+
+    @classmethod
+    def from_crypto(cls, certificate: x509.Certificate):
+        m = cls()
+        m.pem_data = certificate.public_bytes(encoding=serialization.Encoding.PEM)
+        m.not_after = certificate.not_valid_after
+        m.not_before = certificate.not_valid_before
+        m.fingerprint = certificate.fingerprint(hashes.SHA1())
+
+        subject: x509.Name = certificate.subject
+
+
+        m.x509_cn = subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
+        # m.x509_c = subject.get_attributes_for_oid(NameOID.COUNTRY_NAME)
+        # m.x509_o = subject.get_attributes_for_oid(NameOID.ORGANIZATION_NAME)
+        # m.x509_ou = subject.get_attributes_for_oid(NameOID.ORGANIZATIONAL_UNIT_NAME)
+        # m.x509_st = subject.get_attributes_for_oid(NameOID.STATE_OR_PROVINCE_NAME)
+
+        return m
 
 
 class CellularTechnology(IntEnum):
