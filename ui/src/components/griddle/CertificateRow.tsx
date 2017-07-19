@@ -10,7 +10,7 @@ export const CertificateRow = connect((state, props) => ({
         <List.Icon name={rowData.attributes.is_identity? 'id badge' : 'certificate'} size='large' verticalAlign="middle" />
         <List.Content>
             <List.Header>{rowData.attributes.x509_cn}</List.Header>
-            <List.Description>Expires: / OU = / O = / ST = / dNSName = </List.Description>
+            <List.Description></List.Description>
         </List.Content>
     </List.Item>
 ));

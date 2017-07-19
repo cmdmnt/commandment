@@ -89,11 +89,11 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
         dbc.device = device
         db.session.add(dbc)
 
-    for remove_profile in remove_profiles:
-        c = commands.RemoveProfile(None, Identifier=remove_profile.payload_identifier)
-        dbc = DBCommand.from_model(c)
-        dbc.device = device
-        db.session.add(dbc)
+    # for remove_profile in remove_profiles:
+    #     c = commands.RemoveProfile(None, Identifier=remove_profile.payload_identifier)
+    #     dbc = DBCommand.from_model(c)
+    #     dbc.device = device
+    #     db.session.add(dbc)
 
     db.session.commit()
 

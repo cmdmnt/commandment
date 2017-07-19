@@ -9,6 +9,7 @@ from commandment.mdm import CommandStatus
 from commandment.mdm.commands import Command
 from commandment.decorators import parse_plist_input_data
 from commandment.cms.decorators import verify_cms_signers_header
+from commandment.mdm.util import queue_full_inventory
 from commandment.models import DeviceUser, DeviceIdentityCertificate
 from commandment.routers import CommandRouter, PlistRouter
 import plistlib
@@ -84,8 +85,7 @@ def token_update(plist_data):
         db.session.add(device_certificate)
         device.certificate = device_certificate
         device_enrolled.send(device)
-
-        # TODO: Queue inventory
+        queue_full_inventory(device)
 
     device.tokenupdate_at = datetime.utcnow()
 
@@ -107,8 +107,44 @@ def token_update(plist_data):
     device.last_seen = datetime.now()
     db.session.commit()
 
-    # TODO: Can return next command here, no need to wait for Idle
-    return 'OK'
+    # TODO: DRY
+    while True:
+        command = DBCommand.get_next_device_command(device)
+
+        if not command:
+            break
+
+        # mark this command as being in process right away to (try) to avoid
+        # any race conditions with mutliple MDM commands from the same device
+        # at a time
+
+        #command.set_processing()
+        #db.session.commit()
+
+        # Re-hydrate the command class based on the persisted model containing the request type and the parameters
+        # that were given to generate the command
+        cmd = Command.new_request_type(command.request_type, command.parameters, command.uuid)
+
+
+        # get command dictionary representation (e.g. the full command to send)
+        output_dict = cmd.to_dict()
+
+        current_app.logger.info('sending %s MDM command class=%s to device=%d', cmd.request_type,
+                                command.request_type, device.id)
+
+        current_app.logger.debug(output_dict)
+        # convert to plist and send
+        plist_data = plistlib.dumps(output_dict)
+        current_app.logger.debug(plist_data)
+        resp = make_response(plist_data)
+        resp.headers['Content-Type'] = 'application/xml'
+
+        # finally set as sent
+        command.status = CommandStatus.Sent.value
+        command.sent_at = datetime.utcnow()
+        db.session.commit()
+
+        return resp
 
 
 @plr.route('MessageType', 'UserAuthenticate')
