@@ -1,5 +1,6 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, g
 from flask_rest_jsonapi import Api
+import plistlib
 
 from commandment.cms.decorators import verify_cms_signers
 from .resources import DEPProfileList, DEPProfileDetail, DEPProfileRelationship
@@ -27,4 +28,4 @@ def profile():
     See Also:
         - **Request to a Profile URL** in the MDM Protocol Reference.
     """
-    pass
+    g.plist_data = plistlib.loads(g.signed_data)
