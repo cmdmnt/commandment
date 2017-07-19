@@ -1,6 +1,10 @@
-from flask import Blueprint, jsonify, g
+from cryptography.hazmat.backends import default_backend
+from flask import Blueprint, jsonify, g, current_app
 from flask_rest_jsonapi import Api
 import plistlib
+from cryptography import x509
+from cryptography.hazmat.primitives.serialization import Encoding
+from base64 import urlsafe_b64encode
 
 from commandment.cms.decorators import verify_cms_signers
 from .resources import DEPProfileList, DEPProfileDetail, DEPProfileRelationship
@@ -29,3 +33,27 @@ def profile():
         - **Request to a Profile URL** in the MDM Protocol Reference.
     """
     g.plist_data = plistlib.loads(g.signed_data)
+
+
+@dep_app.route('/dep/anchor_certs', methods=["GET"])
+def anchor_certs():
+    """Download a list of certificates to trust the MDM
+
+    The response is a JSON array of base64 encoded DER certs as described in the DEP profile creation documentation."""
+    anchors = []
+
+    if 'CA_CERTIFICATE' in current_app.config:
+        with open(current_app.config['CA_CERTIFICATE'], 'rb') as fd:
+            pem_data = fd.read()
+            c: x509.Certificate = x509.load_pem_x509_certificate(pem_data, backend=default_backend())
+            der = c.public_bytes(Encoding.DER)
+            anchors.append(urlsafe_b64encode(der))
+
+    if 'SSL_CERTIFICATE' in current_app.config:
+        with open(current_app.config['SSL_CERTIFICATE'], 'rb') as fd:
+            pem_data = fd.read()
+            c: x509.Certificate = x509.load_pem_x509_certificate(pem_data, backend=default_backend())
+            der = c.public_bytes(Encoding.DER)
+            anchors.append(urlsafe_b64encode(der))
+
+    return jsonify(anchors)

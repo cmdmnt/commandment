@@ -201,7 +201,10 @@ def mdm():
     :status 410: User channel capability not available.
     """
     # TODO: proper identity verification, for now just matching on UDID
-    device = db.session.query(Device).filter(Device.udid == g.plist_data['UDID']).one()
+    try:
+        device = db.session.query(Device).filter(Device.udid == g.plist_data['UDID']).one()
+    except NoResultFound:
+        return abort(410)  # Unmanage devices that we dont have a record of
 
     # if g.device.udid != g.plist_data['UDID']:
     #     # see note in device_cert_check() about old device cert sometimes

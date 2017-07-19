@@ -36,7 +36,8 @@ def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> (List[x50
         if detached:
             verifier.update(request.data)
         else:
-            verifier.update(signed['encap_content_info']['content'].native)
+            data = signed['encap_content_info']['content'].native
+            verifier.update(data)
         verifier.verify()  # Raises a SigningError if not valid
         signers.append(certificate)
 
