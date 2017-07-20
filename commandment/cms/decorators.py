@@ -1,10 +1,13 @@
 from typing import List
+
+from asn1crypto.cms import CMSAttribute
 from flask import request, g, current_app
 from functools import wraps
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
 from asn1crypto import cms
-from base64 import b64decode
+from base64 import b64decode, b64encode
 from . import _certificate_by_signer_identifier, _cryptography_hash_function, _cryptography_pad_function
 
 
@@ -27,24 +30,34 @@ def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> (List[x50
 
         if hash_function is None or pad_function is None:
             raise ValueError('Unsupported signature algorithm: {}'.format(signature_algorithm))
+        else:
+            current_app.logger.debug("Using signature algorithm: %s", signature_algorithm.native)
 
-        verifier = certificate.public_key().verifier(
+        assert signed['encap_content_info']['content_type'].native == 'data'
+        if detached:
+            data = request.data
+        else:
+            data = signed['encap_content_info']['content'].native
+
+        digest = hashes.Hash(hash_function(), backend=default_backend())
+        digest.update(data)
+        digested = digest.finalize()
+        current_app.logger.debug("Digest calculated on request body: %s", b64encode(digested))
+
+        if 'signed_attrs' in signer:
+            for i in range(0, len(signer['signed_attrs'])):
+                signed_attr: CMSAttribute = signer['signed_attrs'][i]
+
+                if signed_attr['type'].native == "message_digest":
+                    current_app.logger.debug("SignerInfo digest: %s", b64encode(signed_attr['values'][0].native))
+
+        certificate.public_key().verify(
             signer['signature'].native,
+            signer['signed_attrs'].dump(),
             pad_function(),
             hash_function()
         )
 
-        assert signed['encap_content_info']['content_type'].native == 'data'
-        # if detached:
-        #     verifier.update(request.data)
-        # else:
-        #     data = signed['encap_content_info']['content'].native
-        #     verifier.update(data)
-
-        if 'signed_attrs' in signer:
-            verifier.update(signer['signed_attrs'].dump())
-
-        verifier.verify()  # Raises a SigningError if not valid
         signers.append(certificate)
 
     # TODO: Don't assume that content is OctetString
