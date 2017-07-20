@@ -16,6 +16,8 @@ def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> (List[x50
     assert ci['content_type'].native == 'signed_data'
     signed: cms.SignedData = ci['content']
 
+    current_app.logger.debug("CMS request contains %d certificate(s)", len(signed['certificates']))
+
     signers = []
     for signer in signed['signer_infos']:
         asn_certificate = _certificate_by_signer_identifier(signed['certificates'], signer['sid'])

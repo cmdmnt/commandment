@@ -1,12 +1,14 @@
 from cryptography.hazmat.backends import default_backend
 from flask import Blueprint, jsonify, g, current_app
 from flask_rest_jsonapi import Api
-import plistlib
 from cryptography import x509
 from cryptography.hazmat.primitives.serialization import Encoding
 from base64 import urlsafe_b64encode
-
+from commandment.enroll.util import generate_enroll_profile
 from commandment.cms.decorators import verify_cms_signers
+from commandment.plistutil.nonewriter import dumps as dumps_none
+from commandment.profiles.plist_schema import ProfileSchema
+from commandment.profiles import PROFILE_CONTENT_TYPE
 from .resources import DEPProfileList, DEPProfileDetail, DEPProfileRelationship
 
 dep_app = Blueprint('dep_app', __name__)
@@ -23,7 +25,7 @@ def account():
 
 
 @dep_app.route('/dep/profile', methods=["POST"])
-@verify_cms_signers
+# @verify_cms_signers
 def profile():
     """Accept a CMS Signed DER encoded XML data containing device information.
 
@@ -32,7 +34,15 @@ def profile():
     See Also:
         - **Request to a Profile URL** in the MDM Protocol Reference.
     """
-    g.plist_data = plistlib.loads(g.signed_data)
+    # TODO: Do something with signed request data???
+    #g.plist_data = plistlib.loads(g.signed_data)
+    profile = generate_enroll_profile()
+
+    schema = ProfileSchema()
+    result = schema.dump(profile)
+    plist_data = dumps_none(result.data, skipkeys=True)
+
+    return plist_data, 200, {'Content-Type': PROFILE_CONTENT_TYPE}
 
 
 @dep_app.route('/dep/anchor_certs', methods=["GET"])

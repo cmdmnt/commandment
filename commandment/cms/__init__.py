@@ -29,7 +29,7 @@ def _certificate_by_signer_identifier(certificates: CertificateSet, sid: SignerI
             continue
 
         if chosen.issuer == ias['issuer']:
-            return c
+            return chosen
 
     return None
 
