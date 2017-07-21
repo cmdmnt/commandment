@@ -307,6 +307,37 @@ export const postRelationship: PostRelationshipActionRequest = (id: string, rela
     }
 };
 
+export const RCPOST_REQUEST = 'devices/RCPOST_REQUEST';
+export type RCPOST_REQUEST = typeof RCPOST_REQUEST;
+export const RCPOST_SUCCESS = 'devices/RCPOST_SUCCESS';
+export type RCPOST_SUCCESS = typeof RCPOST_SUCCESS;
+export const RCPOST_FAILURE = 'devices/RCPOST_FAILURE';
+export type RCPOST_FAILURE = typeof RCPOST_FAILURE;
+
+export interface PostRelatedActionRequest {
+    <TRelated>(parent_id: string, relationship: DeviceRelationship, data: TRelated): RSAA<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE>;
+}
+export type PostRelatedActionResponse = RSAAReadActionResponse<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE, JSONAPIDetailResponse<any, undefined>>;
+
+export const postRelated: PostRelatedActionRequest = <TRelated>(parent_id: string, relationship: DeviceRelationship, data: TRelated): RSAA<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE> => {
+    return {
+        [CALL_API]: {
+            endpoint: `/api/v1/devices/${parent_id}/${relationship}`,
+            method: 'POST',
+            types: [
+                RCPOST_REQUEST,
+                RCPOST_SUCCESS,
+                RCPOST_FAILURE
+            ],
+            headers: JSONAPI_HEADERS,
+            body: JSON.stringify({ data: {
+                type: relationship,
+                attributes: data
+            } })
+        }
+    }
+};
+
 
 export const RPATCH_REQUEST = 'devices/RPATCH_REQUEST';
 export type RPATCH_REQUEST = typeof RPATCH_REQUEST;

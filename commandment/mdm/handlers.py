@@ -60,6 +60,9 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
     schema = ProfileListResponse()
     profile_list = schema.load(response)
 
+    for pl in device.installed_payloads:
+        db.session.delete(pl)
+
     # Impossible to calculate delta, so all profiles get wiped
     for p in device.installed_profiles:
         db.session.delete(p)

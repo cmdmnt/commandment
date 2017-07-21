@@ -9,6 +9,7 @@ import {
     push, PushActionRequest,
     test, TestActionRequest,
     fetchDeviceIfRequired, CacheFetchActionRequest,
+    postRelated, PostRelatedActionRequest,
     patchRelationship, PatchRelationshipActionRequest
 } from "../actions/devices";
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
@@ -53,6 +54,7 @@ interface ReduxDispatchProps {
     fetchDeviceIfRequired: CacheFetchActionRequest;
     createTag: PostTagActionRequest;
     patchRelationship: PatchRelationshipActionRequest;
+    postRelated: PostRelatedActionRequest;
 }
 
 function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps): ReduxDispatchProps {
@@ -63,7 +65,8 @@ function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps):
         fetchTags,
         fetchDeviceIfRequired,
         createTag,
-        patchRelationship
+        patchRelationship,
+        postRelated
     }, dispatch);
 }
 
@@ -103,7 +106,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
             color: '888888'
         };
 
-        this.props.createTag(tag);
+        this.props.postRelated<Tag>(this.props.device.device.id, "tags", tag);
     };
 
     handleSearchTag = (value: string) => {

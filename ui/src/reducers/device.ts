@@ -1,6 +1,6 @@
 import * as actions from '../actions/devices';
 import {
-    CommandsActionResponse, PatchRelationshipActionResponse,
+    CommandsActionResponse, PatchRelationshipActionResponse, PostRelatedActionResponse,
     ReadActionResponse
 } from "../actions/devices";
 import {CertificatesActionResponse} from '../actions/device/certificates';
@@ -42,7 +42,7 @@ const initialState: DeviceState = {
 };
 
 type DevicesAction = ReadActionResponse | InstalledApplicationsActionResponse | CommandsActionResponse |
-    CertificatesActionResponse | PatchRelationshipActionResponse;
+    CertificatesActionResponse | PatchRelationshipActionResponse | PostRelatedActionResponse;
 
 export function device(state: DeviceState = initialState, action: DevicesAction): DeviceState {
     switch (action.type) {
@@ -113,6 +113,26 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
             return {
                 ...state,
                 tagsLoading: false
+            };
+
+        case actions.RCPOST_REQUEST:
+            return {
+                ...state,
+                tagsLoading: true
+            };
+
+        case actions.RCPOST_SUCCESS:
+            return {
+                ...state,
+                tags: state.tags.concat([action.payload.data])
+            };
+
+        case actions.RCPOST_FAILURE:
+            return {
+                ...state,
+                tagsLoading: false,
+                error: true,
+                errorDetail: action.payload
             };
             
         default:

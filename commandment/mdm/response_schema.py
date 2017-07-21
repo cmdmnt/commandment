@@ -182,7 +182,7 @@ class CertificateListResponse(CommandResponse):
 
 class AvailableOSUpdate(Schema):
     AllowsInstallLater = fields.Boolean(attribute='allows_install_later')
-    AppIdentifiersToClose = fields.String(attribute='app_identifiers_to_close', many=True)
+    AppIdentifiersToClose = fields.List(fields.String, attribute='app_identifiers_to_close', many=True)
     HumanReadableName = fields.String(attribute='human_readable_name')
     HumanReadableNameLocale = fields.String(attribute='human_readable_name_locale')
     IsConfigDataUpdate = fields.Boolean(attribute='is_config_data_update')
@@ -190,7 +190,7 @@ class AvailableOSUpdate(Schema):
     IsFirmwareUpdate = fields.Boolean(attribute='is_firmware_update')
     MetadataURL = fields.String(attribute='metadata_url')
     ProductKey = fields.String(attribute='product_key')
-    RestartRequired = fields.String(attribute='restart_required')
+    RestartRequired = fields.Boolean(attribute='restart_required')
     Version = fields.String(attribute='version')
 
     @post_load

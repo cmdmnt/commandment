@@ -197,17 +197,24 @@ class InstalledCertificateSchema(Schema):
 
 
 class PrivateKeySchema(Schema):
-    id = fields.Int(dump_only=True)
-    pem_key = fields.Str()
-
     class Meta:
         type_ = 'private_keys'
         self_view = 'api_app.private_key_detail'
         self_view_kwargs = {'private_key_id': '<id>'}
         strict = True
-    
+
+    id = fields.Int(dump_only=True)
+    pem_key = fields.Str()
+
 
 class CertificateSchema(Schema):
+    class Meta:
+        type_ = 'certificates'
+        self_view = 'api_app.certificate_detail'
+        self_view_kwargs = {'certificate_id': '<id>'}
+        self_view_many = 'api_app.certificates_list'
+        strict = True
+
     id = fields.Int(dump_only=True)
     type = fields.Str(attribute='type')
     x509_cn = fields.Str(dump_only=True)
@@ -226,28 +233,26 @@ class CertificateSchema(Schema):
         type_='private_keys'
     )
 
-    class Meta:
-        type_ = 'certificates'
-        self_view = 'api_app.certificate_detail'
-        self_view_kwargs = {'certificate_id': '<id>'}
-        self_view_many = 'api_app.certificates_list'
-        strict = True
-
 
 class CertificateSigningRequestSchema(Schema):
-    id = fields.Int(dump_only=True)
-    purpose = fields.Str(load_only=True, attribute='req_type')
-    subject = fields.Str()
-    pem_request = fields.Str()
-
     class Meta:
         type_ = 'certificate_signing_requests'
         self_view = 'api_app.certificate_signing_request_detail'
         self_view_kwargs = {'certificate_signing_request_id': '<id>'}
         self_view_many = 'api_app.certificate_signing_request_list'
 
+    id = fields.Int(dump_only=True)
+    purpose = fields.Str(load_only=True, attribute='req_type')
+    subject = fields.Str()
+    pem_request = fields.Str()
+
 
 class OrganizationSchema(Schema):
+    class Meta:
+        type_ = 'organizations'
+        self_view = 'api_app.organization_detail'
+        self_view_kwargs = {'organization_id': '<id>'}
+
     id = fields.Int(dump_only=True)
     name = fields.Str()
     payload_prefix = fields.Str()
@@ -256,11 +261,6 @@ class OrganizationSchema(Schema):
     x509_o = fields.Str()
     x509_st = fields.Str()
     x509_c = fields.Str()
-
-    class Meta:
-        type_ = 'organizations'
-        self_view = 'api_app.organization_detail'
-        self_view_kwargs = {'organization_id': '<id>'}
 
 
 class OrganizationFlatSchema(FlatSchema):
@@ -324,7 +324,12 @@ class PushResponseFlatSchema(FlatSchema):
 
 
 class InstalledProfileSchema(Schema):
-    """marshmallow-jsonapi schema for Profile SQLAlchemy models."""
+    class Meta:
+        type_ = 'installed_profiles'
+        self_view = 'api_app.installed_profile_detail'
+        self_view_kwargs = {'installed_profile_id': '<id>'}
+        self_view_many = 'api_app.installed_profiles_list'
+
     id = fields.Int(dump_only=True)
 
     has_removal_password = fields.Bool()
@@ -336,15 +341,15 @@ class InstalledProfileSchema(Schema):
     payload_removal_disallowed = fields.Boolean()
     payload_uuid = fields.UUID()
     # signer_certificates = fields.Nested()
-    
-    class Meta:
-        type_ = 'installed_profiles'
-        self_view = 'api_app.installed_profile_detail'
-        self_view_kwargs = {'installed_profile_id': '<id>'}
-        self_view_many = 'api_app.installed_profiles_list'
 
 
 class ProfileSchema(Schema):
+    class Meta:
+        type_ = 'profiles'
+        self_view = 'api_app.profile_detail'
+        self_view_kwargs = {'profile_id': '<id>'}
+        self_view_many = 'api_app.profiles_list'
+
     id = fields.Int(dump_only=True)
     data = fields.String()
 
@@ -369,21 +374,32 @@ class ProfileSchema(Schema):
         type_='tags'
     )
 
-    class Meta:
-        type_ = 'profiles'
-        self_view = 'api_app.profile_detail'
-        self_view_kwargs = {'profile_id': '<id>'}
-        self_view_many = 'api_app.profiles_list'
-
 
 class TagSchema(Schema):
-    id = fields.Int(dump_only=True)
-    name = fields.Str()
-    color = fields.Str()
-
     class Meta:
         type_ = 'tags'
         self_view = 'api_app.tag_detail'
         self_view_kwargs = {'tag_id': '<id>'}
         self_view_many = 'api_app.tags_list'
 
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+    color = fields.Str()
+
+    devices = Relationship(
+        self_view='api_app.tag_devices',
+        self_view_kwargs={'tag_id': '<id>'},
+        related_view='api_app.device_detail',
+        related_view_kwargs={'device_id': '<id>'},
+        schema='DeviceSchema',
+        many=True,
+        type_='devices'
+    )
+
+    # profiles = Relationship(
+    #     related_view='api_app.profiles_list',
+    #     related_view_kwargs={'profile_id': '<id>'},
+    #     schema='ProfileSchema',
+    #     many=True,
+    #     type_='profiles'
+    # )

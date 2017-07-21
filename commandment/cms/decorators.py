@@ -1,7 +1,8 @@
 from typing import List
 
 from asn1crypto.cms import CMSAttribute
-from flask import request, g, current_app
+from cryptography.exceptions import InvalidSignature
+from flask import request, g, current_app, abort
 from functools import wraps
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
@@ -36,29 +37,32 @@ def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> (List[x50
             current_app.logger.debug("Using signature algorithm: %s", signature_algorithm.native)
 
         assert signed['encap_content_info']['content_type'].native == 'data'
+
         if detached:
             data = request.data
         else:
             data = signed['encap_content_info']['content'].native
 
-        digest = hashes.Hash(hash_function(), backend=default_backend())
-        digest.update(data)
-        digested = digest.finalize()
-        current_app.logger.debug("Digest calculated on request body: %s", b64encode(digested))
-
-        if 'signed_attrs' in signer:
+        if 'signed_attrs' in signer and len(signer['signed_attrs']) > 0:
             for i in range(0, len(signer['signed_attrs'])):
                 signed_attr: CMSAttribute = signer['signed_attrs'][i]
 
                 if signed_attr['type'].native == "message_digest":
                     current_app.logger.debug("SignerInfo digest: %s", b64encode(signed_attr['values'][0].native))
 
-        certificate.public_key().verify(
-            signer['signature'].native,
-            signer['signed_attrs'].dump(),
-            pad_function(),
-            hash_function()
-        )
+            certificate.public_key().verify(
+                signer['signature'].native,
+                signer['signed_attrs'].dump(),
+                pad_function(),
+                hash_function()
+            )
+        else:  # No signed attributes means we are only validating the digest
+            certificate.public_key().verify(
+                signer['signature'].native,
+                data,
+                pad_function(),
+                hash_function()
+            )
 
         signers.append(certificate)
 
@@ -114,7 +118,12 @@ def verify_cms_signers_header(f):
             raise TypeError('Client did not supply an Mdm-Signature header but signature is required.')
 
         detached_signature = b64decode(request.headers['Mdm-Signature'])
-        signers, signed_data = _verify_cms_signers(detached_signature, detached=True)
+
+        try:
+            signers, signed_data = _verify_cms_signers(detached_signature, detached=True)
+        except InvalidSignature as e:
+            current_app.logger.warn("Invalid Signature in Mdm-Signature header")
+            return abort(403)
 
         g.signers = signers
         g.signed_data = signed_data

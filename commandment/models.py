@@ -864,7 +864,7 @@ class Tag(db.Model):
     )
 
     # profiles = db.relationship(
-    #     "Tag",
+    #     "Profiles",
     #     secondary=profile_tags,
     #     back_populates="tags",
     # )
