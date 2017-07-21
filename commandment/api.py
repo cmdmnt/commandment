@@ -9,7 +9,8 @@ from .resources import CertificatesList, CertificateDetail, CertificateSigningRe
     OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationsList, ProfilesList, ProfileDetail, \
     InstalledCertificatesList, InstalledCertificateDetail, InstalledApplicationDetail, \
     DeviceGroupList, DeviceGroupDetail, DeviceRelationship, CommandRelationship, InstalledProfilesList, \
-    InstalledProfileDetail, TagsList, TagDetail, TagRelationship, ProfileRelationship
+    InstalledProfileDetail, TagsList, TagDetail, TagRelationship, ProfileRelationship, AvailableOSUpdateList, \
+    AvailableOSUpdateDetail
 
 # PayloadsList, PayloadDetail,
 
@@ -71,8 +72,14 @@ api.route(InstalledProfileDetail, 'installed_profile_detail', '/v1/installed_pro
 # api.route(OrganizationList, 'organizations_list', '/v1/organizations')
 # api.route(OrganizationDetail, 'organization_detail', '/v1/organizations/<int:organization_id>')
 
-
+# Tags
 api.route(TagsList, 'tags_list', '/v1/tags', '/v1/devices/<int:device_id>/tags')
 api.route(TagDetail, 'tag_detail', '/v1/tags/<int:tag_id>')
 api.route(TagRelationship, 'tag_devices', '/v1/tags/<int:tag_id>/relationships/devices')
 
+
+# Available OS Updates
+api.route(AvailableOSUpdateList, 'available_os_update_list',
+          '/v1/available_os_updates', '/v1/devices/<int:device_id>/available_os_updates')
+api.route(AvailableOSUpdateDetail, 'available_os_update_detail',
+          '/v1/available_os_updates/<int:available_os_update_id>')

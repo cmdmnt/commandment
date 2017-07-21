@@ -21,6 +21,7 @@ import {DeviceCertificates} from "./devices/DeviceCertificates";
 import {DeviceCommands} from "./devices/DeviceCommands";
 import {DeviceApplications} from "./devices/DeviceApplications";
 import {DeviceProfiles} from "./devices/DeviceProfiles";
+import {DeviceOSUpdates} from "./devices/DeviceOSUpdates";
 import {TagDropdown} from "../components/TagDropdown";
 import {TagsState} from "../reducers/tags";
 import {
@@ -124,7 +125,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
 
     componentDidMount(): void {
         this.props.fetchDeviceIfRequired(''+this.props.match.params.id, ['tags']);
-        this.props.fetchTags();
+        this.props.fetchTags(40);
     }
 
     render(): JSX.Element {
@@ -179,6 +180,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                             <Route path='/devices/:id/commands' component={DeviceCommands}/>
                             <Route path='/devices/:id/installed_applications' component={DeviceApplications}/>
                             <Route path='/devices/:id/installed_profiles' component={DeviceProfiles}/>
+                            <Route path='/devices/:id/os_updates' component={DeviceOSUpdates}/>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

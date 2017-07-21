@@ -4,10 +4,10 @@
 
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
     CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, InstalledApplicationSchema, ProfileSchema, \
-    InstalledCertificateSchema, DeviceGroupSchema, InstalledProfileSchema, TagSchema
+    InstalledCertificateSchema, DeviceGroupSchema, InstalledProfileSchema, TagSchema, AvailableOSUpdateSchema
 from .models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
     SSLCertificate, Organization, Command, InstalledApplication, InstalledProfile, InstalledCertificate, DeviceGroup, \
-    Tag
+    Tag, AvailableOSUpdate
 from .profiles.models import Profile
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
@@ -245,6 +245,7 @@ class TagsList(ResourceList):
         'session': db.session,
         'model': Tag
     }
+    view_kwargs = True
 
 
 class TagDetail(ResourceDetail):
@@ -262,4 +263,21 @@ class TagRelationship(ResourceRelationship):
         'session': db.session,
         'model': Tag,
         'url_field': 'tag_id'
+    }
+
+
+class AvailableOSUpdateList(ResourceList):
+    schema = AvailableOSUpdateSchema
+    data_layer = {
+        'session': db.session,
+        'model': AvailableOSUpdate
+    }
+
+
+class AvailableOSUpdateDetail(ResourceDetail):
+    schema = AvailableOSUpdateSchema
+    data_layer = {
+        'session': db.session,
+        'model': AvailableOSUpdate,
+        'url_field': 'available_os_update_id'
     }

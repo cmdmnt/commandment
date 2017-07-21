@@ -122,9 +122,18 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
             };
 
         case actions.RCPOST_SUCCESS:
+            const mergedTags = state.device.relationships.tags.data.concat([action.payload.data]);
             return {
                 ...state,
-                tags: state.tags.concat([action.payload.data])
+                device: {
+                    ...state.device,
+                    relationships: {
+                        ...state.device.relationships,
+                        tags: {
+                            data: mergedTags
+                        }
+                    }
+                }
             };
 
         case actions.RCPOST_FAILURE:

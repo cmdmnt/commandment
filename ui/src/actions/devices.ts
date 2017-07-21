@@ -332,7 +332,17 @@ export const postRelated: PostRelatedActionRequest = <TRelated>(parent_id: strin
             headers: JSONAPI_HEADERS,
             body: JSON.stringify({ data: {
                 type: relationship,
-                attributes: data
+                attributes: data,
+                relationships: {
+                    devices: {
+                        data: [
+                            {
+                                type: "devices",
+                                id: parent_id
+                            }
+                        ]
+                    }
+                }
             } })
         }
     }
