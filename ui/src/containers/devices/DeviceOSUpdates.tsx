@@ -23,7 +23,7 @@ function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
 }
 
 interface ReduxDispatchProps {
-    fetchInstalledProfiles: AvailableOSUpdatesActionRequest;
+    fetchAvailableOSUpdates: AvailableOSUpdatesActionRequest;
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
