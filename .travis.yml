@@ -10,4 +10,4 @@ env:
 install:
   - cd ui && yarn install
 script:
-  - cd ui && webpack
+  - webpack
