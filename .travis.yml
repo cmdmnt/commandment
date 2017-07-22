@@ -4,8 +4,10 @@ node_js:
 cache:
   yarn: true
   directories:
-    - "node_modules"
+    - "ui/node_modules"
 env:
   - NODE_ENV=production
+install:
+  - cd ui && yarn install
 script:
-  - webpack
+  - cd ui && webpack
