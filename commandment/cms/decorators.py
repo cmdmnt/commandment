@@ -71,7 +71,7 @@ def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> (List[x50
     if detached:
         return signers, request.data
     else:
-        return signers, signed['encap_content_info']['content']
+        return signers, signed['encap_content_info']['content'].native
 
 
 def verify_cms_signers(f):

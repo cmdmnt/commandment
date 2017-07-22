@@ -15,7 +15,6 @@ from .configuration import configuration_app
 from .enroll.app import enroll_app
 from .models import db
 from .omdm import omdm_app
-from .ota import ota_app
 from .sso.oauth import oauth_app
 from .sso.saml import saml_app
 from .dep.app import dep_app
@@ -43,7 +42,6 @@ def create_app() -> Flask:
     app.register_blueprint(api_app, url_prefix='/api')
     app.register_blueprint(api_push_app, url_prefix='/api')
     app.register_blueprint(flat_api, url_prefix='/api')
-    app.register_blueprint(ota_app, url_prefix='/ota')
     app.register_blueprint(oauth_app, url_prefix='/oauth')
     app.register_blueprint(saml_app, url_prefix='/saml')
     app.register_blueprint(omdm_app, url_prefix='/omdm')

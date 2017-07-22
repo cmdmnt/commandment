@@ -1,6 +1,7 @@
 from uuid import uuid4
+import plistlib
 
-from flask import current_app, render_template, abort, Blueprint, make_response, url_for, request
+from flask import current_app, render_template, abort, Blueprint, make_response, url_for, request, g
 import os
 
 from commandment.enroll import AllDeviceAttributes
@@ -10,6 +11,7 @@ from commandment.models import db, Organization, SCEPConfig
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from commandment.plistutil.nonewriter import dumps as dumps_none
 from commandment.enroll.util import generate_enroll_profile
+from commandment.cms.decorators import verify_cms_signers
 
 enroll_app = Blueprint('enroll_app', __name__)
 
@@ -97,7 +99,7 @@ def enroll():
     return plist_data, 200, {'Content-Type': PROFILE_CONTENT_TYPE}
 
 
-@enroll_app.route('/ota/enroll')
+@enroll_app.route('/ota')
 def ota_enroll():
     try:
         org = db.session.query(Organization).one()
@@ -109,18 +111,25 @@ def ota_enroll():
     profile = {
         'PayloadType': 'Profile Service',
         'PayloadIdentifier': org.payload_prefix + '.ota.enroll',
+        'PayloadUUID': str(uuid4()),
+        'PayloadVersion': 1,
         'PayloadDisplayName': 'Commandment Profile Service',
         'PayloadDescription': 'Enrolls your device with Commandment',
         'PayloadContent': [{
-            'URL': 'https://{}:{}/ota/profile'.format(current_app.config['PUBLIC_HOSTNAME'], current_app.config['PORT']),
+            'URL': 'https://{}:{}/enroll/ota_authenticate'.format(current_app.config['PUBLIC_HOSTNAME'], current_app.config['PORT']),
             'DeviceAttributes': list(AllDeviceAttributes),
             'Challenge': 'TODO',
         }],
     }
+    plist_data = dumps_none(profile)
+
+    return plist_data, 200, {'Content-Type': PROFILE_CONTENT_TYPE}
 
 
-
-
-@enroll_app.route('/ota/profile')
-def ota_profile():
-    pass
+@enroll_app.route('/ota_authenticate', methods=['POST'])
+@verify_cms_signers
+def ota_authenticate():
+    signed_data = g.signed_data
+    signers = g.signers
+    device_attributes = plistlib.loads(signed_data)
+    current_app.logger.debug(device_attributes)
