@@ -79,7 +79,7 @@ api.route(TagRelationship, 'tag_devices', '/v1/tags/<int:tag_id>/relationships/d
 
 
 # Available OS Updates
-api.route(AvailableOSUpdateList, 'available_os_update_list',
+api.route(AvailableOSUpdateList, 'available_os_updates_list',
           '/v1/available_os_updates', '/v1/devices/<int:device_id>/available_os_updates')
 api.route(AvailableOSUpdateDetail, 'available_os_update_detail',
           '/v1/available_os_updates/<int:available_os_update_id>')

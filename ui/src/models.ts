@@ -111,6 +111,21 @@ export interface InstalledProfile {
     payload_uuid: string;
 }
 
+export interface AvailableOSUpdate {
+    id?: string;
+    allows_install_later: boolean;
+    app_identifiers_to_close: Array<string>;
+    human_readable_name: string;
+    human_readable_name_locale: string;
+    is_config_data_update: boolean;
+    is_critical: boolean;
+    is_firmware_update: boolean;
+    metadata_url: string;
+    product_key: string;
+    restart_required: boolean;
+    version: string;
+}
+
 export interface SCEPConfiguration {
     url: string;
     challenge_enabled: boolean;

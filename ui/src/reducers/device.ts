@@ -11,6 +11,7 @@ import {InstalledApplicationsActionResponse} from "../actions/device/application
 import {installed_profiles, InstalledProfilesState} from "./device/installed_profiles";
 import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Device, Tag} from "../models";
+import {available_os_updates, AvailableOSUpdatesState} from "./device/available_os_updates";
 
 
 export interface DeviceState {
@@ -26,6 +27,7 @@ export interface DeviceState {
     installed_certificates?: InstalledCertificatesState;
     installed_applications?: InstalledApplicationsState;
     installed_profiles?: InstalledProfilesState;
+    available_os_updates?: AvailableOSUpdatesState;
     tags?: Array<JSONAPIObject<Tag>>;
     tagsLoading: boolean;
 }
@@ -150,7 +152,8 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                 commands: commands(state.commands, action),
                 installed_certificates: installed_certificates(state.installed_certificates, action),
                 installed_applications: installed_applications(state.installed_applications, action),
-                installed_profiles: installed_profiles(state.installed_profiles, action)
+                installed_profiles: installed_profiles(state.installed_profiles, action),
+                available_os_updates: available_os_updates(state.available_os_updates, action)
             };
     }
 }

@@ -171,6 +171,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                                 <MenuItemLink to={`/devices/${device_id}/commands`}>Commands</MenuItemLink>
                                 <MenuItemLink to={`/devices/${device_id}/installed_applications`}>Applications</MenuItemLink>
                                 <MenuItemLink to={`/devices/${device_id}/installed_profiles`}>Profiles</MenuItemLink>
+                                <MenuItemLink to={`/devices/${device_id}/available_os_updates`}>Updates</MenuItemLink>
                             </Menu>
                         </Grid.Column>
                     </Grid.Row>
@@ -180,7 +181,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                             <Route path='/devices/:id/commands' component={DeviceCommands}/>
                             <Route path='/devices/:id/installed_applications' component={DeviceApplications}/>
                             <Route path='/devices/:id/installed_profiles' component={DeviceProfiles}/>
-                            <Route path='/devices/:id/os_updates' component={DeviceOSUpdates}/>
+                            <Route path='/devices/:id/available_os_updates' component={DeviceOSUpdates}/>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

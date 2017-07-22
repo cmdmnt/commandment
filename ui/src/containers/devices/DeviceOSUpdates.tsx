@@ -1,11 +1,10 @@
 import * as React from 'react';
 import {connect, Dispatch} from "react-redux";
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import {SinceNowUTC} from "../../components/griddle/SinceNowUTC";
 import {RootState} from "../../reducers/index";
-import {InstalledProfilesState} from "../../reducers/device/installed_profiles";
+import {AvailableOSUpdatesState} from "../../reducers/device/available_os_updates";
 import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
-import {InstalledProfilesActionRequest, profiles as fetchInstalledProfiles} from "../../actions/device/profiles";
+import {AvailableOSUpdatesActionRequest, updates as fetchAvailableOSUpdates} from "../../actions/device/updates";
 import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators} from "redux";
 import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
@@ -14,70 +13,65 @@ import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
 
 
 interface ReduxStateProps {
-    profiles?: InstalledProfilesState;
+    updates?: AvailableOSUpdatesState;
 }
 
 function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
     return {
-        profiles: state.device.installed_profiles
+        updates: state.device.available_os_updates
     }
 }
 
 interface ReduxDispatchProps {
-    fetchInstalledProfiles: InstalledProfilesActionRequest;
+    fetchInstalledProfiles: AvailableOSUpdatesActionRequest;
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
    return bindActionCreators({
-       fetchInstalledProfiles
+       fetchAvailableOSUpdates
    }, dispatch);
 }
 
-interface DeviceProfilesRouteProps {
+interface DeviceOSUpdatesRouteProps {
     id: number;
 }
 
-interface DeviceProfilesProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<DeviceProfilesRouteProps> {
+interface DeviceOSUpdatesProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<DeviceOSUpdatesRouteProps> {
     griddleState: GriddleDecoratorState;
     events: any;
 }
 
 
-@connect<ReduxStateProps, ReduxDispatchProps, any>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-@griddle
-export class DeviceProfiles extends React.Component<DeviceProfilesProps, undefined> {
+class BaseDeviceOSUpdates extends React.Component<DeviceOSUpdatesProps, undefined> {
 
     componentWillMount?() {
-        this.props.fetchInstalledProfiles(this.props.match.params.id, this.props.griddleState.pageSize, 1);
+        this.props.fetchAvailableOSUpdates(this.props.match.params.id, this.props.griddleState.pageSize, 1);
     }
 
-    componentWillUpdate?(nextProps: DeviceProfilesProps, nextState: void | Readonly<{}>) {
+    componentWillUpdate?(nextProps: DeviceOSUpdatesProps, nextState: void | Readonly<{}>) {
         const {griddleState} = this.props;
         const {griddleState: nextGriddleState} = nextProps;
 
         if (nextGriddleState.filter !== griddleState.filter || nextGriddleState.currentPage !== griddleState.currentPage) {
-            this.props.fetchInstalledProfiles(
+            this.props.fetchAvailableOSUpdates(
                 this.props.match.params.id,
                 nextGriddleState.pageSize,
                 nextGriddleState.currentPage, [],
-                [{ name: 'payload_display_name', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
+                [{ name: 'human_readable_name', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
         }
     }
 
     render() {
         const {
-            profiles
+            updates
         } = this.props;
 
         return (
-            <div className='DeviceProfiles container'>
+            <div className='DeviceOSUpdates container'>
 
-                {profiles &&
+                {updates &&
                 <Griddle
-                    data={profiles.items}
+                    data={updates.items}
                     plugins={[SemanticUIPlugin()]}
                     styleConfig={{
                         classNames: {
@@ -88,17 +82,22 @@ export class DeviceProfiles extends React.Component<DeviceProfilesProps, undefin
                     events={this.props.events}
                     components={{Layout}}
                     pageProperties={{
-                        recordCount: profiles.recordCount,
+                        recordCount: updates.recordCount,
                         currentPage: this.props.griddleState.currentPage,
                         pageSize: this.props.griddleState.pageSize
                     }}
                 >
                     <RowDefinition>
-                        <ColumnDefinition title='Display Name' id='attributes.payload_display_name' />
-                        <ColumnDefinition title='Identifier' id="attributes.payload_identifier" />
+                        <ColumnDefinition title='Name' id='attributes.human_readable_name' />
+                        <ColumnDefinition title='Version' id="attributes.version" />
                     </RowDefinition>
                 </Griddle>}
             </div>
         )
     }
 }
+
+export const DeviceOSUpdates = connect<ReduxStateProps, ReduxDispatchProps, any>(
+    mapStateToProps,
+    mapDispatchToProps
+)(griddle(BaseDeviceOSUpdates));
