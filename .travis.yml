@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - "7"
+cache:
+  yarn: true
+  directories:
+    - "node_modules"
+env:
+  - NODE_ENV=production
+script:
+  - webpack

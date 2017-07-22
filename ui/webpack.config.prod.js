@@ -1,5 +1,6 @@
 const path = require('path');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const {CheckerPlugin} = require('awesome-typescript-loader');
 
 const extractSass = new ExtractTextPlugin({
     filename: "css/[name].css"
@@ -9,7 +10,6 @@ const extractSass = new ExtractTextPlugin({
 module.exports = {
     entry: {
         app: [
-            'react-hot-loader/patch',
             './src/entry.tsx'
         ]
     },
@@ -79,6 +79,7 @@ module.exports = {
         ]
     },
     plugins: [
-        extractSass
+        extractSass,
+        new CheckerPlugin()
     ]
 };
