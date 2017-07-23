@@ -1,5 +1,5 @@
-VPP
-===
+VPP - Volume Purchasing Programme
+=================================
 
 Details of the **commandment.vpp** package.
 

@@ -77,7 +77,10 @@ def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> (List[x50
 def verify_cms_signers(f):
     """Verify the signers of a request containing a CMS/PKCS#7, DER encoded body.
 
-    The certificate of each signer is placed on the global **g** variable as **g.signers**
+    The certificate of each signer is placed on the global **g** variable as **g.signers** and the signed data is
+    set as **g.signed_data**.
+
+    In unit tests, this decorator is completely disabled by the presence of testing = True
 
     Raises:
           - TypeError if *Content-Type* header is not "application/pkcs7-signature"
@@ -103,7 +106,7 @@ def verify_cms_signers_header(f):
     """Verify the signature supplied by the client in the request using the ``Mdm-Signature`` header.
 
     If the authenticity of the message has been verified,
-    then the signer is attached to the **g** object as **g.signer**
+    then the signer is attached to the **g** object as **g.signer**.
 
     In unit tests, this decorator is completely disabled by the presence of testing = True
 

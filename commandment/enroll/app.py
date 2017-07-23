@@ -33,7 +33,12 @@ def base64_to_pem(crypto_type, b64_text, width=76):
 
 @enroll_app.route('/trust.mobileconfig', methods=['GET'])
 def trust_mobileconfig():
-    """Generate a trust profile, if one is required."""
+    """Generate a trust profile, if one is required.
+
+    :resheader Content-Type: application/x-apple-aspen-config
+    :statuscode 200:
+    :statuscode 500: The system has not been configured, so we can't produce anything.
+    """
     try:
         org = db.session.query(Organization).one()
     except NoResultFound:

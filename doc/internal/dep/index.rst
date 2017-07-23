@@ -1,5 +1,5 @@
-DEP
-===
+DEP - Device Enrollment Programme
+=================================
 
 Details of the **commandment.dep** package
 
@@ -7,4 +7,5 @@ Details of the **commandment.dep** package
     :maxdepth: 2
 
     dep
-
+    types
+    models

@@ -5,11 +5,14 @@ Internals Reference
 .. toctree::
     :maxdepth: 2
 
-    flask/index.rst
+    core/index
 
-    models/index.rst
+    cms/index
+    dep/index
+    enroll/index
+    mdm/index
+    vpp/index
 
-    vpp/index.rst
     workers/index
 
     push.rst

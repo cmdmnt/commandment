@@ -7,7 +7,7 @@ import re
 from datetime import timedelta, datetime
 
 from commandment.dep import DEPProfileRemovals
-from .exceptions import DEPError
+from .errors import DEPError
 from email.utils import parsedate  # Necessary for HTTP-Date
 
 
