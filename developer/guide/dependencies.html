@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Dependencies &#8212; commandment 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Building" href="building.html" />
+    <link rel="prev" title="Developer Guide" href="index.html" />
+  
+   
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="building.html" title="Building"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Developer Guide"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Developer Documentation</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">Developer Guide</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+        <a href="
+    ../../index.html" class="text-logo">Commandment</a>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user/index.html">User Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Developer Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest/index.html">REST API Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../internal/index.html">Internals Reference</a></li>
+</ul>
+
+    
+  </div>
+</div>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Developer Documentation</a></li>
+              
+                <li><a href="index.html">Developer Guide</a></li>
+              
+              <li>Dependencies</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="dependencies">
+<h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installing-backend-dependencies">
+<h2>Installing backend dependencies<a class="headerlink" href="#installing-backend-dependencies" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="python-3-6">
+<h3>Python 3.6+<a class="headerlink" href="#python-3-6" title="Permalink to this headline">¶</a></h3>
+<p>Commandment is written using Python 3.6, and uses type annotations as provided by the
+<a class="reference external" href="https://docs.python.org/3/library/typing.html">typing</a> module.</p>
+<p>macOS ships with Python 2.7, so you will need to have a separate instance of Python 3.6 installed on your system.
+You can use <a class="reference external" href="https://brew.sh">Homebrew</a> to install Python 3.6 alongside the system provided Python 2.7.</p>
+<p>It&#8217;s as easy as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ brew install python3
+</pre></div>
+</div>
+<p>You can also get an isolated environment using something such as <a class="reference external" href="https://www.continuum.io/downloads">Anaconda</a>, which
+is not covered here.</p>
+</div>
+<div class="section" id="nodejs-7">
+<h3>NodeJS 7+<a class="headerlink" href="#nodejs-7" title="Permalink to this headline">¶</a></h3>
+<p>All of the front end tooling requires NodeJS. You can download and install an official package from <a class="reference external" href="https://nodejs.org/en/">here</a>.
+I use <a class="reference external" href="https://github.com/creationix/nvm">nvm</a> to run multiple NodeJS versions at a time, for testing purposes.</p>
+</div>
+</div>
+<div class="section" id="setting-up-the-environment">
+<h2>Setting up the environment<a class="headerlink" href="#setting-up-the-environment" title="Permalink to this headline">¶</a></h2>
+<p>This part will assume that you have now cloned the git repository somewhere on your system. Usually within your own
+home folder.</p>
+<div class="section" id="virtualenv">
+<h3>Virtualenv<a class="headerlink" href="#virtualenv" title="Permalink to this headline">¶</a></h3>
+<p>Because we want to keep all the dependency versions tied to the project and not mixed in with other python projects on
+your system, we use <a class="reference external" href="https://virtualenv.pypa.io/en/stable/">virtualenv</a>.</p>
+<p>If you don&#8217;t have virtualenv for some reason, you can run:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip3 install virtualenv
+</pre></div>
+</div>
+<p>To install it for use with python 3.</p>
+<p>To create a new virtualenv, called <strong>venv</strong>, run this in the cloned repository location:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ virtualenv -p python3.6 venv
+</pre></div>
+</div>
+<p>This will create a new virtualenv specifically for Python 3.6, inside the <strong>venv</strong> directory.</p>
+<p>Before we can install all of the commandment dependencies, we need to activate the virtual environment. This is so the
+dependencies are installed into <strong>venv</strong> and not <strong>/usr/local</strong> somewhere.</p>
+<p>To activate the virtualenv run:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ . ./venv/activate
+</pre></div>
+</div>
+<p>Your prompt should then change to <code class="docutils literal"><span class="pre">(venv)</span> <span class="pre">hostname:dir</span> <span class="pre">$</span></code>.</p>
+</div>
+<div class="section" id="python-dependencies">
+<h3>Python dependencies<a class="headerlink" href="#python-dependencies" title="Permalink to this headline">¶</a></h3>
+<p>Now that the virtualenv is active, we can install all of the Python dependencies, using the <strong>requirements.txt</strong> in the
+repository.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In a normal setup, the dependencies listed in setup.py would be used instead.</p>
+</div>
+<p>Run this command to fetch all of the Python dependencies:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install -r ./requirements.txt
+</pre></div>
+</div>
+<p>Now you&#8217;re done with all the backend, you can move on to the front end build process.</p>
+</div>
+</div>
+<div class="section" id="front-end-dependencies">
+<h2>Front end dependencies<a class="headerlink" href="#front-end-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>All of the front end code is contained within the <strong>ui</strong> subdirectory, so make that your current working directory.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The Python virtualenv has zero impact on the front end build</p>
+</div>
+<p>First, you need to install all of the <strong>node</strong> dependencies. For this i recommend <a class="reference external" href="https://yarnpkg.com">yarn</a>, which you
+can install by running:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ brew install yarn
+</pre></div>
+</div>
+<p>Then, to install all front end dependencies you can run:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ yarn install
+</pre></div>
+</div>
+<p>From the ui directory.</p>
+<p>You now have the tools to develop both the backend and front end code.</p>
+</div>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="index.html" title="previous chapter (use the left arrow)">Developer Guide</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="building.html" title="next chapter (use the right arrow)">Building</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="building.html" title="Building"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Developer Guide"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Developer Documentation</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >Developer Guide</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

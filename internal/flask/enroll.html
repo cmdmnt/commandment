@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Enrollment Blueprint &#8212; commandment 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="MDM Blueprint" href="mdm_app.html" />
+    <link rel="prev" title="Configuration Blueprint" href="configuration.html" />
+  
+   
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mdm_app.html" title="MDM Blueprint"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration Blueprint"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">Flask Endpoints</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+        <a href="
+    ../../index.html" class="text-logo">Commandment</a>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user/index.html">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Internals Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Flask Endpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">ORM (SQLAlchemy) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../vpp/index.html">VPP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../workers/index.html">Worker Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../push.html">push</a></li>
+</ul>
+</li>
+</ul>
+
+    
+  </div>
+</div>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Internals Reference</a></li>
+              
+                <li><a href="index.html">Flask Endpoints</a></li>
+              
+              <li>Enrollment Blueprint</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="enrollment-blueprint">
+<h1>Enrollment Blueprint<a class="headerlink" href="#enrollment-blueprint" title="Permalink to this headline">¶</a></h1>
+<dl class="get">
+<dt id="get--enroll-trust.mobileconfig">
+<code class="descname">GET </code><code class="descname">/enroll/trust.mobileconfig</code><a class="headerlink" href="#get--enroll-trust.mobileconfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a trust profile, if one is required.</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--enroll-ota_authenticate">
+<code class="descname">POST </code><code class="descname">/enroll/ota_authenticate</code><a class="headerlink" href="#post--enroll-ota_authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Over-The-Air Profile Delivery Phase 3 and 4.</p>
+<p>This endpoint represents the OTA Phase 3 and 4, &#8220;/profile&#8221; endpoint as specified in apples document &#8220;Over-The-Air
+Profile Delivery&#8221;.</p>
+<p>There are two types of requests made here:
+- The first request is signed by the iPhone Device CA and contains the challenge in the <cite>Profile Service</cite> payload,</p>
+<blockquote>
+<div>we respond with the SCEP detail.</div></blockquote>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>The second request is signed by the issued SCEP certificate. We should respond with an enrollment profile.</dt>
+<dd>It also contains the same device attributes sent in the previous step, but this time they are authenticated by
+our SCEP CA.</dd>
+</dl>
+</li>
+</ul>
+<p>Examples:</p>
+<p>Signed plist given in the first request:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;CHALLENGE&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;CHALLENGE FROM PROFILE HERE&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;IMEI&#39;</span><span class="p">:</span> <span class="s1">&#39;empty if macOS&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MEID&#39;</span><span class="p">:</span> <span class="s1">&#39;empty if macOS&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;NotOnConsole&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s1">&#39;PRODUCT&#39;</span><span class="p">:</span> <span class="s1">&#39;MacPro6,1&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SERIAL&#39;</span><span class="p">:</span> <span class="s1">&#39;C020000000000&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;UDID&#39;</span><span class="p">:</span> <span class="s1">&#39;00000000-0000-0000-0000-000000000000&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;UserID&#39;</span><span class="p">:</span> <span class="s1">&#39;00000000-0000-0000-0000-000000000000&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;UserLongName&#39;</span><span class="p">:</span> <span class="s1">&#39;Joe User&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;UserShortName&#39;</span><span class="p">:</span> <span class="s1">&#39;juser&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;VERSION&#39;</span><span class="p">:</span> <span class="s1">&#39;16F73&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>See Also:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/iPhoneOTAConfiguration/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009505-CH1-SW1">Over-the-Air Profile Delivery and Configuration</a>.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--enroll-profile">
+<code class="descname">GET </code><code class="descname">/enroll/profile</code><a class="headerlink" href="#get--enroll-profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an enrollment profile.</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--enroll-profile">
+<code class="descname">POST </code><code class="descname">/enroll/profile</code><a class="headerlink" href="#post--enroll-profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an enrollment profile.</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--enroll-ota">
+<code class="descname">GET </code><code class="descname">/enroll/ota</code><a class="headerlink" href="#get--enroll-ota" title="Permalink to this definition">¶</a></dt>
+<dd><p>Over-The-Air Profile Delivery Phase 1.5.</p>
+<p>This endpoint represents the delivery of the <cite>Profile Service</cite> profile that should be delivered AFTER the user has
+successfully authenticated.</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--enroll-">
+<code class="descname">GET </code><code class="descname">/enroll/</code><a class="headerlink" href="#get--enroll-" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the enrollment page</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="configuration.html" title="previous chapter (use the left arrow)">Configuration Blueprint</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="mdm_app.html" title="next chapter (use the right arrow)">MDM Blueprint</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mdm_app.html" title="MDM Blueprint"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration Blueprint"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >Flask Endpoints</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

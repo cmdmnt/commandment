@@ -1,0 +1,320 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Command &#8212; commandment 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Device" href="device.html" />
+    <link rel="prev" title="CertificateRequest" href="certificate_request.html" />
+  
+   
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="device.html" title="Device"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="certificate_request.html" title="CertificateRequest"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">ORM (SQLAlchemy) Models</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+        <a href="
+    ../../index.html" class="text-logo">Commandment</a>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user/index.html">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Internals Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../flask/index.html">Flask Endpoints</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">ORM (SQLAlchemy) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../vpp/index.html">VPP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../workers/index.html">Worker Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../push.html">push</a></li>
+</ul>
+</li>
+</ul>
+
+    
+  </div>
+</div>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Internals Reference</a></li>
+              
+                <li><a href="index.html">ORM (SQLAlchemy) Models</a></li>
+              
+              <li>Command</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="command">
+<span id="model-command"></span><h1>Command<a class="headerlink" href="#command" title="Permalink to this headline">¶</a></h1>
+<p class="plantuml">
+<img src="../../_images/plantuml-a18f2cfdf66f30e8cd3f43607619747be2534034.png" alt="&#64;startuml
+
+skinparam defaultFontName Courier
+
+Class commands {
+    INTEGER       ★ id                
+    INTEGER       ☆ device_id         
+    DATETIME      ⚪ acknowledged_at   
+    DATETIME      ⚪ after             
+    TEXT          ⚪ parameters        
+    DATETIME      ⚪ queued_at         
+    VARCHAR       ⚪ request_type      
+    DATETIME      ⚪ sent_at           
+    VARCHAR[1]    ⚪ status            
+    INTEGER       ⚪ ttl               
+    CHAR[32]      ⚪ uuid              
+    INDEX[status] » ix_commands_status
+    INDEX[uuid]   » ix_commands_uuid  
+}
+
+right footer generated by sadisplay v0.4.8
+
+&#64;enduml" />
+</p>
+<dl class="class">
+<dt id="commandment.models.Command">
+<em class="property">class </em><code class="descclassname">commandment.models.</code><code class="descname">Command</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/models.html#Command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.models.Command" title="Permalink to this definition">¶</a></dt>
+<dd><p>The command model represents a single MDM command that should be, has been, or has failed to be delivered to
+a single enrolled device.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Table:</th><td class="field-body">commands</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="commandment.models.Command.find_by_uuid">
+<em class="property">classmethod </em><code class="descname">find_by_uuid</code><span class="sig-paren">(</span><em>uuid: str</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/models.html#Command.find_by_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.models.Command.find_by_uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find and return an instance of the Command model matching the given UUID string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>uuid</strong> (<em>str</em>) &#8211; The command UUID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Instance of the command, if any</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#commandment.models.Command" title="commandment.models.Command">Command</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="commandment.models.Command.from_model">
+<em class="property">classmethod </em><code class="descname">from_model</code><span class="sig-paren">(</span><em>cmd: commandment.mdm.commands.Command</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/models.html#Command.from_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.models.Command.from_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method turns a subclass of commands.Command into an SQLAlchemy model.
+The parameters of the command are encoded as a JSON dictionary inside the parameters column.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cmd</strong> (<em>commands.Command</em>) &#8211; The command to be turned into a database model.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The database model, ready to be committed.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#commandment.models.Command" title="commandment.models.Command">Command</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="commandment.models.Command.get_next_device_command">
+<em class="property">classmethod </em><code class="descname">get_next_device_command</code><span class="sig-paren">(</span><em>device: commandment.models.Device</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/models.html#Command.get_next_device_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.models.Command.get_next_device_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the next available command in the queue for the specified device.</p>
+<p>TODO: Explain this process here</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device</strong> (<a class="reference internal" href="device.html#commandment.models.Device" title="commandment.models.Device"><em>Device</em></a>) &#8211; The database model matching the device checking in.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The next command model to be processed.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#commandment.models.Command" title="commandment.models.Command">Command</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="commandment.models.CommandStatus">
+<em class="property">class </em><code class="descclassname">commandment.models.</code><code class="descname">CommandStatus</code><a class="reference internal" href="../../_modules/commandment/mdm.html#CommandStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.models.CommandStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>CommandStatus describes all the possible states of a command in the device command queue.</p>
+<dl class="attribute">
+<dt id="commandment.models.CommandStatus.Acknowledged">
+<code class="descname">Acknowledged</code><em class="property"> = 'A'</em><a class="headerlink" href="#commandment.models.CommandStatus.Acknowledged" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Response has been returned from the device. This is considered completed</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.CommandStatus.Invalid">
+<code class="descname">Invalid</code><em class="property"> = 'I'</em><a class="headerlink" href="#commandment.models.CommandStatus.Invalid" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; The command that we sent was invalid, unable to be processed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.CommandStatus.NotNow">
+<code class="descname">NotNow</code><em class="property"> = 'N'</em><a class="headerlink" href="#commandment.models.CommandStatus.NotNow" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; The device is busy, this command cannot be processed right now.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.CommandStatus.Queued">
+<code class="descname">Queued</code><em class="property"> = 'Q'</em><a class="headerlink" href="#commandment.models.CommandStatus.Queued" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Command has been created but has not been sent.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.CommandStatus.Sent">
+<code class="descname">Sent</code><em class="property"> = 'S'</em><a class="headerlink" href="#commandment.models.CommandStatus.Sent" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Command has been sent to the device, but no response has returned.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="certificate_request.html" title="previous chapter (use the left arrow)">CertificateRequest</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="device.html" title="next chapter (use the right arrow)">Device</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="device.html" title="Device"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="certificate_request.html" title="CertificateRequest"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >ORM (SQLAlchemy) Models</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

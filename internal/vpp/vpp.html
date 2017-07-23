@@ -1,0 +1,550 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>VPP Client &#8212; commandment 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Worker Threads" href="../workers/index.html" />
+    <link rel="prev" title="VPP License Operations" href="operations.html" />
+  
+   
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../workers/index.html" title="Worker Threads"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="operations.html" title="VPP License Operations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">VPP</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+        <a href="
+    ../../index.html" class="text-logo">Commandment</a>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user/index.html">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Internals Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../flask/index.html">Flask Endpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">ORM (SQLAlchemy) Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">VPP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../workers/index.html">Worker Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../push.html">push</a></li>
+</ul>
+</li>
+</ul>
+
+    
+  </div>
+</div>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Internals Reference</a></li>
+              
+                <li><a href="index.html">VPP</a></li>
+              
+              <li>VPP Client</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="vpp-client">
+<h1>VPP Client<a class="headerlink" href="#vpp-client" title="Permalink to this headline">¶</a></h1>
+<p>The main VPP API wrapper class</p>
+<dl class="class">
+<dt id="commandment.vpp.vpp.VPP">
+<em class="property">class </em><code class="descclassname">commandment.vpp.vpp.</code><code class="descname">VPP</code><span class="sig-paren">(</span><em>stoken: str</em>, <em>vpp_service_config_url: str = 'https://vpp.itunes.apple.com/WebObjects/MZFinance.woa/wa/VPPServiceConfigSrv'</em>, <em>service_config: dict = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP" title="Permalink to this definition">¶</a></dt>
+<dd><p>VPP Object. The main VPP API wrapper class.</p>
+<dl class="attribute">
+<dt id="VPP.AssociationProperties">
+<code class="descname">AssociationProperties</code><a class="headerlink" href="#VPP.AssociationProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; Mapping of the LicenseAssociationType enum to the expected JSON keys in
+the request.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="VPP.DisassociationProperties">
+<code class="descname">DisassociationProperties</code><a class="headerlink" href="#VPP.DisassociationProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; Mapping of the LicenseDisassociationType enum to the expected JSON keys
+in the request.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.assets">
+<code class="descname">assets</code><span class="sig-paren">(</span><em>include_license_counts: bool = True</em>, <em>facilitator_member_id: str = None</em><span class="sig-paren">)</span> &#x2192; typing.List[dict]<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.assets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.assets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get assets for which the organization has licenses.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>include_license_counts</strong> (<em>bool</em>) &#8211; Include counts of total/assigned/unassigned licenses.</li>
+<li><strong>facilitator_member_id</strong> &#8211; Currently unused</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of VPP assets for which this organization has licenses.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List[dict]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.bulk_update_licenses">
+<code class="descname">bulk_update_licenses</code><span class="sig-paren">(</span><em>adam_id: int, association_type: typing.Union[commandment.vpp.enum.LicenseAssociationType, NoneType] = None, associate: typing.Union[typing.List[str], NoneType] = None, disassociation_type: typing.Union[commandment.vpp.enum.LicenseDisassociationType, NoneType] = None, disassociate: typing.Union[typing.List[str], NoneType] = None, pricing_param: str = 'STDQ', notify: bool = False</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.bulk_update_licenses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.bulk_update_licenses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a batch operation of license associations and disassociations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>adam_id</strong> (<em>int</em>) &#8211; Adam ID - The iTunes Store Product for which licenses will be managed.</li>
+<li><strong>association_type</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="enum.html#commandment.vpp.enum.LicenseAssociationType" title="commandment.vpp.enum.LicenseAssociationType"><em>LicenseAssociationType</em></a><em>]</em>) &#8211; Provide an association type if associate length &gt; 0</li>
+<li><strong>associate</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) &#8211; A list of values that will be used to associate licenses, corresponding
+to the association_type</li>
+<li><strong>disassociation_type</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="enum.html#commandment.vpp.enum.LicenseDisassociationType" title="commandment.vpp.enum.LicenseDisassociationType"><em>LicenseDisassociationType</em></a><em>]</em>) &#8211; Provide a disassociation type if disassociate
+length &gt; 0.</li>
+<li><strong>disassociate</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) &#8211; A list of values that will be used to disassociate licenses,
+corresponding to the association_type</li>
+<li><strong>pricing_param</strong> (<em>str</em>) &#8211; Defaults to Standard Quality &#8216;STDQ&#8217;</li>
+<li><strong>notify</strong> (<em>bool</em>) &#8211; Notify disassociation, default is False</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<ul class="last simple">
+<li>manageVPPLicensesByAdamIdSrv</li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.edit_user">
+<code class="descname">edit_user</code><span class="sig-paren">(</span><em>client_user_id: str = None</em>, <em>facilitator_member_id: str = None</em>, <em>email: str = None</em>, <em>managed_apple_id: str = None</em>, <em>user_id: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.edit_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.edit_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit a user&#8217;s VPP record.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>client_user_id</strong> (<em>str</em>) &#8211; A unique string, usually a UUID to identify the user in the MDM. You can use this OR
+the user_id to identify the user.</li>
+<li><strong>facilitator_member_id</strong> &#8211; Currently unused</li>
+<li><strong>email</strong> (<em>str</em>) &#8211; Supply an E-mail address to update the current address.</li>
+<li><strong>user_id</strong> (<em>int</em>) &#8211; User ID which uniquely identifies the user with the iTunes store.</li>
+<li><strong>managed_apple_id</strong> (<em>str</em>) &#8211; Managed Apple ID</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Containing the reply from the service.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.get_user">
+<code class="descname">get_user</code><span class="sig-paren">(</span><em>client_user_id: str = None</em>, <em>its_id_hash: str = None</em>, <em>facilitator_member_id: str = None</em>, <em>user_id: int = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.get_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.get_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the status of a user by their unique ID.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>client_user_id</strong> (<em>str</em>) &#8211; A unique string, usually a UUID to identify the user in the MDM. You can use this OR
+the user_id to identify the user.</li>
+<li><strong>its_id_hash</strong> (<em>str</em>) &#8211; (Optional) iTunes Store ID hash</li>
+<li><strong>facilitator_member_id</strong> &#8211; </li>
+<li><strong>user_id</strong> (<em>int</em>) &#8211; User ID which uniquely identifies the user with the iTunes store.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Containing the reply from the service.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.licenses">
+<code class="descname">licenses</code><span class="sig-paren">(</span><em>adam_id: int = None</em>, <em>pricing_param: typing.Union[commandment.vpp.enum.VPPPricingParam</em>, <em>NoneType] = None</em>, <em>assigned_only: bool = False</em>, <em>facilitator_member_id: str = None</em>, <em>batch_token: str = None</em>, <em>since_modified_token: str = None</em><span class="sig-paren">)</span> &#x2192; commandment.vpp.vpp.VPPLicenseCursor<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.licenses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.licenses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a list of licenses matching the supplied criteria.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>adam_id</strong> (<em>int</em>) &#8211; Get licenses that match this Adam ID</li>
+<li><strong>pricing_param</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="enum.html#commandment.vpp.enum.VPPPricingParam" title="commandment.vpp.enum.VPPPricingParam"><em>VPPPricingParam</em></a><em>]</em>) &#8211; Get licenses that match this &#8216;Quality&#8217; param.</li>
+<li><strong>assigned_only</strong> (<em>bool</em>) &#8211; Return only licenses that are assigned to users, if this value is true.</li>
+<li><strong>facilitator_member_id</strong> (<em>str</em>) &#8211; Currently unused</li>
+<li><strong>batch_token</strong> (<em>str</em>) &#8211; Supplied if there are more results to fetch.</li>
+<li><strong>since_modified_token</strong> (<em>str</em>) &#8211; Supplied if you want to fetch results modified since a certain date. This will
+be supplied on the last page of your most recent set of results.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>A cursor that can be used to fetch all remaining results, pre-populated with the first</dt>
+<dd><p class="first last">page.</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">VPPLicenseCursor</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.manage">
+<code class="descname">manage</code><span class="sig-paren">(</span><em>adam_id: int</em>, <em>pricing_param: str = 'STDQ'</em><span class="sig-paren">)</span> &#x2192; commandment.vpp.vpp.VPPLicenseOperation<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.manage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.manage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manage VPP licenses for the given Adam ID.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>adam_id</strong> (<em>str</em>) &#8211; The Adam ID</li>
+<li><strong>pricing_param</strong> (<em>str</em>) &#8211; The pricing param defaults to &#8216;STDQ&#8217; but may be &#8216;PLUS&#8217; for things which aren&#8217;t</li>
+<li><strong>software.</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">an instance of a VPP license operation which can be modified to add or remove devices,
+and then submitted.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="operations.html#commandment.vpp.vpp.VPPLicenseOperation" title="commandment.vpp.vpp.VPPLicenseOperation">VPPLicenseOperation</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.manage_device_licenses">
+<code class="descname">manage_device_licenses</code><span class="sig-paren">(</span><em>adam_id: int</em>, <em>pricing_param: str = 'STDQ'</em><span class="sig-paren">)</span> &#x2192; commandment.vpp.vpp.VPPDeviceLicenseOperation<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.manage_device_licenses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.manage_device_licenses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manage VPP Device License Assignment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>adam_id</strong> (<em>str</em>) &#8211; The Adam ID</li>
+<li><strong>pricing_param</strong> (<em>str</em>) &#8211; The pricing param defaults to &#8216;STDQ&#8217; but may be &#8216;PLUS&#8217; for things which aren&#8217;t</li>
+<li><strong>software.</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>an instance of a VPP license operation which can be modified to add or remove</dt>
+<dd><p class="first last">license associations by device serial number</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="operations.html#commandment.vpp.vpp.VPPDeviceLicenseOperation" title="commandment.vpp.vpp.VPPDeviceLicenseOperation">VPPDeviceLicenseOperation</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.manage_user_licenses">
+<code class="descname">manage_user_licenses</code><span class="sig-paren">(</span><em>adam_id: int</em>, <em>pricing_param: str = 'STDQ'</em><span class="sig-paren">)</span> &#x2192; commandment.vpp.vpp.VPPUserLicenseOperation<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.manage_user_licenses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.manage_user_licenses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manage VPP User License Assignment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>adam_id</strong> (<em>str</em>) &#8211; The Adam ID</li>
+<li><strong>pricing_param</strong> (<em>str</em>) &#8211; The pricing param defaults to &#8216;STDQ&#8217; but may be &#8216;PLUS&#8217; for things which aren&#8217;t</li>
+<li><strong>software.</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>an instance of a VPP license operation which can be modified to add or remove license</dt>
+<dd><p class="first last">associations by user client id</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="operations.html#commandment.vpp.vpp.VPPUserLicenseOperation" title="commandment.vpp.vpp.VPPUserLicenseOperation">VPPUserLicenseOperation</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.register_user">
+<code class="descname">register_user</code><span class="sig-paren">(</span><em>client_user_id: str</em>, <em>email: str = None</em>, <em>facilitator_member_id: str = None</em>, <em>managed_apple_id: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.register_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.register_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register an MDM user with VPP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>client_user_id</strong> (<em>str</em>) &#8211; A unique string, usually a UUID to identify the user in the MDM.</li>
+<li><strong>email</strong> (<em>str</em>) &#8211; The e-mail address of the user.</li>
+<li><strong>facilitator_member_id</strong> (<em>str</em>) &#8211; Currently unused</li>
+<li><strong>managed_apple_id</strong> (<em>str</em>) &#8211; Currently unused</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>Containing the decoded body of the reply from the VPP service, eg:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;userId&quot;</span><span class="p">:</span> <span class="mi">2878111686099947</span><span class="p">,</span>
+      <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;vpp-test@localhost&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;Registered&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;inviteUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/D1971F9DD5F8E67BDD&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;inviteCode&quot;</span><span class="p">:</span> <span class="s2">&quot;D1971F9DD5F8E67BDD&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;clientUserIdStr&quot;</span><span class="p">:</span> <span class="s2">&quot;F33D9E0F-CDE3-427E-A444-B137BEF9EFA2&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.retire_user">
+<code class="descname">retire_user</code><span class="sig-paren">(</span><em>client_user_id: str = None</em>, <em>facilitator_member_id: str = None</em>, <em>user_id: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.retire_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.retire_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregister a user from VPP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>client_user_id</strong> (<em>str</em>) &#8211; A unique string, usually a UUID to identify the user in the MDM. You can use this OR
+the user_id to identify the user.</li>
+<li><strong>facilitator_member_id</strong> &#8211; Currently unused</li>
+<li><strong>user_id</strong> (<em>int</em>) &#8211; User ID which uniquely identifies the user with the iTunes store.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Containing the reply from the service.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>operation: commandment.vpp.vpp.VPPLicenseOperation</em>, <em>notify: bool = False</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a license management operation, represented by a VPPLicenseOperation or subclass.</p>
+<p>This provides a more convenient interface than bulk_update_licenses.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>operation</strong> (<a class="reference internal" href="operations.html#commandment.vpp.vpp.VPPLicenseOperation" title="commandment.vpp.vpp.VPPLicenseOperation"><em>VPPLicenseOperation</em></a>) &#8211; The license operation to perform.</li>
+<li><strong>notify</strong> (<em>bool</em>) &#8211; Optional. Notify devices of license disassociation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Reply from the license endpoint.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commandment.vpp.vpp.VPP.users">
+<code class="descname">users</code><span class="sig-paren">(</span><em>include_retired: int = 1</em>, <em>facilitator_member_id: str = None</em>, <em>batch_token: str = None</em>, <em>since_modified_token: str = None</em><span class="sig-paren">)</span> &#x2192; commandment.vpp.vpp.VPPUserCursor<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.users" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>include_retired</strong> (<em>int</em>) &#8211; 0 - do not include retired users, 1 - include retired users</li>
+<li><strong>facilitator_member_id</strong> &#8211; Currently unused</li>
+<li><strong>batch_token</strong> (<em>str</em>) &#8211; Batch token (if being called from a cursor)</li>
+<li><strong>since_modified_token</strong> (<em>str</em>) &#8211; Since modified token (if requesting a time delta)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="operations.html" title="previous chapter (use the left arrow)">VPP License Operations</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="../workers/index.html" title="next chapter (use the right arrow)">Worker Threads</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../workers/index.html" title="Worker Threads"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="operations.html" title="VPP License Operations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >VPP</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

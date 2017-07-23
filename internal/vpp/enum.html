@@ -1,0 +1,324 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>VPP Types &#8212; commandment 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="VPP Errors" href="errors.html" />
+    <link rel="prev" title="Decorators" href="decorators.html" />
+  
+   
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="errors.html" title="VPP Errors"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="decorators.html" title="Decorators"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">VPP</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+        <a href="
+    ../../index.html" class="text-logo">Commandment</a>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user/index.html">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Internals Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../flask/index.html">Flask Endpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">ORM (SQLAlchemy) Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">VPP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../workers/index.html">Worker Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../push.html">push</a></li>
+</ul>
+</li>
+</ul>
+
+    
+  </div>
+</div>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Internals Reference</a></li>
+              
+                <li><a href="index.html">VPP</a></li>
+              
+              <li>VPP Types</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="module-commandment.vpp.enum">
+<span id="vpp-types"></span><h1>VPP Types<a class="headerlink" href="#module-commandment.vpp.enum" title="Permalink to this headline">¶</a></h1>
+<dl class="attribute">
+<dt id="commandment.vpp.enum.LicenseAssociation">
+<code class="descclassname">commandment.vpp.enum.</code><code class="descname">LicenseAssociation</code><a class="headerlink" href="#commandment.vpp.enum.LicenseAssociation" title="Permalink to this definition">¶</a></dt>
+<dd><p>LicenseAssociation: A tuple representing a combination of a product by adam id and a type of association operation</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">Tuple</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="commandment.vpp.enum.LicenseAssociationType">
+<em class="property">class </em><code class="descclassname">commandment.vpp.enum.</code><code class="descname">LicenseAssociationType</code><a class="reference internal" href="../../_modules/commandment/vpp/enum.html#LicenseAssociationType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.enum.LicenseAssociationType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Valid types of license association operations which are mutually exclusive in a single batch.</p>
+<dl class="attribute">
+<dt id="commandment.vpp.enum.LicenseAssociationType.ClientUserID">
+<code class="descname">ClientUserID</code><em class="property"> = 'ClientUserID'</em><a class="headerlink" href="#commandment.vpp.enum.LicenseAssociationType.ClientUserID" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Associate user to license by Client ID</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.vpp.enum.LicenseAssociationType.SerialNumber">
+<code class="descname">SerialNumber</code><em class="property"> = 'SerialNumber'</em><a class="headerlink" href="#commandment.vpp.enum.LicenseAssociationType.SerialNumber" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Associate device to license by Serial Number</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.vpp.enum.LicenseDisassociation">
+<code class="descclassname">commandment.vpp.enum.</code><code class="descname">LicenseDisassociation</code><a class="headerlink" href="#commandment.vpp.enum.LicenseDisassociation" title="Permalink to this definition">¶</a></dt>
+<dd><p>LicenseDisassociation: A tuple representing a combination of a product by adam id and a type of
+disassociation operation</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">Tuple</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="commandment.vpp.enum.LicenseDisassociationType">
+<em class="property">class </em><code class="descclassname">commandment.vpp.enum.</code><code class="descname">LicenseDisassociationType</code><a class="reference internal" href="../../_modules/commandment/vpp/enum.html#LicenseDisassociationType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.enum.LicenseDisassociationType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Valid types of license disassociation operations which are mutually exclusive in a single batch.</p>
+<dl class="attribute">
+<dt id="commandment.vpp.enum.LicenseDisassociationType.ClientUserID">
+<code class="descname">ClientUserID</code><em class="property"> = 'ClientUserID'</em><a class="headerlink" href="#commandment.vpp.enum.LicenseDisassociationType.ClientUserID" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Disassociate license from user by Client ID</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.vpp.enum.LicenseDisassociationType.LicenseID">
+<code class="descname">LicenseID</code><em class="property"> = 'LicenseID'</em><a class="headerlink" href="#commandment.vpp.enum.LicenseDisassociationType.LicenseID" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Disassociate license by ID regardless of User/Device</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.vpp.enum.LicenseDisassociationType.SerialNumber">
+<code class="descname">SerialNumber</code><em class="property"> = 'SerialNumber'</em><a class="headerlink" href="#commandment.vpp.enum.LicenseDisassociationType.SerialNumber" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Disassociate license from device by Serial Number</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.vpp.enum.VPPAsset">
+<code class="descclassname">commandment.vpp.enum.</code><code class="descname">VPPAsset</code><a class="headerlink" href="#commandment.vpp.enum.VPPAsset" title="Permalink to this definition">¶</a></dt>
+<dd><p>VPPAsset: A tuple representing a pair of product adam id and pricing parameter.</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">Tuple</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="commandment.vpp.enum.VPPPricingParam">
+<em class="property">class </em><code class="descclassname">commandment.vpp.enum.</code><code class="descname">VPPPricingParam</code><a class="reference internal" href="../../_modules/commandment/vpp/enum.html#VPPPricingParam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.enum.VPPPricingParam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Valid values for the VPP pricingParam argument.</p>
+<dl class="attribute">
+<dt id="commandment.vpp.enum.VPPPricingParam.HighQuality">
+<code class="descname">HighQuality</code><em class="property"> = 'PLUS'</em><a class="headerlink" href="#commandment.vpp.enum.VPPPricingParam.HighQuality" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; High Quality - Does not apply to Software</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.vpp.enum.VPPPricingParam.StandardQuality">
+<code class="descname">StandardQuality</code><em class="property"> = 'STDQ'</em><a class="headerlink" href="#commandment.vpp.enum.VPPPricingParam.StandardQuality" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Standard Quality</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="commandment.vpp.enum.VPPProductType">
+<em class="property">class </em><code class="descclassname">commandment.vpp.enum.</code><code class="descname">VPPProductType</code><a class="reference internal" href="../../_modules/commandment/vpp/enum.html#VPPProductType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.enum.VPPProductType" title="Permalink to this definition">¶</a></dt>
+<dd><p>A VPP product type. Required by some of the VPP API</p>
+<dl class="attribute">
+<dt id="commandment.vpp.enum.VPPProductType.Application">
+<code class="descname">Application</code><em class="property"> = 8</em><a class="headerlink" href="#commandment.vpp.enum.VPPProductType.Application" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; Don&#8217;t ask me</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.vpp.enum.VPPProductType.Publication">
+<code class="descname">Publication</code><em class="property"> = 10</em><a class="headerlink" href="#commandment.vpp.enum.VPPProductType.Publication" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; An ebook</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.vpp.enum.VPPProductType.Software">
+<code class="descname">Software</code><em class="property"> = 7</em><a class="headerlink" href="#commandment.vpp.enum.VPPProductType.Software" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; An piece of software</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="commandment.vpp.enum.VPPUserStatus">
+<em class="property">class </em><code class="descclassname">commandment.vpp.enum.</code><code class="descname">VPPUserStatus</code><a class="reference internal" href="../../_modules/commandment/vpp/enum.html#VPPUserStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.enum.VPPUserStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Valid values for the status of a VPP registered user.</p>
+<dl class="attribute">
+<dt id="commandment.vpp.enum.VPPUserStatus.Associated">
+<code class="descname">Associated</code><em class="property"> = 'Associated'</em><a class="headerlink" href="#commandment.vpp.enum.VPPUserStatus.Associated" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Associated</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.vpp.enum.VPPUserStatus.Deleted">
+<code class="descname">Deleted</code><em class="property"> = 'Deleted'</em><a class="headerlink" href="#commandment.vpp.enum.VPPUserStatus.Deleted" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Deleted</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.vpp.enum.VPPUserStatus.Registered">
+<code class="descname">Registered</code><em class="property"> = 'Registered'</em><a class="headerlink" href="#commandment.vpp.enum.VPPUserStatus.Registered" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Registered</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.vpp.enum.VPPUserStatus.Retired">
+<code class="descname">Retired</code><em class="property"> = 'Retired'</em><a class="headerlink" href="#commandment.vpp.enum.VPPUserStatus.Retired" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Retired (can still be changed back)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="decorators.html" title="previous chapter (use the left arrow)">Decorators</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="errors.html" title="next chapter (use the right arrow)">VPP Errors</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="errors.html" title="VPP Errors"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="decorators.html" title="Decorators"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >VPP</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

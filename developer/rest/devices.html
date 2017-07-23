@@ -1,0 +1,829 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Devices &#8212; commandment 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Organization" href="organization.html" />
+    <link rel="prev" title="Commands" href="commands.html" />
+  
+   
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="organization.html" title="Organization"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="commands.html" title="Commands"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Developer Documentation</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">REST API Documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+        <a href="
+    ../../index.html" class="text-logo">Commandment</a>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user/index.html">User Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guide/index.html">Developer Guide</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">REST API Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../internal/index.html">Internals Reference</a></li>
+</ul>
+
+    
+  </div>
+</div>
+        
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Developer Documentation</a></li>
+              
+                <li><a href="index.html">REST API Documentation</a></li>
+              
+              <li>Devices</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="devices">
+<h1>Devices<a class="headerlink" href="#devices" title="Permalink to this headline">¶</a></h1>
+<dl class="get">
+<dt id="get--api-v1-certificate_signing_requests">
+<code class="descname">GET </code><code class="descname">/api/v1/certificate_signing_requests</code><a class="headerlink" href="#get--api-v1-certificate_signing_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-certificate_signing_requests">
+<code class="descname">POST </code><code class="descname">/api/v1/certificate_signing_requests</code><a class="headerlink" href="#post--api-v1-certificate_signing_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-installed_applications">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/installed_applications</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-installed_applications" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-installed_applications">
+<code class="descname">GET </code><code class="descname">/api/v1/installed_applications</code><a class="headerlink" href="#get--api-v1-installed_applications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices-(int-device_id)-installed_applications">
+<code class="descname">POST </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/installed_applications</code><a class="headerlink" href="#post--api-v1-devices-(int-device_id)-installed_applications" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-installed_applications">
+<code class="descname">POST </code><code class="descname">/api/v1/installed_applications</code><a class="headerlink" href="#post--api-v1-installed_applications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-installed_certificates">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/installed_certificates</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-installed_certificates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-installed_certificates">
+<code class="descname">GET </code><code class="descname">/api/v1/installed_certificates</code><a class="headerlink" href="#get--api-v1-installed_certificates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices-(int-device_id)-installed_certificates">
+<code class="descname">POST </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/installed_certificates</code><a class="headerlink" href="#post--api-v1-devices-(int-device_id)-installed_certificates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-installed_certificates">
+<code class="descname">POST </code><code class="descname">/api/v1/installed_certificates</code><a class="headerlink" href="#post--api-v1-installed_certificates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-available_os_updates">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/available_os_updates</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-available_os_updates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-available_os_updates">
+<code class="descname">GET </code><code class="descname">/api/v1/available_os_updates</code><a class="headerlink" href="#get--api-v1-available_os_updates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices-(int-device_id)-available_os_updates">
+<code class="descname">POST </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/available_os_updates</code><a class="headerlink" href="#post--api-v1-devices-(int-device_id)-available_os_updates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-available_os_updates">
+<code class="descname">POST </code><code class="descname">/api/v1/available_os_updates</code><a class="headerlink" href="#post--api-v1-available_os_updates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-installed_profiles">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/installed_profiles</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-installed_profiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-installed_profiles">
+<code class="descname">GET </code><code class="descname">/api/v1/installed_profiles</code><a class="headerlink" href="#get--api-v1-installed_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices-(int-device_id)-installed_profiles">
+<code class="descname">POST </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/installed_profiles</code><a class="headerlink" href="#post--api-v1-devices-(int-device_id)-installed_profiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-installed_profiles">
+<code class="descname">POST </code><code class="descname">/api/v1/installed_profiles</code><a class="headerlink" href="#post--api-v1-installed_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-push_certificates-">
+<code class="descname">GET </code><code class="descname">/api/v1/push_certificates/</code><a class="headerlink" href="#get--api-v1-push_certificates-" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-push_certificates-">
+<code class="descname">POST </code><code class="descname">/api/v1/push_certificates/</code><a class="headerlink" href="#post--api-v1-push_certificates-" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-ssl_certificates-">
+<code class="descname">GET </code><code class="descname">/api/v1/ssl_certificates/</code><a class="headerlink" href="#get--api-v1-ssl_certificates-" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-ssl_certificates-">
+<code class="descname">POST </code><code class="descname">/api/v1/ssl_certificates/</code><a class="headerlink" href="#post--api-v1-ssl_certificates-" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-ca_certificates-">
+<code class="descname">GET </code><code class="descname">/api/v1/ca_certificates/</code><a class="headerlink" href="#get--api-v1-ca_certificates-" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-ca_certificates-">
+<code class="descname">POST </code><code class="descname">/api/v1/ca_certificates/</code><a class="headerlink" href="#post--api-v1-ca_certificates-" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-groups">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/groups</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-groups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-device_groups">
+<code class="descname">GET </code><code class="descname">/api/v1/device_groups</code><a class="headerlink" href="#get--api-v1-device_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices-(int-device_id)-groups">
+<code class="descname">POST </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/groups</code><a class="headerlink" href="#post--api-v1-devices-(int-device_id)-groups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-device_groups">
+<code class="descname">POST </code><code class="descname">/api/v1/device_groups</code><a class="headerlink" href="#post--api-v1-device_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-certificates-">
+<code class="descname">GET </code><code class="descname">/api/v1/certificates/</code><a class="headerlink" href="#get--api-v1-certificates-" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-certificates-">
+<code class="descname">POST </code><code class="descname">/api/v1/certificates/</code><a class="headerlink" href="#post--api-v1-certificates-" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-commands">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/commands</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-commands" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-commands">
+<code class="descname">GET </code><code class="descname">/api/v1/commands</code><a class="headerlink" href="#get--api-v1-commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices-(int-device_id)-commands">
+<code class="descname">POST </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/commands</code><a class="headerlink" href="#post--api-v1-devices-(int-device_id)-commands" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-commands">
+<code class="descname">POST </code><code class="descname">/api/v1/commands</code><a class="headerlink" href="#post--api-v1-commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-profiles">
+<code class="descname">GET </code><code class="descname">/api/v1/profiles</code><a class="headerlink" href="#get--api-v1-profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-profiles">
+<code class="descname">POST </code><code class="descname">/api/v1/profiles</code><a class="headerlink" href="#post--api-v1-profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-device_groups-(int-device_group_id)-devices">
+<code class="descname">GET </code><code class="descname">/api/v1/device_groups/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_group_id</em><span class="sig-paren">)</span><code class="descname">/devices</code><a class="headerlink" href="#get--api-v1-device_groups-(int-device_group_id)-devices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices">
+<code class="descname">GET </code><code class="descname">/api/v1/devices</code><a class="headerlink" href="#get--api-v1-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-device_groups-(int-device_group_id)-devices">
+<code class="descname">POST </code><code class="descname">/api/v1/device_groups/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_group_id</em><span class="sig-paren">)</span><code class="descname">/devices</code><a class="headerlink" href="#post--api-v1-device_groups-(int-device_group_id)-devices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices">
+<code class="descname">POST </code><code class="descname">/api/v1/devices</code><a class="headerlink" href="#post--api-v1-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-tags">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/tags</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-tags">
+<code class="descname">GET </code><code class="descname">/api/v1/tags</code><a class="headerlink" href="#get--api-v1-tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a collection of objects</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices-(int-device_id)-tags">
+<code class="descname">POST </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/tags</code><a class="headerlink" href="#post--api-v1-devices-(int-device_id)-tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-tags">
+<code class="descname">POST </code><code class="descname">/api/v1/tags</code><a class="headerlink" href="#post--api-v1-tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-device_groups-(int-device_group_id)-relationship-devices">
+<code class="descname">DELETE </code><code class="descname">/api/v1/device_groups/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_group_id</em><span class="sig-paren">)</span><code class="descname">/relationship/devices</code><a class="headerlink" href="#delete--api-v1-device_groups-(int-device_group_id)-relationship-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete relationship(s)</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-device_groups-(int-device_group_id)-relationship-devices">
+<code class="descname">GET </code><code class="descname">/api/v1/device_groups/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_group_id</em><span class="sig-paren">)</span><code class="descname">/relationship/devices</code><a class="headerlink" href="#get--api-v1-device_groups-(int-device_group_id)-relationship-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a relationship details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-device_groups-(int-device_group_id)-relationship-devices">
+<code class="descname">PATCH </code><code class="descname">/api/v1/device_groups/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_group_id</em><span class="sig-paren">)</span><code class="descname">/relationship/devices</code><a class="headerlink" href="#patch--api-v1-device_groups-(int-device_group_id)-relationship-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a relationship</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-device_groups-(int-device_group_id)-relationship-devices">
+<code class="descname">POST </code><code class="descname">/api/v1/device_groups/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_group_id</em><span class="sig-paren">)</span><code class="descname">/relationship/devices</code><a class="headerlink" href="#post--api-v1-device_groups-(int-device_group_id)-relationship-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add / create relationship(s)</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-profiles-(int-profile_id)-relationships-tags">
+<code class="descname">DELETE </code><code class="descname">/api/v1/profiles/</code><span class="sig-paren">(</span><em class="property">int: </em><em>profile_id</em><span class="sig-paren">)</span><code class="descname">/relationships/tags</code><a class="headerlink" href="#delete--api-v1-profiles-(int-profile_id)-relationships-tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete relationship(s)</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-profiles-(int-profile_id)-relationships-tags">
+<code class="descname">GET </code><code class="descname">/api/v1/profiles/</code><span class="sig-paren">(</span><em class="property">int: </em><em>profile_id</em><span class="sig-paren">)</span><code class="descname">/relationships/tags</code><a class="headerlink" href="#get--api-v1-profiles-(int-profile_id)-relationships-tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a relationship details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-profiles-(int-profile_id)-relationships-tags">
+<code class="descname">PATCH </code><code class="descname">/api/v1/profiles/</code><span class="sig-paren">(</span><em class="property">int: </em><em>profile_id</em><span class="sig-paren">)</span><code class="descname">/relationships/tags</code><a class="headerlink" href="#patch--api-v1-profiles-(int-profile_id)-relationships-tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a relationship</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-profiles-(int-profile_id)-relationships-tags">
+<code class="descname">POST </code><code class="descname">/api/v1/profiles/</code><span class="sig-paren">(</span><em class="property">int: </em><em>profile_id</em><span class="sig-paren">)</span><code class="descname">/relationships/tags</code><a class="headerlink" href="#post--api-v1-profiles-(int-profile_id)-relationships-tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add / create relationship(s)</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-devices-(int-device_id)-relationships-commands">
+<code class="descname">DELETE </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/relationships/commands</code><a class="headerlink" href="#delete--api-v1-devices-(int-device_id)-relationships-commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete relationship(s)</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-relationships-commands">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/relationships/commands</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-relationships-commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a relationship details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-devices-(int-device_id)-relationships-commands">
+<code class="descname">PATCH </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/relationships/commands</code><a class="headerlink" href="#patch--api-v1-devices-(int-device_id)-relationships-commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a relationship</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices-(int-device_id)-relationships-commands">
+<code class="descname">POST </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/relationships/commands</code><a class="headerlink" href="#post--api-v1-devices-(int-device_id)-relationships-commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add / create relationship(s)</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-devices-(int-device_id)-relationships-tags">
+<code class="descname">DELETE </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/relationships/tags</code><a class="headerlink" href="#delete--api-v1-devices-(int-device_id)-relationships-tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete relationship(s)</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-relationships-tags">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/relationships/tags</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-relationships-tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a relationship details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-devices-(int-device_id)-relationships-tags">
+<code class="descname">PATCH </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/relationships/tags</code><a class="headerlink" href="#patch--api-v1-devices-(int-device_id)-relationships-tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a relationship</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices-(int-device_id)-relationships-tags">
+<code class="descname">POST </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/relationships/tags</code><a class="headerlink" href="#post--api-v1-devices-(int-device_id)-relationships-tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add / create relationship(s)</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-tags-(int-tag_id)-relationships-devices">
+<code class="descname">DELETE </code><code class="descname">/api/v1/tags/</code><span class="sig-paren">(</span><em class="property">int: </em><em>tag_id</em><span class="sig-paren">)</span><code class="descname">/relationships/devices</code><a class="headerlink" href="#delete--api-v1-tags-(int-tag_id)-relationships-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete relationship(s)</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-tags-(int-tag_id)-relationships-devices">
+<code class="descname">GET </code><code class="descname">/api/v1/tags/</code><span class="sig-paren">(</span><em class="property">int: </em><em>tag_id</em><span class="sig-paren">)</span><code class="descname">/relationships/devices</code><a class="headerlink" href="#get--api-v1-tags-(int-tag_id)-relationships-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a relationship details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-tags-(int-tag_id)-relationships-devices">
+<code class="descname">PATCH </code><code class="descname">/api/v1/tags/</code><span class="sig-paren">(</span><em class="property">int: </em><em>tag_id</em><span class="sig-paren">)</span><code class="descname">/relationships/devices</code><a class="headerlink" href="#patch--api-v1-tags-(int-tag_id)-relationships-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a relationship</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-tags-(int-tag_id)-relationships-devices">
+<code class="descname">POST </code><code class="descname">/api/v1/tags/</code><span class="sig-paren">(</span><em class="property">int: </em><em>tag_id</em><span class="sig-paren">)</span><code class="descname">/relationships/devices</code><a class="headerlink" href="#post--api-v1-tags-(int-tag_id)-relationships-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add / create relationship(s)</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-certificate_signing_requests-(int-certificate_signing_request_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/certificate_signing_requests/</code><span class="sig-paren">(</span><em class="property">int: </em><em>certificate_signing_request_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-certificate_signing_requests-(int-certificate_signing_request_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-certificate_signing_requests-(int-certificate_signing_request_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/certificate_signing_requests/</code><span class="sig-paren">(</span><em class="property">int: </em><em>certificate_signing_request_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-certificate_signing_requests-(int-certificate_signing_request_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-certificate_signing_requests-(int-certificate_signing_request_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/certificate_signing_requests/</code><span class="sig-paren">(</span><em class="property">int: </em><em>certificate_signing_request_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-certificate_signing_requests-(int-certificate_signing_request_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-installed_applications-(int-installed_application_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/installed_applications/</code><span class="sig-paren">(</span><em class="property">int: </em><em>installed_application_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-installed_applications-(int-installed_application_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-installed_applications-(int-installed_application_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/installed_applications/</code><span class="sig-paren">(</span><em class="property">int: </em><em>installed_application_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-installed_applications-(int-installed_application_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-installed_applications-(int-installed_application_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/installed_applications/</code><span class="sig-paren">(</span><em class="property">int: </em><em>installed_application_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-installed_applications-(int-installed_application_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-installed_certificates-(int-installed_certificate_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/installed_certificates/</code><span class="sig-paren">(</span><em class="property">int: </em><em>installed_certificate_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-installed_certificates-(int-installed_certificate_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-installed_certificates-(int-installed_certificate_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/installed_certificates/</code><span class="sig-paren">(</span><em class="property">int: </em><em>installed_certificate_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-installed_certificates-(int-installed_certificate_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-installed_certificates-(int-installed_certificate_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/installed_certificates/</code><span class="sig-paren">(</span><em class="property">int: </em><em>installed_certificate_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-installed_certificates-(int-installed_certificate_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-available_os_updates-(int-available_os_update_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/available_os_updates/</code><span class="sig-paren">(</span><em class="property">int: </em><em>available_os_update_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-available_os_updates-(int-available_os_update_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-available_os_updates-(int-available_os_update_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/available_os_updates/</code><span class="sig-paren">(</span><em class="property">int: </em><em>available_os_update_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-available_os_updates-(int-available_os_update_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-available_os_updates-(int-available_os_update_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/available_os_updates/</code><span class="sig-paren">(</span><em class="property">int: </em><em>available_os_update_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-available_os_updates-(int-available_os_update_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-installed_profiles-(int-installed_profile_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/installed_profiles/</code><span class="sig-paren">(</span><em class="property">int: </em><em>installed_profile_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-installed_profiles-(int-installed_profile_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-installed_profiles-(int-installed_profile_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/installed_profiles/</code><span class="sig-paren">(</span><em class="property">int: </em><em>installed_profile_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-installed_profiles-(int-installed_profile_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-installed_profiles-(int-installed_profile_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/installed_profiles/</code><span class="sig-paren">(</span><em class="property">int: </em><em>installed_profile_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-installed_profiles-(int-installed_profile_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-rsa_private_keys-(int-private_key_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/rsa_private_keys/</code><span class="sig-paren">(</span><em class="property">int: </em><em>private_key_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-rsa_private_keys-(int-private_key_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-rsa_private_keys-(int-private_key_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/rsa_private_keys/</code><span class="sig-paren">(</span><em class="property">int: </em><em>private_key_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-rsa_private_keys-(int-private_key_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-rsa_private_keys-(int-private_key_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/rsa_private_keys/</code><span class="sig-paren">(</span><em class="property">int: </em><em>private_key_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-rsa_private_keys-(int-private_key_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-device_groups-(int-device_group_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/device_groups/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_group_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-device_groups-(int-device_group_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-device_groups-(int-device_group_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/device_groups/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_group_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-device_groups-(int-device_group_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-device_groups-(int-device_group_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/device_groups/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_group_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-device_groups-(int-device_group_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-certificates-(int-certificate_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/certificates/</code><span class="sig-paren">(</span><em class="property">int: </em><em>certificate_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-certificates-(int-certificate_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-certificates-(int-certificate_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/certificates/</code><span class="sig-paren">(</span><em class="property">int: </em><em>certificate_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-certificates-(int-certificate_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-certificates-(int-certificate_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/certificates/</code><span class="sig-paren">(</span><em class="property">int: </em><em>certificate_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-certificates-(int-certificate_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-commands-(int-command_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/commands/</code><span class="sig-paren">(</span><em class="property">int: </em><em>command_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-commands-(int-command_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-commands-(int-command_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/commands/</code><span class="sig-paren">(</span><em class="property">int: </em><em>command_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-commands-(int-command_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-commands-(int-command_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/commands/</code><span class="sig-paren">(</span><em class="property">int: </em><em>command_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-commands-(int-command_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-profiles-(int-profile_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/profiles/</code><span class="sig-paren">(</span><em class="property">int: </em><em>profile_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-profiles-(int-profile_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-profiles-(int-profile_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/profiles/</code><span class="sig-paren">(</span><em class="property">int: </em><em>profile_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-profiles-(int-profile_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-profiles-(int-profile_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/profiles/</code><span class="sig-paren">(</span><em class="property">int: </em><em>profile_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-profiles-(int-profile_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-devices-(int-device_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-devices-(int-device_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-devices-(int-device_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-devices-(int-device_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-devices-(int-device_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-tags-(int-tag_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/tags/</code><span class="sig-paren">(</span><em class="property">int: </em><em>tag_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-tags-(int-tag_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-tags-(int-tag_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/tags/</code><span class="sig-paren">(</span><em class="property">int: </em><em>tag_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-tags-(int-tag_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object details</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-tags-(int-tag_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/tags/</code><span class="sig-paren">(</span><em class="property">int: </em><em>tag_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-tags-(int-tag_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an object</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices">
+<code class="descname">GET </code><code class="descname">/api/v1/devices</code><a class="headerlink" href="#get--api-v1-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of devices</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://tools.ietf.org/html/rfc7231#section-5.3.2">Accept</a> &#8211; application/vnd.api+json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> &#8211; application/vnd.api+json</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-devices-(int-device_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information about a specific device.</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices">
+<code class="descname">POST </code><code class="descname">/api/v1/devices</code><a class="headerlink" href="#post--api-v1-devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new enrolled device</p>
+</dd></dl>
+
+<dl class="patch">
+<dt id="patch--api-v1-devices-(int-device_id)">
+<code class="descname">PATCH </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#patch--api-v1-devices-(int-device_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an enrolled device</p>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--api-v1-devices-(int-device_id)">
+<code class="descname">DELETE </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--api-v1-devices-(int-device_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an enrolled device</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-commands">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/commands</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get MDM commands associated with this device.</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-tags">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/tags</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get tags associated with this device.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="commands.html" title="previous chapter (use the left arrow)">Commands</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="organization.html" title="next chapter (use the right arrow)">Organization</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="organization.html" title="Organization"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="commands.html" title="Commands"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Developer Documentation</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >REST API Documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>
