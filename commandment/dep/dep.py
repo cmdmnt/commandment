@@ -1,22 +1,14 @@
 from collections.abc import Iterator
-from typing import Union, List, Dict, Optional
+from typing import Union, List, Optional
 import requests
 from requests.auth import AuthBase
 from requests_oauthlib import OAuth1
 import re
 from datetime import timedelta, datetime
+
+from commandment.dep import DEPProfileRemovals
 from .exceptions import DEPError
-from enum import Enum
 from email.utils import parsedate  # Necessary for HTTP-Date
-
-
-class DEPProfileRemovalStatus(Enum):
-    SUCCESS = "SUCCESS"
-    NOT_ACCESSIBLE = "NOT_ACCESSIBLE"
-    FAILED = "FAILED"
-
-SerialNumber = str
-DEPProfileRemovals = Dict[SerialNumber, DEPProfileRemovalStatus]
 
 
 class DEPAuth(AuthBase):

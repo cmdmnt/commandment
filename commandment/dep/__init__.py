@@ -1,4 +1,4 @@
-from typing import Set
+from typing import Set, Dict
 from enum import Enum
 
 
@@ -25,3 +25,12 @@ class SetupAssistantStep(Enum):
     ScreenSaver = 'ScreenSaver'
 
 SkipSetupSteps = Set[SetupAssistantStep]
+
+
+class DEPProfileRemovalStatus(Enum):
+    SUCCESS = "SUCCESS"
+    NOT_ACCESSIBLE = "NOT_ACCESSIBLE"
+    FAILED = "FAILED"
+
+SerialNumber = str
+DEPProfileRemovals = Dict[SerialNumber, DEPProfileRemovalStatus]

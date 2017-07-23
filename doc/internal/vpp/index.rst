@@ -1,7 +1,9 @@
 VPP
 ===
 
-Details of the **commandment.vpp** package
+Details of the **commandment.vpp** package.
+
+This package implements all of the functionality related to Apple's **Volume Purchase Programme**.
 
 .. toctree::
     :maxdepth: 2
