@@ -9,7 +9,7 @@ from commandment.mdm.app import mdm_app
 from .ac2.ac2_app import ac2_app
 from .api.app import api_app
 from .api_flat import flat_api
-from .api_push import api_push_app
+from .apns.app import api_push_app
 from .auth import authenticate, identity
 from .configuration import configuration_app
 from .enroll.app import enroll_app

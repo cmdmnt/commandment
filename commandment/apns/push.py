@@ -11,10 +11,9 @@ import apns2
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
 from oscrypto.keys import parse_pkcs12
 from flask import g, current_app
-from .models import Device
+from commandment.models import Device
 import json
 
 

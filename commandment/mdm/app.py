@@ -11,7 +11,7 @@ from commandment.decorators import parse_plist_input_data
 from commandment.cms.decorators import verify_cms_signers_header
 from commandment.mdm.util import queue_full_inventory
 from commandment.models import DeviceUser, DeviceIdentityCertificate
-from commandment.routers import CommandRouter, PlistRouter
+from commandment.mdm.routers import CommandRouter, PlistRouter
 import plistlib
 from datetime import datetime
 from commandment.signals import device_enrolled

@@ -2,8 +2,8 @@ from datetime import datetime
 from flask import Blueprint, request, abort, send_file, current_app, jsonify
 from sqlalchemy.orm.exc import NoResultFound
 
-from .models import db, Device, Certificate, RSAPrivateKey
-from .pki import serialization
+from commandment.models import db, Device, Certificate, RSAPrivateKey
+from commandment.pki import serialization
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
 from .push import push_to_device

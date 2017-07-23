@@ -315,14 +315,6 @@ class SCEPConfigFlatSchema(FlatSchema):
         return o
 
 
-class PushResponseFlatSchema(FlatSchema):
-    """This structure mimics the fields of an APNS2 service reply."""
-    apns_id = fields.Integer()
-    status_code = fields.Integer()
-    reason = fields.Str()
-    timestamp = fields.DateTime()
-
-
 class InstalledProfileSchema(Schema):
     class Meta:
         type_ = 'installed_profiles'
