@@ -11,10 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   guides/index
+   user/index
+   developer/index
 
-   rest/index.rst
-   api/index.rst
+   internal/index
 
 
 

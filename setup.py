@@ -45,6 +45,7 @@ setup(
             'Sphinx',
             'sphinxcontrib-napoleon',
             'sphinx-rtd-theme',
+            'guzzle-sphinx-theme',
             'sphinxcontrib-httpdomain',
             'sphinxcontrib-plantuml',
             'sadisplay'
