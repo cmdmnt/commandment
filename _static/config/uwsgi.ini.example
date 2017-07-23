@@ -1,0 +1,6 @@
+[uwsgi]
+socket = /usr/local/var/run/uwsgi.sock
+plugins = python3
+module = commandment:create_app
+processes = 4
+master = 1

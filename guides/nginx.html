@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Nginx Configuration &mdash; commandment 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="commandment 1.0 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> commandment
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../rest/index.html">REST API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">Internal Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">commandment</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Nginx Configuration</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/guides/nginx.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="nginx-configuration">
+<h1>Nginx Configuration<a class="headerlink" href="#nginx-configuration" title="Permalink to this headline">¶</a></h1>
+<p>If you are using commandment behind Nginx, Nginx will be terminating the SSL connection, therefore commandment is unable
+to manage the SSL certificates for you. You should always pass the client certificate back up to commandment so that
+the validity of the device certificate can be determined using CA&#8217;s stored in commandment.</p>
+<div class="section" id="with-uwsgi">
+<h2>With uWSGI<a class="headerlink" href="#with-uwsgi" title="Permalink to this headline">¶</a></h2>
+<p>Prerequisites:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Python 3.5+</dt>
+<dd><ul class="first last">
+<li>On macOS: <code class="docutils literal"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">python3</span></code></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>uWSGI</dt>
+<dd><ul class="first last">
+<li>On macOS: <code class="docutils literal"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">uwsgi</span> <span class="pre">--with-python3</span></code></li>
+<li>Linux DEB: <code class="docutils literal"><span class="pre">uwsgi-plugin-python3</span></code></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>uWSGI python3 plugin</li>
+</ul>
+<p>Example configuration (with uWSGI):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>server {
+    listen 443 ssl;
+    server_name commandment.dev;
+    ssl_certificate commandment.dev.crt;
+    ssl_certificate_key commandment.dev.key;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_verify_client optional_no_ca;
+
+    root /path/to/commandment/static;
+    access_log commandment-access.log;
+    error_log commandment-error.log;
+
+    location / { try_files $uri @commandment; }
+    location @commandment {
+        include uwsgi_params;
+        uwsgi_param HTTP_X_CLIENT_CERT $ssl_client_cert;
+        uwsgi_pass unix:/tmp/uwsgi.sock;
+    }
+}
+</pre></div>
+</div>
+<p>References:
+- <a class="reference external" href="http://uwsgi-docs.readthedocs.io/en/latest/Nginx.html">http://uwsgi-docs.readthedocs.io/en/latest/Nginx.html</a>
+- <a class="reference external" href="http://flask.pocoo.org/docs/0.12/deploying/uwsgi/">http://flask.pocoo.org/docs/0.12/deploying/uwsgi/</a></p>
+</div>
+<div class="section" id="with-gunicorn">
+<h2>With Gunicorn<a class="headerlink" href="#with-gunicorn" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">gunicorn</span></code></p>
+<blockquote>
+<div><p>gunicorn -w 4 commandment:create_app</p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="with-phusion-passenger">
+<h2>With Phusion Passenger<a class="headerlink" href="#with-phusion-passenger" title="Permalink to this headline">¶</a></h2>
+<p>Example configuration:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">server</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="mi">443</span> <span class="n">ssl</span><span class="p">;</span>
+    <span class="n">server_name</span> <span class="n">commandment</span><span class="o">.</span><span class="n">dev</span><span class="p">;</span>
+    <span class="n">ssl_certificate</span> <span class="n">commandment</span><span class="o">.</span><span class="n">dev</span><span class="o">.</span><span class="n">crt</span><span class="p">;</span>
+    <span class="n">ssl_certificate_key</span> <span class="n">commandment</span><span class="o">.</span><span class="n">dev</span><span class="o">.</span><span class="n">key</span><span class="p">;</span>
+    <span class="n">ssl_protocols</span> <span class="n">TLSv1</span> <span class="n">TLSv1</span><span class="o">.</span><span class="mi">1</span> <span class="n">TLSv1</span><span class="o">.</span><span class="mi">2</span><span class="p">;</span>
+    <span class="n">ssl_verify_client</span> <span class="n">optional_no_ca</span><span class="p">;</span>
+
+    <span class="n">root</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">commandment</span><span class="o">/</span><span class="n">static</span><span class="p">;</span>
+    <span class="n">access_log</span> <span class="n">commandment</span><span class="o">-</span><span class="n">access</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
+    <span class="n">error_log</span> <span class="n">commandment</span><span class="o">-</span><span class="n">error</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
+
+    <span class="n">passenger_enabled</span> <span class="n">on</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jesse Peterson, Mosen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

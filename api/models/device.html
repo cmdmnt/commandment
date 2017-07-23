@@ -1,0 +1,380 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Device &mdash; commandment 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="commandment 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="ORM (SQLAlchemy) Models" href="index.html"/>
+        <link rel="next" title="InternalCA" href="internal_ca.html"/>
+        <link rel="prev" title="DEPProfile" href="dep_profile.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> commandment
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../rest/index.html">REST API Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Internal Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../flask/index.html">Flask Endpoints</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">ORM (SQLAlchemy) Models</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="app.html">App</a></li>
+<li class="toctree-l3"><a class="reference internal" href="certificate.html">Certificate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="certificate_request.html">CertificateRequest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="command.html">Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dep_config.html">DEPConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dep_profile.html">DEPProfile</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal_ca.html">InternalCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="organization.html">Organization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="profile.html">Profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rsa_private_key.html">PrivateKey</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../profiles/index.html">Configuration Profile Payloads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../push.html">push</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../runner.html">runner</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">commandment</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Internal Documentation</a> &raquo;</li>
+        
+          <li><a href="index.html">ORM (SQLAlchemy) Models</a> &raquo;</li>
+        
+      <li>Device</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/api/models/device.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="device">
+<h1>Device<a class="headerlink" href="#device" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="commandment.models.Device">
+<em class="property">class </em><code class="descclassname">commandment.models.</code><code class="descname">Device</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/models.html#Device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.models.Device" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enrolled device.</p>
+<dl class="attribute">
+<dt id="commandment.models.Device.id">
+<code class="descname">id</code><a class="headerlink" href="#commandment.models.Device.id" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.udid">
+<code class="descname">udid</code><a class="headerlink" href="#commandment.models.Device.udid" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Unique Device Identifier</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.topic">
+<code class="descname">topic</code><a class="headerlink" href="#commandment.models.Device.topic" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; The APNS topic the device is listening on.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.last_seen">
+<code class="descname">last_seen</code><a class="headerlink" href="#commandment.models.Device.last_seen" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>datetime.datetime</em> &#8211; When the device last contacted the MDM.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.is_enrolled">
+<code class="descname">is_enrolled</code><a class="headerlink" href="#commandment.models.Device.is_enrolled" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> &#8211; Whether the MDM should consider this device enrolled.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.build_version">
+<code class="descname">build_version</code><a class="headerlink" href="#commandment.models.Device.build_version" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; DeviceInformation BuildVersion</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.device_name">
+<code class="descname">device_name</code><a class="headerlink" href="#commandment.models.Device.device_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Name of the device</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.model">
+<code class="descname">model</code><a class="headerlink" href="#commandment.models.Device.model" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Name of the hardware model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.model_name">
+<code class="descname">model_name</code><a class="headerlink" href="#commandment.models.Device.model_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; Longer name of the hardware model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.os_version">
+<code class="descname">os_version</code><a class="headerlink" href="#commandment.models.Device.os_version" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; The operating system version number.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.product_name">
+<code class="descname">product_name</code><a class="headerlink" href="#commandment.models.Device.product_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; The base product name of the hardware</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.serial_number">
+<code class="descname">serial_number</code><a class="headerlink" href="#commandment.models.Device.serial_number" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; The hardware serial number</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.awaiting_configuration">
+<code class="descname">awaiting_configuration</code><a class="headerlink" href="#commandment.models.Device.awaiting_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> &#8211; True if device is waiting at Setup Assistant</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.push_magic">
+<code class="descname">push_magic</code><a class="headerlink" href="#commandment.models.Device.push_magic" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; The UUID that establishes a unique relationship between the device and the MDM.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.token">
+<code class="descname">token</code><a class="headerlink" href="#commandment.models.Device.token" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; The hex string representing the Device Token, required to push with APNS.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.last_push_at">
+<code class="descname">last_push_at</code><a class="headerlink" href="#commandment.models.Device.last_push_at" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>datetime.datetime</em> &#8211; The datetime when the last push was sent to APNS for this device.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.last_apns_id">
+<code class="descname">last_apns_id</code><a class="headerlink" href="#commandment.models.Device.last_apns_id" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; The UUID of the last apns command sent.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.certificate_id">
+<code class="descname">certificate_id</code><a class="headerlink" href="#commandment.models.Device.certificate_id" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; The ID of the certificate that this device is using to authenticate itself. May be null</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="commandment.models.Device.hex_token">
+<code class="descname">hex_token</code><a class="headerlink" href="#commandment.models.Device.hex_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the device token in hex encoding, necessary for the APNS2 client.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="internal_ca.html" class="btn btn-neutral float-right" title="InternalCA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dep_profile.html" class="btn btn-neutral" title="DEPProfile" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jesse Peterson, Mosen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Building Commandment &mdash; commandment 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="commandment 1.0 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> commandment
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../rest/index.html">REST API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">Internal Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">commandment</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Building Commandment</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/guides/building.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="building-commandment">
+<h1>Building Commandment<a class="headerlink" href="#building-commandment" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="install-python-3">
+<h2>Install Python 3<a class="headerlink" href="#install-python-3" title="Permalink to this headline">¶</a></h2>
+<p>Commandment requires python &gt;= 3.5 for its type annotation support.
+On the mac you can install python 3 via <span class="target" id="homebrew-https-brew-sh">Homebrew &lt;https://brew.sh&gt;</span> like so:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ brew install python3
+</pre></div>
+</div>
+<p>If you are running commandment on linux, python 3 will be available via your package manager of choice.</p>
+</div>
+<div class="section" id="create-virtualenv">
+<h2>Create VirtualEnv<a class="headerlink" href="#create-virtualenv" title="Permalink to this headline">¶</a></h2>
+<p>To keep dependencies with the project, you should create a
+<span class="target" id="virtualenv-https-virtualenv-pypa-io-en-stable-userguide-usage">VirtualEnv &lt;https://virtualenv.pypa.io/en/stable/userguide/#usage&gt;</span>.</p>
+<p>For example, if you have the project as your current working directory, you can type:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ virtualenv venv
+</pre></div>
+</div>
+<p>To create a VirtualEnv in the <code class="docutils literal"><span class="pre">venv</span></code> folder.</p>
+<p>You will need to <strong>activate</strong> the virtualenv before dependencies will be installed there, like so:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ . ./venv/bin/activate
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-python-dependencies">
+<h2>Install Python Dependencies<a class="headerlink" href="#install-python-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>To install dependencies into the virtualenv, run the <code class="docutils literal"><span class="pre">setup.py</span></code> with develop so that commandment is linked instead of
+installed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python setup.py develop
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jesse Peterson, Mosen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
