@@ -1,9 +1,10 @@
-Internal Documentation
-======================
+API
+===
 
 
 .. toctree::
     :maxdepth: 2
 
-    jsonapi.rst
+    api.rst
+    json-api.rst
 

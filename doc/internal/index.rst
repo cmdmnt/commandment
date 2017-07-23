@@ -7,6 +7,7 @@ Internals Reference
 
     core/index
 
+    api/index
     cms/index
     dep/index
     enroll/index
