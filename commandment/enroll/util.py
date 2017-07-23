@@ -1,12 +1,15 @@
 import os.path
 from flask import abort, current_app
-from commandment.models import db, Organization, SCEPConfig
+
+from commandment.enroll.profiles import scep_payload_from_configuration, ca_trust_payload_from_configuration, \
+    ssl_trust_payload_from_configuration
+from commandment.models import db, Organization
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.x509.name import NameOID
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from commandment.profiles import PayloadScope
-from commandment.profiles.models import Profile, PEMCertificatePayload, SCEPPayload, MDMPayload
+from commandment.profiles.models import Profile, MDMPayload
 from uuid import uuid4
 
 
@@ -31,11 +34,6 @@ def generate_enroll_profile() -> Profile:
 
     push_certificate_path = os.path.join(os.path.dirname(current_app.root_path), current_app.config['PUSH_CERTIFICATE'])
 
-    try:
-        scep_config = db.session.query(SCEPConfig).one()
-    except NoResultFound:
-        abort(500, 'No SCEP Configuration found, cannot generate enrollment profile.')
-
     if os.path.exists(push_certificate_path):
         push_certificate_basename, ext = os.path.splitext(push_certificate_path)
         if ext.lower() == '.p12':  # push service will have re-exported the PKCS#12 container
@@ -45,9 +43,6 @@ def generate_enroll_profile() -> Profile:
             push_certificate = x509.load_pem_x509_certificate(fd.read(), backend=default_backend())
     else:
         abort(500, 'No push certificate available at: {}'.format(push_certificate_path))
-
-    if not org:
-        abort(500, 'No MDM configuration present; cannot generate enrollment profile')
 
     if not org.payload_prefix:
         abort(500, 'MDM configuration has no profile prefix')
@@ -63,64 +58,19 @@ def generate_enroll_profile() -> Profile:
     )
 
     if 'CA_CERTIFICATE' in current_app.config:
-        with open(current_app.config['CA_CERTIFICATE'], 'rb') as fd:
-            pem_data = fd.read()
-            pem_payload = PEMCertificatePayload(
-                uuid=uuid4(),
-                identifier=org.payload_prefix + '.ca',
-                payload_content=pem_data,
-                display_name='Certificate Authority',
-                description='Required for your device to trust the server',
-                type='com.apple.security.root',
-                version=1
-            )
-            profile.payloads.append(pem_payload)
+        # If you specified a CA certificate, we assume it isn't a CA trusted by Apple devices.
+        ca_payload = ca_trust_payload_from_configuration()
+        profile.payloads.append(ca_payload)
 
     # Include Self Signed Certificate if necessary
     # TODO: Check that cert is self signed.
     if 'SSL_CERTIFICATE' in current_app.config:
-        basepath = os.path.dirname(__file__)
-        certpath = os.path.join(basepath, current_app.config['SSL_CERTIFICATE'])
-        with open(certpath, 'rb') as fd:
-            # ssl_certificate = x509.load_pem_x509_certificate(fd.read(), backend=default_backend())
-            # der_payload = PEMCertificatePayload(
-            #     uuid=uuid4(),
-            #     identifier=org.payload_prefix + '.ssl',
-            #     payload_content=ssl_certificate.public_bytes(serialization.Encoding.DER),
-            #     display_name='Web Server Certificate',
-            #     description='Required for your device to trust the server',
-            #     type='com.apple.security.pem',
-            # )
-            # profile.payloads.append(der_payload)
-            pem_payload = PEMCertificatePayload(
-                uuid=uuid4(),
-                identifier=org.payload_prefix + '.ssl',
-                payload_content=fd.read(),
-                display_name='Web Server Certificate',
-                description='Required for your device to trust the server',
-                type='com.apple.security.pkcs1',
-                version=1
-            )
-            profile.payloads.append(pem_payload)
+        ssl_payload = ssl_trust_payload_from_configuration()
+        profile.payloads.append(ssl_payload)
 
-    scep_payload = SCEPPayload(
-        uuid=uuid4(),
-        identifier=org.payload_prefix + '.mdm-scep',
-        url=scep_config.url,
-        name='MDM SCEP',
-        subject=[['CN', '%HardwareUUID%']],
-        challenge=scep_config.challenge,
-        key_size=scep_config.key_size,
-        key_type='RSA',
-        key_usage=scep_config.key_usage,
-        display_name='MDM SCEP',
-        description='Requests a certificate to identify your device',
-        retries=scep_config.retries,
-        retry_delay=scep_config.retry_delay,
-        version=1
-    )
-
+    scep_payload = scep_payload_from_configuration()
     profile.payloads.append(scep_payload)
+
     cert_uuid = scep_payload.uuid
 
     from commandment.mdm import AccessRights

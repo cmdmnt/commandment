@@ -5,6 +5,7 @@ from flask import current_app, render_template, abort, Blueprint, make_response,
 import os
 
 from commandment.enroll import AllDeviceAttributes
+from commandment.enroll.profiles import ca_trust_payload_from_configuration, scep_payload_from_configuration
 from commandment.profiles.models import MDMPayload, Profile, PEMCertificatePayload, DERCertificatePayload, SCEPPayload
 from commandment.profiles import PROFILE_CONTENT_TYPE, plist_schema as profile_schema, PayloadScope
 from commandment.models import db, Organization, SCEPConfig
@@ -51,18 +52,9 @@ def trust_mobileconfig():
     )
 
     if 'CA_CERTIFICATE' in current_app.config:
-        with open(current_app.config['CA_CERTIFICATE'], 'rb') as fd:
-            pem_data = fd.read()
-            pem_payload = PEMCertificatePayload(
-                uuid=uuid4(),
-                identifier=org.payload_prefix + '.ca',
-                payload_content=pem_data,
-                display_name='Certificate Authority',
-                description='Required for your device to trust the server',
-                type='com.apple.security.root',
-                version=1
-            )
-            profile.payloads.append(pem_payload)
+        # If you specified a CA certificate, we assume it isn't a CA trusted by Apple devices.
+        ca_payload = ca_trust_payload_from_configuration()
+        profile.payloads.append(ca_payload)
 
     if 'SSL_CERTIFICATE' in current_app.config:
         basepath = os.path.dirname(__file__)
@@ -101,6 +93,11 @@ def enroll():
 
 @enroll_app.route('/ota')
 def ota_enroll():
+    """Over-The-Air Profile Delivery Phase 1.5.
+
+    This endpoint represents the delivery of the `Profile Service` profile that should be delivered AFTER the user has
+    successfully authenticated.
+    """
     try:
         org = db.session.query(Organization).one()
     except NoResultFound:
@@ -129,7 +126,70 @@ def ota_enroll():
 @enroll_app.route('/ota_authenticate', methods=['POST'])
 @verify_cms_signers
 def ota_authenticate():
+    """Over-The-Air Profile Delivery Phase 3 and 4.
+
+    This endpoint represents the OTA Phase 3 and 4, "/profile" endpoint as specified in apples document "Over-The-Air
+    Profile Delivery".
+
+    There are two types of requests made here:
+    - The first request is signed by the iPhone Device CA and contains the challenge in the `Profile Service` payload,
+        we respond with the SCEP detail.
+    - The second request is signed by the issued SCEP certificate. We should respond with an enrollment profile.
+        It also contains the same device attributes sent in the previous step, but this time they are authenticated by
+        our SCEP CA.
+
+    Examples:
+
+    Signed plist given in the first request::
+
+        {
+            'CHALLENGE': '<CHALLENGE FROM PROFILE HERE>',
+            'IMEI': 'empty if macOS',
+            'MEID': 'empty if macOS',
+            'NotOnConsole': False,
+            'PRODUCT': 'MacPro6,1',
+            'SERIAL': 'C020000000000',
+            'UDID': '00000000-0000-0000-0000-000000000000',
+            'UserID': '00000000-0000-0000-0000-000000000000',
+            'UserLongName': 'Joe User',
+            'UserShortName': 'juser',
+            'VERSION': '16F73'
+        }
+
+    See Also:
+        - `Over-the-Air Profile Delivery and Configuration <https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/iPhoneOTAConfiguration/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009505-CH1-SW1>`_.
+    """
     signed_data = g.signed_data
     signers = g.signers
+    # TODO: This should Validate to iPhone Device CA but we can't because:
+    # http://www.openradar.me/31423312
     device_attributes = plistlib.loads(signed_data)
     current_app.logger.debug(device_attributes)
+
+    try:
+        org = db.session.query(Organization).one()
+    except NoResultFound:
+        abort(500, 'No organization is configured, cannot generate enrollment profile.')
+    except MultipleResultsFound:
+        abort(500, 'Multiple organizations, backup your database and start again')
+
+    # Reply SCEP
+    profile = Profile(
+        identifier=org.payload_prefix + '.ota.phase3',
+        uuid=uuid4(),
+        display_name='Commandment OTA SCEP Enrollment',
+        description='Retrieves a SCEP Certificate to complete OTA Enrollment',
+        organization=org.name,
+        version=1,
+        scope=PayloadScope.System,
+    )
+
+    scep_payload = scep_payload_from_configuration()
+    profile.payloads.append(scep_payload)
+
+    schema = profile_schema.ProfileSchema()
+    result = schema.dump(profile)
+    plist_data = dumps_none(result.data, skipkeys=True)
+
+    return plist_data, 200, {'Content-Type': PROFILE_CONTENT_TYPE}
+
