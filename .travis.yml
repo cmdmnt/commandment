@@ -9,6 +9,5 @@ env:
   - NODE_ENV=production
 install:
   - cd ui && yarn install
-  - npm i -g yargs
 script:
   - ./node_modules/.bin/webpack
