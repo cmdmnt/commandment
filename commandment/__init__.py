@@ -7,8 +7,8 @@ from flask_jwt import JWT
 
 from commandment.mdm.app import mdm_app
 from .ac2.ac2_app import ac2_app
-from .api.app import api_app
-from .api_flat import flat_api
+from .api.app_jsonapi import api_app
+from .api.app_json import flat_api
 from .apns.app import api_push_app
 from .auth import authenticate, identity
 from .configuration import configuration_app

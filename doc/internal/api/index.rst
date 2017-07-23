@@ -5,11 +5,5 @@ Internal Documentation
 .. toctree::
     :maxdepth: 2
 
-    flask/index.rst
+    jsonapi.rst
 
-    models/index.rst
-
-    vpp/index.rst
-    workers/index
-
-    push.rst
