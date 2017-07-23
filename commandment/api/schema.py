@@ -6,7 +6,7 @@
 from marshmallow_jsonapi import fields
 from marshmallow_jsonapi.flask import Relationship, Schema
 from marshmallow import Schema as FlatSchema, post_load
-from .models import db, Organization, SCEPConfig
+from commandment.models import db, Organization, SCEPConfig
 
 
 class DeviceSchema(Schema):

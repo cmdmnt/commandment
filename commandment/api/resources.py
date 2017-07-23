@@ -5,10 +5,10 @@
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
     CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, InstalledApplicationSchema, ProfileSchema, \
     InstalledCertificateSchema, DeviceGroupSchema, InstalledProfileSchema, TagSchema, AvailableOSUpdateSchema
-from .models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
+from commandment.models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
     SSLCertificate, Organization, Command, InstalledApplication, InstalledProfile, InstalledCertificate, DeviceGroup, \
     Tag, AvailableOSUpdate
-from .profiles.models import Profile
+from commandment.profiles.models import Profile
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
 
