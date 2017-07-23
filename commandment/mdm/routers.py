@@ -5,8 +5,8 @@ from typing import Union
 from flask import Flask, app, Blueprint, request, abort, current_app
 from functools import wraps
 import biplist
-from .models import db, Device
-from .mdm import commands
+from commandment.models import db, Device
+from commandment.mdm import commands
 
 
 class CommandRouter(object):

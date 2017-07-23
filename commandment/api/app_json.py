@@ -5,12 +5,12 @@ import io
 from flask import Blueprint, send_file, abort, current_app, jsonify, request, make_response
 from sqlalchemy.orm.exc import NoResultFound
 import plistlib
-from .plistutil.nonewriter import dumps as dumps_none
-from .models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
-from .profiles.models import Profile
-from .mdm import commands
+from commandment.plistutil.nonewriter import dumps as dumps_none
+from commandment.models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
+from commandment.profiles.models import Profile
+from commandment.mdm import commands
 from .schema import OrganizationFlatSchema, ProfileSchema
-from .profiles.plist_schema import ProfileSchema as ProfilePlistSchema
+from commandment.profiles.plist_schema import ProfileSchema as ProfilePlistSchema
 
 flat_api = Blueprint('flat_api', __name__)
 

@@ -11,7 +11,7 @@ from .api.app_jsonapi import api_app
 from .api.app_json import flat_api
 from .apns.app import api_push_app
 from .auth import authenticate, identity
-from .configuration import configuration_app
+from .api.configuration import configuration_app
 from .enroll.app import enroll_app
 from .models import db
 from .omdm import omdm_app
