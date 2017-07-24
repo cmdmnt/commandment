@@ -8,6 +8,7 @@ cache:
   directories:
     - "ui/node_modules"
 install:
+  - pip install -r requirements.txt
   - cd ui && yarn install
 script:
-  - ./node_modules/.bin/webpack
+  - NODE_ENV=production ./node_modules/.bin/webpack
