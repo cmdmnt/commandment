@@ -71,7 +71,8 @@ There are two options for providing the identity certificate:
 The second option is always the preferred method, since it allows you to use whatever existing infrastructure you have
 for issuing certificates.
 
-
+If you are testing commandment you can use `SCEPy <https://github.com/mosen/SCEPy>`_ as your SCEP server.
+I would recommend running something else as a production ready SCEP service.
 
 
 .. rubric:: Footnotes
