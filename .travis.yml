@@ -8,7 +8,7 @@ cache:
   pip: true
   directories:
     - "ui/node_modules"
-    - $HOME/.cache/pip3
+    - $HOME/.cache/pip
 #addons:
 #  apt:
 #    packages:
