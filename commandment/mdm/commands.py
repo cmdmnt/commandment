@@ -1,13 +1,16 @@
 from enum import Enum
 from uuid import uuid4
-from typing import Set, List
+from typing import Dict, Set, List, Type
 import semver
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from . import AccessRights, Platform
 
+PlatformVersion = str
+PlatformRequirements = Dict[Platform, PlatformVersion]
+
 
 class CommandRegistry(type):
-    command_classes = {}
+    command_classes: Dict[str, Type] = {}
 
     def __new__(cls, name, bases, namespace, **kwds):
         ns = dict(namespace)
@@ -20,14 +23,14 @@ class CommandRegistry(type):
 
 class Command(metaclass=CommandRegistry):
 
-    request_type = None
+    request_type: str = None
     """request_type (str): The MDM RequestType, as specified in the MDM Specification."""
 
-    require_access = {}
+    require_access: Set[AccessRights] = set()
     """require_access (Set[AccessRights]): Access required for the MDM to execute the command on this device."""
 
-    require_platforms = dict()
-    """require_platforms (Dict): A dict of Platform : version predicate string, to indicate which platforms will accept
+    require_platforms: PlatformRequirements = dict()
+    """require_platforms (PlatformRequirements): A dict of Platform : version predicate string, to indicate which platforms will accept
     the command"""
 
     def __init__(self, uuid=None):
@@ -400,7 +403,7 @@ class ProvisioningProfileList(Command):
 
 class InstalledApplicationList(Command):
     request_type = 'InstalledApplicationList'
-    require_access = {}
+    require_access: Set[AccessRights] = set()
 
     def __init__(self, uuid=None, **kwargs):
         super(InstalledApplicationList, self).__init__(uuid)

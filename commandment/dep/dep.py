@@ -5,6 +5,7 @@ from requests.auth import AuthBase
 from requests_oauthlib import OAuth1
 import re
 from datetime import timedelta, datetime
+from locale import atof
 
 from commandment.dep import DEPProfileRemovals
 from .errors import DEPError
@@ -17,7 +18,7 @@ class DEPAuth(AuthBase):
     Example:
           session.get("https://something", auth=DEPAuth(token))
     """
-    def __init__(self, token: str):
+    def __init__(self, token: str) -> None:
         self.token = token
 
     def __call__(self, r):
@@ -34,7 +35,7 @@ class DEP:
                  consumer_secret: str = None,
                  access_token: str = None,
                  access_secret: str = None,
-                 url: str = "https://mdmenrollment.apple.com"):
+                 url: str = "https://mdmenrollment.apple.com") -> None:
 
         self._auth_session_token = None
         self._oauth = OAuth1(
@@ -50,8 +51,8 @@ class DEP:
             "Content-Type": "application/json;charset=UTF8",
             "User-Agent": DEP.UserAgent,
         })
-        self._token = None
-        self._retry_after = None
+        self._token: Optional[str] = None
+        self._retry_after: Optional[datetime] = None
 
     def _response_hook(self, r: requests.Response, *args, **kwargs):
         """This method always exists as a response hook in order to keep some of the state returned by the
@@ -71,7 +72,7 @@ class DEP:
         if 'Retry-After' in r.headers:
             after = r.headers['Retry-After']
             if re.compile(r"/[0-9]+/").match(after):
-                d = timedelta(seconds=after)
+                d = timedelta(seconds=atof(after))
                 self._retry_after = datetime.utcnow() + d
             else:  # HTTP Date
                 self._retry_after = datetime(*parsedate(after)[:6])
@@ -245,7 +246,7 @@ class DEPBaseCursor(object):
           results (dict): The current response results.
     """
 
-    def __init__(self, owner: DEP, results: Optional[dict] = None):
+    def __init__(self, owner: DEP, results: Optional[dict] = None) -> None:
         self.owner = owner
         self.results = results
 
@@ -281,7 +282,7 @@ class DEPFetchCursor(DEPBaseCursor, Iterator):
 
 class DEPSyncCursor(DEPBaseCursor, Iterator):
     """DEPSyncCursor wraps the DEP device sync cursor as an iterable object."""
-    def __init__(self, owner: DEP, cursor: str, results: Optional[dict] = None):
+    def __init__(self, owner: DEP, cursor: str, results: Optional[dict] = None) -> None:
         super(DEPSyncCursor, self).__init__(owner, results)
 
     def __next__(self):

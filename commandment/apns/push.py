@@ -66,7 +66,7 @@ def get_apns() -> apns2.APNSClient:
 
 class MDMPayload(apns2.Payload):
     """A class representing an MDM APNs message payload."""
-    def __init__(self, push_magic: str):
+    def __init__(self, push_magic: str) -> None:
         """Constructor
         
             Args:
@@ -75,7 +75,7 @@ class MDMPayload(apns2.Payload):
         super(MDMPayload, self).__init__(custom={'mdm': push_magic})
         self._push_magic = push_magic
 
-    def to_json(self) -> bytes:
+    def to_json(self) -> str:
         return json.dumps({'mdm': self._push_magic})
 
 

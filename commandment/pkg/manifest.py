@@ -6,7 +6,7 @@ import io
 DEFAULT_MD5_CHUNK_SIZE = 10485760
 
 
-def chunked_hash(stream: Union[io.RawIOBase, io.BufferedIOBase], chunk_size: int = DEFAULT_MD5_CHUNK_SIZE) -> List[str]:
+def chunked_hash(stream: Union[io.RawIOBase, io.BufferedIOBase], chunk_size: int = DEFAULT_MD5_CHUNK_SIZE) -> List[bytes]:
     """Create a list of hashes of chunk_size size in bytes.
 
     Args:

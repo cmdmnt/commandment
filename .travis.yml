@@ -22,4 +22,4 @@ script:
   - NODE_ENV=production ./node_modules/.bin/webpack
   - cd ..
   - pytest -v -m "not depsim and not vppsim" tests
-  - mypy commandment
+#  - mypy commandment

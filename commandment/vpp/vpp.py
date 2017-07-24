@@ -9,7 +9,7 @@ TODO:
 """
 
 import requests
-from typing import List, Optional, Iterator, Tuple
+from typing import List, Optional, Iterator, Tuple, Dict, Text, Any
 import json
 import base64
 
@@ -62,8 +62,8 @@ class VPPCursor(object):
         made."""
         return self._current.get('sinceModifiedToken', None)
 
-    def __init__(self, since_modified_token: str = None, vpp=None):
-        self._current = {}
+    def __init__(self, since_modified_token: str = None, vpp=None) -> None:
+        self._current: Dict[Text, Any] = {}
         if since_modified_token is not None:
             self._current['sinceModifiedToken'] = since_modified_token
 
@@ -82,7 +82,7 @@ class VPPUserCursor(VPPCursor):
         """Optional[List[dict]]: The current set of users in the cursor result, or None if there are no results."""
         return self._current.get('users', None)
 
-    def __init__(self, includes_retired: bool = True, vpp=None):
+    def __init__(self, includes_retired: bool = True, vpp=None) -> None:
         super(VPPUserCursor, self).__init__(vpp=vpp)
         self.includes_retired = includes_retired
 
@@ -112,7 +112,7 @@ class VPPLicenseCursor(VPPCursor):
         no results."""
         return self._current.get('licenses', None)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super(VPPLicenseCursor, self).__init__(*args, **kwargs)
 
     def next(self):
@@ -138,6 +138,7 @@ class VPPLicenseOperation(object):
           _disassociation_type (LicenseDisassociationType): This specifies the type of disassociation this license
             operation represents. The API only accepts one of these in a single request.
     """
+    _vpp: VPP
 
     @property
     def adam_id(self) -> int:
@@ -157,7 +158,7 @@ class VPPLicenseOperation(object):
 
     def __init__(self, adam_id: int, pricing_param: str = 'STDQ',
                  license_association_type: Optional[LicenseAssociationType] = None,
-                 license_disassociation_type: Optional[LicenseDisassociationType] = None):
+                 license_disassociation_type: Optional[LicenseDisassociationType] = None) -> None:
         self._adam_id = adam_id
         self._pricing_param = pricing_param
         self._associate: List[LicenseAssociation] = []
@@ -197,7 +198,7 @@ class VPPUserLicenseOperation(VPPLicenseOperation):
           pricing_param (str): The pricing parameter, defaults to 'STDQ' (Standard Quality)
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super(VPPUserLicenseOperation, self).__init__(*args, **kwargs)
         self._association_type = LicenseAssociationType.ClientUserID
         self._disassociation_type = LicenseDisassociationType.ClientUserID
@@ -212,7 +213,7 @@ class VPPDeviceLicenseOperation(VPPLicenseOperation):
           pricing_param (str): The pricing parameter, defaults to 'STDQ' (Standard Quality)
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super(VPPDeviceLicenseOperation, self).__init__(*args, **kwargs)
         self._association_type = LicenseAssociationType.SerialNumber
         self._disassociation_type = LicenseDisassociationType.SerialNumber
@@ -240,7 +241,7 @@ class VPP(object):
         LicenseDisassociationType.LicenseID: 'disassociateLicenseIdStrs',
     }
 
-    def __init__(self, stoken: str, vpp_service_config_url: str = SERVICE_CONFIG_URL, service_config: dict = None):
+    def __init__(self, stoken: str, vpp_service_config_url: str = SERVICE_CONFIG_URL, service_config: dict = None) -> None:
         """
         The VPP class is a wrapper around a requests session and provides an API for interacting with Apple's VPP
         service.

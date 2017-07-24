@@ -3,14 +3,14 @@ This module defines marshmallow schemas for use in converting .mobileconfig (pli
 model representations.
 """
 
-from typing import Union, Callable, Type, List
+from typing import Union, Callable, Type, List, Dict
 from marshmallow import Schema, fields, post_load, post_dump
 from marshmallow_enum import EnumField
 from commandment.profiles import models
 from commandment.profiles.certificates import KeyUsage
 from . import PayloadScope
 
-_schemas = {}
+_schemas: Dict[str, Schema] = {}
 """Hold all registered schemas by their PayloadType."""
 
 

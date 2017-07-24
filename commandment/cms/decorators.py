@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from asn1crypto.cms import CMSAttribute
 from cryptography.exceptions import InvalidSignature
@@ -12,7 +12,7 @@ from base64 import b64decode, b64encode
 from . import _certificate_by_signer_identifier, _cryptography_hash_function, _cryptography_pad_function
 
 
-def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> (List[x509.Certificate], bytes):
+def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> Tuple[List[x509.Certificate], bytes]:
     ci = cms.ContentInfo.load(signed_data)
     assert ci['content_type'].native == 'signed_data'
     signed: cms.SignedData = ci['content']

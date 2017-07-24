@@ -1,12 +1,15 @@
 """This module contains routers which direct the request towards a certain module or function based upon the CONTENT
 of the request, rather than the URL."""
 
-from typing import Union
+from typing import Union, Any, Type, Callable, Dict, List
 from flask import Flask, app, Blueprint, request, abort, current_app
 from functools import wraps
 import biplist
 from commandment.models import db, Device
 from commandment.mdm import commands
+
+CommandHandler = Callable[[commands.Command, Device, dict], None]
+CommandHandlers = Dict[str, CommandHandler]
 
 
 class CommandRouter(object):
@@ -20,9 +23,9 @@ class CommandRouter(object):
     Args:
           app (app): The flask application or blueprint instance
     """
-    def __init__(self, app: Union[Flask, Blueprint]):
+    def __init__(self, app: Union[Flask, Blueprint]) -> None:
         self._app = app
-        self._handlers = {}
+        self._handlers: CommandHandlers = {}
 
     def handle(self, command: commands.Command, device: Device, response: dict):
         if command.request_type in self._handlers:
@@ -58,10 +61,10 @@ class PlistRouter(object):
     """PlistRouter routes requests to view functions based on matching values to top level keys.
     
     """
-    def __init__(self, app: app, url: str):
+    def __init__(self, app: app, url: str) -> None:
         self._app = app
         app.add_url_rule(url, view_func=self.view, methods=['PUT'])
-        self.kv_routes = []
+        self.kv_routes: List[Dict[str, Any]] = []
 
     def view(self):
         try:
@@ -80,7 +83,7 @@ class PlistRouter(object):
 
         abort(404, 'No matching plist route')
 
-    def route(self, key: str, value: any):
+    def route(self, key: str, value: Any):
         """
         Route a plist request if the content satisfies the key value test
         
