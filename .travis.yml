@@ -7,9 +7,7 @@ cache:
   yarn: true
   directories:
     - "ui/node_modules"
-env:
-  - NODE_ENV=production
 install:
-  - cd ui && yarn --production=false
+  - cd ui && yarn install
 script:
   - ./node_modules/.bin/webpack
