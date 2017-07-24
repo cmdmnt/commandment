@@ -20,5 +20,6 @@ install:
   - cd ui && yarn install
 script:
   - NODE_ENV=production ./node_modules/.bin/webpack
-  - pytest -v -m "not depsim and not vppsim"
+  - cd ..
+  - pytest -v -m "not depsim and not vppsim" tests
   - mypy commandment
