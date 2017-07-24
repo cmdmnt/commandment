@@ -11,7 +11,7 @@ from commandment import create_app
 from commandment.pki.ssl import generate_self_signed_certificate, generate_signing_request
 from cryptography.hazmat.primitives import serialization
 
-from commandment.push import get_apns
+from commandment.apns.push import get_apns
 from commandment.runner import start_runner, stop_runner
 
 def server():
