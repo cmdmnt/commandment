@@ -5,6 +5,7 @@ python:
   - "3.6"
 cache:
   yarn: true
+  pip: true
   directories:
     - "ui/node_modules"
 addons:
@@ -12,7 +13,7 @@ addons:
     packages:
       - python3
 install:
-  - pip install -r requirements.txt
+  - pip3 install -r requirements.txt
   - cd ui && yarn install
 script:
   - NODE_ENV=production ./node_modules/.bin/webpack
