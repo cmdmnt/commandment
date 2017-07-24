@@ -2,6 +2,7 @@ import pytest
 from commandment.dep.dep import DEP
 
 
+@pytest.mark.depsim
 class TestDEP:
     def test_account(self, dep: DEP):
         dep.fetch_token()

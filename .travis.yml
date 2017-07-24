@@ -13,10 +13,15 @@ cache:
 #  apt:
 #    packages:
 #      - python3.6
+addons:
+  artifacts: true
 install:
   - pip3 install -r requirements.txt
   - cd ui && yarn install
 script:
   - NODE_ENV=production ./node_modules/.bin/webpack
-  - pytest
+  - pytest -v -m "not depsim and not vppsim"
+  - mypy
+
+
 

@@ -1,8 +1,8 @@
 import pytest
 from commandment.dep.dep import DEP
-from commandment.dep.exceptions import DEPError
+from commandment.dep.errors import DEPError
 
-
+@pytest.mark.depsim
 class TestDEPFailures:
     # NOTE: ensure that this is in exactly the same order as your DEPsim config.
     @pytest.mark.parametrize("expected_status,expected_text", [

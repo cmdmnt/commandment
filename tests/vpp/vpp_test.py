@@ -13,6 +13,7 @@ VPP_MOCK_USER_EMAIL_2 = 'vpp-test-2@localhost'
 VPP_BATCH_LICENSE_ADAMID = 525463029  # This license is used as the test for large batch operations
 
 
+@pytest.mark.vppsim
 class TestVPP:
 
     # def test_vpp_init(self, vpp):
