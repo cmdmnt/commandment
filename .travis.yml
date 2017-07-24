@@ -21,7 +21,4 @@ install:
 script:
   - NODE_ENV=production ./node_modules/.bin/webpack
   - pytest -v -m "not depsim and not vppsim"
-  - mypy
-
-
-
+  - mypy commandment
