@@ -4,11 +4,10 @@ node_js:
 python:
   - "3.6"
 cache:
-  yarn: true
-  pip: true
   directories:
     - "ui/node_modules"
     - $HOME/.cache/pip
+    - $HOME/.cache/yarn
 #addons:
 #  apt:
 #    packages:
