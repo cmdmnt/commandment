@@ -7,8 +7,12 @@ cache:
   yarn: true
   directories:
     - "ui/node_modules"
+addons:
+  apt:
+    packages:
+      - python3
 install:
-#  - pip install -r requirements.txt
+  - pip install -r requirements.txt
   - cd ui && yarn install
 script:
   - NODE_ENV=production ./node_modules/.bin/webpack
