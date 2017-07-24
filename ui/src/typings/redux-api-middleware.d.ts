@@ -61,7 +61,7 @@ declare module "redux-api-middleware" {
     //export const CALL_API: CALL_API = Symbol('CALL_API');
     //export const CALL_API = 'CALL_API'; // Cheating for now
 
-    interface RSAA<R, S, F> {
+    export interface RSAA<R, S, F> {
         [propName: string]: { // Symbol as object key seems impossible
             endpoint: string;  // or function
             method: HTTPVerb;

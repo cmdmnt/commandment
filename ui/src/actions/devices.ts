@@ -28,7 +28,7 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String
     return {
         [CALL_API]: {
             endpoint: '/api/v1/devices?' + queryParameters.join('&'),
-            method: 'GET',
+            method: (<HTTPVerb>'GET'),
             types: [
                 INDEX_REQUEST,
                 INDEX_SUCCESS,

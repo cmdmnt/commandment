@@ -12,6 +12,7 @@ import {DeviceGroupsState} from "../reducers/device_groups";
 import {index, IndexActionRequest} from '../actions/device_groups';
 import {griddle, GriddleDecoratorState} from "../hoc/griddle";
 import {RouteLinkColumn} from "../components/griddle/RouteLinkColumn";
+import {RouteComponentProps} from "react-router";
 
 interface ReduxStateProps {
     device_groups: DeviceGroupsState;
@@ -34,7 +35,7 @@ function mapDispatchToProps(dispatch: Dispatch<RootState>): ReduxDispatchProps {
     }, dispatch);
 }
 
-interface DeviceGroupsPageProps extends ReduxStateProps, ReduxDispatchProps {
+interface DeviceGroupsPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<void> {
     griddleState: GriddleDecoratorState;
     events: any;
 }

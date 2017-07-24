@@ -2,6 +2,7 @@ import * as React from 'react';
 import {WrappedFieldProps} from "redux-form";
 import {StatelessComponent} from "react-redux";
 import {Form} from 'semantic-ui-react';
+import {ChangeEvent} from "react";
 
 interface FieldProps extends WrappedFieldProps<any> {
     label: string;
@@ -14,6 +15,6 @@ export const SemanticUISelect: StatelessComponent<FieldProps> = ({ input, meta: 
         label={label}
         error={touched && !!error}
         options={options}
-        onChange={(e: React.SyntheticEvent<any>, { value }: { value: string }) => input.onChange(value)}
+        onChange={(e: React.SyntheticEvent<any>, { value }: { value: ChangeEvent<any> }) => input.onChange(value)}
     />
 );
