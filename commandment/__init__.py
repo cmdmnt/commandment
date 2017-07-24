@@ -25,6 +25,9 @@ from .dep.app import dep_app
 def create_app(config_file: Union[str, PurePath]) -> Flask:
     """Create the Flask Application
 
+    Args:
+        config_file (Union[str, PurePath]): Path to configuration file
+
     Returns:
         Instance of the flask application
     """
