@@ -14,7 +14,9 @@ cache:
 #    packages:
 #      - python3.6
 addons:
-  artifacts: true
+  artifacts:
+    working_dir: ui
+    debug: true
 install:
   - pip3 install -r requirements.txt
   - cd ui && yarn install
