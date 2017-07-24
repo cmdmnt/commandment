@@ -8,10 +8,10 @@ cache:
   pip: true
   directories:
     - "ui/node_modules"
-addons:
-  apt:
-    packages:
-      - python3.6
+#addons:
+#  apt:
+#    packages:
+#      - python3.6
 install:
   - pip3 install -r requirements.txt
   - cd ui && yarn install
