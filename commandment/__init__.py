@@ -2,6 +2,8 @@
 Copyright (c) 2015 Jesse Peterson, 2017 Mosen
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
+from typing import Union
+from pathlib import PurePath
 from flask import Flask, render_template
 from flask_jwt import JWT
 
@@ -20,7 +22,7 @@ from .sso.saml import saml_app
 from .dep.app import dep_app
 
 
-def create_app() -> Flask:
+def create_app(config_file: Union[str, PurePath]) -> Flask:
     """Create the Flask Application
 
     Returns:
@@ -28,7 +30,7 @@ def create_app() -> Flask:
     """
     app = Flask(__name__)
     app.config.from_object('commandment.default_settings')
-    app.config.from_envvar('COMMANDMENT_SETTINGS', True)
+    app.config.from_pyfile(config_file)
 
     db.init_app(app)
     # Use alembic to perform migrations

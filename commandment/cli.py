@@ -17,7 +17,7 @@ from commandment.runner import start_runner, stop_runner
 def server():
     """Run server in standalone development mode."""
     
-    app = create_app()
+    app = create_app(os.environ['COMMANDMENT_SETTINGS'])
 
     # Werkzeug, in debug mode, will launch the app using the debug file-system
     # watching auto-reloader. For threads this means that there would be two
