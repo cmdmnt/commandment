@@ -1,6 +1,8 @@
 language: node_js
 node_js:
   - "7"
+python:
+  - "3.6"
 cache:
   yarn: true
   directories:
@@ -8,7 +10,6 @@ cache:
 env:
   - NODE_ENV=production
 install:
-  - cd ui && yarn install
-  - npm i yargs
+  - cd ui && npm install
 script:
   - ./node_modules/.bin/webpack
