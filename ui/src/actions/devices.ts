@@ -234,7 +234,7 @@ export type CommandsActionResponse = RSAAIndexActionResponse<COMMANDS_REQUEST, C
 
 
 export const commands = encodeJSONAPIChildIndexParameters((device_id: string, queryParameters: Array<String>)  => {
-    return {
+    return (<RSAA<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE>>{
         [CALL_API]: {
             endpoint: `/api/v1/devices/${device_id}/commands?${queryParameters.join('&')}`,
             method: 'GET',
@@ -245,7 +245,7 @@ export const commands = encodeJSONAPIChildIndexParameters((device_id: string, qu
             ],
             headers: JSONAPI_HEADERS
         }
-    }
+    });
 });
 
 

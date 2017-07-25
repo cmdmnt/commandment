@@ -36,7 +36,7 @@ def upgrade():
                     sa.Column('is_encrypted', sa.Boolean(), nullable=True),
                     sa.PrimaryKeyConstraint('id')
                     )
-    op.create_index(op.f('ix_profiles_uuid'), 'profiles', ['uuid'], unique=False)
+    op.create_index(op.f('ix_profiles_uuid'), 'profiles', ['uuid'], unique=True)
 
 
 def downgrade():

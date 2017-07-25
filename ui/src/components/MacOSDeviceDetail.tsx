@@ -31,7 +31,7 @@ export class MacOSDeviceDetail extends React.Component<MacOSDeviceDetailProps, M
         const niceLastSeen = attributes.last_seen ? moment(attributes.last_seen).fromNow() : 'Never';
 
         return (
-            <Grid columns={2} className='MacOSDeviceDetail'>
+            <Grid columns={3} className='MacOSDeviceDetail'>
                 <Grid.Row>
                     <Grid.Column>
                         <Header as="h1">{name} <Button content='Rename' /></Header>
@@ -98,6 +98,9 @@ export class MacOSDeviceDetail extends React.Component<MacOSDeviceDetailProps, M
                                 </List.Content>
                             </List.Item>
                         </List>
+                    </Grid.Column>
+                    <Grid.Column>
+
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

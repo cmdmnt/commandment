@@ -46,7 +46,7 @@ interface DeviceProfilesProps extends ReduxStateProps, ReduxDispatchProps, Route
 class UnconnectedDeviceProfiles extends React.Component<DeviceProfilesProps, undefined> {
 
     componentWillMount?() {
-        this.props.fetchInstalledProfiles(this.props.match.params.id, this.props.griddleState.pageSize, 1);
+        this.props.fetchInstalledProfiles(''+this.props.match.params.id, this.props.griddleState.pageSize, 1);
     }
 
     componentWillUpdate?(nextProps: DeviceProfilesProps, nextState: void | Readonly<{}>) {

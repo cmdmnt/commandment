@@ -73,36 +73,35 @@ export class UnconnectedDeviceCertificates extends React.Component<DeviceCertifi
 
         return (
             <div className='DeviceCertificates'>
-
-                        {installed_certificates.items &&
-                        <Griddle
-                            data={installed_certificates.items}
-                            plugins={[SemanticUIPlugin()]}
-                            styleConfig={{
-                                classNames: {
-                                    Table: 'ui celled table',
-                                    NoResults: 'ui message'
-                                }
-                            }}
-                            events={this.props.events}
-                            components={{
-                                Layout,
-                                Row: CertificateRow,
-                                TableContainer: ListTableContainer,
-                                TableBody: ListTableBody
-                            }}
-                            pageProperties={{
-                                currentPage: griddleState.currentPage,
-                                pageSize: griddleState.pageSize,
-                                recordCount: installed_certificates.recordCount
-                            }}
-                        >
-                            <RowDefinition>
-                                <ColumnDefinition id="id" />
-                                <ColumnDefinition title='Identity' id="attributes.is_identity" customComponent={CertificateTypeIcon} />
-                                <ColumnDefinition title='X.509 CN' id='attributes.x509_cn' />
-                            </RowDefinition>
-                        </Griddle>}
+                {installed_certificates.items &&
+                <Griddle
+                    data={installed_certificates.items}
+                    plugins={[SemanticUIPlugin()]}
+                    styleConfig={{
+                        classNames: {
+                            Table: 'ui celled table',
+                            NoResults: 'ui message'
+                        }
+                    }}
+                    events={this.props.events}
+                    components={{
+                        Layout,
+                        Row: CertificateRow,
+                        TableContainer: ListTableContainer,
+                        TableBody: ListTableBody
+                    }}
+                    pageProperties={{
+                        currentPage: griddleState.currentPage,
+                        pageSize: griddleState.pageSize,
+                        recordCount: installed_certificates.recordCount
+                    }}
+                >
+                    <RowDefinition onClickButton={(e: any) => { console.log('clicked button'); }}>
+                        <ColumnDefinition title='Identity' id="attributes.is_identity" customComponent={CertificateTypeIcon} />
+                        <ColumnDefinition title='X.509 CN' id='attributes.x509_cn' />
+                        <ColumnDefinition id="id" />
+                    </RowDefinition>
+                </Griddle>}
             </div>
         )
     }

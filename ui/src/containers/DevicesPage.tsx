@@ -16,17 +16,18 @@ import {DeviceColumn} from "../components/griddle/DeviceColumn";
 import {MultiAttrCellPlugin} from "../griddle-plugins/multiattr-cell/index";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
+import {List, Map} from "immutable";
 import {components} from "griddle-react";
 
 
-const rowDataSelector = (state: any, { griddleKey }: { griddleKey: string }) => {
+const rowDataSelector = (state: Map<string, any>, { griddleKey }: { griddleKey?: string }) => {
     return state
         .get('data')
-        .find(rowMap => rowMap.get('griddleKey') === griddleKey)
+        .find((rowMap: any) => rowMap.get('griddleKey') === griddleKey)
         .toJSON();
 };
 
-const enhancedWithRowData = connect((state, props) => {
+const enhancedWithRowData = connect((state, props: components.RowProps) => {
     return {
         // rowData will be available into MyCustomComponent
         rowData: rowDataSelector(state, props)

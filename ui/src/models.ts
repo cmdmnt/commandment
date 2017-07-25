@@ -47,6 +47,8 @@ export interface Device {
     sip_enabled: boolean;
     hostname: string;
     local_hostname: string;
+    available_device_capacity: number;
+    device_capacity: number;
 }
 
 // Valid JSON-API relationships

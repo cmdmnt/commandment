@@ -45,12 +45,8 @@ interface ProfilesPageState {
     filter: string;
 }
 
-@connect<ReduxStateProps, ReduxDispatchProps, ProfilesPageProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-@griddle
-export class ProfilesPage extends React.Component<ProfilesPageProps, ProfilesPageState> {
+
+export class UnconnectedProfilesPage extends React.Component<ProfilesPageProps, ProfilesPageState> {
 
     componentWillMount?(): void {
         this.props.index(this.props.griddleState.pageSize, this.props.griddleState.currentPage);
@@ -130,3 +126,8 @@ export class ProfilesPage extends React.Component<ProfilesPageProps, ProfilesPag
         );
     }
 }
+
+export const ProfilesPage = connect<ReduxStateProps, ReduxDispatchProps, ProfilesPageProps>(
+    mapStateToProps,
+    mapDispatchToProps
+)(griddle(UnconnectedProfilesPage));

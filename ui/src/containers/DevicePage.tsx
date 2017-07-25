@@ -30,6 +30,8 @@ import {
 } from '../actions/tags';
 import {Tag} from "../models";
 import {JSONAPIObject, JSONAPIRelationship} from "../json-api";
+import {getPercentCapacityUsed} from "../selectors/device";
+import {isArray} from "../guards";
 
 interface OwnProps {
 
@@ -38,12 +40,14 @@ interface OwnProps {
 interface ReduxStateProps {
     device: DeviceState;
     tags: TagsState;
+    percentCapacityUsed: number;
 }
 
 function mapStateToProps(state: RootState, ownProps?: OwnProps): ReduxStateProps {
     return {
         device: state.device,
-        tags: state.tags
+        tags: state.tags,
+        percentCapacityUsed: getPercentCapacityUsed(state)
     };
 }
 
@@ -107,16 +111,16 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
             color: '888888'
         };
 
-        this.props.postRelated<Tag>(this.props.device.device.id, "tags", tag);
+        this.props.postRelated<Tag>(''+this.props.device.device.id, "tags", tag);
     };
 
     handleSearchTag = (value: string) => {
         this.props.fetchTags(10, 1, [], [{'name': 'name', 'op': 'ilike', 'val': `%${value}%`}]);
     };
 
-    handleApplyTags = (event: SyntheticEvent<any>, { value: values }: { value: Array<number> }) => {
-        const relationships = values.map((v: number) => {
-            return {"id": ''+v, "type": "tags"};
+    handleChangeTag = (event: SyntheticEvent<any>, { value: values }: { value: Array<string> }) => {
+        const relationships = values.map((v: string) => {
+            return {"id": v, "type": "tags"};
         });
 
         this.props.patchRelationship(
@@ -140,9 +144,12 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
         });
 
         let deviceTags: Array<number> = [];
-        if (device.device && device.device.relationships) {
-            deviceTags = device.device.relationships.tags &&
-                device.device.relationships.tags.data.map((t: JSONAPIRelationship) => parseInt(t.id, 0));
+        if (device.device && device.device.relationships && device.device.relationships.tags) {
+            if (isArray(device.device.relationships.tags.data)) {
+                deviceTags = device.device.relationships.tags.data.map((t: JSONAPIRelationship) => parseInt(t.id, 0));
+            } else {
+                deviceTags = [parseInt(device.device.relationships.tags.data.id, 0)];
+            }
         }
 
         return (
@@ -161,7 +168,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                                 value={deviceTags}
                                 onAddItem={this.handleAddTag}
                                 onSearch={this.handleSearchTag}
-                                onChange={this.handleApplyTags}
+                                onChange={this.handleChangeTag}
                             />
                             <Segment>
                                 {device && <MacOSDeviceDetail device={device}/>}

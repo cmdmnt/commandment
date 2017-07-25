@@ -138,7 +138,7 @@ class VPPLicenseOperation(object):
           _disassociation_type (LicenseDisassociationType): This specifies the type of disassociation this license
             operation represents. The API only accepts one of these in a single request.
     """
-    _vpp: VPP
+    # _vpp: VPP
 
     @property
     def adam_id(self) -> int:

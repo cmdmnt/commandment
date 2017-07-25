@@ -39,7 +39,7 @@ interface EAPClientConfigurationProps {
     accept_eap_types: { [eapType: number]: boolean };
 }
 
-function mapStateToProps(state): EAPClientConfigurationProps {
+function mapStateToProps(state: RootState): EAPClientConfigurationProps {
     const accept_eap_types = selector(state, 'eap_client_configuration.accept_eap_types');
     
     return {

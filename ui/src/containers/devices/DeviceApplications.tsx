@@ -13,10 +13,13 @@ import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
 import * as byteSize from 'byte-size';
 
 
-const ByteColumn = ({ value }: { value: number; }) => {
-    const size = byteSize(value);
-
-    return <span>{size.value} {size.unit}</span>;
+const ByteColumn = ({ value }: { value: number | null; }) => {
+    if (value) {
+        const size = byteSize(value);
+        return <span>{size.value} {size.unit}</span>;
+    } else {
+        return <span>0</span>
+    }
 };
 
 interface ReduxStateProps {
