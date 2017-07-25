@@ -6,7 +6,7 @@ import {SemanticField} from "../fields/SemanticField";
 
 export interface FormData {
     id?: string;
-    url: string;
+    url?: string;
     name: string;
     subject: string;
     challenge: string;

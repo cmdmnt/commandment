@@ -33,11 +33,11 @@ function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
     }, dispatch);
 }
 
-interface RouterProps {
+interface DeviceCertificatesRouteProps {
     id: string; // device id
 }
 
-interface DeviceCertificatesProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouterProps> {
+interface DeviceCertificatesProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<DeviceCertificatesRouteProps> {
     griddleState: GriddleDecoratorState;
     events: any;
 }
@@ -45,12 +45,8 @@ interface DeviceCertificatesProps extends ReduxStateProps, ReduxDispatchProps, R
 interface DeviceCertificatesState {
 }
 
-@connect<ReduxStateProps, ReduxDispatchProps, DeviceCertificatesProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-@griddle
-export class DeviceCertificates extends React.Component<DeviceCertificatesProps, any> {
+
+export class UnconnectedDeviceCertificates extends React.Component<DeviceCertificatesProps, any> {
 
     componentWillMount?() {
         this.props.fetchInstalledCertificates(this.props.match.params.id, this.props.griddleState.pageSize);
@@ -62,7 +58,7 @@ export class DeviceCertificates extends React.Component<DeviceCertificatesProps,
 
         if (nextGriddleState.filter !== griddleState.filter || nextGriddleState.currentPage !== griddleState.currentPage) {
             this.props.fetchInstalledCertificates(
-                this.props.match.params.id,
+                ''+this.props.match.params.id,
                 nextGriddleState.pageSize,
                 nextGriddleState.currentPage, [],
                 [{ name: 'x509_cn', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
@@ -111,3 +107,8 @@ export class DeviceCertificates extends React.Component<DeviceCertificatesProps,
         )
     }
 }
+
+export const DeviceCertificates = connect<ReduxStateProps, ReduxDispatchProps, DeviceCertificatesProps>(
+    mapStateToProps,
+    mapDispatchToProps
+)(griddle(UnconnectedDeviceCertificates));

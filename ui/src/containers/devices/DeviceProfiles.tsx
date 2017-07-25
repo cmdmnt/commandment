@@ -43,12 +43,7 @@ interface DeviceProfilesProps extends ReduxStateProps, ReduxDispatchProps, Route
 }
 
 
-@connect<ReduxStateProps, ReduxDispatchProps, any>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-@griddle
-export class DeviceProfiles extends React.Component<DeviceProfilesProps, undefined> {
+class UnconnectedDeviceProfiles extends React.Component<DeviceProfilesProps, undefined> {
 
     componentWillMount?() {
         this.props.fetchInstalledProfiles(this.props.match.params.id, this.props.griddleState.pageSize, 1);
@@ -60,7 +55,7 @@ export class DeviceProfiles extends React.Component<DeviceProfilesProps, undefin
 
         if (nextGriddleState.filter !== griddleState.filter || nextGriddleState.currentPage !== griddleState.currentPage) {
             this.props.fetchInstalledProfiles(
-                this.props.match.params.id,
+                ''+this.props.match.params.id,
                 nextGriddleState.pageSize,
                 nextGriddleState.currentPage, [],
                 [{ name: 'payload_display_name', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
@@ -102,3 +97,9 @@ export class DeviceProfiles extends React.Component<DeviceProfilesProps, undefin
         )
     }
 }
+
+export const DeviceProfiles = connect<ReduxStateProps, ReduxDispatchProps, any>(
+    mapStateToProps,
+    mapDispatchToProps
+)(griddle(UnconnectedDeviceProfiles));
+

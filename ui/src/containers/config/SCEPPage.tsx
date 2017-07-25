@@ -36,11 +36,8 @@ interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentPr
 
 }
 
-@connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-export class SCEPPage extends React.Component<OwnProps, undefined> {
+
+export class UnconnectedSCEPPage extends React.Component<OwnProps, undefined> {
 
     componentWillMount?() {
         this.props.read();
@@ -79,3 +76,8 @@ export class SCEPPage extends React.Component<OwnProps, undefined> {
     }
 
 }
+
+export const SCEPPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
+    mapStateToProps,
+    mapDispatchToProps
+)(UnconnectedSCEPPage);

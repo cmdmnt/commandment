@@ -47,8 +47,6 @@ declare module "redux-api-middleware" {
 
     function apiMiddleware<S>(store: Store<any>): (next: Dispatch<S>) => Dispatch<S>;
 
-    type HTTPVerb = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS';
-
     interface TypeDescriptor<TSymbol> {
         type: string | TSymbol;
         payload: any;
@@ -60,7 +58,8 @@ declare module "redux-api-middleware" {
     //type CALL_API = Symbol('CALL_API');
     //export const CALL_API: CALL_API = Symbol('CALL_API');
     //export const CALL_API = 'CALL_API'; // Cheating for now
-
+    export type RSAAActionTypes = [string, string, string];
+    export type HTTPVerb = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS';
     export interface RSAA<R, S, F> {
         [propName: string]: { // Symbol as object key seems impossible
             endpoint: string;  // or function
@@ -72,8 +71,6 @@ declare module "redux-api-middleware" {
             types: [R, S, F];
         }
     }
-
-
 
 }
 

@@ -5,7 +5,7 @@ import {components} from "griddle-react";
 
 export const ListTableBody = ({ rowIds, Row, style, className }: components.TableBodyProps) => (
     <List divided relaxed style={style} className={className}>
-        { rowIds && rowIds.map((r: React.Component<components.RowProps, void>) => <Row key={r} griddleKey={r} />)}
+        { rowIds && rowIds.map((r: number) => <Row key={r} griddleKey={r} />)}
     </List>
 );
 

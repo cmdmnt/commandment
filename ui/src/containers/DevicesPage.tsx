@@ -16,6 +16,7 @@ import {DeviceColumn} from "../components/griddle/DeviceColumn";
 import {MultiAttrCellPlugin} from "../griddle-plugins/multiattr-cell/index";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
+import {components} from "griddle-react";
 
 
 const rowDataSelector = (state: any, { griddleKey }: { griddleKey: string }) => {
@@ -65,8 +66,8 @@ interface DevicesPageState {
     filter: string;
 }
 
-@griddle
-class BaseDevicesPage extends React.Component<DevicesPageProps, DevicesPageState> {
+
+class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPageState> {
 
     componentWillMount?(): void {
         // this.props.index();
@@ -121,4 +122,4 @@ class BaseDevicesPage extends React.Component<DevicesPageProps, DevicesPageState
 export const DevicesPage = connect<ReduxStateProps, ReduxDispatchProps, DevicesPageProps>(
     mapStateToProps,
     mapDispatchToProps
-)(BaseDevicesPage);
+)(griddle(UnconnectedDevicesPage));

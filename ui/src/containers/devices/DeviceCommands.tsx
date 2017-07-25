@@ -47,15 +47,10 @@ interface DeviceCommandsComponentState {
 }
 
 
-@connect<ReduxStateProps, ReduxDispatchProps, any>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-@griddle
-export class DeviceCommands extends React.Component<DeviceCommandsProps, DeviceCommandsComponentState> {
+export class UnconnectedDeviceCommands extends React.Component<DeviceCommandsProps, DeviceCommandsComponentState> {
 
     componentWillMount?() {
-        this.props.fetchCommands(this.props.match.params.id, 10, 1, ['-sent_at']);
+        this.props.fetchCommands(''+this.props.match.params.id, 10, 1, ['-sent_at']);
     }
 
     componentWillUpdate?(nextProps: DeviceCommandsProps, nextState: void | Readonly<DeviceCommandsComponentState>) {
@@ -64,7 +59,7 @@ export class DeviceCommands extends React.Component<DeviceCommandsProps, DeviceC
 
         if (nextGriddleState.filter !== griddleState.filter || nextGriddleState.currentPage !== griddleState.currentPage) {
             this.props.fetchCommands(
-                this.props.match.params.id,
+                ''+this.props.match.params.id,
                 10, nextGriddleState.currentPage, [], []);
         }
     }
@@ -106,3 +101,8 @@ export class DeviceCommands extends React.Component<DeviceCommandsProps, DeviceC
         )
     }
 }
+
+export const DeviceCommands = connect<ReduxStateProps, ReduxDispatchProps, any>(
+    mapStateToProps,
+    mapDispatchToProps
+)(griddle(UnconnectedDeviceCommands));

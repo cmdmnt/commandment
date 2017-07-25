@@ -45,6 +45,8 @@ export interface Device {
     bluetooth_mac: string;
     wifi_mac: string;
     sip_enabled: boolean;
+    hostname: string;
+    local_hostname: string;
 }
 
 // Valid JSON-API relationships

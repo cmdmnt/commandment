@@ -68,18 +68,11 @@ interface WIFIPayloadFormProps extends FormProps<WIFIPayload, any, any> {
 
 const selector = formValueSelector('wifi_payload');
 
-@connect(
-    state => {
-        const is_hotspot = selector(state, 'is_hotspot');
-        return {
-            is_hotspot
-        }
-    }
-)
+
 @reduxForm<WIFIPayload, WIFIPayloadFormProps, undefined>({
     form: 'wifi_payload'
 })
-export class WIFIPayloadForm extends React.Component<WIFIPayloadFormProps, undefined> {
+export class UnconnectedWIFIPayloadForm extends React.Component<WIFIPayloadFormProps, undefined> {
 
     render() {
         const {
@@ -176,4 +169,13 @@ export class WIFIPayloadForm extends React.Component<WIFIPayloadFormProps, undef
         )
     }
 }
+
+export const WIFIPayloadForm = connect(
+    state => {
+        const is_hotspot = selector(state, 'is_hotspot');
+        return {
+            is_hotspot
+        }
+    }
+)(UnconnectedWIFIPayloadForm);
 

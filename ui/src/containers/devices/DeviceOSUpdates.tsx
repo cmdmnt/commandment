@@ -45,7 +45,7 @@ interface DeviceOSUpdatesProps extends ReduxStateProps, ReduxDispatchProps, Rout
 class BaseDeviceOSUpdates extends React.Component<DeviceOSUpdatesProps, undefined> {
 
     componentWillMount?() {
-        this.props.fetchAvailableOSUpdates(this.props.match.params.id, this.props.griddleState.pageSize, 1);
+        this.props.fetchAvailableOSUpdates(''+this.props.match.params.id, this.props.griddleState.pageSize, 1);
     }
 
     componentWillUpdate?(nextProps: DeviceOSUpdatesProps, nextState: void | Readonly<{}>) {
@@ -54,7 +54,7 @@ class BaseDeviceOSUpdates extends React.Component<DeviceOSUpdatesProps, undefine
 
         if (nextGriddleState.filter !== griddleState.filter || nextGriddleState.currentPage !== griddleState.currentPage) {
             this.props.fetchAvailableOSUpdates(
-                this.props.match.params.id,
+                ''+this.props.match.params.id,
                 nextGriddleState.pageSize,
                 nextGriddleState.currentPage, [],
                 [{ name: 'human_readable_name', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);

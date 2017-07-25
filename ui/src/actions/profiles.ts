@@ -21,7 +21,7 @@ export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUC
 export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, Profile>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String>) => {
-    return {
+    return (<RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
         [CALL_API]: {
             endpoint: '/api/v1/profiles?' + queryParameters.join('&'),
             method: (<HTTPVerb>'GET'),
@@ -32,7 +32,7 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String
             ],
             headers: JSONAPI_HEADERS
         }
-    }
+    });
 });
 
 export type READ_REQUEST = 'profiles/READ_REQUEST';

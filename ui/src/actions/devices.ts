@@ -3,6 +3,7 @@ import {CALL_API, HTTPVerb, RSAA} from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIRelationship, JSONAPIRelationships,
+    RSAAChildIndexActionRequest,
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAPatchActionRequest, RSAAReadActionRequest, RSAAReadActionResponse
 } from "../json-api";
@@ -25,7 +26,7 @@ export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUC
 export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, Device>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String>) => {
-    return {
+    return (<RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
         [CALL_API]: {
             endpoint: '/api/v1/devices?' + queryParameters.join('&'),
             method: (<HTTPVerb>'GET'),
@@ -36,7 +37,7 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String
             ],
             headers: JSONAPI_HEADERS
         }
-    }
+    });
 });
 
 
@@ -228,10 +229,11 @@ export const COMMANDS_SUCCESS: COMMANDS_SUCCESS = 'devices/COMMANDS_SUCCESS';
 export type COMMANDS_FAILURE = 'devices/COMMANDS_FAILURE';
 export const COMMANDS_FAILURE: COMMANDS_FAILURE = 'devices/COMMANDS_FAILURE';
 
-export type CommandsActionRequest = RSAAIndexActionRequest<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE>;
+export type CommandsActionRequest = RSAAChildIndexActionRequest<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE>;
 export type CommandsActionResponse = RSAAIndexActionResponse<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE, Command>;
 
-export const commands = encodeJSONAPIChildIndexParameters((device_id: number, queryParameters: Array<String>)  => {
+
+export const commands = encodeJSONAPIChildIndexParameters((device_id: string, queryParameters: Array<String>)  => {
     return {
         [CALL_API]: {
             endpoint: `/api/v1/devices/${device_id}/commands?${queryParameters.join('&')}`,

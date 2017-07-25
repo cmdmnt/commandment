@@ -34,11 +34,8 @@ interface OrganizationPageProps extends OrganizationPageState, OrganizationPageD
 
 }
 
-@connect<OrganizationPageState, OrganizationPageDispatchProps, OrganizationPageProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-export class OrganizationPage extends React.Component<OrganizationPageProps, undefined> {
+
+export class UnconnectedOrganizationPage extends React.Component<OrganizationPageProps, undefined> {
 
     componentWillMount?() {
         this.props.read();
@@ -70,3 +67,8 @@ export class OrganizationPage extends React.Component<OrganizationPageProps, und
     }
 
 }
+
+export const OrganizationPage = connect<OrganizationPageState, OrganizationPageDispatchProps, OrganizationPageProps>(
+    mapStateToProps,
+    mapDispatchToProps
+)(UnconnectedOrganizationPage);

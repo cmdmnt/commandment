@@ -12,6 +12,7 @@ import {installed_profiles, InstalledProfilesState} from "./device/installed_pro
 import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Device, Tag} from "../models";
 import {available_os_updates, AvailableOSUpdatesState} from "./device/available_os_updates";
+import {isArray} from "../guards";
 
 
 export interface DeviceState {
@@ -124,7 +125,13 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
             };
 
         case actions.RCPOST_SUCCESS:
-            const mergedTags = state.device.relationships.tags.data.concat([action.payload.data]);
+            let mergedTags;
+            if (isArray(action.payload.data)) {
+                mergedTags = state.device.relationships.tags.data.concat(action.payload.data);
+            } else {
+                mergedTags = state.device.relationships.tags.data.concat([action.payload.data])
+            }
+
             return {
                 ...state,
                 device: {

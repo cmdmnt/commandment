@@ -12,7 +12,7 @@ interface DeviceGroupFormProps extends FormProps<FormData, any, any> {
 }
 
 
-class BaseDeviceGroupForm extends React.Component<DeviceGroupFormProps, undefined> {
+class UnconnectedDeviceGroupForm extends React.Component<DeviceGroupFormProps, undefined> {
     render() {
         const {
             handleSubmit
@@ -29,4 +29,4 @@ class BaseDeviceGroupForm extends React.Component<DeviceGroupFormProps, undefine
 
 export const DeviceGroupForm = reduxForm<FormData, DeviceGroupFormProps, undefined>({
     form: 'device_group'
-});
+})(UnconnectedDeviceGroupForm);

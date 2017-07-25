@@ -21,7 +21,7 @@ export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUC
 export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, DeviceGroup>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String>) => {
-    return {
+    return (<RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
         [CALL_API]: {
             endpoint: '/api/v1/device_groups?' + queryParameters.join('&'),
             method: (<HTTPVerb>'GET'),
@@ -32,7 +32,7 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String
             ],
             headers: JSONAPI_HEADERS
         }
-    }
+    });
 });
 
 export type READ_REQUEST = 'device_groups/READ_REQUEST';
@@ -52,7 +52,7 @@ export const read: ReadActionRequest = (id: string, include?: Array<string>) => 
         inclusions = 'include=' + include.join(',')
     }
 
-    return {
+    return (<RSAA<READ_REQUEST, READ_SUCCESS, READ_FAILURE>>{
         [CALL_API]: {
             endpoint: `/api/v1/device_groups/${id}?${inclusions}`,
             method: 'GET',
@@ -63,7 +63,7 @@ export const read: ReadActionRequest = (id: string, include?: Array<string>) => 
             ],
             headers: JSONAPI_HEADERS
         }
-    }
+    });
 };
 
 

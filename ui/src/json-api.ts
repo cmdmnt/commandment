@@ -93,7 +93,7 @@ export function isJSONAPIErrorResponsePayload(
 
 
 interface WrappedChildIndexActionCreator<R> {
-    (id: number, queryParameters: Array<String>): R;
+    (id: string, queryParameters: Array<String>): R;
 }
 
 interface WrappedIndexActionCreator<R> {
@@ -113,7 +113,7 @@ export interface RSAAIndexActionResponse<TRequest, TSuccess, TFailure, TObject> 
 
 // Standardised JSON-API Index ActionCreator that fetches a resource child of some object / by relationship
 export interface RSAAChildIndexActionRequest<TRequest, TSuccess, TFailure> {
-    (parent_id: number, size?: number, pageNumber?: number, sort?: Array<string>, filters?: FlaskFilters): RSAA<TRequest, TSuccess, TFailure>;
+    (parent_id: string, size?: number, pageNumber?: number, sort?: Array<string>, filters?: FlaskFilters): RSAA<TRequest, TSuccess, TFailure>;
 }
 
 export interface RSAAReadActionRequest<TRequest, TSuccess, TFailure> {
@@ -179,7 +179,7 @@ export const encodeJSONAPIIndexParameters = <R>(wrappedActionCreator: WrappedInd
  * @param wrappedActionCreator
  */
 export const encodeJSONAPIChildIndexParameters = <R>(wrappedActionCreator: WrappedChildIndexActionCreator<R>) => (
-    id: number,
+    id: string,
     size: number = 10,
     pageNumber: number = 1,
     sort?: Array<string>,

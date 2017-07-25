@@ -25,7 +25,7 @@ export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUC
 export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, Tag>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String>) => {
-    return {
+    return (<RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
         [CALL_API]: {
             endpoint: '/api/v1/tags?' + queryParameters.join('&'),
             method: (<HTTPVerb>'GET'),
@@ -36,7 +36,7 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String
             ],
             headers: JSONAPI_HEADERS
         }
-    }
+    });
 });
 
 
@@ -52,7 +52,7 @@ export type PostActionResponse = RSAAPostActionResponse<POST_REQUEST, POST_SUCCE
 
 export const post: PostActionRequest = (values: Tag) => {
 
-    return {
+    return (<RSAA<POST_REQUEST, POST_SUCCESS, POST_FAILURE>>{
         [CALL_API]: {
             endpoint: `/api/v1/tags`,
             method: 'POST',
@@ -69,7 +69,7 @@ export const post: PostActionRequest = (values: Tag) => {
                 }
             })
         }
-    }
+    });
 };
 
 export type CreateAndApplyRequest = (values: Tag) => ThunkAction<void, RootState, void>;

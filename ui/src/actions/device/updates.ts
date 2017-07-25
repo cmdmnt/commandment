@@ -1,5 +1,5 @@
 import {JSONAPI_HEADERS} from "../constants";
-import {CALL_API, HTTPVerb} from "redux-api-middleware";
+import {CALL_API, HTTPVerb, RSAA} from "redux-api-middleware";
 import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
     RSAAIndexActionResponse
@@ -17,8 +17,8 @@ export type UPDATES_FAILURE = typeof UPDATES_FAILURE;
 export type AvailableOSUpdatesActionRequest = RSAAChildIndexActionRequest<UPDATES_REQUEST, UPDATES_SUCCESS, UPDATES_FAILURE>;
 export type AvailableOSUpdatesActionResponse = RSAAIndexActionResponse<UPDATES_REQUEST, UPDATES_SUCCESS, UPDATES_FAILURE, AvailableOSUpdate>;
 
-export const updates = encodeJSONAPIChildIndexParameters((device_id: number, queryParameters: Array<String>)  => {
-    return {
+export const updates = encodeJSONAPIChildIndexParameters((device_id: string, queryParameters: Array<String>)  => {
+    return (<RSAA<UPDATES_REQUEST, UPDATES_SUCCESS, UPDATES_FAILURE>>{
         [CALL_API]: {
             endpoint: `/api/v1/devices/${device_id}/available_os_updates?${queryParameters.join('&')}`,
             method: (<HTTPVerb>'GET'),
@@ -27,5 +27,5 @@ export const updates = encodeJSONAPIChildIndexParameters((device_id: number, que
             ],
             headers: JSONAPI_HEADERS
         }
-    }
+    });
 });

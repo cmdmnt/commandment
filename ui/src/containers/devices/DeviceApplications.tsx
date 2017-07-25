@@ -49,15 +49,10 @@ interface DeviceApplicationsProps extends ReduxStateProps, ReduxDispatchProps, R
 }
 
 
-@connect<ReduxStateProps, ReduxDispatchProps, any>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-@griddle
-export class DeviceApplications extends React.Component<DeviceApplicationsProps, undefined> {
+export class UnconnectedDeviceApplications extends React.Component<DeviceApplicationsProps, undefined> {
 
     componentWillMount?() {
-        this.props.fetchInstalledApplications(this.props.match.params.id, this.props.griddleState.pageSize, 1);
+        this.props.fetchInstalledApplications(''+this.props.match.params.id, this.props.griddleState.pageSize, 1);
     }
 
     componentWillUpdate?(nextProps: DeviceApplicationsProps, nextState: void | Readonly<{}>) {
@@ -78,7 +73,7 @@ export class DeviceApplications extends React.Component<DeviceApplicationsProps,
             }
 
             this.props.fetchInstalledApplications(
-                this.props.match.params.id,
+                ''+this.props.match.params.id,
                 nextGriddleState.pageSize,
                 nextGriddleState.currentPage,
                 [sortColumnId],
@@ -127,3 +122,9 @@ export class DeviceApplications extends React.Component<DeviceApplicationsProps,
         )
     }
 }
+
+export const DeviceApplications = connect<ReduxStateProps, ReduxDispatchProps, any>(
+    mapStateToProps,
+    mapDispatchToProps
+)(griddle(UnconnectedDeviceApplications));
+

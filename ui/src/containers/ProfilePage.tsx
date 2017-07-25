@@ -53,11 +53,8 @@ interface OwnProps extends RouteComponentProps<RouteProps> {
 
 }
 
-@connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-export class ProfilePage extends React.Component<OwnProps & ReduxStateProps & ReduxDispatchProps, void | {}> {
+
+export class UnconnectedProfilePage extends React.Component<OwnProps & ReduxStateProps & ReduxDispatchProps, void | {}> {
 
     componentWillMount?() {
         const {params: {id}} = this.props.match;
@@ -138,3 +135,8 @@ export class ProfilePage extends React.Component<OwnProps & ReduxStateProps & Re
         )
     }
 }
+
+export const ProfilePage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
+    mapStateToProps,
+    mapDispatchToProps
+)(UnconnectedProfilePage);

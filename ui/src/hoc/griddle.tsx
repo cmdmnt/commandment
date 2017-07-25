@@ -1,4 +1,3 @@
-/// <reference path="../typings/griddle-react.d.ts" />
 import * as React from 'react';
 
 interface GriddleDecoratorFactory {

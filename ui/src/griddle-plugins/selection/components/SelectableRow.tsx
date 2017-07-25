@@ -1,13 +1,12 @@
 import * as React from 'react';
+import {components} from 'griddle-react';
 
-export const SelectableRow = (props) => {
-    const {Cell, griddleKey, columnIds, style, className, rowData, rowProperties} = props;
-
-    console.dir(props);
+export const SelectableRow = (props: components.RowProps) => {
+    const {Cell, griddleKey, columnIds, style, className} = props;
 
     const onClick = () => {
-        console.dir(rowData);
-        console.dir(rowProperties);
+        // console.dir(rowData);
+        // console.dir(rowProperties);
     };
 
     return (

@@ -114,7 +114,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
         this.props.fetchTags(10, 1, [], [{'name': 'name', 'op': 'ilike', 'val': `%${value}%`}]);
     };
 
-    handleApplyTags = (event: SyntheticEvent<any>, { value: values }) => {
+    handleApplyTags = (event: SyntheticEvent<any>, { value: values }: { value: Array<number> }) => {
         const relationships = values.map((v: number) => {
             return {"id": ''+v, "type": "tags"};
         });
