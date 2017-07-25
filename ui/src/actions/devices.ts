@@ -97,12 +97,13 @@ export const read: ReadActionRequest = (id: string, include?: Array<string>) => 
 export const READ_CACHE_HIT = 'devices/READ_CACHE_HIT';
 export type READ_CACHE_HIT = typeof READ_CACHE_HIT;
 
-export type CacheFetchActionRequest = (id: string, include?: Array<string>) => ThunkAction<RootState, any, any>;
+export type CacheFetchActionRequest = (id: string, include?: Array<string>) => ThunkAction<void, RootState, any>;
 
 export const fetchDeviceIfRequired = (
     id: string, include?: Array<string>
 ) => (
-    dispatch: Dispatch<RootState>, getState: () => RootState
+    dispatch: Dispatch<RootState>,
+    getState: () => RootState
 ) => {
     const { devices } = getState();
 

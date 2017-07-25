@@ -75,9 +75,9 @@ export class UnconnectedProfilePage extends React.Component<OwnProps & ReduxStat
         this.props.fetchTags(10, 1, [], [{'name': 'name', 'op': 'ilike', 'val': `%${value}%`}]);
     };
 
-    handleApplyTags = (event: SyntheticEvent<any>, {value: values}: { value: number[] }) => {
-        const relationships = values.map((v: number) => {
-            return {"id": '' + v, "type": "tags"};
+    handleApplyTags = (event: SyntheticEvent<any>, {value: values}: { value: string[] }) => {
+        const relationships = values.map((v: string) => {
+            return {"id": v, "type": "tags"};
         });
 
         this.props.patchRelationship(

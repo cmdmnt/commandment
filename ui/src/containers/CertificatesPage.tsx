@@ -33,7 +33,7 @@ function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps: OwnProps): 
     }, dispatch);
 }
 
-interface CertificatesPageProps {
+interface CertificatesPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
     handleFilter: (filterText: string) => void;
 }
 
@@ -42,7 +42,7 @@ interface CertificatesPageState {
 
 }
 
-class BaseCertificatesPage extends React.Component<CertificatesPageProps & ReduxStateProps & ReduxDispatchProps & RouteComponentProps<any>, CertificatesPageState> {
+class BaseCertificatesPage extends React.Component<CertificatesPageProps, CertificatesPageState> {
 
     componentWillMount?(): void {
         this.props.index();

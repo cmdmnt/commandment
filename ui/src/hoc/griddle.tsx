@@ -25,7 +25,7 @@ export interface GriddleDecoratorHandlers {
  * @returns React.Component
  */
 export const griddle: GriddleDecoratorFactory = (WrappedComponent: React.ComponentClass<any>) => {
-    class GriddleDecorator extends React.Component<any, GriddleDecoratorState> implements React.ComponentClass<{}> {
+    class GriddleDecorator extends React.Component<any, GriddleDecoratorState> {
 
         displayName: string;
 
@@ -74,7 +74,7 @@ export const griddle: GriddleDecoratorFactory = (WrappedComponent: React.Compone
         }
     }
 
-    let wrappedDisplayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
-    GriddleDecorator.displayName = `GriddleDecorator(${wrappedDisplayName})`;
+    let wrappedDisplayName = WrappedComponent.displayName || 'Component';
+    (GriddleDecorator as React.ComponentClass<any>).displayName = `GriddleDecorator(${wrappedDisplayName})`;
     return GriddleDecorator;
 };

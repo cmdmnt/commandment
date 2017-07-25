@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {Table, Menu, Icon} from 'semantic-ui-react';
 import {Dispatch} from 'react-redux';
+import {Action} from 'redux';
 
 interface SUIPageListProps {
     maxPages: number;
     currentPage: number;
-    setPage: (pageNumber: number) => void;
+    setPage: (pageNumber: number) => Action;
     previous: any;
     next: any;
     dispatch: Dispatch<any>;
@@ -23,7 +24,11 @@ export class SUIPageList extends React.Component<SUIPageListProps, undefined> {
 
         const pages = [];
         for (let x = 0; x < maxPages; x++) {
-            pages.push(<Menu.Item key={'page-'+(x+1)} as='a' active={x+1 == currentPage} onClick={() => { this.props.dispatch(setPage(x+1)) }}>{x+1}</Menu.Item>);
+            pages.push(<Menu.Item
+                key={'page-'+(x+1)}
+                as='a'
+                active={x+1 == currentPage}
+                onClick={() => { this.props.dispatch(setPage(x+1)) }}>{x+1}</Menu.Item>);
         }
         
         return (
