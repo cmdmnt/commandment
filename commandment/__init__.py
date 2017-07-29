@@ -20,6 +20,7 @@ from .omdm import omdm_app
 from .sso.oauth import oauth_app
 from .sso.saml import saml_app
 from .dep.app import dep_app
+from .vpp.app import vpp_app
 
 
 def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
@@ -53,6 +54,7 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     app.register_blueprint(omdm_app, url_prefix='/omdm')
     app.register_blueprint(ac2_app)
     app.register_blueprint(dep_app)
+    app.register_blueprint(vpp_app)
 
     # SPA Entry Point
     @app.route('/')

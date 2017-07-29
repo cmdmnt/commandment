@@ -33,6 +33,7 @@ export interface Command {
 
 export interface Device {
     udid: string;
+    last_seen: string;
     build_version: string;
     device_name: string;
     model: string;
@@ -40,15 +41,22 @@ export interface Device {
     os_version: string;
     product_name: string;
     serial_number: string;
-    awaiting_configuration: boolean;
-    last_seen: string;
-    bluetooth_mac: string;
-    wifi_mac: string;
-    sip_enabled: boolean;
     hostname: string;
     local_hostname: string;
     available_device_capacity: number;
     device_capacity: number;
+    wifi_mac: string;
+    bluetooth_mac: string;
+    awaiting_configuration: boolean;
+    sip_enabled: boolean;
+    passcode_present: boolean;
+    passcode_compliant: boolean;
+    passcode_compliant_with_profiles: boolean;
+    fde_enabled: boolean;
+    fde_has_prk: boolean;
+    fde_has_irk: boolean;
+    firewall_enabled: boolean;
+
 }
 
 // Valid JSON-API relationships
@@ -115,6 +123,16 @@ export interface InstalledProfile {
     payload_uuid: string;
 }
 
+export interface InstalledPayload {
+    id?: number;
+    description: string;
+    display_name: string;
+    identifier: string;
+    organization: string;
+    payload_type: string;
+    uuid: string;
+}
+
 export interface AvailableOSUpdate {
     id?: string;
     allows_install_later: boolean;
@@ -143,4 +161,9 @@ export interface SCEPConfiguration {
     retries: number;
     retry_delay: number;
     certificate_renewal_time_interval: number;
+}
+
+export interface VPPAccount {
+    org_name: string;
+    exp_date: string;
 }

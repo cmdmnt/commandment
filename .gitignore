@@ -159,4 +159,6 @@ scep_settings.cfg
 *.key
 *.csr
 
+# dont ever commit vpp tokens if they are downloaded into the root
+*.vpptoken
 

@@ -24,19 +24,12 @@ interface SCEPPayloadFormProps extends FormProps<FormData, any, any> {
     submitted: boolean;
 }
 
-@reduxForm<FormData, SCEPPayloadFormProps, undefined>({
-    form: 'scep_payload'
-})
-export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undefined> {
+
+export class UnconnectedSCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undefined> {
 
     static defaultProps = {
         loading: false,
         submitted: false
-    };
-
-    handleClickTest = (e: any) => {
-        e.preventDefault();
-        // TODO: dispatch test action
     };
 
     render() {
@@ -123,3 +116,7 @@ export class SCEPPayloadForm extends React.Component<SCEPPayloadFormProps, undef
         );
     }
 }
+
+export const SCEPPayloadForm = reduxForm<FormData, SCEPPayloadFormProps, undefined>({
+    form: 'scep_payload'
+})(UnconnectedSCEPPayloadForm);

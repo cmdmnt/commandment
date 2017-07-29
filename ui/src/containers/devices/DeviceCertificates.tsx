@@ -97,9 +97,6 @@ export class UnconnectedDeviceCertificates extends React.Component<DeviceCertifi
                     }}
                 >
                     <RowDefinition onClickButton={(e: any) => { console.log('clicked button'); }}>
-                        <ColumnDefinition title='Identity' id="attributes.is_identity" customComponent={CertificateTypeIcon} />
-                        <ColumnDefinition title='X.509 CN' id='attributes.x509_cn' />
-                        <ColumnDefinition id="id" />
                     </RowDefinition>
                 </Griddle>}
             </div>

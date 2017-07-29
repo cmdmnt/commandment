@@ -20,6 +20,7 @@ import {SettingsPage} from './containers/SettingsPage';
 import {DeviceGroupsPage} from "./containers/DeviceGroupsPage";
 import {DeviceGroupPage} from "./containers/DeviceGroupPage";
 import {ProfilePage} from "./containers/ProfilePage";
+import {VPPPage} from "./containers/config/VPPPage";
 
 import '../sass/app.scss';
 
@@ -48,6 +49,7 @@ render(
                     <Route exact path='/settings' component={SettingsPage} />
                     <Route path='/settings/scep' component={SCEPPage} />
                     <Route path='/settings/organization' component={OrganizationPage} />
+                    <Route path='/settings/vpp' component={VPPPage} />
                 </App>
             </AppContainer>
         </ConnectedRouter>

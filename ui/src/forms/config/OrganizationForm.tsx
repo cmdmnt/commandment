@@ -1,10 +1,10 @@
 import * as React from 'react';
 import {Field, reduxForm, FormProps} from 'redux-form';
 
-import {required, reverseDns} from "../validations";
+import {required, reverseDns} from "../../validations";
 import {Header, Icon, Segment, Message, Divider, Grid, Form} from 'semantic-ui-react';
-import {SemanticInput} from "./fields/SemanticInput";
-import {SemanticUISelect} from "./fields/SemanticUISelect";
+import {SemanticInput} from "../fields/SemanticInput";
+import {SemanticUISelect} from "../fields/SemanticUISelect";
 
 export interface FormData {
     name: string;
@@ -20,10 +20,8 @@ interface OrganizationFormProps extends FormProps<FormData, any, any> {
     submitted: boolean;
 }
 
-@reduxForm<FormData, OrganizationFormProps, undefined>({
-    form: 'organization'
-})
-export class OrganizationForm extends React.Component<OrganizationFormProps, undefined> {
+
+export class UnconnectedOrganizationForm extends React.Component<OrganizationFormProps, undefined> {
 
     static defaultProps = {
         loading: false
@@ -109,3 +107,7 @@ export class OrganizationForm extends React.Component<OrganizationFormProps, und
         )
     }
 }
+
+export const OrganizationForm = reduxForm<FormData, OrganizationFormProps, undefined>({
+    form: 'organization'
+})(UnconnectedOrganizationForm);

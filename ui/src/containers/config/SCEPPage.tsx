@@ -14,28 +14,14 @@ interface ReduxStateProps {
     scep: SCEPState;
 }
 
-function mapStateToProps(state: RootState): ReduxStateProps {
-    return {
-        scep: state.configuration.scep
-    }
-}
-
 interface ReduxDispatchProps {
     read: actions.ReadActionRequest;
     post: actions.PostActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>) {
-    return bindActionCreators({
-        post: actions.post,
-        read: actions.read
-    }, dispatch);
-}
-
 interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<{}> {
 
 }
-
 
 export class UnconnectedSCEPPage extends React.Component<OwnProps, undefined> {
 
@@ -78,6 +64,11 @@ export class UnconnectedSCEPPage extends React.Component<OwnProps, undefined> {
 }
 
 export const SCEPPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
-    mapStateToProps,
-    mapDispatchToProps
+    (state: RootState): ReduxStateProps => ({
+        scep: state.configuration.scep
+    }),
+    (dispatch: Dispatch<any>) => bindActionCreators({
+        post: actions.post,
+        read: actions.read
+    }, dispatch)
 )(UnconnectedSCEPPage);

@@ -2,13 +2,34 @@ from ..dbtypes import GUID, JSONEncodedDict
 from .enum import VPPUserStatus, VPPPricingParam, VPPProductType
 
 from ..models import db
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
+import base64
+import json
+import dateutil.parser
 
 
 class VPPAccount(db.Model):
     __tablename__ = 'vpp_accounts'
 
     id = db.Column(db.Integer, primary_key=True)
-    stoken = db.Column(db.String, nullable=False)
+
+    @hybrid_property
+    def stoken(self) -> str:
+        return self._stoken
+
+    @stoken.setter
+    def stoken(self, value: str):
+        self._stoken = value
+        decoded = base64.b64decode(value)
+        data = json.loads(decoded)
+        self.exp_date = dateutil.parser.parse(data['expDate'])
+        self.org_name = data['orgName']
+
+    _stoken = db.Column(db.String, nullable=False)
+    exp_date = db.Column(db.DateTime)
+    """datetime: Populated for convenience when checking the VPP token expiry date."""
+    org_name = db.Column(db.String)
+    """string: Populated for convenience."""
 
     # at least one of these must be null at all times
     licenses_since_modified_token = db.Column(db.String)

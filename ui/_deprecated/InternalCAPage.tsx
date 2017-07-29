@@ -9,7 +9,7 @@ import * as caActions from '../src/actions/certificates/ca';
 import {bindActionCreators} from "redux";
 import {CertificateDetail} from '../src/components/CertificateDetail';
 import {CAState} from "../src/reducers/certificates/ca";
-import {CAConfigurationForm} from '../src/forms/CAConfigurationForm';
+import {CAConfigurationForm} from '../src/forms/_retired/CAConfigurationForm';
 
 interface CAPageState {
     ca: CAState;

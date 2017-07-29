@@ -163,6 +163,12 @@
   version "15.0.25"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.25.tgz#d396949cccc9a90b61755def9781e5aced9b2261"
 
+"@types/recompose@^0.23.2":
+  version "0.23.2"
+  resolved "https://registry.yarnpkg.com/@types/recompose/-/recompose-0.23.2.tgz#9335c347aaf21f958763b98a0eabcb3ffa101813"
+  dependencies:
+    "@types/react" "*"
+
 "@types/redux-devtools@^3.0.37":
   version "3.0.37"
   resolved "https://registry.yarnpkg.com/@types/redux-devtools/-/redux-devtools-3.0.37.tgz#4149492f1a63726e8e68f36619927a24d4d42f85"
@@ -4351,6 +4357,15 @@ rechoir@^0.6.2:
 recompose@^0.21.2:
   version "0.21.2"
   resolved "https://registry.yarnpkg.com/recompose/-/recompose-0.21.2.tgz#ff3fbdb2397b1c77c47d451be2a63b9295d44681"
+  dependencies:
+    change-emitter "^0.1.2"
+    fbjs "^0.8.1"
+    hoist-non-react-statics "^1.0.0"
+    symbol-observable "^1.0.4"
+
+recompose@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/recompose/-/recompose-0.24.0.tgz#262e93f974439eb17e7779824d88cce90492a5dd"
   dependencies:
     change-emitter "^0.1.2"
     fbjs "^0.8.1"

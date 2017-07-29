@@ -14,27 +14,15 @@ interface ReduxStateProps {
 
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
-    return {};
-}
-
 interface ReduxDispatchProps {
 
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>): ReduxDispatchProps {
-    return bindActionCreators({}, dispatch);
-}
-
-interface SettingsPageProps extends RouteComponentProps<RouteProps> {
+interface SettingsPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteProps> {
 
 }
 
-@connect<ReduxStateProps, ReduxDispatchProps, SettingsPageProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)
-export class SettingsPage extends React.Component<ReduxStateProps & ReduxDispatchProps & SettingsPageProps, void | Readonly<{}>> {
+export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, void | Readonly<{}>> {
 
     render() {
         const {
@@ -99,3 +87,8 @@ export class SettingsPage extends React.Component<ReduxStateProps & ReduxDispatc
         );
     }
 }
+
+export const SettingsPage = connect<ReduxStateProps, ReduxDispatchProps, SettingsPageProps>(
+    (state: RootState, ownProps?: any): ReduxStateProps => ({}),
+    (dispatch: Dispatch<RootState>): ReduxDispatchProps => bindActionCreators({}, dispatch)
+)(UnconnectedSettingsPage);

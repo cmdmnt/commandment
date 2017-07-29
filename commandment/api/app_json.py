@@ -5,6 +5,7 @@ import io
 from flask import Blueprint, send_file, abort, current_app, jsonify, request, make_response
 from sqlalchemy.orm.exc import NoResultFound
 import plistlib
+import string
 from commandment.plistutil.nonewriter import dumps as dumps_none
 from commandment.models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
 from commandment.profiles.models import Profile
@@ -77,7 +78,9 @@ def download_key(rsa_private_key_id: int):
 
 @flat_api.route('/v1/installed_certificates/<int:installed_certificate_id>/download')
 def download_installed_certificate(installed_certificate_id: int):
-    """Download an installed X.509 certificate as DER encoded
+    """Download an installed certificate as a DER encoded X.509 certificate.
+
+    The file name will be a stripped version of the X.509 Common Name, with a .crt extension.
 
     :reqheader Accept: application/x-x509-ca-cert
     :resheader Content-Type: application/x-x509-ca-cert
@@ -88,7 +91,9 @@ def download_installed_certificate(installed_certificate_id: int):
     c = db.session.query(InstalledCertificate).filter(InstalledCertificate.id == installed_certificate_id).one()
     bio = io.BytesIO(c.der_data)
 
-    return send_file(bio, 'application/x-x509-ca-cert', True, 'certificate.crt')
+    prefix = c.x509_cn.strip('/\:') if c.x509_cn is not None else 'certificate'
+
+    return send_file(bio, 'application/x-x509-ca-cert', True, '{}.crt'.format(prefix))
 
 
 @flat_api.route('/v1/devices/test/<int:device_id>')

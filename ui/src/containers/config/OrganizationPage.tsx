@@ -4,7 +4,7 @@ import {RouteComponentProps} from 'react-router';
 import * as actions from '../../actions/organization';
 import {bindActionCreators} from "redux";
 import {OrganizationState} from "../../reducers/organization";
-import {OrganizationForm, FormData} from '../../forms/OrganizationForm';
+import {OrganizationForm, FormData} from '../../forms/config/OrganizationForm';
 import {RootState} from "../../reducers/index";
 import {Segment, Header, Container} from 'semantic-ui-react';
 

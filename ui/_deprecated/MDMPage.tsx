@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect, Dispatch } from 'react-redux';
 import {RouteComponentProps} from 'react-router';
-import { MDMConfigurationForm, FormData } from '../src/forms/MDMConfigurationForm';
+import { MDMConfigurationForm, FormData } from '../src/forms/_retired/MDMConfigurationForm';
 import {FetchCertificateTypeActionRequest, fetchCertificatesForType} from "../src/actions/certificates";
 import {bindActionCreators} from "redux";
 import {JSONAPIDetailResponse} from "../src/json-api";

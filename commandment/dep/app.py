@@ -25,7 +25,7 @@ def account():
 
 
 @dep_app.route('/dep/profile', methods=["POST"])
-@verify_cms_signers
+#@verify_cms_signers
 def profile():
     """Accept a CMS Signed DER encoded XML data containing device information.
 
