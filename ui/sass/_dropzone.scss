@@ -1,0 +1,13 @@
+.dropzone {
+  margin: 1rem 0;
+  height: 5rem;
+
+  border: 1px solid rgba(34,36,38,.1);
+  background-color: #F9FAFB;
+  text-align: center;
+  cursor: pointer;
+
+  .ui.header {
+    line-height: 5rem;
+  }
+}

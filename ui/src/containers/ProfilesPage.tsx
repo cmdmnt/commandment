@@ -1,14 +1,15 @@
 import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
-import {Grid, Container, Table, Header} from 'semantic-ui-react';
+import {Grid, Container, Table, Header, Message} from 'semantic-ui-react';
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
+import * as Dropzone from 'react-dropzone';
 
 import {bindActionCreators} from "redux";
 import * as actions from '../actions/profiles';
 import {RootState} from "../reducers/index";
 import {RouteComponentProps} from "react-router";
 import {ProfilesState} from "../reducers/profiles";
-import {IndexActionRequest} from "../actions/profiles";
+import {IndexActionRequest, UploadActionRequest} from "../actions/profiles";
 import {PayloadScopeIcon} from '../components/griddle/PayloadScopeIcon';
 import {SimpleLayout as Layout} from "../components/griddle/SimpleLayout";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
@@ -19,20 +20,9 @@ interface ReduxStateProps {
     profiles: ProfilesState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
-    return {
-        profiles: state.profiles
-    }
-}
-
 interface ReduxDispatchProps {
     index: IndexActionRequest;
-}
-
-function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: any): ReduxDispatchProps {
-    return bindActionCreators({
-        index: actions.index
-    }, dispatch);
+    upload: UploadActionRequest;
 }
 
 interface ProfilesPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
@@ -77,22 +67,37 @@ export class UnconnectedProfilesPage extends React.Component<ProfilesPageProps, 
         }
     }
 
+    handleDrop = (files: Array<File>) => {
+        console.dir(files);
+        this.props.upload(files[0]);
+    };
+
     render(): JSX.Element {
         const {
             griddleState,
             profiles
         } = this.props;
 
+        ///api/v1/upload/profiles
         return (
             <Container className='ProfilesPage'>
                 <Grid>
                     <Grid.Column>
                         <Header as="h1">Profiles</Header>
+                            <Dropzone
+                                onDrop={this.handleDrop}
+                                className="dropzone"
+                                activeClassName="dropzone-active"
+                                rejectClassName="dropzone-reject"
+                                style={{}}
+                                accept="application/x-apple-aspen-config">
+                                <Header as="h3">Drop configuration profile or Click to upload</Header>
+                            </Dropzone>
 
-                        <form method='POST' action='/api/v1/upload/profiles' encType='multipart/form-data'>
-                            <input type='file' name='file' accept='application/x-apple-aspen-config' />
-                            <input type='submit' />
-                        </form>
+
+                        {profiles.uploadError &&
+                            <Message negative header="Upload error" content={profiles.uploadErrorDetail.message} />
+                        }
 
                         <Griddle
                             data={profiles.items}
@@ -128,6 +133,11 @@ export class UnconnectedProfilesPage extends React.Component<ProfilesPageProps, 
 }
 
 export const ProfilesPage = connect<ReduxStateProps, ReduxDispatchProps, ProfilesPageProps>(
-    mapStateToProps,
-    mapDispatchToProps
+    (state: RootState, ownProps?: any): ReduxStateProps => ({
+        profiles: state.profiles
+    }),
+    (dispatch: Dispatch<RootState>, ownProps?: any): ReduxDispatchProps => bindActionCreators({
+        index: actions.index,
+        upload: actions.upload
+    }, dispatch)
 )(griddle(UnconnectedProfilesPage));

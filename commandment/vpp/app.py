@@ -17,8 +17,11 @@ def token():
     """
     account = db.session.query(VPPAccount).first()
     schema = VPPAccountSchema()
-
-    return schema.dumps(account)
+    result = schema.dumps(account)
+    if result.errors:
+        abort(500)
+    else:
+        return result.data, 200, {'Content-Type': 'application/json'}
 
 
 @vpp_app.route('/api/v1/vpp/upload/token', methods=['POST'])

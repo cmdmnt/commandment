@@ -1,7 +1,7 @@
 // Redux API Middleware Type Guards
 import {FlaskFilters} from "./actions/constants";
 
-import {RSAA} from "redux-api-middleware";
+import {ApiError, RSAA} from "redux-api-middleware";
 
 export const JSONAPI_HEADERS = {
     'Content-Type': 'application/vnd.api+json',
@@ -122,7 +122,7 @@ export interface RSAAReadActionRequest<TRequest, TSuccess, TFailure> {
 
 export interface RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> {
     type: TRequest | TSuccess | TFailure;
-    payload: TResponse;
+    payload: TResponse | ApiError;
 }
 
 export interface RSAAJSONAPIReadActionResponse<TRequest, TSuccess, TFailure, TResponse> {

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {connect, Dispatch, MapStateToProps} from 'react-redux';
-import {Container, Header, Item, Icon} from 'semantic-ui-react';
-import {Link} from 'react-router-dom';
+import {Container, Header, Item, Icon, Segment} from 'semantic-ui-react';
 import {RouteComponentProps} from "react-router";
 import {RootState} from "../../reducers/index";
 import {bindActionCreators} from "redux";
 import {read as fetchTokenInfo, TokenActionRequest} from "../../actions/vpp";
 import {VPPState} from "../../reducers/configuration/vpp";
+import {VPPAccountDetail} from "../../components/vpp/VPPAccountDetail";
 
 
 interface RouteProps {
@@ -38,7 +38,7 @@ export class UnconnectedVPPPage extends React.Component<OwnProps, void> {
 
     render() {
         const {
-            vpp
+            vpp: {data, loading}
         } = this.props;
 
         return (
@@ -48,22 +48,10 @@ export class UnconnectedVPPPage extends React.Component<OwnProps, void> {
                     Upload a VPP Token
                 </p>
                 <form method='POST' action='/api/v1/vpp/upload/token' encType='multipart/form-data'>
-                    <input type='file' name='file' />
-                    <input type='submit' />
+                    <input type='file' name='file'/>
+                    <input type='submit'/>
                 </form>
-
-                <Item>
-                    <Item.Content>
-                        <Item.Header>
-                            <Icon name='ticket' />
-                            VPP Token
-                        </Item.Header>
-                        <Item.Description>
-                            Org {vpp.data && vpp.data.org_name}
-                            Expires {vpp.data && vpp.data.exp_date}
-                        </Item.Description>
-                    </Item.Content>
-                </Item>
+                {data && <VPPAccountDetail {...data} />}
             </Container>
         )
     }

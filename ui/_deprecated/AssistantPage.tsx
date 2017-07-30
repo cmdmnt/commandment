@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect, Dispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {RouteComponentProps} from 'react-router';
-import {Assistant} from '../src/components/Assistant';
+import {Assistant} from '../src/components/_deprecated/Assistant';
 import {nextStep, prevStep} from '../src/actions/assistant';
 import {newCertificateSigningRequest} from '../src/actions/signing_requests';
 import {NextStepAction, PrevStepAction} from "../src/actions/assistant";

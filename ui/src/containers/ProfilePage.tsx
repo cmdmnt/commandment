@@ -16,6 +16,7 @@ import {patchRelationship, PatchRelationshipActionRequest} from "../actions/prof
 import {SyntheticEvent} from "react";
 import {ProfileState} from "../reducers/profile";
 import {TagsState} from "../reducers/tags";
+import {isArray} from "../guards";
 
 interface RouteProps {
     id?: string;
@@ -97,7 +98,7 @@ export class UnconnectedProfilePage extends React.Component<OwnProps & ReduxStat
 
         let profileTags: Array<number> = [];
         if (profile && profile.relationships && profile.relationships.tags) {
-            if (profile.relationships.tags.data.length) {
+            if (isArray(profile.relationships.tags.data)) {
                 profileTags = profile.relationships.tags.data.map((t: JSONAPIRelationship) => parseInt(t.id, 0));
             }
 

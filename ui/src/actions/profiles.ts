@@ -1,5 +1,5 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
-import {CALL_API, HTTPVerb, RSAA} from 'redux-api-middleware';
+import {ApiError, CALL_API, HTTPVerb, RSAA} from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from './constants'
 import {
     RSAAIndexActionRequest, RSAAIndexActionResponse, encodeJSONAPIIndexParameters,
@@ -7,7 +7,9 @@ import {
 } from "../json-api";
 import {Profile, ProfileRelationship, Tag} from "../models";
 import {JSONAPIDetailResponse} from "../json-api";
-
+import {ThunkAction} from "redux-thunk";
+import {RootState} from "../reducers/index";
+import {Dispatch} from "react-redux";
 
 
 export type INDEX_REQUEST = 'profiles/INDEX_REQUEST';
@@ -95,3 +97,43 @@ export const patchRelationship: PatchRelationshipActionRequest = (id: string, re
     }
 };
 
+export const UPLOAD = 'profiles/UPLOAD';
+export type UPLOAD = typeof UPLOAD;
+
+export const UPLOAD_REQUEST = 'profiles/UPLOAD_REQUEST';
+export type UPLOAD_REQUEST = typeof UPLOAD_REQUEST;
+export const UPLOAD_SUCCESS = 'profiles/UPLOAD_SUCCESS';
+export type UPLOAD_SUCCESS = typeof UPLOAD_SUCCESS;
+export const UPLOAD_FAILURE = 'profiles/UPLOAD_FAILURE';
+export type UPLOAD_FAILURE = typeof UPLOAD_FAILURE;
+
+export interface UploadActionRequest {
+    (file: File): ThunkAction<void, RootState, void>;
+}
+export type UploadActionResponse = RSAAReadActionResponse<UPLOAD_REQUEST, UPLOAD_SUCCESS, UPLOAD_FAILURE, JSONAPIDetailResponse<Profile, undefined>>;
+
+export const upload = (file: File): ThunkAction<void, RootState, void> => (
+    dispatch: Dispatch<RootState>,
+    getState: () => RootState,
+    extraArgument: void) => {
+
+    const data = new FormData();
+    data.append('file', file);
+    dispatch({
+        type: UPLOAD,
+        payload: data
+    });
+
+    dispatch({
+        [CALL_API]: {
+            endpoint: `/api/v1/upload/profiles`,
+            method: 'POST',
+            types: [
+                UPLOAD_REQUEST,
+                UPLOAD_SUCCESS,
+                UPLOAD_FAILURE
+            ],
+            body: data
+        }
+    })
+};
