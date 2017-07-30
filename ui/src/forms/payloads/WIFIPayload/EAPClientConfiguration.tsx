@@ -47,10 +47,8 @@ function mapStateToProps(state: RootState): EAPClientConfigurationProps {
     }
 }
 
-@connect(
-    mapStateToProps
-)
-export class EAPClientConfiguration extends React.Component<EAPClientConfigurationProps, undefined> {
+
+export class EAPClientConfigurationFormSection extends React.Component<EAPClientConfigurationProps, undefined> {
     render() {
         const {
             accept_eap_types
@@ -146,3 +144,7 @@ export class EAPClientConfiguration extends React.Component<EAPClientConfigurati
         )
     }
 }
+
+export const EAPClientConfiguration = connect(
+    mapStateToProps
+)(EAPClientConfigurationFormSection);

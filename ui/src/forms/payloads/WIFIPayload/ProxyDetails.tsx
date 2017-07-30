@@ -16,10 +16,8 @@ function mapStateToProps(state: FormState): ProxyDetailsProps {
     }
 }
 
-@connect(
-    mapStateToProps
-)
-export class ProxyDetails extends React.Component<ProxyDetailsProps, undefined> {
+
+export class ProxyDetailsFormSection extends React.Component<ProxyDetailsProps, undefined> {
     render() {
         const {
             proxy_type
@@ -80,3 +78,7 @@ export class ProxyDetails extends React.Component<ProxyDetailsProps, undefined> 
         )
     }
 }
+
+export const ProxyDetails = connect(
+    mapStateToProps
+)(ProxyDetailsFormSection);

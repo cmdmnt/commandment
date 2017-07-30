@@ -1,4 +1,5 @@
-import {cellPropertiesSelector} from 'griddle-react/dist/module/selectors/dataSelectors';
+import {selectors} from 'griddle-react';
+const cellPropertiesSelector = selectors.cellPropertiesSelector;
 
 export const cellValueSelector = (state: any, props: any) => {
     console.log('cell value selector');

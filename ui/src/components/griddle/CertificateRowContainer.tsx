@@ -2,16 +2,31 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {compose, mapProps, getContext} from 'recompose';
-import {
+import {components, selectors, utils} from 'griddle-react';
+
+const {
     columnIdsSelector,
     rowDataSelector,
     rowPropertiesSelector,
     classNamesForComponentSelector,
-    stylesForComponentSelector,
-} from 'griddle-react/selectors/dataSelectors';
-import { valueOrResult } from 'griddle-react/utils/valueUtils';
+    stylesForComponentSelector
+} = selectors;
 
-const ComposedRowContainer = (OriginalComponent: React.ComponentClass<any>) => compose(
+const valueOrResult = utils.dataUtils.valueOrResult;
+
+export interface CertificateRowContainerContext {
+    components: any;
+}
+
+export interface CertificateRowContainerProps {
+    columnIds?: number[];
+    rowProperties?: any; // RowRenderProperties;
+    rowData?: any;
+    className?: string;
+    style?: React.CSSProperties;
+}
+
+const ComposedRowContainer = (OriginalComponent: React.ComponentClass<components.RowProps>) => compose(
     getContext({
         components: PropTypes.object,
     }),
@@ -22,7 +37,7 @@ const ComposedRowContainer = (OriginalComponent: React.ComponentClass<any>) => c
         className: classNamesForComponentSelector(state, 'Row'),
         style: stylesForComponentSelector(state, 'Row'),
     })),
-    mapProps(props => {
+    mapProps((props: CertificateRowContainerProps & CertificateRowContainerContext) => {
         const { components, rowProperties, className, ...otherProps } = props;
         return {
             Cell: components.Cell,
