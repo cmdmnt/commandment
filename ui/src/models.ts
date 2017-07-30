@@ -154,9 +154,9 @@ export interface SCEPConfiguration {
     challenge: string;
     ca_fingerprint: string;
     subject: string;
-    key_size: number;
+    key_size: string; // Needs to be string to support redux-form
     key_type: 'RSA';
-    key_usage: any;
+    key_usage: string;
     subject_alt_name: string;
     retries: number;
     retry_delay: number;

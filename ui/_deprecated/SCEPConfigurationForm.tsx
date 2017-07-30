@@ -9,6 +9,7 @@ export interface FormData {
     scep_url: string;
     scep_challenge: string;
     scep_subject: string;
+
 }
 
 interface SCEPConfigurationFormProps extends FormProps<FormData, any, any> {

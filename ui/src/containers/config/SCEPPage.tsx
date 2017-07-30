@@ -1,8 +1,7 @@
 import * as React from 'react';
 import {connect, Dispatch, MapStateToProps} from 'react-redux';
 import {RouteComponentProps} from 'react-router';
-import { SCEPConfigurationForm, FormData } from '../../../_deprecated/SCEPConfigurationForm';
-import {SCEPPayloadForm} from '../../forms/payloads/SCEPPayloadForm';
+import {SCEPPayloadForm, FormData} from '../../forms/payloads/SCEPPayloadForm';
 import * as actions from '../../actions/configuration/scep';
 import {RootState} from "../../reducers/index";
 import {bindActionCreators} from "redux";
@@ -30,7 +29,11 @@ export class UnconnectedSCEPPage extends React.Component<OwnProps, undefined> {
     }
 
     handleSubmit = (values: FormData): void => {
-        this.props.post(values);
+        this.props.post({
+            ...values,
+            key_usage: parseInt(values.key_usage, 0),
+            key_size: parseInt(values.key_size, 0)
+        });
     };
 
     handleTest = () => {
@@ -41,6 +44,12 @@ export class UnconnectedSCEPPage extends React.Component<OwnProps, undefined> {
         const {
             scep
         } = this.props;
+
+        const stringifiedData = {
+            ...scep.data,
+            key_size: scep.data ? ''+scep.data.key_size : null,
+            key_usage: scep.data ? ''+scep.data.key_usage: null
+        };
 
         return (
             <Container className='SCEPPage'>

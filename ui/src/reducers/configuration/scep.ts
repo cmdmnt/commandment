@@ -55,7 +55,6 @@ export function scep(state: SCEPState = initialState, action: SCEPAction): SCEPS
                 loading: false,
                 submitted: true
             };
-
         default:
             return state;
     }

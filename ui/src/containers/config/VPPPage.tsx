@@ -4,9 +4,11 @@ import {Container, Header, Item, Icon, Segment} from 'semantic-ui-react';
 import {RouteComponentProps} from "react-router";
 import {RootState} from "../../reducers/index";
 import {bindActionCreators} from "redux";
-import {read as fetchTokenInfo, TokenActionRequest} from "../../actions/vpp";
+import {read as fetchTokenInfo, TokenActionRequest,
+    upload, UploadActionRequest} from "../../actions/vpp";
 import {VPPState} from "../../reducers/configuration/vpp";
 import {VPPAccountDetail} from "../../components/vpp/VPPAccountDetail";
+import * as Dropzone from "react-dropzone";
 
 
 interface RouteProps {
@@ -19,6 +21,7 @@ interface ReduxStateProps {
 
 interface ReduxDispatchProps {
     fetchTokenInfo: TokenActionRequest;
+    upload: UploadActionRequest;
 }
 
 interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteProps> {
@@ -31,9 +34,8 @@ export class UnconnectedVPPPage extends React.Component<OwnProps, void> {
         this.props.fetchTokenInfo();
     }
 
-    handleSubmit = (e: any) => {
-        e.preventDefault();
-        console.log('vpp submit');
+    handleDrop = (files: Array<File>) => {
+        this.props.upload(files[0]);
     };
 
     render() {
@@ -44,13 +46,14 @@ export class UnconnectedVPPPage extends React.Component<OwnProps, void> {
         return (
             <Container className='VPPPage'>
                 <Header as='h1'>Volume Purchase Programme Configuration</Header>
-                <p>
-                    Upload a VPP Token
-                </p>
-                <form method='POST' action='/api/v1/vpp/upload/token' encType='multipart/form-data'>
-                    <input type='file' name='file'/>
-                    <input type='submit'/>
-                </form>
+                <Dropzone
+                    onDrop={this.handleDrop}
+                    className="dropzone"
+                    activeClassName="dropzone-active"
+                    rejectClassName="dropzone-reject"
+                    style={{}}>
+                    <Header as="h3">Drop .vpptoken or Click to upload</Header>
+                </Dropzone>
                 {data && <VPPAccountDetail {...data} />}
             </Container>
         )
@@ -62,6 +65,7 @@ export const VPPPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
         vpp: state.configuration.vpp
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({
-        fetchTokenInfo
+        fetchTokenInfo,
+        upload
     }, dispatch)
 )(UnconnectedVPPPage);

@@ -29,7 +29,6 @@
     "@types/semver": "^5.3.31",
     "@types/webpack": "^2.2.12",
     "@types/webpack-env": "^1.13.0",
-    "@types/whatwg-fetch": "^0.0.33",
     "awesome-typescript-loader": "^3.1.2",
     "css-loader": "^0.28.0",
     "extract-text-webpack-plugin": "^2.1.0",
@@ -60,8 +59,7 @@
     "url-loader": "^0.5.8",
     "webpack": "^2.3.2",
     "webpack-dev-server": "^2.4.2",
-    "webpack-hot-middleware": "^2.17.1",
-    "whatwg-fetch": "^2.0.3"
+    "webpack-hot-middleware": "^2.17.1"
   },
   "dependencies": {
     "@types/recompose": "^0.23.2",

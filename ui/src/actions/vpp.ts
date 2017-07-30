@@ -1,7 +1,10 @@
-import {RSAAReadActionRequest, RSAAReadActionResponse} from "../json-api";
+import {JSONAPIDetailResponse, RSAAReadActionRequest, RSAAReadActionResponse} from "../json-api";
 import {VPPAccount} from "../models";
 import {CALL_API, RSAA} from "redux-api-middleware";
 import {JSON_HEADERS} from "./constants";
+import {ThunkAction} from "redux-thunk";
+import {RootState} from "../reducers/index";
+import {Dispatch} from "react-redux";
 
 export const TOKEN_REQUEST = 'vpp/TOKEN_REQUEST';
 export type TOKEN_REQUEST = typeof TOKEN_REQUEST;
@@ -24,4 +27,45 @@ export const read: TokenActionRequest = (id: string) => {
             headers: JSON_HEADERS
         }
     });
+};
+
+export const UPLOAD_TOKEN = 'vpp/UPLOAD_TOKEN';
+export type UPLOAD_TOKEN = typeof UPLOAD_TOKEN;
+
+export const UPLOAD_REQUEST = 'vpp/UPLOAD_REQUEST';
+export type UPLOAD_REQUEST = typeof UPLOAD_REQUEST;
+export const UPLOAD_SUCCESS = 'vpp/UPLOAD_SUCCESS';
+export type UPLOAD_SUCCESS = typeof UPLOAD_SUCCESS;
+export const UPLOAD_FAILURE = 'vpp/UPLOAD_FAILURE';
+export type UPLOAD_FAILURE = typeof UPLOAD_FAILURE;
+
+export interface UploadActionRequest {
+    (file: File): ThunkAction<void, RootState, void>;
+}
+export type UploadActionResponse = RSAAReadActionResponse<UPLOAD_REQUEST, UPLOAD_SUCCESS, UPLOAD_FAILURE, JSONAPIDetailResponse<VPPAccount, undefined>>;
+
+export const upload = (file: File): ThunkAction<void, RootState, void> => (
+    dispatch: Dispatch<RootState>,
+    getState: () => RootState,
+    extraArgument: void) => {
+
+    const data = new FormData();
+    data.append('file', file);
+    dispatch({
+        type: UPLOAD_TOKEN,
+        payload: data
+    });
+
+    dispatch({
+        [CALL_API]: {
+            endpoint: `/api/v1/vpp/upload/token`,
+            method: 'POST',
+            types: [
+                UPLOAD_REQUEST,
+                UPLOAD_SUCCESS,
+                UPLOAD_FAILURE
+            ],
+            body: data
+        }
+    })
 };
