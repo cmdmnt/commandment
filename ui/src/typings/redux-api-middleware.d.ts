@@ -1,17 +1,25 @@
 declare module "redux-api-middleware" {
-
-    import {Store, Dispatch} from "react-redux";
     import {Middleware} from "redux";
+    
+    /**
+     * Symbol key that carries API call info interpreted by this Redux middleware.
+     *
+     * @constant {symbol}
+     * @access public
+     * @default
+     */
+    export const CALL_API: symbol;
 
-// validation
-    function isRSAA(action: any): boolean;
-
-// Returns array of strings containing validation errors
-    function validateRSAA(action: any): Array<string>;
-
-    function isValidRSAA(action: any): boolean;
-
-    class InvalidRSAA {
+    //// ERRORS
+    
+    /**
+     * Error class for an RSAA that does not conform to the RSAA definition
+     *
+     * @class InvalidRSAA
+     * @access public
+     * @param {array} validationErrors - an array of validation errors
+     */
+    export class InvalidRSAA {
         constructor(validationErrors: Array<string>);
 
         name: string;
@@ -19,21 +27,45 @@ declare module "redux-api-middleware" {
         validationErrors: Array<string>;
     }
 
-    class InternalError {
+    /**
+     * Error class for a custom `payload` or `meta` function throwing
+     *
+     * @class InternalError
+     * @access public
+     * @param {string} message - the error message
+     */
+    export class InternalError {
         constructor(message: string);
 
         name: string;
         message: string;
     }
 
-    class RequestError {
+    /**
+     * Error class for an error raised trying to make an API call
+     *
+     * @class RequestError
+     * @access public
+     * @param {string} message - the error message
+     */
+    export class RequestError {
         constructor(message: string);
 
         name: string;
         message: string;
     }
 
-    class ApiError {
+    /**
+     * Error class for an API response outside the 200 range
+     *
+     * @class ApiError
+     * @access public
+     * @param {number} status - the status code of the API response
+     * @param {string} statusText - the status text of the API response
+     * @param {object} response - the parsed JSON response of the API server if the
+     *  'Content-Type' header signals a JSON response
+     */
+    export class ApiError {
         constructor(status: number, statusText: string, response: any);
 
         name: string;
@@ -43,23 +75,62 @@ declare module "redux-api-middleware" {
         response?: any;
     }
 
-    function getJSON(res: Response): PromiseLike<any>;
+    //// VALIDATION
 
-    function apiMiddleware<S>(store: Store<any>): (next: Dispatch<S>) => Dispatch<S>;
+    /**
+     * Is the given action a plain JavaScript object with a [CALL_API] property?
+     */
+    export function isRSAA(action: object): action is RSAA<any, any, any>;
 
-    interface TypeDescriptor<TSymbol> {
+
+    export interface TypeDescriptor<TSymbol> {
         type: string | TSymbol;
         payload: any;
         meta: any;
     }
 
+    /**
+     * Is the given object a valid type descriptor?
+     */
+    export function isValidTypeDescriptor(obj: object): obj is TypeDescriptor<any>;
 
-    export const CALL_API: symbol;
-    //type CALL_API = Symbol('CALL_API');
-    //export const CALL_API: CALL_API = Symbol('CALL_API');
-    //export const CALL_API = 'CALL_API'; // Cheating for now
-    export type RSAAActionTypes = [string, string, string];
+    /**
+     * Checks an action against the RSAA definition, returning a (possibly empty)
+     * array of validation errors.
+     */
+    function validateRSAA(action: object): Array<string>;
+
+    /**
+     * Is the given action a valid RSAA?
+     */
+    function isValidRSAA(action: object): boolean;
+
+    //// MIDDLEWARE
+
+    /**
+     * A Redux middleware that processes RSAA actions.
+     */
+    export const apiMiddleware: Middleware;
+
+    //// UTIL
+
+    /**
+     * Extract JSON body from a server response
+     */
+    export function getJSON(res: Response): PromiseLike<any>|undefined;
+    
+    export type RSAActionTypeTuple = [string|symbol, string|symbol, string|symbol];
+
+    /**
+     * Blow up string or symbol types into full-fledged type descriptors,
+     *   and add defaults
+     */
+    export function normalizeTypeDescriptors(types: RSAActionTypeTuple): RSAActionTypeTuple;
+
+
+
     export type HTTPVerb = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS';
+
     export interface RSAA<R, S, F> {
         [propName: string]: { // Symbol as object key seems impossible
             endpoint: string;  // or function
@@ -72,10 +143,11 @@ declare module "redux-api-middleware" {
         }
     }
 
+    module "redux" {
+        export interface Dispatch<S> {
+            <R, S, F>(rsaa: RSAA<R, S, F>): void;
+        }
+    }
 }
 
-// declare module "redux" {
-//     export interface Dispatch<S> {
-//         <R, E>(rsaa: RSAA<R, S, E>): R;
-//     }
-// }
+
