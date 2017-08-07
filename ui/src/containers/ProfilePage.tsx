@@ -2,7 +2,7 @@ import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 import {RootState} from "../reducers/index";
 import {bindActionCreators} from "redux";
-import {Container, Segment, Grid, Header} from 'semantic-ui-react';
+import {Container, Segment, Grid, Header, DropdownProps} from 'semantic-ui-react';
 import {read, ReadActionRequest} from "../actions/profiles";
 import {RouteComponentProps} from "react-router";
 import {TagDropdown} from "../components/TagDropdown";
@@ -76,8 +76,10 @@ export class UnconnectedProfilePage extends React.Component<OwnProps & ReduxStat
         this.props.fetchTags(10, 1, [], [{'name': 'name', 'op': 'ilike', 'val': `%${value}%`}]);
     };
 
-    handleApplyTags = (event: SyntheticEvent<any>, {value: values}: { value: string[] }) => {
-        const relationships = values.map((v: string) => {
+    handleChangeTag = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
+        const { value } = data;
+
+        const relationships = value.map((v: string) => {
             return {"id": v, "type": "tags"};
         });
 
@@ -112,7 +114,7 @@ export class UnconnectedProfilePage extends React.Component<OwnProps & ReduxStat
                     value={profileTags}
                     onAddItem={this.handleAddTag}
                     onSearch={this.handleSearchTag}
-                    onChange={this.handleApplyTags}
+                    onChange={this.handleChangeTag}
                 />
                 <Segment>
                     <Grid columns={2}>

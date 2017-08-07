@@ -3,6 +3,7 @@ import {IndexActionResponse, UploadActionResponse} from '../actions/profiles';
 import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Profile} from "../models";
 import {ApiError} from "redux-api-middleware";
+import {isApiError} from "../guards";
 
 export interface ProfilesState {
     items: Array<JSONAPIObject<Profile>>;
@@ -67,12 +68,14 @@ export function profiles(state: ProfilesState = initialState, action: ProfilesAc
                 };
             }
         case actions.UPLOAD_FAILURE:
-            return {
-                ...state,
-                uploading: false,
-                uploadError: true,
-                uploadErrorDetail: action.payload
-            };
+            if (isApiError(action.payload)) {
+                return {
+                    ...state,
+                    uploading: false,
+                    uploadError: true,
+                    uploadErrorDetail: action.payload
+                };
+            }
         default:
             return state;
     }

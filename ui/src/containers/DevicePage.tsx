@@ -14,7 +14,7 @@ import {
 } from "../actions/devices";
 import {MacOSDeviceDetail} from '../components/MacOSDeviceDetail';
 import {DeviceState} from "../reducers/device";
-import {Container, Grid, Menu, Segment, Dropdown, DropdownItemProps} from 'semantic-ui-react';
+import {Container, Grid, Menu, Segment, Dropdown, DropdownItemProps, DropdownProps} from 'semantic-ui-react';
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {SyntheticEvent} from "react";
 import {DeviceCertificates} from "./devices/DeviceCertificates";
@@ -118,8 +118,10 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
         this.props.fetchTags(10, 1, [], [{'name': 'name', 'op': 'ilike', 'val': `%${value}%`}]);
     };
 
-    handleChangeTag = (event: SyntheticEvent<any>, { value: values }: { value: Array<string> }) => {
-        const relationships = values.map((v: string) => {
+    handleChangeTag = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
+        const { value } = data;
+
+        const relationships = value.map((v: string) => {
             return {"id": v, "type": "tags"};
         });
 
