@@ -33,7 +33,9 @@ export interface Command {
 
 export interface Device {
     udid: string;
+    // topic
     last_seen: string;
+    is_enrolled: boolean;
     build_version: string;
     device_name: string;
     model: string;
@@ -48,7 +50,11 @@ export interface Device {
     wifi_mac: string;
     bluetooth_mac: string;
     awaiting_configuration: boolean;
-    sip_enabled: boolean;
+    // push_magic
+    // tokenupdate_at
+    // last_apns_id
+
+    // last_push_at
     passcode_present: boolean;
     passcode_compliant: boolean;
     passcode_compliant_with_profiles: boolean;
@@ -56,7 +62,40 @@ export interface Device {
     fde_has_prk: boolean;
     fde_has_irk: boolean;
     firewall_enabled: boolean;
-
+    block_all_incoming: boolean;
+    stealth_mode_enabled: boolean;
+    sip_enabled: boolean;
+    battery_level: number;
+    carrier_settings_version: string;
+    cellular_technology: string;
+    current_carrier_network: string;
+    current_mcc: string;
+    current_mnc: string;
+    data_roaming_enabled: boolean;
+    eas_device_identifier: string;
+    iccid: string;
+    imei: string;
+    is_activation_lock_enabled: boolean;
+    is_cloud_backup_enabled: boolean;
+    is_device_locator_service_enabled: boolean;
+    is_do_not_disturb_in_effect: boolean;
+    is_mdm_lost_mode_enabled: boolean;
+    is_roaming: boolean;
+    is_supervised: boolean;
+    itunes_store_account_hash: string;
+    itunes_store_account_is_active: boolean;
+    last_cloud_backup_date: string;
+    maximum_resident_users: number;
+    meid: string;
+    modem_firmware_version: string;
+    passcode_lock_grace_period_enforced: number;
+    personal_hotspot_enabled: boolean;
+    phone_number: string;
+    sim_carrier_network: string;
+    subscriber_carrier_network: string;
+    subscriber_mcc: string;
+    subscriber_mnc: string;
+    voice_roaming_enabled: boolean;
 }
 
 // Valid JSON-API relationships

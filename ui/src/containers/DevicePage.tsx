@@ -22,11 +22,12 @@ import {DeviceCommands} from "./devices/DeviceCommands";
 import {DeviceApplications} from "./devices/DeviceApplications";
 import {DeviceProfiles} from "./devices/DeviceProfiles";
 import {DeviceOSUpdates} from "./devices/DeviceOSUpdates";
+import {DeviceDetail} from "./devices/DeviceDetail";
 import {TagDropdown} from "../components/TagDropdown";
 import {TagsState} from "../reducers/tags";
 import {
-    index as fetchTags, IndexActionRequest,
-    post as createTag, PostActionRequest as PostTagActionRequest
+index as fetchTags, IndexActionRequest,
+post as createTag, PostActionRequest as PostTagActionRequest
 } from '../actions/tags';
 import {Tag} from "../models";
 import {JSONAPIObject, JSONAPIRelationship} from "../json-api";
@@ -176,6 +177,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                                 {device && <MacOSDeviceDetail device={device}/>}
                             </Segment>
                             <Menu pointing secondary color="purple" inverted>
+                                <MenuItemLink to={`/devices/${device_id}/detail`}>Detail</MenuItemLink>
                                 <MenuItemLink to={`/devices/${device_id}/certificates`}>Certificates</MenuItemLink>
                                 <MenuItemLink to={`/devices/${device_id}/commands`}>Commands</MenuItemLink>
                                 <MenuItemLink to={`/devices/${device_id}/installed_applications`}>Applications</MenuItemLink>
@@ -186,6 +188,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column>
+                            <Route path='/devices/:id/detail' component={DeviceDetail}/>
                             <Route path='/devices/:id/certificates' component={DeviceCertificates}/>
                             <Route path='/devices/:id/commands' component={DeviceCommands}/>
                             <Route path='/devices/:id/installed_applications' component={DeviceApplications}/>
