@@ -48,7 +48,7 @@ lxml==3.8.0
 M2Crypto==0.26.2
 Mako==1.0.7
 MarkupSafe==1.0
-marshmallow==2.13.6
+marshmallow==2.13.1
 marshmallow-enum==1.4.1
 marshmallow-jsonapi==0.15.1
 marshmallow-sqlalchemy==0.13.1
@@ -71,7 +71,7 @@ pyasn1-modules==0.1.1
 pycparser==2.18
 pycryptodomex==3.4.7
 Pygments==2.2.0
-PyJWT==1.5.3
+PyJWT==1.4.2
 pyOpenSSL==17.3.0
 pyparsing==2.2.0
 pyRFC3339==1.0
