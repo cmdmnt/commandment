@@ -1,5 +1,5 @@
 import {JSONAPI_HEADERS} from "../constants";
-import {CALL_API, HTTPVerb, RSAA} from "redux-api-middleware";
+import {RSAA, HTTPVerb, RSAAction} from "redux-api-middleware";
 import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
     RSAAIndexActionResponse
@@ -18,8 +18,8 @@ export type CertificatesActionRequest = RSAAChildIndexActionRequest<CERTIFICATES
 export type CertificatesActionResponse = RSAAIndexActionResponse<CERTIFICATES_REQUEST, CERTIFICATES_SUCCESS, CERTIFICATES_FAILURE, InstalledCertificate>;
 
 export const certificates = encodeJSONAPIChildIndexParameters((device_id: string, queryParameters: Array<String>)  => {
-    return (<RSAA<CERTIFICATES_REQUEST, CERTIFICATES_SUCCESS, CERTIFICATES_FAILURE>>{
-        [CALL_API]: {
+    return (<RSAAction<CERTIFICATES_REQUEST, CERTIFICATES_SUCCESS, CERTIFICATES_FAILURE>>{
+        [RSAA]: {
             endpoint: `/api/v1/devices/${device_id}/installed_certificates?${queryParameters.join('&')}`,
             method: (<HTTPVerb>'GET'),
             types: [

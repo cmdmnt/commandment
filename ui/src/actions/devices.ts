@@ -1,5 +1,5 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
-import {CALL_API, HTTPVerb, RSAA} from 'redux-api-middleware';
+import {RSAA, HTTPVerb, RSAAction} from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIRelationship, JSONAPIRelationships,
@@ -26,8 +26,8 @@ export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUC
 export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, Device>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String>) => {
-    return (<RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
-        [CALL_API]: {
+    return (<RSAAction<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
+        [RSAA]: {
             endpoint: '/api/v1/devices?' + queryParameters.join('&'),
             method: (<HTTPVerb>'GET'),
             types: [
@@ -81,7 +81,7 @@ export const read: ReadActionRequest = (id: string, include?: Array<string>) => 
     }
 
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/devices/${id}?${inclusions}`,
             method: 'GET',
             types: [
@@ -137,7 +137,7 @@ export type PUSH_FAILURE = 'devices/PUSH_FAILURE';
 export const PUSH_FAILURE: PUSH_FAILURE = 'devices/PUSH_FAILURE';
 
 export interface PushActionRequest {
-    (id: string): RSAA<PUSH_REQUEST, PUSH_SUCCESS, PUSH_FAILURE>;
+    (id: string): RSAAction<PUSH_REQUEST, PUSH_SUCCESS, PUSH_FAILURE>;
 }
 
 export interface PushActionResponse {
@@ -147,7 +147,7 @@ export interface PushActionResponse {
 
 export const push: PushActionRequest = (id: string) => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/devices/${id}/push`,
             method: 'POST',
             types: [
@@ -168,7 +168,7 @@ export type INVENTORY_FAILURE = 'devices/INVENTORY_FAILURE';
 export const INVENTORY_FAILURE: INVENTORY_FAILURE = 'devices/INVENTORY_FAILURE';
 
 export interface InventoryActionRequest {
-    (id: string): RSAA<INVENTORY_REQUEST, INVENTORY_SUCCESS, INVENTORY_FAILURE>;
+    (id: string): RSAAction<INVENTORY_REQUEST, INVENTORY_SUCCESS, INVENTORY_FAILURE>;
 }
 
 export interface InventoryActionResponse {
@@ -178,7 +178,7 @@ export interface InventoryActionResponse {
 
 export const inventory: InventoryActionRequest = (id: string) => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/devices/inventory/${id}`,
             method: 'GET',
             types: [
@@ -200,7 +200,7 @@ export type TEST_FAILURE = 'devices/TEST_FAILURE';
 export const TEST_FAILURE: TEST_FAILURE = 'devices/TEST_FAILURE';
 
 export interface TestActionRequest {
-    (id: string): RSAA<TEST_REQUEST, TEST_SUCCESS, TEST_FAILURE>;
+    (id: string): RSAAction<TEST_REQUEST, TEST_SUCCESS, TEST_FAILURE>;
 }
 
 export interface TestActionResponse {
@@ -210,7 +210,7 @@ export interface TestActionResponse {
 
 export const test: TestActionRequest = (id: string) => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/devices/test/${id}`,
             method: 'POST',
             types: [
@@ -235,8 +235,8 @@ export type CommandsActionResponse = RSAAIndexActionResponse<COMMANDS_REQUEST, C
 
 
 export const commands = encodeJSONAPIChildIndexParameters((device_id: string, queryParameters: Array<String>)  => {
-    return (<RSAA<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE>>{
-        [CALL_API]: {
+    return (<RSAAction<COMMANDS_REQUEST, COMMANDS_SUCCESS, COMMANDS_FAILURE>>{
+        [RSAA]: {
             endpoint: `/api/v1/devices/${device_id}/commands?${queryParameters.join('&')}`,
             method: 'GET',
             types: [
@@ -263,7 +263,7 @@ export type PatchActionResponse = RSAAReadActionResponse<PATCH_REQUEST, PATCH_SU
 export const patch: PatchActionRequest = (device_id: string, values: Device) => {
 
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/devices/${device_id}`,
             method: 'PATCH',
             types: [
@@ -290,13 +290,13 @@ export const RPOST_FAILURE = 'devices/RPOST_FAILURE';
 export type RPOST_FAILURE = typeof RPOST_FAILURE;
 
 export interface PostRelationshipActionRequest {
-    (parent_id: string, relationship: DeviceRelationship, data: Array<JSONAPIRelationship>): RSAA<RPOST_REQUEST, RPOST_SUCCESS, RPOST_FAILURE>;
+    (parent_id: string, relationship: DeviceRelationship, data: Array<JSONAPIRelationship>): RSAAction<RPOST_REQUEST, RPOST_SUCCESS, RPOST_FAILURE>;
 }
 export type PostRelationshipActionResponse = RSAAReadActionResponse<RPOST_REQUEST, RPOST_SUCCESS, RPOST_FAILURE, JSONAPIDetailResponse<Device, undefined>>;
 
 export const postRelationship: PostRelationshipActionRequest = (id: string, relationship: DeviceRelationship, data: Array<JSONAPIRelationship>) => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/devices/${id}/relationships/${relationship}`,
             method: 'POST',
             types: [
@@ -318,13 +318,13 @@ export const RCPOST_FAILURE = 'devices/RCPOST_FAILURE';
 export type RCPOST_FAILURE = typeof RCPOST_FAILURE;
 
 export interface PostRelatedActionRequest {
-    <TRelated>(parent_id: string, relationship: DeviceRelationship, data: TRelated): RSAA<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE>;
+    <TRelated>(parent_id: string, relationship: DeviceRelationship, data: TRelated): RSAAction<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE>;
 }
 export type PostRelatedActionResponse = RSAAReadActionResponse<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE, JSONAPIDetailResponse<any, undefined>>;
 
-export const postRelated: PostRelatedActionRequest = <TRelated>(parent_id: string, relationship: DeviceRelationship, data: TRelated): RSAA<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE> => {
+export const postRelated: PostRelatedActionRequest = <TRelated>(parent_id: string, relationship: DeviceRelationship, data: TRelated): RSAAction<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE> => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/devices/${parent_id}/${relationship}`,
             method: 'POST',
             types: [
@@ -360,13 +360,13 @@ export const RPATCH_FAILURE = 'devices/RPATCH_FAILURE';
 export type RPATCH_FAILURE = typeof RPATCH_FAILURE;
 
 export interface PatchRelationshipActionRequest {
-    (parent_id: string, relationship: DeviceRelationship, data: Array<JSONAPIRelationship>): RSAA<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE>;
+    (parent_id: string, relationship: DeviceRelationship, data: Array<JSONAPIRelationship>): RSAAction<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE>;
 }
 export type PatchRelationshipActionResponse = RSAAReadActionResponse<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE, JSONAPIDetailResponse<Device, undefined>>;
 
 export const patchRelationship: PatchRelationshipActionRequest = (id: string, relationship: DeviceRelationship, data: Array<JSONAPIRelationship>) => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/devices/${id}/relationships/${relationship}`,
             method: 'PATCH',
             types: [

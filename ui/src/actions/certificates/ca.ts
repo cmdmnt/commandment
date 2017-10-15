@@ -1,5 +1,5 @@
 /// <reference path="../../typings/redux-api-middleware.d.ts" />
-import { CALL_API, RSAA } from 'redux-api-middleware';
+import { RSAA, RSAAction } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from '../constants'
 import {JSONAPIListResponse, JSONAPIObject} from "../../json-api";
 import {Certificate} from "../../models";
@@ -13,7 +13,7 @@ export type CACERT_FAILURE = 'certificates/CACERT_FAILURE';
 export const CACERT_FAILURE: CACERT_FAILURE = 'certificates/CACERT_FAILURE';
 
 export interface FetchCACertificatesActionRequest {
-    (): RSAA<CACERT_REQUEST, CACERT_SUCCESS, CACERT_FAILURE>;
+    (): RSAAction<CACERT_REQUEST, CACERT_SUCCESS, CACERT_FAILURE>;
 }
 
 export interface FetchCACertificatesActionResponse {
@@ -21,9 +21,9 @@ export interface FetchCACertificatesActionResponse {
     payload?: JSONAPIListResponse<JSONAPIObject<Certificate>>;
 }
 
-export const fetchCACertificates: FetchCACertificatesActionRequest = (): RSAA<CACERT_REQUEST, CACERT_SUCCESS, CACERT_FAILURE> => {
+export const fetchCACertificates: FetchCACertificatesActionRequest = (): RSAAction<CACERT_REQUEST, CACERT_SUCCESS, CACERT_FAILURE> => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: '/api/v1/ca_certificates',
             method: 'GET',
             types: [

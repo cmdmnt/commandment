@@ -1,6 +1,6 @@
 import {JSONAPIDetailResponse, RSAAReadActionRequest, RSAAReadActionResponse} from "../json-api";
 import {VPPAccount} from "../models";
-import {CALL_API, RSAA} from "redux-api-middleware";
+import {RSAA, RSAAction} from "redux-api-middleware";
 import {JSON_HEADERS} from "./constants";
 import {ThunkAction} from "redux-thunk";
 import {RootState} from "../reducers/index";
@@ -17,8 +17,8 @@ export type TokenActionRequest = RSAAReadActionRequest<TOKEN_REQUEST, TOKEN_SUCC
 export type TokenActionResponse = RSAAReadActionResponse<TOKEN_REQUEST, TOKEN_SUCCESS, TOKEN_FAILURE, VPPAccount>;
 
 export const read: TokenActionRequest = (id: string) => {
-    return (<RSAA<TOKEN_REQUEST, TOKEN_SUCCESS, TOKEN_FAILURE>>{
-        [CALL_API]: {
+    return (<RSAAction<TOKEN_REQUEST, TOKEN_SUCCESS, TOKEN_FAILURE>>{
+        [RSAA]: {
             endpoint: '/api/v1/vpp/token',
             method: 'GET',
             types: [
@@ -57,7 +57,7 @@ export const upload = (file: File): ThunkAction<void, RootState, void> => (
     });
 
     dispatch({
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/vpp/upload/token`,
             method: 'POST',
             types: [

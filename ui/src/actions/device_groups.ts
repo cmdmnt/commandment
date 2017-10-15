@@ -1,5 +1,5 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
-import {CALL_API, HTTPVerb, RSAA} from 'redux-api-middleware';
+import {RSAA, HTTPVerb, RSAAction} from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIDetailResponse, JSONAPIListResponse,
@@ -21,8 +21,8 @@ export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUC
 export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, DeviceGroup>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String>) => {
-    return (<RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
-        [CALL_API]: {
+    return (<RSAAction<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
+        [RSAA]: {
             endpoint: '/api/v1/device_groups?' + queryParameters.join('&'),
             method: (<HTTPVerb>'GET'),
             types: [
@@ -52,8 +52,8 @@ export const read: ReadActionRequest = (id: string, include?: Array<string>) => 
         inclusions = 'include=' + include.join(',')
     }
 
-    return (<RSAA<READ_REQUEST, READ_SUCCESS, READ_FAILURE>>{
-        [CALL_API]: {
+    return (<RSAAction<READ_REQUEST, READ_SUCCESS, READ_FAILURE>>{
+        [RSAA]: {
             endpoint: `/api/v1/device_groups/${id}?${inclusions}`,
             method: 'GET',
             types: [
@@ -75,7 +75,7 @@ export type POST_FAILURE = 'device_groups/POST_FAILURE';
 export const POST_FAILURE: POST_FAILURE = 'device_groups/POST_FAILURE';
 
 export interface PostActionRequest {
-    (values: DeviceGroup): RSAA<POST_REQUEST, POST_SUCCESS, POST_FAILURE>;
+    (values: DeviceGroup): RSAAction<POST_REQUEST, POST_SUCCESS, POST_FAILURE>;
 }
 
 export interface PostActionResponse {
@@ -86,7 +86,7 @@ export interface PostActionResponse {
 export const post: PostActionRequest = (values: DeviceGroup) => {
 
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/device_groups`,
             method: 'POST',
             types: [

@@ -1,5 +1,5 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
-import { CALL_API, RSAA } from 'redux-api-middleware';
+import { RSAA, RSAAction } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from './constants'
 import {JSONAPIDetailResponse, JSONAPIListResponse, JSONAPIObject} from "../json-api";
 import {Certificate} from "../models";
@@ -12,7 +12,7 @@ export type INDEX_FAILURE = 'certificates/INDEX_FAILURE';
 export const INDEX_FAILURE: INDEX_FAILURE = 'certificates/INDEX_FAILURE';
 
 export interface IndexActionRequest {
-    (size?: number, number?: number, sort?: Array<string>, filter?: Array<FlaskFilter>): RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>;
+    (size?: number, number?: number, sort?: Array<string>, filter?: Array<FlaskFilter>): RSAAction<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>;
 }
 
 export interface IndexActionResponse {
@@ -25,7 +25,7 @@ export const index: IndexActionRequest = (
     number: number = 1,
     sort: Array<string> = [],
     filter?: Array<FlaskFilter>
-): RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE> => {
+): RSAAction<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE> => {
 
     let queryParameters = [];
     queryParameters.push(`size=${size}`);
@@ -41,7 +41,7 @@ export const index: IndexActionRequest = (
     }
 
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: '/api/v1/certificates/?' + queryParameters.join('&'),
             method: 'GET',
             types: [
@@ -63,7 +63,7 @@ export type CERTTYPE_FAILURE = 'certificates/CERTTYPE_FAILURE';
 export const CERTTYPE_FAILURE: CERTTYPE_FAILURE = 'certificates/CERTTYPE_FAILURE';
 
 export interface FetchCertificateTypeActionRequest {
-    (certType: string): RSAA<CERTTYPE_REQUEST, CERTTYPE_SUCCESS, CERTTYPE_FAILURE>;
+    (certType: string): RSAAction<CERTTYPE_REQUEST, CERTTYPE_SUCCESS, CERTTYPE_FAILURE>;
 }
 
 export interface FetchCertificateTypeActionResponse {
@@ -72,9 +72,9 @@ export interface FetchCertificateTypeActionResponse {
 }
 
 
-export const fetchCertificatesForType: FetchCertificateTypeActionRequest = (certType: string): RSAA<CERTTYPE_REQUEST, CERTTYPE_SUCCESS, CERTTYPE_FAILURE> => {
+export const fetchCertificatesForType: FetchCertificateTypeActionRequest = (certType: string): RSAAction<CERTTYPE_REQUEST, CERTTYPE_SUCCESS, CERTTYPE_FAILURE> => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/certificates/type/${certType}?include=private_key`,
             method: 'GET',
             types: [
@@ -96,7 +96,7 @@ export type DELETE_FAILURE = 'certificates/DELETE_FAILURE';
 export const DELETE_FAILURE: DELETE_FAILURE = 'certificates/DELETE_FAILURE';
 
 export interface DeleteCertificateActionRequest {
-    (id: number): RSAA<DELETE_REQUEST, DELETE_SUCCESS, DELETE_FAILURE>;
+    (id: number): RSAAction<DELETE_REQUEST, DELETE_SUCCESS, DELETE_FAILURE>;
 }
 
 export interface DeleteCertificateActionResponse {
@@ -105,9 +105,9 @@ export interface DeleteCertificateActionResponse {
 }
 
 
-export const remove: DeleteCertificateActionRequest = (id: number): RSAA<DELETE_REQUEST, DELETE_SUCCESS, DELETE_FAILURE> => {
+export const remove: DeleteCertificateActionRequest = (id: number): RSAAction<DELETE_REQUEST, DELETE_SUCCESS, DELETE_FAILURE> => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/certificates/${id}`,
             method: 'DELETE',
             types: [

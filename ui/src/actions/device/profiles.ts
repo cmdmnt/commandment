@@ -1,5 +1,5 @@
 import {JSONAPI_HEADERS} from "../constants";
-import {CALL_API, HTTPVerb, RSAA} from "redux-api-middleware";
+import {RSAA, HTTPVerb, RSAAction} from "redux-api-middleware";
 import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
     RSAAIndexActionResponse
@@ -18,8 +18,8 @@ export type InstalledProfilesActionRequest = RSAAChildIndexActionRequest<PROFILE
 export type InstalledProfilesActionResponse = RSAAIndexActionResponse<PROFILES_REQUEST, PROFILES_SUCCESS, PROFILES_FAILURE, InstalledApplication>;
 
 export const profiles = encodeJSONAPIChildIndexParameters((device_id: string, queryParameters: Array<String>)  => {
-    const rsaa: RSAA<PROFILES_REQUEST, PROFILES_SUCCESS, PROFILES_FAILURE> = {
-        [CALL_API]: {
+    const rsaa: RSAAction<PROFILES_REQUEST, PROFILES_SUCCESS, PROFILES_FAILURE> = {
+        [RSAA]: {
             endpoint: `/api/v1/devices/${device_id}/installed_profiles?${queryParameters.join('&')}`,
             method: (<HTTPVerb>'GET'),
             types: [

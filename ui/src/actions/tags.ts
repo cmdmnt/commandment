@@ -1,5 +1,5 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
-import {CALL_API, HTTPVerb, RSAA} from 'redux-api-middleware';
+import {RSAA, HTTPVerb, RSAAction} from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIListResponse, JSONAPIObject,
@@ -25,8 +25,8 @@ export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUC
 export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, Tag>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String>) => {
-    return (<RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
-        [CALL_API]: {
+    return (<RSAAction<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
+        [RSAA]: {
             endpoint: '/api/v1/tags?' + queryParameters.join('&'),
             method: (<HTTPVerb>'GET'),
             types: [
@@ -52,8 +52,8 @@ export type PostActionResponse = RSAAPostActionResponse<POST_REQUEST, POST_SUCCE
 
 export const post: PostActionRequest = (values: Tag) => {
 
-    return (<RSAA<POST_REQUEST, POST_SUCCESS, POST_FAILURE>>{
-        [CALL_API]: {
+    return (<RSAAction<POST_REQUEST, POST_SUCCESS, POST_FAILURE>>{
+        [RSAA]: {
             endpoint: `/api/v1/tags`,
             method: 'POST',
             types: [

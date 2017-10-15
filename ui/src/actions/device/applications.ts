@@ -1,5 +1,5 @@
 import {JSONAPI_HEADERS} from "../constants";
-import {CALL_API, HTTPVerb, RSAA} from "redux-api-middleware";
+import {RSAA, HTTPVerb, RSAAction} from "redux-api-middleware";
 import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest, RSAAIndexActionResponse
 } from "../../json-api";
@@ -21,8 +21,8 @@ export type InstalledApplicationsActionResponse = RSAAIndexActionResponse<APPLIC
  * @type {(id:number, size?:number, pageNumber?:number, sort?:String[], filters?:FlaskFilters)=>R}
  */
 export const applications = encodeJSONAPIChildIndexParameters((device_id: string, queryParameters: Array<String>)  => {
-    return (<RSAA<APPLICATIONS_REQUEST, APPLICATIONS_SUCCESS, APPLICATIONS_FAILURE>>{
-        [CALL_API]: {
+    return (<RSAAction<APPLICATIONS_REQUEST, APPLICATIONS_SUCCESS, APPLICATIONS_FAILURE>>{
+        [RSAA]: {
             endpoint: `/api/v1/devices/${device_id}/installed_applications?${queryParameters.join('&')}`,
             method: (<HTTPVerb>'GET'),
             types: [

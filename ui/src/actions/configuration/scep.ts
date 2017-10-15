@@ -1,5 +1,5 @@
 /// <reference path="../../typings/redux-api-middleware.d.ts" />
-import { CALL_API, RSAA } from 'redux-api-middleware';
+import { RSAA, RSAAction } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, JSON_HEADERS} from '../constants'
 import {SCEPConfiguration} from "../../models";
 
@@ -11,7 +11,7 @@ export type READ_FAILURE = 'scep/READ_FAILURE';
 export const READ_FAILURE: READ_FAILURE = 'scep/READ_FAILURE';
 
 export interface ReadActionRequest {
-    (): RSAA<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
+    (): RSAAction<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
 }
 
 export interface ReadActionResponse {
@@ -21,7 +21,7 @@ export interface ReadActionResponse {
 
 export const read: ReadActionRequest = () => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: '/api/v1/configuration/scep',
             method: 'GET',
             types: [
@@ -42,7 +42,7 @@ export type POST_FAILURE = 'scep/POST_FAILURE';
 export const POST_FAILURE: POST_FAILURE = 'scep/POST_FAILURE';
 
 export interface PostActionRequest {
-    (values: SCEPConfiguration): RSAA<POST_REQUEST, POST_SUCCESS, POST_FAILURE>;
+    (values: SCEPConfiguration): RSAAction<POST_REQUEST, POST_SUCCESS, POST_FAILURE>;
 }
 
 export interface PostActionResponse {
@@ -52,7 +52,7 @@ export interface PostActionResponse {
 
 export const post: PostActionRequest = (values: SCEPConfiguration) => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: '/api/v1/configuration/scep',
             method: 'POST',
             types: [

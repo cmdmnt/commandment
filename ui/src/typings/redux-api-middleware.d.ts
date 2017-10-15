@@ -4,11 +4,11 @@ declare module "redux-api-middleware" {
     /**
      * Symbol key that carries API call info interpreted by this Redux middleware.
      *
-     * @constant {symbol}
+     * @constant {string}
      * @access public
      * @default
      */
-    export const CALL_API: symbol;
+    export const RSAA: string;
 
     //// ERRORS
     
@@ -78,9 +78,9 @@ declare module "redux-api-middleware" {
     //// VALIDATION
 
     /**
-     * Is the given action a plain JavaScript object with a [CALL_API] property?
+     * Is the given action a plain JavaScript object with a [RSAA] property?
      */
-    export function isRSAA(action: object): action is RSAA<any, any, any>;
+    export function isRSAA(action: object): action is RSAAction<any, any, any>;
 
 
     export interface TypeDescriptor<TSymbol> {
@@ -131,7 +131,7 @@ declare module "redux-api-middleware" {
 
     export type HTTPVerb = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS';
 
-    export interface RSAA<R, S, F> {
+    export interface RSAAction<R, S, F> {
         [propName: string]: { // Symbol as object key seems impossible
             endpoint: string;  // or function
             method: HTTPVerb;
@@ -145,7 +145,7 @@ declare module "redux-api-middleware" {
 
     module "redux" {
         export interface Dispatch<S> {
-            <R, S, F>(rsaa: RSAA<R, S, F>): void;
+            <R, S, F>(rsaa: RSAAction<R, S, F>): void;
         }
     }
 }

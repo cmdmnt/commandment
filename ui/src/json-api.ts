@@ -1,7 +1,7 @@
 // Redux API Middleware Type Guards
 import {FlaskFilters} from "./actions/constants";
 
-import {ApiError, RSAA} from "redux-api-middleware";
+import {ApiError, RSAAction} from "redux-api-middleware";
 
 export const JSONAPI_HEADERS = {
     'Content-Type': 'application/vnd.api+json',
@@ -30,6 +30,9 @@ export interface JSONAPIErrorObject {
 
 export interface JSONAPIErrorResponse {
     errors: Array<JSONAPIErrorObject>;
+    jsonapi: {
+        version: string;
+    }
 }
 
 export interface JSONAPIRelationship {
@@ -102,7 +105,7 @@ interface WrappedIndexActionCreator<R> {
 
 // Standardised JSON-API Index ActionCreator
 export interface RSAAIndexActionRequest<TRequest, TSuccess, TFailure> {
-    (size?: number, pageNumber?: number, sort?: Array<string>, filters?: FlaskFilters): RSAA<TRequest, TSuccess, TFailure>;
+    (size?: number, pageNumber?: number, sort?: Array<string>, filters?: FlaskFilters): RSAAction<TRequest, TSuccess, TFailure>;
 }
 
 // Standardised JSON-API Index ActionCreator Response (passed to reducer)
@@ -113,11 +116,11 @@ export interface RSAAIndexActionResponse<TRequest, TSuccess, TFailure, TObject> 
 
 // Standardised JSON-API Index ActionCreator that fetches a resource child of some object / by relationship
 export interface RSAAChildIndexActionRequest<TRequest, TSuccess, TFailure> {
-    (parent_id: string, size?: number, pageNumber?: number, sort?: Array<string>, filters?: FlaskFilters): RSAA<TRequest, TSuccess, TFailure>;
+    (parent_id: string, size?: number, pageNumber?: number, sort?: Array<string>, filters?: FlaskFilters): RSAAction<TRequest, TSuccess, TFailure>;
 }
 
 export interface RSAAReadActionRequest<TRequest, TSuccess, TFailure> {
-    (id: string, include?: Array<string>): RSAA<TRequest, TSuccess, TFailure>;
+    (id: string, include?: Array<string>): RSAAction<TRequest, TSuccess, TFailure>;
 }
 
 export interface RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> {
@@ -131,7 +134,7 @@ export interface RSAAJSONAPIReadActionResponse<TRequest, TSuccess, TFailure, TRe
 }
 
 export interface RSAAPostActionRequest<TRequest, TSuccess, TFailure, TValues> {
-    (values: TValues): RSAA<TRequest, TSuccess, TFailure>;
+    (values: TValues): RSAAction<TRequest, TSuccess, TFailure>;
 }
 
 export interface RSAAPostActionResponse<TRequest, TSuccess, TFailure, TResponse> {
@@ -140,7 +143,7 @@ export interface RSAAPostActionResponse<TRequest, TSuccess, TFailure, TResponse>
 }
 
 export interface RSAAPatchActionRequest<TRequest, TSuccess, TFailure, TValues> {
-    (id: string, values: TValues): RSAA<TRequest, TSuccess, TFailure>;
+    (id: string, values: TValues): RSAAction<TRequest, TSuccess, TFailure>;
 }
 
 /**

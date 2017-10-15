@@ -1,5 +1,5 @@
 /// <reference path="../../typings/redux-api-middleware.d.ts" />
-import { CALL_API, RSAA } from 'redux-api-middleware';
+import { RSAA, RSAAction } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from '../constants'
 import {JSONAPIListResponse, JSONAPIObject} from "../../json-api";
 import {Certificate} from "../../models";
@@ -13,7 +13,7 @@ export type PUSHCERT_FAILURE = 'certificates/PUSHCERT_FAILURE';
 export const PUSHCERT_FAILURE: PUSHCERT_FAILURE = 'certificates/PUSHCERT_FAILURE';
 
 export interface FetchPushCertificatesActionRequest {
-    (): RSAA<PUSHCERT_REQUEST, PUSHCERT_SUCCESS, PUSHCERT_FAILURE>;
+    (): RSAAction<PUSHCERT_REQUEST, PUSHCERT_SUCCESS, PUSHCERT_FAILURE>;
 }
 
 export interface FetchPushCertificatesActionResponse {
@@ -21,9 +21,9 @@ export interface FetchPushCertificatesActionResponse {
     payload?: JSONAPIListResponse<JSONAPIObject<Certificate>>;
 }
 
-export const fetchPushCertificates: FetchPushCertificatesActionRequest = (): RSAA<PUSHCERT_REQUEST, PUSHCERT_SUCCESS, PUSHCERT_FAILURE> => {
+export const fetchPushCertificates: FetchPushCertificatesActionRequest = (): RSAAction<PUSHCERT_REQUEST, PUSHCERT_SUCCESS, PUSHCERT_FAILURE> => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: '/api/v1/push_certificates',
             method: 'GET',
             types: [

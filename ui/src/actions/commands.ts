@@ -1,5 +1,5 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
-import { CALL_API, RSAA } from 'redux-api-middleware';
+import { RSAA, RSAAction } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from './constants';
 import {JSONAPIListResponse, JSONAPIObject} from "../json-api";
 import {Command} from "../models";
@@ -20,7 +20,7 @@ export type POST_FAILURE = 'commands/POST_FAILURE';
 export const POST_FAILURE: POST_FAILURE = 'commands/POST_FAILURE';
 
 export interface PostActionRequest {
-    (values: Command): RSAA<POST_REQUEST, POST_SUCCESS, POST_FAILURE>;
+    (values: Command): RSAAction<POST_REQUEST, POST_SUCCESS, POST_FAILURE>;
 }
 
 export interface PostActionResponse {
@@ -37,7 +37,7 @@ export const post: PostActionRequest = (values: Command, device_id?: number) => 
     }
 
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint,
             method: 'POST',
             types: [

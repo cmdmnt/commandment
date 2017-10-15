@@ -1,4 +1,4 @@
-import { CALL_API, RSAA } from 'redux-api-middleware';
+import { RSAA, RSAAction } from 'redux-api-middleware';
 import { JSONAPI_HEADERS, CertificatePurpose } from './constants'
 
 export type NEW_REQUEST = 'signing_requests/NEW_REQUEST';
@@ -10,9 +10,9 @@ export const NEW_FAILURE: NEW_FAILURE = 'signing_requests/NEW_FAILURE';
 
 
 
-export const newCertificateSigningRequest = (purpose: CertificatePurpose): RSAA<NEW_REQUEST, NEW_SUCCESS, NEW_FAILURE>  => {
+export const newCertificateSigningRequest = (purpose: CertificatePurpose): RSAAction<NEW_REQUEST, NEW_SUCCESS, NEW_FAILURE>  => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: '/api/v1/certificate_signing_requests/new',
             method: 'GET',
             types: [

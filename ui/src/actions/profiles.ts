@@ -1,5 +1,5 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
-import {ApiError, CALL_API, HTTPVerb, RSAA} from 'redux-api-middleware';
+import {ApiError, RSAA, HTTPVerb, RSAAction} from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from './constants'
 import {
     RSAAIndexActionRequest, RSAAIndexActionResponse, encodeJSONAPIIndexParameters,
@@ -23,8 +23,8 @@ export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUC
 export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, Profile>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: Array<String>) => {
-    return (<RSAA<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
-        [CALL_API]: {
+    return (<RSAAction<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
+        [RSAA]: {
             endpoint: '/api/v1/profiles?' + queryParameters.join('&'),
             method: (<HTTPVerb>'GET'),
             types: [
@@ -55,7 +55,7 @@ export const read: ReadActionRequest = (id: string, include?: Array<string>) => 
     }
 
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/profiles/${id}?${inclusions}`,
             method: 'GET',
             types: [
@@ -77,13 +77,13 @@ export const RPATCH_FAILURE = 'profiles/RPATCH_FAILURE';
 export type RPATCH_FAILURE = typeof RPATCH_FAILURE;
 
 export interface PatchRelationshipActionRequest {
-    (parent_id: string, relationship: ProfileRelationship, data: Array<JSONAPIRelationship>): RSAA<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE>;
+    (parent_id: string, relationship: ProfileRelationship, data: Array<JSONAPIRelationship>): RSAAction<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE>;
 }
 export type PatchRelationshipActionResponse = RSAAReadActionResponse<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE, JSONAPIDetailResponse<Profile, Tag>>;
 
 export const patchRelationship: PatchRelationshipActionRequest = (id: string, relationship: ProfileRelationship, data: Array<JSONAPIRelationship>) => {
     return {
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/profiles/${id}/relationships/${relationship}`,
             method: 'PATCH',
             types: [
@@ -125,7 +125,7 @@ export const upload = (file: File): ThunkAction<void, RootState, void> => (
     });
 
     dispatch({
-        [CALL_API]: {
+        [RSAA]: {
             endpoint: `/api/v1/upload/profiles`,
             method: 'POST',
             types: [
