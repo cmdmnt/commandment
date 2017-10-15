@@ -1,29 +1,25 @@
 // Redux API Middleware Type Guards
 import {FlaskFilters} from "./actions/constants";
-
-import {ApiError, RSAAction} from "redux-api-middleware";
+import {ApiError, InvalidRSAA, RequestError, RSAAction} from "redux-api-middleware";
 
 export const JSONAPI_HEADERS = {
     'Content-Type': 'application/vnd.api+json',
     'Accept': 'application/vnd.api+json'
 };
 
-export const JSON_HEADERS = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-};
-
+// http://jsonapi.org/format/#errors
 export interface JSONAPIErrorObject {
     id?: any;
     links?: {
-        about: string;
+        about?: string;
     };
     status?: string;
     code?: string;
     title?: string;
     detail?: string;
     source?: {
-        pointer: string;
+        pointer?: string;
+        parameter?: string;
     };
     meta?: any;
 }
@@ -109,10 +105,25 @@ export interface RSAAIndexActionRequest<TRequest, TSuccess, TFailure> {
 }
 
 // Standardised JSON-API Index ActionCreator Response (passed to reducer)
-export interface RSAAIndexActionResponse<TRequest, TSuccess, TFailure, TObject> {
-    type: TRequest | TSuccess | TFailure;
-    payload?: JSONAPIListResponse<JSONAPIObject<TObject>> | JSONAPIErrorResponse;
+
+export interface RSAAResponseRequest<TRequest> {
+    type: TRequest;
+    payload?: InvalidRSAA | RequestError;
+    error?: boolean;
 }
+
+export interface RSAAResponseFailure<TFailure> {
+    type: TFailure;
+    payload: ApiError;
+}
+
+export interface RSAAResponseSuccess<TSuccess, TResponse> {
+    type: TSuccess;
+    payload: TResponse;
+}
+
+export type RSAAIndexActionResponse<TRequest, TSuccess, TFailure, TObject> = RSAAResponseRequest<TRequest> |
+    RSAAResponseFailure<TFailure> | RSAAResponseSuccess<TSuccess, JSONAPIListResponse<JSONAPIObject<TObject>> | JSONAPIErrorResponse>;
 
 // Standardised JSON-API Index ActionCreator that fetches a resource child of some object / by relationship
 export interface RSAAChildIndexActionRequest<TRequest, TSuccess, TFailure> {
@@ -123,22 +134,13 @@ export interface RSAAReadActionRequest<TRequest, TSuccess, TFailure> {
     (id: string, include?: Array<string>): RSAAction<TRequest, TSuccess, TFailure>;
 }
 
-export interface RSAAReadActionResponseRequest<TRequest> {
-    type: TRequest;
-}
-
-export interface RSAAReadActionResponseFailure<TFailure> {
-    type: TFailure;
-    payload: ApiError;
-}
-
 export interface RSAAReadActionResponseSuccess<TSuccess, TResponse> {
     type: TSuccess;
     payload: TResponse;
 }
 
-export type RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAReadActionResponseRequest<TRequest> |
-    RSAAReadActionResponseFailure<TFailure> | RSAAReadActionResponseSuccess<TSuccess, TResponse>;
+export type RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |
+    RSAAResponseFailure<TFailure> | RSAAReadActionResponseSuccess<TSuccess, TResponse>;
 
 export interface RSAAJSONAPIReadActionResponse<TRequest, TSuccess, TFailure, TResponse> {
     type: TRequest | TSuccess | TFailure;
@@ -149,10 +151,8 @@ export interface RSAAPostActionRequest<TRequest, TSuccess, TFailure, TValues> {
     (values: TValues): RSAAction<TRequest, TSuccess, TFailure>;
 }
 
-export interface RSAAPostActionResponse<TRequest, TSuccess, TFailure, TResponse> {
-    type: TRequest | TSuccess | TFailure;
-    payload: TResponse | JSONAPIErrorResponse;
-}
+export type RSAAPostActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |
+    RSAAResponseFailure<TFailure> | RSAAResponseSuccess<TSuccess, TResponse | JSONAPIErrorResponse>;
 
 export interface RSAAPatchActionRequest<TRequest, TSuccess, TFailure, TValues> {
     (id: string, values: TValues): RSAAction<TRequest, TSuccess, TFailure>;
