@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const webpack = require('webpack');
 const {CheckerPlugin} = require('awesome-typescript-loader');
 
@@ -77,7 +78,11 @@ module.exports = {
         publicPath: "https://localhost:4000/static/",
         hot: true,
         port: 4000,
-        https: true,
+        https: {
+          key: fs.readFileSync('../server.key'),
+          cert: fs.readFileSync('../server.crt'),
+          ca: fs.readFileSync('../ca.crt')
+        },
         headers: {
             'Access-Control-Allow-Origin': '*'
         }

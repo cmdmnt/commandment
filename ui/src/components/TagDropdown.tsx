@@ -1,7 +1,13 @@
 import * as React from 'react';
-import {Dropdown, DropdownItemProps, Input} from 'semantic-ui-react';
+import {Dropdown, DropdownItemProps, DropdownProps, Input} from 'semantic-ui-react';
 import {Tag} from "../models";
 import {SyntheticEvent} from "react";
+
+// Not exported by Dropdown
+interface DropdownOnSearchChangeData extends DropdownProps {
+    searchQuery: string;
+}
+
 
 interface TagDropdownProps {
     loading: boolean;
@@ -33,13 +39,13 @@ export class TagDropdown extends React.Component<TagDropdownProps, TagDropdownSt
         this.props.onSearch(this.state.value);
     };
 
-    handleSearchChange = (event: SyntheticEvent<any>, value: string) => {
+    handleSearchChange = (event: React.SyntheticEvent<HTMLElement>, data: DropdownOnSearchChangeData): void => {
         console.log('change');
         if (this._timeout) { clearTimeout(this._timeout); }
-        this.setState({ value });
+        this.setState({ value: data.searchQuery });
 
-        if (value.length > 0) {
-            this._timeout = setTimeout(this.performSearch, 400);
+        if (data.length > 0) {
+            this._timeout = window.setTimeout(this.performSearch, 400);
         }
     };
 
