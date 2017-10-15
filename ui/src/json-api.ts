@@ -123,10 +123,22 @@ export interface RSAAReadActionRequest<TRequest, TSuccess, TFailure> {
     (id: string, include?: Array<string>): RSAAction<TRequest, TSuccess, TFailure>;
 }
 
-export interface RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> {
-    type: TRequest | TSuccess | TFailure;
-    payload: TResponse | ApiError;
+export interface RSAAReadActionResponseRequest<TRequest> {
+    type: TRequest;
 }
+
+export interface RSAAReadActionResponseFailure<TFailure> {
+    type: TFailure;
+    payload: ApiError;
+}
+
+export interface RSAAReadActionResponseSuccess<TSuccess, TResponse> {
+    type: TSuccess;
+    payload: TResponse;
+}
+
+export type RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAReadActionResponseRequest<TRequest> |
+    RSAAReadActionResponseFailure<TFailure> | RSAAReadActionResponseSuccess<TSuccess, TResponse>;
 
 export interface RSAAJSONAPIReadActionResponse<TRequest, TSuccess, TFailure, TResponse> {
     type: TRequest | TSuccess | TFailure;
