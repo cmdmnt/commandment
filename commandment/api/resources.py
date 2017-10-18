@@ -3,12 +3,14 @@
 """
 
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
-    CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, InstalledApplicationSchema, ProfileSchema, \
+    CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, InstalledApplicationSchema, \
     InstalledCertificateSchema, DeviceGroupSchema, InstalledProfileSchema, TagSchema, AvailableOSUpdateSchema
 from commandment.models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
     SSLCertificate, Organization, Command, InstalledApplication, InstalledProfile, InstalledCertificate, DeviceGroup, \
     Tag, AvailableOSUpdate
 from commandment.profiles.models import Profile
+from commandment.apps.models import ApplicationManifest
+from commandment.apps.jsonapi_schema import ApplicationManifestSchema
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
 
@@ -196,33 +198,6 @@ class InstalledCertificateDetail(ResourceDetail):
 #         'model': Payload
 #     }
 
-
-class ProfilesList(ResourceList):
-    schema = ProfileSchema
-    data_layer = {
-        'session': db.session,
-        'model': Profile
-    }
-
-
-class ProfileDetail(ResourceDetail):
-    schema = ProfileSchema
-    data_layer = {
-        'session': db.session,
-        'model': Profile,
-        'url_field': 'profile_id'
-    }
-
-
-class ProfileRelationship(ResourceRelationship):
-    schema = ProfileSchema
-    data_layer = {
-        'session': db.session,
-        'model': Profile,
-        'url_field': 'profile_id'
-    }
-
-
 class InstalledProfilesList(ResourceList):
     schema = InstalledProfileSchema
     data_layer = {
@@ -280,4 +255,13 @@ class AvailableOSUpdateDetail(ResourceDetail):
         'session': db.session,
         'model': AvailableOSUpdate,
         'url_field': 'available_os_update_id'
+    }
+
+
+class ApplicationManifestDetail(ResourceDetail):
+    schema = ApplicationManifestSchema
+    data_layer = {
+        'session': db.session,
+        'model': ApplicationManifest,
+        'url_field': 'application_manifest_id'
     }

@@ -6,10 +6,10 @@ from flask_rest_jsonapi import Api
 from .resources import CertificatesList, CertificateDetail, CertificateSigningRequestList, \
     CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
     CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, OrganizationList, \
-    OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationsList, ProfilesList, ProfileDetail, \
+    OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationsList, \
     InstalledCertificatesList, InstalledCertificateDetail, InstalledApplicationDetail, \
     DeviceGroupList, DeviceGroupDetail, DeviceRelationship, CommandRelationship, InstalledProfilesList, \
-    InstalledProfileDetail, TagsList, TagDetail, TagRelationship, ProfileRelationship, AvailableOSUpdateList, \
+    InstalledProfileDetail, TagsList, TagDetail, TagRelationship, AvailableOSUpdateList, \
     AvailableOSUpdateDetail
 
 # PayloadsList, PayloadDetail,
@@ -56,12 +56,7 @@ api.route(InstalledCertificatesList, 'installed_certificates_list',
 api.route(InstalledCertificateDetail, 'installed_certificate_detail',
           '/v1/installed_certificates/<int:installed_certificate_id>')
 
-# Profiles (Different to profiles returned by inventory)
-api.route(ProfilesList, 'profiles_list', '/v1/profiles')
-api.route(ProfileDetail, 'profile_detail', '/v1/profiles/<int:profile_id>')
-api.route(ProfileRelationship, 'profile_tags', '/v1/profiles/<int:profile_id>/relationships/tags')
-# api.route(PayloadsList, 'payloads_list', '/v1/payloads')
-# api.route(PayloadDetail, 'payload_detail', '/v1/payloads/<int:payload_id>')
+
 
 api.route(InstalledProfilesList, 'installed_profiles_list', '/v1/installed_profiles',
           '/v1/devices/<int:device_id>/installed_profiles')

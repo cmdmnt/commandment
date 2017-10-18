@@ -4,7 +4,8 @@ This module contains a Blueprint for API endpoints relating to system configurat
 from flask import Blueprint, abort, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
 from commandment.models import db, Organization, SCEPConfig
-from .schema import OrganizationFlatSchema, ProfileSchema, SCEPConfigFlatSchema
+from .schema import OrganizationFlatSchema, SCEPConfigFlatSchema
+from commandment.profiles.schema import ProfileSchema
 
 configuration_app = Blueprint('configuration_app', __name__)
 

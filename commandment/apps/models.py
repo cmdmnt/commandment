@@ -21,7 +21,7 @@ class ApplicationManifestChecksum(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     application_manifest_id = db.Column(db.Integer, db.ForeignKey('application_manifests.id'))
-    application_manifest = db.Relationship(ApplicationManifest, back_populates='checksums')
+    application_manifest = db.relationship(ApplicationManifest, back_populates='checksums')
     checksum_index = db.Column(db.Integer, nullable=False)
     checksum_value = db.Column(db.String, nullable=False)
 

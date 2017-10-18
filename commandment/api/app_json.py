@@ -10,7 +10,8 @@ from commandment.plistutil.nonewriter import dumps as dumps_none
 from commandment.models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
 from commandment.profiles.models import Profile
 from commandment.mdm import commands
-from .schema import OrganizationFlatSchema, ProfileSchema
+from .schema import OrganizationFlatSchema
+from commandment.profiles.schema import ProfileSchema
 from commandment.profiles.plist_schema import ProfileSchema as ProfilePlistSchema
 
 flat_api = Blueprint('flat_api', __name__)
