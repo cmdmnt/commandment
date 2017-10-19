@@ -23,6 +23,7 @@ from .dep.app import dep_app
 from .vpp.app import vpp_app
 from .profiles.api import profiles_api_app
 from .inventory.api import api_app as inventory_api
+from .mdm.api import api_app as mdm_api
 
 
 def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:

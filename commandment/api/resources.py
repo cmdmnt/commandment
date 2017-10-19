@@ -3,11 +3,11 @@
 """
 
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
-    CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, DeviceGroupSchema, TagSchema, AvailableOSUpdateSchema
+    CertificateSigningRequestSchema, OrganizationSchema, DeviceGroupSchema, TagSchema, AvailableOSUpdateSchema
 from commandment.models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
-    SSLCertificate, Organization, Command, DeviceGroup, \
+    SSLCertificate, Organization, DeviceGroup, \
     Tag, AvailableOSUpdate
-from commandment.profiles.models import Profile
+
 from commandment.apps.models import ApplicationManifest
 from commandment.apps.jsonapi_schema import ApplicationManifestSchema
 
@@ -125,28 +125,6 @@ class OrganizationDetail(ResourceDetail):
         'session': db.session,
         'model': Organization
     }
-
-
-class CommandsList(ResourceList):
-    schema = CommandSchema
-    data_layer = {
-        'session': db.session,
-        'model': Command,
-    }
-
-
-class CommandDetail(ResourceDetail):
-    schema = CommandSchema
-    data_layer = {
-        'session': db.session,
-        'model': Command,
-        'url_field': 'command_id'
-    }
-
-
-class CommandRelationship(ResourceRelationship):
-    schema = CommandSchema
-    data_layer = {'session': db.session, 'model': Command}
 
 
 class TagsList(ResourceList):

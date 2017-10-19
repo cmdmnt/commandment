@@ -524,30 +524,6 @@ class Command(db.Model):
         return '<Command ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
 
 
-class App(db.Model):
-    __tablename__ = 'apps'
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    filename = db.Column(db.String, nullable=False, unique=True)
-    filesize = db.Column(db.Integer, nullable=False)
-
-    md5_hash = db.Column(db.String(32), nullable=False)  # MD5 hash of the entire file
-
-    # MDM clients support a chunked method of retrival of the download file
-    # presumably to best support OTA download of large updates. These fields
-    # are in support of that mechanism
-    md5_chunk_size = db.Column(db.Integer, nullable=False)
-    md5_chunk_hashes = db.Column(db.Text, nullable=True)  # colon (:) separated list of MD5 chunk hashes
-
-    bundle_ids_json = db.Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
-    pkg_ids_json = db.Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
-
-    def path_format(self):
-        return '%010d.dat' % self.id
-
-    def __repr__(self):
-        return '<App ID=%r Filename=%r>' % (self.id, self.filename)
 
 
 class User(db.Model):
@@ -616,43 +592,6 @@ class Organization(db.Model):
     """x509_st (string): The x.509 State for generating certificates."""
     x509_c = db.Column(db.String(2))
     """x509_c (string): The 2 letter x.509 country code for generating certificates. """
-
-
-class AppSourceType(Enum):
-    S3 = 'S3'
-    Munki = 'Munki'
-
-
-class ApplicationSource(db.Model):
-    """This table holds rows indicating sources that may referenced in ``InstallApplication`` commands.
-    
-    The MDM may require write access to create application manifests from existing items.
-    
-    :table: application_sources
-    """
-    __tablename__ = 'application_sources'
-
-    id = db.Column(db.Integer, primary_key=True)
-    """id (db.Integer): ID"""
-    name = db.Column(db.String)
-    """name (db.String): A short, descriptive name for the source. Only used in display."""
-    source_type = db.Column(db.Enum(AppSourceType), default=AppSourceType.Munki)
-    """source_type (AppSourceType): The application source type."""
-
-    endpoint = db.Column(db.String)
-    """endpoint (db.String): The hostname for object storage or URI for read-only munki repositories."""
-    mount_uri = db.Column(db.String)
-    """mount_uri (db.String): The R/W mount URI for munki repositories only."""
-    use_ssl = db.Column(db.Boolean)
-    """use_ssl (Boolean): Use SSL when connecting to endpoint. Used when endpoint is host only."""
-
-    # For S3 / Minio
-    access_key = db.Column(db.String)
-    """access_key (db.String): The access key for S3 / Minio that uniquely identifies this client."""
-    secret_key = db.Column(db.String)
-    """secret_key (db.String): The secret key for S3 / Minio that authenticates this client."""
-    bucket = db.Column(db.String)
-    """bucket (db.String): The bucket name that holds installation packages."""
 
 
 class SCEPConfig(db.Model):

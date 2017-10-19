@@ -6,9 +6,9 @@ from marshmallow import Schema as FlatSchema, post_load
 class ProfileSchema(Schema):
     class Meta:
         type_ = 'profiles'
-        self_view = 'api_app.profile_detail'
+        self_view = 'profiles_api.profile_detail'
         self_view_kwargs = {'profile_id': '<id>'}
-        self_view_many = 'api_app.profiles_list'
+        self_view_many = 'profiles_api.profiles_list'
 
     id = fields.Int(dump_only=True)
     data = fields.String()

@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_rest_jsonapi import Api
 from commandment.profiles.resources import ProfilesList, ProfileDetail, ProfileRelationship
 
-profiles_api_app = Blueprint('profiles_api_app', __name__)
+profiles_api_app = Blueprint('profiles_api', __name__)
 api = Api(blueprint=profiles_api_app)
 
 # Profiles (Different to profiles returned by inventory)
