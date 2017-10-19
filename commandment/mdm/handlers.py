@@ -11,7 +11,8 @@ from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApp
     InstallProfile, AvailableOSUpdates
 from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse, AvailableOSUpdateListResponse, \
     ProfileListResponse
-from ..models import db, Device, InstalledCertificate, InstalledProfile, Command as DBCommand
+from ..models import db, Device, Command as DBCommand
+from commandment.inventory.models import InstalledCertificate, InstalledProfile
 
 Queries = DeviceInformation.Queries
 

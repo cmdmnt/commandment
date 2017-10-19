@@ -6,10 +6,9 @@ from flask_rest_jsonapi import Api
 from .resources import CertificatesList, CertificateDetail, CertificateSigningRequestList, \
     CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
     CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, OrganizationList, \
-    OrganizationDetail, CommandsList, CommandDetail, InstalledApplicationsList, \
-    InstalledCertificatesList, InstalledCertificateDetail, InstalledApplicationDetail, \
-    DeviceGroupList, DeviceGroupDetail, DeviceRelationship, CommandRelationship, InstalledProfilesList, \
-    InstalledProfileDetail, TagsList, TagDetail, TagRelationship, AvailableOSUpdateList, \
+    OrganizationDetail, CommandsList, CommandDetail, \
+    DeviceGroupList, DeviceGroupDetail, DeviceRelationship, CommandRelationship, \
+    TagsList, TagDetail, TagRelationship, AvailableOSUpdateList, \
     AvailableOSUpdateDetail
 
 # PayloadsList, PayloadDetail,
@@ -43,24 +42,6 @@ api.route(DeviceRelationship, 'device_group_devices', '/v1/device_groups/<int:de
 # Commands
 api.route(CommandsList, 'commands_list', '/v1/commands', '/v1/devices/<int:device_id>/commands')
 api.route(CommandDetail, 'command_detail', '/v1/commands/<int:command_id>')
-
-# InstalledApplications
-api.route(InstalledApplicationsList, 'installed_applications_list',
-          '/v1/installed_applications', '/v1/devices/<int:device_id>/installed_applications')
-api.route(InstalledApplicationDetail, 'installed_application_detail',
-          '/v1/installed_applications/<int:installed_application_id>')
-
-# InstalledCertificates
-api.route(InstalledCertificatesList, 'installed_certificates_list',
-          '/v1/installed_certificates', '/v1/devices/<int:device_id>/installed_certificates')
-api.route(InstalledCertificateDetail, 'installed_certificate_detail',
-          '/v1/installed_certificates/<int:installed_certificate_id>')
-
-
-
-api.route(InstalledProfilesList, 'installed_profiles_list', '/v1/installed_profiles',
-          '/v1/devices/<int:device_id>/installed_profiles')
-api.route(InstalledProfileDetail, 'installed_profile_detail', '/v1/installed_profiles/<int:installed_profile_id>')
 
 
 # Organizations

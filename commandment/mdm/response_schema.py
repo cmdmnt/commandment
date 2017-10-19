@@ -2,6 +2,7 @@ from marshmallow import Schema, fields, post_load
 from marshmallow_enum import EnumField
 from enum import IntFlag
 from .. import models
+from commandment.inventory import models as inventory_models
 
 
 class ErrorChainItem(Schema):
@@ -158,8 +159,8 @@ class InstalledApplication(Schema):
     IsValidated = fields.Boolean(attribute='is_validated')
 
     @post_load
-    def make_installed_application(self, data: dict) -> models.InstalledApplication:
-        return models.InstalledApplication(**data)
+    def make_installed_application(self, data: dict) -> inventory_models.InstalledApplication:
+        return inventory_models.InstalledApplication(**data)
 
 
 class InstalledApplicationListResponse(CommandResponse):
@@ -172,8 +173,8 @@ class CertificateListItem(Schema):
     Data = fields.String()
 
     @post_load
-    def make_installed_certificate(self, data: dict) -> models.InstalledCertificate:
-        return models.InstalledCertificate(**data)
+    def make_installed_certificate(self, data: dict) -> inventory_models.InstalledCertificate:
+        return inventory_models.InstalledCertificate(**data)
 
 
 class CertificateListResponse(CommandResponse):
@@ -212,8 +213,8 @@ class ProfileListPayloadItem(Schema):
     # PayloadVersion = fields.Integer(attribute='payload_version')
 
     @post_load
-    def make_installed_payload(self, data: dict) -> models.InstalledPayload:
-        return models.InstalledPayload(**data)
+    def make_installed_payload(self, data: dict) -> inventory_models.InstalledPayload:
+        return inventory_models.InstalledPayload(**data)
 
 
 class ProfileListItem(Schema):
@@ -230,8 +231,8 @@ class ProfileListItem(Schema):
     PayloadContent = fields.Nested(ProfileListPayloadItem, attribute='payload_content', many=True)
 
     @post_load
-    def make_installed_profile(self, data: dict) -> models.InstalledProfile:
-        return models.InstalledProfile(**data)
+    def make_installed_profile(self, data: dict) -> inventory_models.InstalledProfile:
+        return inventory_models.InstalledProfile(**data)
 
 
 class ProfileListResponse(CommandResponse):

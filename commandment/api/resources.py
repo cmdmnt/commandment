@@ -3,10 +3,9 @@
 """
 
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
-    CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, InstalledApplicationSchema, \
-    InstalledCertificateSchema, DeviceGroupSchema, InstalledProfileSchema, TagSchema, AvailableOSUpdateSchema
+    CertificateSigningRequestSchema, OrganizationSchema, CommandSchema, DeviceGroupSchema, TagSchema, AvailableOSUpdateSchema
 from commandment.models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
-    SSLCertificate, Organization, Command, InstalledApplication, InstalledProfile, InstalledCertificate, DeviceGroup, \
+    SSLCertificate, Organization, Command, DeviceGroup, \
     Tag, AvailableOSUpdate
 from commandment.profiles.models import Profile
 from commandment.apps.models import ApplicationManifest
@@ -148,70 +147,6 @@ class CommandDetail(ResourceDetail):
 class CommandRelationship(ResourceRelationship):
     schema = CommandSchema
     data_layer = {'session': db.session, 'model': Command}
-
-
-class InstalledApplicationsList(ResourceList):
-    schema = InstalledApplicationSchema
-    data_layer = {
-        'session': db.session,
-        'model': InstalledApplication
-    }
-
-
-class InstalledApplicationDetail(ResourceDetail):
-    schema = InstalledApplicationSchema
-    data_layer = {
-        'session': db.session,
-        'model': InstalledApplication
-    }
-
-
-class InstalledCertificatesList(ResourceList):
-    schema = InstalledCertificateSchema
-    data_layer = {
-        'session': db.session,
-        'model': InstalledCertificate
-    }
-
-
-class InstalledCertificateDetail(ResourceDetail):
-    schema = InstalledCertificateSchema
-    data_layer = {
-        'session': db.session,
-        'model': InstalledCertificate,
-        'url_field': 'installed_certificate_id'
-    }
-
-
-# class PayloadsList(ResourceList):
-#     schema = PayloadSchema
-#     data_layer = {
-#         'session': db.session,
-#         'model': Payload
-#     }
-#
-#
-# class PayloadDetail(ResourceDetail):
-#     schema = PayloadSchema
-#     data_layer = {
-#         'session': db.session,
-#         'model': Payload
-#     }
-
-class InstalledProfilesList(ResourceList):
-    schema = InstalledProfileSchema
-    data_layer = {
-        'session': db.session,
-        'model': InstalledProfile
-    }
-
-
-class InstalledProfileDetail(ResourceDetail):
-    schema = InstalledProfileSchema
-    data_layer = {
-        'session': db.session,
-        'model': InstalledProfile
-    }
 
 
 class TagsList(ResourceList):

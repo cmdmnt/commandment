@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import plistlib
 import string
 from commandment.plistutil.nonewriter import dumps as dumps_none
-from commandment.models import db, Certificate, RSAPrivateKey, Organization, Device, Command, InstalledCertificate
+from commandment.models import db, Certificate, RSAPrivateKey, Organization, Device, Command
 from commandment.profiles.models import Profile
 from commandment.mdm import commands
 from .schema import OrganizationFlatSchema
@@ -77,24 +77,6 @@ def download_key(rsa_private_key_id: int):
     return send_file(bio, 'application/x-pem-file', True, 'rsa_private_key.pem')
 
 
-@flat_api.route('/v1/installed_certificates/<int:installed_certificate_id>/download')
-def download_installed_certificate(installed_certificate_id: int):
-    """Download an installed certificate as a DER encoded X.509 certificate.
-
-    The file name will be a stripped version of the X.509 Common Name, with a .crt extension.
-
-    :reqheader Accept: application/x-x509-ca-cert
-    :resheader Content-Type: application/x-x509-ca-cert
-    :statuscode 200: OK
-    :statuscode 404: Not found
-    :statuscode 400: Can't produce requested encoding
-    """
-    c = db.session.query(InstalledCertificate).filter(InstalledCertificate.id == installed_certificate_id).one()
-    bio = io.BytesIO(c.der_data)
-
-    prefix = c.x509_cn.strip('/\:') if c.x509_cn is not None else 'certificate'
-
-    return send_file(bio, 'application/x-x509-ca-cert', True, '{}.crt'.format(prefix))
 
 
 @flat_api.route('/v1/devices/test/<int:device_id>')
