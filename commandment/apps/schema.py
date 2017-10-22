@@ -19,3 +19,9 @@ class ApplicationSchema(Schema):
         self_view_kwargs = {'application_id': '<id>'}
         self_view_many = 'applications_api.application_list'
         strict = True
+
+    id = fields.Int(dump_only=True)
+    display_name = fields.Str()
+    description = fields.Str()
+    manifest_url = fields.Url()
+
