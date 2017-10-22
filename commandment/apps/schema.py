@@ -6,7 +6,16 @@ from marshmallow import Schema as FlatSchema, post_load
 class ApplicationManifestSchema(Schema):
     class Meta:
         type_ = 'application_manifests'
-        self_view = 'api_app.application_manifest_detail'
+        self_view = 'applications_api.application_manifest_detail'
         self_view_kwargs = {'application_manifest_id': '<id>'}
-        self_view_many = 'api_app.application_manifest_list'
+        self_view_many = 'applications_api.application_manifest_list'
+        strict = True
+
+
+class ApplicationSchema(Schema):
+    class Meta:
+        type_ = 'applications'
+        self_view = 'applications_api.application_detail'
+        self_view_kwargs = {'application_id': '<id>'}
+        self_view_many = 'applications_api.application_list'
         strict = True

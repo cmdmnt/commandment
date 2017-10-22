@@ -1,6 +1,6 @@
 from ..dbtypes import GUID, JSONEncodedDict
 from uuid import uuid4
-from enum import Enum, IntFlag
+from enum import Enum, IntEnum, IntFlag
 
 from ..models import db
 from ..mutablelist import MutableList
@@ -12,19 +12,39 @@ class ManagementFlag(IntFlag):
     PREVENT_APPDATA_BACKUP = 4
 
 
+class PurchaseMethod(IntEnum):
+    LEGACY_VPP = 0
+    VPP_APP_ASSIGNMENT = 1
+
+
 class Application(db.Model):
+    """This table holds details of each individual application (either app store or enterprise application).
+
+    :table: applications
+    """
     __tablename__ = 'applications'
 
     id = db.Column(db.Integer, primary_key=True)
+    """id (db.Integer): ID"""
     display_name = db.Column(db.String, nullable=False)
+    """display_name (db.String): The name of the application displayed in the MDM."""
     description = db.Column(db.String)
+    """description (db.String): Description of this application, possibly including release notes."""
     version = db.Column(db.String)
+    """version (db.String): Application version."""
     itunes_store_id = db.Column(db.Integer)
+    """itunes_store_id (db.Integer): The application’s iTunes Store ID."""
     bundle_id = db.Column(db.String, index=True, nullable=False)
+    """bundle_id (db.String): The application bundle identifier."""
     purchase_method = db.Column(db.Integer)
+    """purchase_method (db.Integer): Used in the Options key of InstallApplication to denote the purchase method."""
     manifest_url = db.Column(db.String)
+    """manifest_url (db.String): The application manifest URL if iTunesStoreID is not supplied (an enterprise app)."""
     management_flags = db.Column(db.Integer)
+    """management_flags (ManagementFlag): Denotes whether app is removed with MDM profile, and whether the user may back
+        up application data."""
     change_management_state = db.Column(db.String)
+    """change_management_state (db.String): Take ownership of an existing application that is unmanaged."""
 
 
 class ApplicationManifest(db.Model):
