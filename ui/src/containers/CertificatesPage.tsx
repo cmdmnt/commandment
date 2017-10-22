@@ -8,8 +8,6 @@ import * as apiActions from '../actions/certificates';
 import {CertificatesState} from "../reducers/certificates";
 import {RootState} from "../reducers/index";
 import {RouteComponentProps} from "react-router";
-import * as webpack from "webpack";
-import Filter = webpack.BannerPlugin.Filter;
 
 interface OwnProps {
 

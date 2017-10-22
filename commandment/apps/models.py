@@ -16,6 +16,9 @@ class Application(db.Model):
     __tablename__ = 'applications'
 
     id = db.Column(db.Integer, primary_key=True)
+    display_name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
+    version = db.Column(db.String)
     itunes_store_id = db.Column(db.Integer)
     bundle_id = db.Column(db.String, index=True, nullable=False)
     purchase_method = db.Column(db.Integer)

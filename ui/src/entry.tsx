@@ -23,6 +23,7 @@ import {ProfilePage} from "./containers/ProfilePage";
 import {VPPPage} from "./containers/config/VPPPage";
 
 import '../sass/app.scss';
+import {ApplicationsPage} from "./containers/ApplicationsPage";
 
 const initialState: RootState = {};
 
@@ -35,6 +36,7 @@ render(
         <ConnectedRouter history={history}>
             <AppContainer>
                 <App>
+                    <Route path='/applications' component={ApplicationsPage} />
                     <Route path='/certificates' component={CertificatesPage} />
                     <Route exact path='/devices' component={DevicesPage} />
                     <Route path='/devices/:id' component={DevicePage} />
