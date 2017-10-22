@@ -4,7 +4,11 @@ import {Menu} from 'semantic-ui-react';
 import './Navigation.scss';
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 
-export const Navigation: React.StatelessComponent<void> = () => (
+export interface NavigationProps {
+
+}
+
+export const Navigation: React.StatelessComponent<NavigationProps> = (props: NavigationProps) => (
     <Menu>
         <Menu.Item header>CMDMNT</Menu.Item>
         <MenuItemLink to='/devices'>Devices</MenuItemLink>

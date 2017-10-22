@@ -3,11 +3,10 @@ import {Field, reduxForm, FormProps} from 'redux-form';
 import {Header, Icon, Segment, Message, Input, Button, Grid, Form, Radio} from 'semantic-ui-react';
 import {SemanticInput} from "./fields/SemanticInput";
 import {SemanticTextArea} from "./fields/SemanticTextArea";
+import {Application} from "../models";
 
-export interface FormData {
-    display_name: string;
-    description: string;
-    manifest_url: string;
+export interface FormData extends Application {
+
 }
 
 interface ApplicationFormProps extends FormProps<FormData, any, any> {

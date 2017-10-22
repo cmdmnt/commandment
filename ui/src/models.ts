@@ -5,7 +5,7 @@ export interface Application {
     purchase_method?: number;
     manifest_url: string;
     management_flags: number;
-    change_management_state: string;
+    change_management_state: 'Managed' | null;
     display_name: string;
     description: string;
     version: string;
