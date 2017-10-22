@@ -4,7 +4,9 @@ import {Header, Icon, Segment, Message, Input, Button, Grid, Form, Radio} from '
 import {SemanticInput} from "./fields/SemanticInput";
 
 export interface FormData {
-    name: string;
+    display_name: string;
+    description: string;
+    manifest_url: string;
 }
 
 interface ApplicationFormProps extends FormProps<FormData, any, any> {

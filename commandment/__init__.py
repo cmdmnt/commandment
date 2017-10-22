@@ -24,6 +24,7 @@ from .vpp.app import vpp_app
 from .profiles.api import profiles_api_app
 from .inventory.api import api_app as inventory_api
 from .mdm.api import api_app as mdm_api
+from .apps.api import api_app as applications_api
 
 
 def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
@@ -53,6 +54,7 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     app.register_blueprint(api_push_app, url_prefix='/api')
     app.register_blueprint(flat_api, url_prefix='/api')
     app.register_blueprint(profiles_api_app, url_prefix='/api')
+    app.register_blueprint(applications_api, url_prefix='/api')
     app.register_blueprint(oauth_app, url_prefix='/oauth')
     app.register_blueprint(saml_app, url_prefix='/saml')
     app.register_blueprint(omdm_app, url_prefix='/omdm')
