@@ -1,7 +1,8 @@
 import * as React from 'react';
-import {storiesOf, action} from '@kadira/storybook';
+import { storiesOf } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import {Container} from 'semantic-ui-react';
-import {ApplicationForm} from './ApplicationForm';
+import {ApplicationForm} from '../forms/ApplicationForm';
 
 storiesOf('ApplicationForm', module)
     .add('default', () => (

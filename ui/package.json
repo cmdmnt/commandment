@@ -5,14 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "./node_modules/.bin/webpack-dev-server",
-    "storybook": "start-storybook -p 6006 --dont-track",
+    "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-storybook"
   },
   "author": "mosen",
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "@kadira/storybook": "^2.21.0",
+    "@storybook/addon-actions": "^3.2.13",
+    "@storybook/react": "^3.2.13",
     "@types/history": "^4.6.0",
     "@types/prop-types": "^15.5.1",
     "@types/react": "^15.0.20",
@@ -27,6 +28,8 @@
     "@types/redux-devtools": "^3.0.38",
     "@types/redux-form": "^6.3.6",
     "@types/semver": "^5.4.0",
+    "@types/storybook__addon-actions": "^3.0.1",
+    "@types/storybook__react": "^3.0.5",
     "@types/webpack": "^3.0.13",
     "@types/webpack-env": "^1.13.2"
   },
