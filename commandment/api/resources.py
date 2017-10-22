@@ -8,9 +8,6 @@ from commandment.models import db, Device, Certificate, CertificateSigningReques
     SSLCertificate, Organization, DeviceGroup, \
     Tag, AvailableOSUpdate
 
-from commandment.apps.models import ApplicationManifest
-from commandment.apps.jsonapi_schema import ApplicationManifestSchema
-
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
 
 
@@ -171,10 +168,3 @@ class AvailableOSUpdateDetail(ResourceDetail):
     }
 
 
-class ApplicationManifestDetail(ResourceDetail):
-    schema = ApplicationManifestSchema
-    data_layer = {
-        'session': db.session,
-        'model': ApplicationManifest,
-        'url_field': 'application_manifest_id'
-    }
