@@ -23,6 +23,7 @@ module.exports = (baseConfig, env) => {
     loader: require.resolve('awesome-typescript-loader')
   });
   config.resolve.extensions.push('.ts', '.tsx');
+  config.plugins.push(new CheckerPlugin());
 
   return config;
 };

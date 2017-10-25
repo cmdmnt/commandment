@@ -6,6 +6,6 @@ interface CertificateTypeIconProps {
     title: string;
 }
 
-export const CertificateTypeIcon = (props: CertificateTypeIconProps): JSX.Element => {
+export const CertificateTypeIcon: React.StatelessComponent<CertificateTypeIconProps> = (props: CertificateTypeIconProps): JSX.Element => {
     return <Icon name={props.value ? 'id badge': 'certificate'} />;
 };
