@@ -13,6 +13,7 @@ import {profiles, ProfilesState} from './profiles';
 import {device_groups, DeviceGroupsState} from "./device_groups";
 import {tags, TagsState} from "./tags";
 import {profile, ProfileState} from "./profile";
+import {applications, ApplicationsState} from "./applications";
 
 export interface RootState {
     router?: RouterState;
@@ -28,12 +29,14 @@ export interface RootState {
     device_groups?: DeviceGroupsState;
     tags?: TagsState;
     profile?: ProfileState;
+    applications?: ApplicationsState;
 }
 
 
 export const rootReducer = combineReducers<RootState>({
     router: routerReducer,
     form: formReducer,
+    applications,
     assistant,
     certificates,
     configuration,
