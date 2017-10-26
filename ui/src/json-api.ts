@@ -117,13 +117,15 @@ export interface RSAAResponseFailure<TFailure> {
     payload: ApiError;
 }
 
+// Success can still contain API errors that are 2xx responses
 export interface RSAAResponseSuccess<TSuccess, TResponse> {
     type: TSuccess;
     payload: TResponse;
 }
 
 export type RSAAIndexActionResponse<TRequest, TSuccess, TFailure, TObject> = RSAAResponseRequest<TRequest> |
-    RSAAResponseFailure<TFailure> | RSAAResponseSuccess<TSuccess, JSONAPIListResponse<JSONAPIObject<TObject>> | JSONAPIErrorResponse>;
+    RSAAResponseFailure<TFailure> |
+    RSAAResponseSuccess<TSuccess, JSONAPIListResponse<JSONAPIObject<TObject>> | JSONAPIErrorResponse>;
 
 // Standardised JSON-API Index ActionCreator that fetches a resource child of some object / by relationship
 export interface RSAAChildIndexActionRequest<TRequest, TSuccess, TFailure> {
@@ -142,10 +144,6 @@ export interface RSAAReadActionResponseSuccess<TSuccess, TResponse> {
 export type RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |
     RSAAResponseFailure<TFailure> | RSAAReadActionResponseSuccess<TSuccess, TResponse>;
 
-export interface RSAAJSONAPIReadActionResponse<TRequest, TSuccess, TFailure, TResponse> {
-    type: TRequest | TSuccess | TFailure;
-    payload: TResponse | JSONAPIErrorResponse;
-}
 
 export interface RSAAPostActionRequest<TRequest, TSuccess, TFailure, TValues> {
     (values: TValues): RSAAction<TRequest, TSuccess, TFailure>;
@@ -157,6 +155,17 @@ export type RSAAPostActionResponse<TRequest, TSuccess, TFailure, TResponse> = RS
 export interface RSAAPatchActionRequest<TRequest, TSuccess, TFailure, TValues> {
     (id: string, values: TValues): RSAAction<TRequest, TSuccess, TFailure>;
 }
+
+export interface RSAADeleteActionRequest<TRequest, TSuccess, TFailure> {
+    (id: string): RSAAction<TRequest, TSuccess, TFailure>;
+}
+
+export interface RSAADeleteActionResponseSuccess<TSuccess> {
+    type: TSuccess;
+}
+
+export type RSAADeleteActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |
+    RSAAResponseFailure<TFailure> | RSAADeleteActionResponseSuccess<TSuccess>;
 
 /**
  * This higher order function processes the standard JSON-API index action creator and provides the already encoded
