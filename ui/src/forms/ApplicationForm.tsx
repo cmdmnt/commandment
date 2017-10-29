@@ -17,15 +17,25 @@ const UnconnectedApplicationForm: React.StatelessComponent<ApplicationFormProps>
         const { error, handleSubmit, pristine, reset, submitting } = props;
 
         return (
-            <Form onSubmit={handleSubmit}>
-                <Message attached>Enterprise Application</Message>
+            <Form onSubmit={handleSubmit} error={error}>
+                <Message attached>Enterprise Application (.pkg)</Message>
                 <Segment attached>
-                    <Field
-                        id='display-name'
-                        label='Display Name'
-                        name='display_name'
-                        component={SemanticInput}
-                        type='text' required />
+                    <Form.Group>
+                        <Field
+                            id='display-name'
+                            label='Display Name'
+                            name='display_name'
+                            component={SemanticInput}
+                            width={12}
+                            type='text' required />
+                        <Field
+                            id='version'
+                            label='Version'
+                            name='version'
+                            width={4}
+                            component={SemanticInput}
+                            type='text' required />
+                    </Form.Group>
                     <Field
                         id='description'
                         label='Description'
@@ -38,7 +48,18 @@ const UnconnectedApplicationForm: React.StatelessComponent<ApplicationFormProps>
                         name='manifest_url'
                         component={SemanticInput}
                         type='text' />
-                    {error && <strong>{error}</strong>}
+                    <Field
+                        id='management-flags-remove-app'
+                        label='Remove application when MDM profile is removed'
+                        name='management_flags_remove_app'
+                        component={SemanticInput}
+                        type='checkbox' />
+                    <Field
+                        id='management-flags-prevent-backup'
+                        label='Prevent backup of application data'
+                        name='management_flags_prevent_backup'
+                        component={SemanticInput}
+                        type='checkbox' />
                     <Button type='submit' disabled={submitting}>Save</Button>
                 </Segment>
             </Form>

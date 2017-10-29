@@ -17,6 +17,14 @@ class PurchaseMethod(IntEnum):
     VPP_APP_ASSIGNMENT = 1
 
 
+class ApplicationType(Enum):
+    """A list of the polymorphic identities available for subclasses of Application."""
+    ENTERPRISE_MAC = 'enterprise_mac'
+    ENTERPRISE_IOS = 'enterprise_ios'
+    APPSTORE_MAC = 'appstore_mac'
+    APPSTORE_IOS = 'appstore_ios'
+
+
 class Application(db.Model):
     """This table holds details of each individual application (either app store or enterprise application).
 
@@ -45,6 +53,54 @@ class Application(db.Model):
         up application data."""
     change_management_state = db.Column(db.String)
     """change_management_state (db.String): Take ownership of an existing application that is unmanaged."""
+    discriminator = db.Column(db.String(20))
+    """discriminator (str): The type of application"""
+
+    __mapper_args__ = {
+        'polymorphic_on': discriminator,
+        'polymorphic_identity': 'applications',
+    }
+
+
+class EnterpriseMacApplication(Application):
+    """Polymorphic single table inheritance specifically for Enterprise Mac Applications.
+
+    These applications are .pkg files which are often distributed by the MDM or from a host outside of the App Store.
+    """
+    __mapper_args__ = {
+        'polymorphic_identity': ApplicationType.ENTERPRISE_MAC.value
+    }
+
+
+class EnterpriseiOSApplication(Application):
+    """Polymorphic single table inheritance specifically for Enterprise iOS Applications.
+
+    These applications are .ipa files which are often distributed by the MDM or from a host outside of the App Store.
+    With or without provisioning profiles.
+    """
+    __mapper_args__ = {
+        'polymorphic_identity': ApplicationType.ENTERPRISE_IOS.value
+    }
+
+
+class AppstoreMacApplication(Application):
+    """Polymorphic single table inheritance specifically for MAS (App Store) Mac Applications.
+
+    These applications are distributed by VPP using an iTunes Store ID
+    """
+    __mapper_args__ = {
+        'polymorphic_identity': ApplicationType.APPSTORE_MAC.value
+    }
+
+
+class AppstoreiOSApplication(Application):
+    """Polymorphic single table inheritance specifically for App Store iOS Applications.
+
+    These applications are distributed by VPP using an iTunes Store ID
+    """
+    __mapper_args__ = {
+        'polymorphic_identity': ApplicationType.APPSTORE_MAC.value
+    }
 
 
 class ApplicationManifest(db.Model):

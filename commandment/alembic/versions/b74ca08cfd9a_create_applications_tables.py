@@ -44,6 +44,7 @@ def schema_upgrades():
                     sa.Column('manifest_url', sa.String(), nullable=True),
                     sa.Column('management_flags', sa.Integer(), nullable=True),
                     sa.Column('change_management_state', sa.String(), nullable=True),
+                    sa.Column('discriminator', sa.String(length=20), nullable=True),
                     sa.PrimaryKeyConstraint('id')
                     )
     op.create_index(op.f('ix_applications_bundle_id'), 'applications', ['bundle_id'], unique=False)
