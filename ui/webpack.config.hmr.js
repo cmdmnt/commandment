@@ -79,9 +79,9 @@ module.exports = {
         hot: true,
         port: 4000,
         https: {
-          key: fs.readFileSync('../server.key'),
-          cert: fs.readFileSync('../server.crt'),
-          ca: fs.readFileSync('../ca.crt')
+          key: fs.readFileSync('../ssl/server.key'),
+          cert: fs.readFileSync('../ssl/server.crt'),
+          ca: fs.readFileSync('../ssl/ca.crt')
         },
         headers: {
             'Access-Control-Allow-Origin': '*'

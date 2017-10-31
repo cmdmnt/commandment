@@ -7,6 +7,8 @@ from ..mutablelist import MutableList
 
 
 class ManagementFlag(IntFlag):
+    """This enum of integer bitwise OR flags represents all the fields available as part of the ``ManagementFlag``
+    option to the ``InstallApplication`` command."""
     NOTHING = 0
     REMOVE_APP_WITH_ENROLLMENT = 1
     PREVENT_APPDATA_BACKUP = 4
@@ -44,7 +46,7 @@ class Application(db.Model):
     """itunes_store_id (db.Integer): The application’s iTunes Store ID."""
     bundle_id = db.Column(db.String, index=True, nullable=False)
     """bundle_id (db.String): The application bundle identifier."""
-    purchase_method = db.Column(db.Integer)
+    purchase_method = db.Column(db.Enum(PurchaseMethod))
     """purchase_method (db.Integer): Used in the Options key of InstallApplication to denote the purchase method."""
     manifest_url = db.Column(db.String)
     """manifest_url (db.String): The application manifest URL if iTunesStoreID is not supplied (an enterprise app)."""
@@ -99,12 +101,16 @@ class AppstoreiOSApplication(Application):
     These applications are distributed by VPP using an iTunes Store ID
     """
     __mapper_args__ = {
-        'polymorphic_identity': ApplicationType.APPSTORE_MAC.value
+        'polymorphic_identity': ApplicationType.APPSTORE_IOS.value
     }
 
 
 class ApplicationManifest(db.Model):
-    __tablename__ = 'applications_manifests'
+    """An application manifest describes a non-App store installable application.
+
+    :table: application_manifests
+    """
+    __tablename__ = 'application_manifests'
 
     id = db.Column(db.Integer, primary_key=True)
     bundle_id = db.Column(db.String, index=True, nullable=False)
@@ -113,6 +119,10 @@ class ApplicationManifest(db.Model):
     size_in_bytes = db.Column(db.BigInteger)
     subtitle = db.Column(db.String)
     title = db.Column(db.String)
+    full_size_image_url = db.Column(db.String)
+    full_size_image_needs_shine = db.Column(db.Boolean, default=False)
+    display_image_url = db.Column(db.String)
+    display_image_needs_shine = db.Column(db.Boolean, default=False)
     checksums = db.relationship('ApplicationManifestChecksum', back_populates='application_manifest')
 
 
@@ -126,30 +136,30 @@ class ApplicationManifestChecksum(db.Model):
     checksum_value = db.Column(db.String, nullable=False)
 
 
-class App(db.Model):
-    __tablename__ = 'apps'
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    filename = db.Column(db.String, nullable=False, unique=True)
-    filesize = db.Column(db.Integer, nullable=False)
-
-    md5_hash = db.Column(db.String(32), nullable=False)  # MD5 hash of the entire file
-
-    # MDM clients support a chunked method of retrival of the download file
-    # presumably to best support OTA download of large updates. These fields
-    # are in support of that mechanism
-    md5_chunk_size = db.Column(db.Integer, nullable=False)
-    md5_chunk_hashes = db.Column(db.Text, nullable=True)  # colon (:) separated list of MD5 chunk hashes
-
-    bundle_ids_json = db.Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
-    pkg_ids_json = db.Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
-
-    def path_format(self):
-        return '%010d.dat' % self.id
-
-    def __repr__(self):
-        return '<App ID=%r Filename=%r>' % (self.id, self.filename)
+# class App(db.Model):
+#     __tablename__ = 'apps'
+#
+#     id = db.Column(db.Integer, primary_key=True)
+#
+#     filename = db.Column(db.String, nullable=False, unique=True)
+#     filesize = db.Column(db.Integer, nullable=False)
+#
+#     md5_hash = db.Column(db.String(32), nullable=False)  # MD5 hash of the entire file
+#
+#     # MDM clients support a chunked method of retrival of the download file
+#     # presumably to best support OTA download of large updates. These fields
+#     # are in support of that mechanism
+#     md5_chunk_size = db.Column(db.Integer, nullable=False)
+#     md5_chunk_hashes = db.Column(db.Text, nullable=True)  # colon (:) separated list of MD5 chunk hashes
+#
+#     bundle_ids_json = db.Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
+#     pkg_ids_json = db.Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
+#
+#     def path_format(self):
+#         return '%010d.dat' % self.id
+#
+#     def __repr__(self):
+#         return '<App ID=%r Filename=%r>' % (self.id, self.filename)
 
 
 class AppSourceType(Enum):
