@@ -108,21 +108,34 @@ class AppstoreiOSApplication(Application):
 class ApplicationManifest(db.Model):
     """An application manifest describes a non-App store installable application.
 
+    See: `macOS Application <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/3-MDM_Protocol/MDM_Protocol.html#//apple_ref/doc/uid/TP40017387-CH3-SW755>`_.
+
     :table: application_manifests
     """
     __tablename__ = 'application_manifests'
 
     id = db.Column(db.Integer, primary_key=True)
+    """id (db.Integer): ID"""
     bundle_id = db.Column(db.String, index=True, nullable=False)
+    """bundle_id (db.String): Bundle Identifier of the top-level distribution package."""
     bundle_version = db.Column(db.String, index=True)
+    """bundle_version (db.String): Bundle Version of the top-level distribution package."""
     kind = db.Column(db.String, default='software')
+    """kind (db.String): Type of item to install, at the moment ignored and always set to 'software'."""
     size_in_bytes = db.Column(db.BigInteger)
+    """size_in_bytes (db.BigInteger): Size of the package (in bytes)."""
     subtitle = db.Column(db.String)
+    """subtitle (db.String):"""
     title = db.Column(db.String)
+    """title (db.String):"""
     full_size_image_url = db.Column(db.String)
+    """full_size_image_url (db.String): URL to full size image. may be null"""
     full_size_image_needs_shine = db.Column(db.Boolean, default=False)
+    """full_size_image_needs_shine (db.Boolean): Whether the image needs the shine effect placed over it."""
     display_image_url = db.Column(db.String)
+    """display_image_url (db.String): URL to display image. may be null"""
     display_image_needs_shine = db.Column(db.Boolean, default=False)
+    """display_image_needs_shine (db.Boolean): Whether the display image needs the shine effect placed over it."""
     checksums = db.relationship('ApplicationManifestChecksum', back_populates='application_manifest')
 
 
@@ -130,10 +143,15 @@ class ApplicationManifestChecksum(db.Model):
     __tablename__ = 'application_manifest_checksums'
 
     id = db.Column(db.Integer, primary_key=True)
-    application_manifest_id = db.Column(db.Integer, db.ForeignKey('applications_manifests.id'))
+    """id (db.Integer): ID"""
+    application_manifest_id = db.Column(db.Integer, db.ForeignKey('application_manifests.id'))
+    """application_manifest_id (db.Integer): Foreign key reference to the parent manifest."""
     application_manifest = db.relationship(ApplicationManifest, back_populates='checksums')
+    """application_manifest (db.relationship): Relationship to the parent manifest."""
     checksum_index = db.Column(db.Integer, nullable=False)
-    checksum_value = db.Column(db.String, nullable=False)
+    """checksum_index (db.Integer): Index of this checksum in the sequence of checksums."""
+    checksum_value = db.Column(db.String(32), nullable=False)
+    """checksum_value (db.String): 32 byte MD5 checksum of this chunk. Chunk size is defined as 10485760 bytes (10mb)"""
 
 
 # class App(db.Model):
