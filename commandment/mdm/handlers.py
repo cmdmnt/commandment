@@ -8,7 +8,7 @@ from flask import current_app
 from commandment.mdm import commands
 from commandment.mdm.app import command_router
 from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList, \
-    InstallProfile, AvailableOSUpdates
+    InstallProfile, AvailableOSUpdates, InstallApplication
 from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse, AvailableOSUpdateListResponse, \
     ProfileListResponse
 from ..models import db, Device, Command as DBCommand
@@ -185,3 +185,9 @@ def ack_available_os_updates(request: AvailableOSUpdates, device: Device, respon
         db.session.add(upd)
 
     db.session.commit()
+
+
+@command_router.route('InstallApplication')
+def ack_install_application(request: InstallApplication, device: Device, response: dict):
+    """Acknowledge a response to InstallApplication. Usually just contains Queued: True/False"""
+    pass

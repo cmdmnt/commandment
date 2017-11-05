@@ -77,13 +77,15 @@ def download_key(rsa_private_key_id: int):
     return send_file(bio, 'application/x-pem-file', True, 'rsa_private_key.pem')
 
 
-
-
-@flat_api.route('/v1/devices/test/<int:device_id>')
+@flat_api.route('/v1/devices/test/<int:device_id>', methods=['POST'])
 def device_test(device_id: int):
     """Testing endpoint for quick and dirty command checking"""
     d = db.session.query(Device).filter(Device.id == device_id).one()
 
+    ia = commands.InstallApplication(ManifestURL='https://localhost:5443/static/appmanifest/munkitools-3.1.0.3430.plist')
+    dbc = Command.from_model(ia)
+    dbc.device = d
+    db.session.add(dbc)
 
     db.session.commit()
 

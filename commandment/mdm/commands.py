@@ -435,6 +435,11 @@ class InstallApplication(Command):
         self._attrs = {}
         self._attrs.update(kwargs)
 
+    def to_dict(self) -> dict:
+        cmd = super(InstallApplication, self).to_dict()
+        cmd['Command']['ManifestURL'] = self._attrs['ManifestURL']
+        return cmd
+
 
 class RestartDevice(Command):
     request_type = 'RestartDevice'
