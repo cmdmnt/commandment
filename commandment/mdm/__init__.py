@@ -1,3 +1,4 @@
+from typing import Set
 from enum import IntFlag, auto, Enum
 
 
@@ -34,6 +35,9 @@ class AccessRights(IntFlag):
     All = ProfileInspection | ProfileInstallRemove | DeviceLockPasscodeRemoval | DeviceErase | QueryDeviceInformation \
           | QueryNetworkInformation | ProvProfileInspection | ProvProfileInstallRemove | InstalledApplications \
           | RestrictionQueries | SecurityQueries | ChangeSettings | ManageApps
+
+
+AccessRightsSet = Set[AccessRights]
 
 
 class CommandStatus(Enum):

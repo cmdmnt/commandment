@@ -1,9 +1,9 @@
 from enum import Enum
-from uuid import uuid4
-from typing import Dict, Set, List, Type
+from uuid import uuid4, UUID
+from typing import Dict, Set, List, Type, ClassVar, Any
 import semver
 from base64 import urlsafe_b64encode, urlsafe_b64decode
-from . import AccessRights, Platform
+from . import AccessRights, AccessRightsSet, Platform
 
 PlatformVersion = str
 PlatformRequirements = Dict[Platform, PlatformVersion]
@@ -12,9 +12,9 @@ PlatformRequirements = Dict[Platform, PlatformVersion]
 class CommandRegistry(type):
     command_classes: Dict[str, Type] = {}
 
-    def __new__(cls, name, bases, namespace, **kwds):
+    def __new__(mcs, name, bases, namespace, **kwds):
         ns = dict(namespace)
-        klass = type.__new__(cls, name, bases, ns)
+        klass = type.__new__(mcs, name, bases, ns)
         if 'request_type' in ns:
             CommandRegistry.command_classes[ns['request_type']] = klass
 
@@ -23,36 +23,48 @@ class CommandRegistry(type):
 
 class Command(metaclass=CommandRegistry):
 
-    request_type: str = None
+    request_type: ClassVar[str] = None
     """request_type (str): The MDM RequestType, as specified in the MDM Specification."""
 
-    require_access: Set[AccessRights] = set()
+    require_access: ClassVar[AccessRightsSet] = set()
     """require_access (Set[AccessRights]): Access required for the MDM to execute the command on this device."""
 
-    require_platforms: PlatformRequirements = dict()
-    """require_platforms (PlatformRequirements): A dict of Platform : version predicate string, to indicate which platforms will accept
-    the command"""
+    require_platforms: ClassVar[PlatformRequirements] = dict()
+    """require_platforms (PlatformRequirements): A dict of Platform : version predicate string, to indicate which 
+    platforms will accept the command"""
 
-    def __init__(self, uuid=None):
+    require_supervised: ClassVar[bool] = False
+    """require_supervised (bool): This command requires supervision on iOS/tvOS"""
+
+    def __init__(self, uuid=None) -> None:
+        """The Command class wraps an MDM Request Command dict to provide validation and convenience methods for
+        accessing command attributes.
+
+        All commands are serialised to the same table as JSON, so the validation is performed here.
+
+        Args:
+            uuid (UUID): The command uuid. Defaults to an automatically generated uuid.
+        """
         if uuid is None:
             uuid = uuid4()
 
-        self._uuid = uuid
-        self._attrs = {}
+        self._uuid: UUID = uuid
+        self._attrs: Dict[str, Any] = {}
 
     @property
-    def uuid(self):
+    def uuid(self) -> UUID:
         return self._uuid
 
     @property
-    def parameters(self):
+    def parameters(self) -> Dict[str, Any]:
         return self._attrs
 
     @classmethod
-    def new_request_type(cls, request_type: str, parameters: dict, uuid: str = None):
+    def new_request_type(cls, request_type: str, parameters: dict, uuid: str = None) -> 'Command':
         """Factory method for instantiating a command based on its class attribute ``request_type``.
 
         Additionally, the dict given in parameters will be applied to the command instance.
+        Commands that have no parameters are not required to implement to_dict().
 
         Args:
               request_type (str): The command request type, as defined in the class attribute ``request_type``.
@@ -305,7 +317,7 @@ class SecurityInfo(Command):
     request_type = 'SecurityInfo'
     require_access = {AccessRights.SecurityQueries}
 
-    def __init__(self, uuid=None, **kwargs):
+    def __init__(self, uuid=None, **kwargs) -> None:
         super(SecurityInfo, self).__init__(uuid)
         self._attrs = kwargs
 
@@ -430,7 +442,7 @@ class InstallApplication(Command):
     request_type = 'InstallApplication'
     require_access = {AccessRights.ManageApps}
 
-    def __init__(self, uuid=None, **kwargs):
+    def __init__(self, uuid=None, **kwargs) -> None:
         super(InstallApplication, self).__init__(uuid)
         self._attrs = {}
         self._attrs.update(kwargs)
