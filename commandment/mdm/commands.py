@@ -1,6 +1,6 @@
 from enum import Enum
 from uuid import uuid4, UUID
-from typing import Dict, Set, List, Type, ClassVar, Any
+from typing import Dict, Set, List, Type, ClassVar, Any, Optional, Tuple
 import semver
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from . import AccessRights, AccessRightsSet, Platform
@@ -259,12 +259,12 @@ class DeviceInformation(Command):
         ]
     }
 
-    def __init__(self, uuid=None, **kwargs):
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
         super(DeviceInformation, self).__init__(uuid)
         self._attrs = kwargs
 
     @classmethod
-    def for_platform(cls, platform: Platform, min_os_version: str, queries: Set[Queries] = None):
+    def for_platform(cls, platform: Platform, min_os_version: str, queries: Set[Queries] = None) -> 'DeviceInformation':
         """Generate a command that is compatible with the specified platform and OS version.
 
         Args:
@@ -317,7 +317,7 @@ class SecurityInfo(Command):
     request_type = 'SecurityInfo'
     require_access = {AccessRights.SecurityQueries}
 
-    def __init__(self, uuid=None, **kwargs) -> None:
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
         super(SecurityInfo, self).__init__(uuid)
         self._attrs = kwargs
 
@@ -326,7 +326,7 @@ class DeviceLock(Command):
     request_type = 'DeviceLock'
     require_access = {AccessRights.DeviceLockPasscodeRemoval}
 
-    def __init__(self, uuid=None, **kwargs):
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
         super(DeviceLock, self).__init__(uuid)
         self._attrs = kwargs
 
@@ -346,7 +346,7 @@ class ProfileList(Command):
     request_type = 'ProfileList'
     require_access = {AccessRights.ProfileInspection}
 
-    def __init__(self, uuid=None, **kwargs):
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
         super(ProfileList, self).__init__(uuid)
         self._attrs = kwargs
 
@@ -355,7 +355,7 @@ class InstallProfile(Command):
     request_type = 'InstallProfile'
     require_access = {AccessRights.ProfileInstallRemove}
 
-    def __init__(self, uuid=None, **kwargs):
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
         super(InstallProfile, self).__init__(uuid)
         self._attrs = kwargs
 
@@ -378,7 +378,7 @@ class RemoveProfile(Command):
     request_type = 'RemoveProfile'
     require_access = {AccessRights.ProfileInstallRemove}
 
-    def __init__(self, uuid=None, **kwargs):
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
         super(RemoveProfile, self).__init__(uuid)
         self._attrs = {
             'Identifier': kwargs.get('Identifier')
@@ -399,7 +399,7 @@ class CertificateList(Command):
     request_type = 'CertificateList'
     require_access = {AccessRights.ProfileInspection}
 
-    def __init__(self, uuid=None, **kwargs):
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
         super(CertificateList, self).__init__(uuid)
         self._attrs = kwargs
 
@@ -408,7 +408,7 @@ class ProvisioningProfileList(Command):
     request_type = 'ProvisioningProfileList'
     require_access = {AccessRights.ProfileInspection}
 
-    def __init__(self, uuid=None, **kwargs):
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs):
         super(ProvisioningProfileList, self).__init__(uuid)
         self._attrs = kwargs
 
@@ -417,7 +417,7 @@ class InstalledApplicationList(Command):
     request_type = 'InstalledApplicationList'
     require_access: Set[AccessRights] = set()
 
-    def __init__(self, uuid=None, **kwargs):
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs):
         super(InstalledApplicationList, self).__init__(uuid)
         self._attrs = {
             'ManagedAppsOnly': False
@@ -425,7 +425,7 @@ class InstalledApplicationList(Command):
         self._attrs.update(kwargs)
 
     @property
-    def identifiers(self):
+    def identifiers(self) -> Optional[List[str]]:
         return self._attrs['Identifiers'] if 'Identifiers' in self._attrs else None
 
     def to_dict(self) -> dict:
@@ -442,7 +442,7 @@ class InstallApplication(Command):
     request_type = 'InstallApplication'
     require_access = {AccessRights.ManageApps}
 
-    def __init__(self, uuid=None, **kwargs) -> None:
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
         super(InstallApplication, self).__init__(uuid)
         self._attrs = {}
         self._attrs.update(kwargs)
@@ -542,16 +542,50 @@ class Settings(Command):
     require_platforms = {Platform.macOS: '>=10.9', Platform.iOS: '>=5.0'}
     require_access = {AccessRights.ChangeSettings}
 
-    def __init__(self, uuid=None, **kwargs):
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
         super(Settings, self).__init__(uuid)
+        self._settings: Dict[str, Any] = {}
+
+    @property
+    def voice_roaming(self) -> Optional[bool]:
+        return self._settings.get('VoiceRoaming', None)
+
+    @voice_roaming.setter
+    def voice_roaming(self, value: bool) -> None:
+        self._settings['VoiceRoaming'] = value
+
+    @property
+    def personal_hotspot(self) -> Optional[bool]:
+        return self._settings.get('PersonalHotspot', None)
+
+    @personal_hotspot.setter
+    def personal_hotspot(self, value: bool):
+        self._settings['PersonalHotspot'] = value
+
+    @property
+    def wallpaper(self) -> Optional[Tuple[bytes, int]]:
+        return self._settings.get('Wallpaper', None)
+
+    @wallpaper.setter
+    def wallpaper(self, value: Tuple[bytes, int]):
+        self._settings['Wallpaper'] = {
+            'Image': value[0],
+            'Where': value[1]
+        }
+
+    @property
+    def data_roaming(self) -> Optional[bool]:
+        return self._settings.get('DataRoaming', None)
+
+    @data_roaming.setter
+    def data_roaming(self, value: bool) -> None:
+        self._settings['DataRoaming'] = value
 
     def to_dict(self) -> dict:
         return {
             'CommandUUID': str(self._uuid),
             'Command': {
                 'RequestType': type(self).request_type,
-                'Settings': {
-                    
-                }
+                'Settings': []
             }
         }
