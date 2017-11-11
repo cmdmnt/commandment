@@ -419,18 +419,30 @@ class InstalledApplicationList(Command):
 
     def __init__(self, uuid: Optional[UUID]=None, **kwargs):
         super(InstalledApplicationList, self).__init__(uuid)
-        self._attrs = {
-            'ManagedAppsOnly': False
-        }
+        self._attrs = {}
         self._attrs.update(kwargs)
 
     @property
+    def managed_apps_only(self) -> Optional[bool]:
+        return self._attrs.get('ManagedAppsOnly', None)
+
+    @managed_apps_only.setter
+    def managed_apps_only(self, value: bool) -> None:
+        self._attrs['ManagedAppsOnly'] = value
+
+    @property
     def identifiers(self) -> Optional[List[str]]:
-        return self._attrs['Identifiers'] if 'Identifiers' in self._attrs else None
+        return self._attrs.get('Identifiers', None)
+
+    @identifiers.setter
+    def identifiers(self, bundle_ids: List[str]) -> None:
+        """NOTE: setting identifiers for macOS 10.12 causes an exception in mdmclient."""
+        self._attrs['Identifiers'] = bundle_ids
 
     def to_dict(self) -> dict:
         """Convert the command into a dict that will be serializable by plistlib."""
-        command = {'RequestType': type(self).request_type}  # .update(self._attrs)
+        command = self._attrs
+        command.update({'RequestType': type(self).request_type})
 
         return {
             'CommandUUID': str(self._uuid),
