@@ -58,8 +58,6 @@ def main():
     parser.add_argument('source',
                         help='Source pkg [REQUIRED!]',
                         metavar='filename')
-    parser.add_argument('-u',
-                        help='url prefix, for where the package will be downloaded from. package name will be appended')
 
     args = parser.parse_args()
 
@@ -69,9 +67,11 @@ def main():
     packages: Packages = []
     bundles: Bundles = []
     file_size = os.path.getsize(args.source)
+    title = os.path.basename(args.source)
 
     if distribution:
         el = ElementTree.fromstring(distribution)
+        title = el.findtext('.//title')
         for pkgRef in el.iter('pkg-ref'):
             if 'version' in pkgRef.attrib:
                 packages.append((pkgRef.attrib['id'], pkgRef.attrib['version']))
@@ -98,7 +98,7 @@ def main():
             }],
             'metadata': {
                 'kind': 'software',
-                'title': os.path.basename(args.source),
+                'title': title,
                 'sizeInBytes': file_size,
                 'bundle-identifier': '',
                 'bundle-version': ''
