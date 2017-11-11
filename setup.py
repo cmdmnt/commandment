@@ -49,6 +49,9 @@ setup(
             'sphinxcontrib-httpdomain',
             'sphinxcontrib-plantuml',
             'sadisplay'
+        ],
+        'macOS': [
+            'pyobjc'
         ]
     },
     setup_requires=['pytest-runner'],

@@ -1,5 +1,5 @@
 import argparse
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from bixar.archive import XarFile
 from xml.etree import ElementTree
 import plistlib
@@ -23,6 +23,34 @@ def blow_chunks(fileobj) -> Tuple[str, List[str]]:
         chunks.append(new_hash.hexdigest())
 
     return total_hash.hexdigest(), chunks
+
+
+def url_from_metadata(path: str) -> Optional[str]:
+    """Try to determine the download URL from the spotlight attributes if the local machine is a mac."""
+    try:
+        from Foundation import NSFileManager, NSPropertyListSerialization
+    except:
+        return None
+
+    fm = NSFileManager.defaultManager()
+    attrs, err = fm.attributesOfItemAtPath_error_(path, None)
+    if err:
+        return None
+
+    if 'NSFileExtendedAttributes' not in attrs:
+        return None
+
+    extd_attrs = attrs['NSFileExtendedAttributes']
+
+    if 'com.apple.metadata:kMDItemWhereFroms' not in extd_attrs:
+        return None
+    else:
+        plist_data: bytes = extd_attrs['com.apple.metadata:kMDItemWhereFroms']
+        value: List[str] = plistlib.loads(plist_data)
+        if len(value) > 0:
+            return value.pop(0)
+        else:
+            return None
 
 
 def main():
@@ -58,13 +86,15 @@ def main():
     with open(args.source, 'rb') as fd:
         total_hash, chunks = blow_chunks(fd)
 
+    url = url_from_metadata(args.source)
+
     manifest = {
         'items': [{
             'assets': [{
                 'kind': 'software-package',
                 'md5-size': MD5_CHUNK_SIZE,
                 'md5s': chunks,
-                'url': '{}{}'.format(args.u, os.path.basename(args.source)) if args.u else 'https://package/url/here.pkg'
+                'url': '{}'.format(url) if url else 'https://package/url/here.pkg'
             }],
             'metadata': {
                 'kind': 'software',
