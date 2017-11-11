@@ -11,6 +11,7 @@ class ManagementFlag(IntFlag):
 
 
 class PurchaseMethod(IntEnum):
+    """Purchase methods, the flag should almost always be VPP_APP_ASSIGNMENT"""
     LEGACY_VPP = 0
     VPP_APP_ASSIGNMENT = 1
 
@@ -148,32 +149,6 @@ class ApplicationManifestChecksum(db.Model):
     """checksum_index (db.Integer): Index of this checksum in the sequence of checksums."""
     checksum_value = db.Column(db.String(32), nullable=False)
     """checksum_value (db.String): 32 byte MD5 checksum of this chunk. Chunk size is defined as 10485760 bytes (10mb)"""
-
-
-# class App(db.Model):
-#     __tablename__ = 'apps'
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#
-#     filename = db.Column(db.String, nullable=False, unique=True)
-#     filesize = db.Column(db.Integer, nullable=False)
-#
-#     md5_hash = db.Column(db.String(32), nullable=False)  # MD5 hash of the entire file
-#
-#     # MDM clients support a chunked method of retrival of the download file
-#     # presumably to best support OTA download of large updates. These fields
-#     # are in support of that mechanism
-#     md5_chunk_size = db.Column(db.Integer, nullable=False)
-#     md5_chunk_hashes = db.Column(db.Text, nullable=True)  # colon (:) separated list of MD5 chunk hashes
-#
-#     bundle_ids_json = db.Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
-#     pkg_ids_json = db.Column(MutableList.as_mutable(JSONEncodedDict), nullable=True)
-#
-#     def path_format(self):
-#         return '%010d.dat' % self.id
-#
-#     def __repr__(self):
-#         return '<App ID=%r Filename=%r>' % (self.id, self.filename)
 
 
 class AppSourceType(Enum):
