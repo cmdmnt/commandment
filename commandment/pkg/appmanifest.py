@@ -60,18 +60,20 @@ def main():
 
     manifest = {
         'items': [{
-            'kind': 'software-package',
-            'md5-size': MD5_CHUNK_SIZE,
-            'md5s': chunks,
-            'url': '{}{}'.format(args.u, os.path.basename(args.source)) if args.u else 'https://package/url/here.pkg'
-        }],
-        'metadata': {
-            'kind': 'software',
-            'title': os.path.basename(args.source),
-            'sizeInBytes': file_size,
-            'bundle-identifier': '',
-            'bundle-version': ''
-        }
+            'assets': [{
+                'kind': 'software-package',
+                'md5-size': MD5_CHUNK_SIZE,
+                'md5s': chunks,
+                'url': '{}{}'.format(args.u, os.path.basename(args.source)) if args.u else 'https://package/url/here.pkg'
+            }],
+            'metadata': {
+                'kind': 'software',
+                'title': os.path.basename(args.source),
+                'sizeInBytes': file_size,
+                'bundle-identifier': '',
+                'bundle-version': ''
+            }
+        }]
     }
 
     pkgs_bundles = [{'bundle-identifier': i[0], 'bundle-version': i[1]} for i in packages]
