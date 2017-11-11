@@ -459,9 +459,21 @@ class InstallApplication(Command):
         self._attrs = {}
         self._attrs.update(kwargs)
 
+    @property
+    def itunes_store_id(self) -> Optional[int]:
+        return self._attrs.get('iTunesStoreID', None)
+
+    @itunes_store_id.setter
+    def itunes_store_id(self, id: int):
+        self._attrs['iTunesStoreID'] = id
+        if 'Options' not in self._attrs:
+            self._attrs['Options'] = {}
+            if 'PurchaseMethod' not in self._attrs['Options']:
+                self._attrs['Options']['PurchaseMethod'] = 1
+
     def to_dict(self) -> dict:
         cmd = super(InstallApplication, self).to_dict()
-        cmd['Command']['ManifestURL'] = self._attrs['ManifestURL']
+        cmd['Command'].update(self._attrs)
         return cmd
 
 

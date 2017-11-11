@@ -77,10 +77,10 @@ def main():
     }
 
     pkgs_bundles = [{'bundle-identifier': i[0], 'bundle-version': i[1]} for i in packages]
-    manifest['metadata'].update(pkgs_bundles[0])
+    manifest['items'][0]['metadata'].update(pkgs_bundles[0])
 
     if len(bundles) > 1:
-        manifest['metadata']['items'] = [{'bundle-identifier': i[0], 'bundle-version': i[1]} for i in bundles]
+        manifest['items'][0]['metadata']['items'] = [{'bundle-identifier': i[0], 'bundle-version': i[1]} for i in bundles]
 
     print(plistlib.dumps(manifest).decode('utf8'))
 
