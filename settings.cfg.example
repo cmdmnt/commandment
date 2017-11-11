@@ -27,4 +27,7 @@ CA_CERTIFICATE = path.join(dirname, 'ssl', 'ca.crt')
 SSL_CERTIFICATE = path.join(dirname, 'ssl', 'server.crt')
 SSL_RSA_KEY = path.join(dirname, 'ssl', 'server.key')
 
-# OAuth
+# If not using external storage, the path to the root directory for upload storage.
+# This should not be used in production.
+
+STORAGE_ROOT = path.join(dirname, 'storage')
