@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>items</key>
+        <array>
+            <dict>
+                <key>assets</key>
+                <array>
+                    <dict>
+                        <key>kind</key>
+                        <string>software-package</string>
+                        <key>md5-size</key>
+                        <integer>10485760</integer>
+                        <key>md5s</key>
+                        <array>
+                            <string>46fc4f5d1d6988999a697d08867dab8b</string>
+                            <string>a950d6d1df6347d1dd61c8fb28b03bf4</string>
+                            <string>0ae19fbd7fbced52c98844048ad980e9</string>
+                            <string>cbd454fbb0b6e57344a7b996f6f9eb22</string>
+                            <string>772f81302420ef668c5280ea3ad03438</string>
+                            <string>6f8a30304d85a406b3351f880f325817</string>
+                            <string>3ddb09ecfbe4bb2d371a00541947f183</string>
+                            <string>0f430c3787aadfaae152dd59d34b2f7c</string>
+                            <string>0c387e5a2ec6d722cda8080eec0e9c33</string>
+                            <string>18827156403d3b503a8621d882de759d</string>
+                            <string>4b00162e0de7068f20bc0ac2488762c2</string>
+                            <string>0769ec04e2f9793979997f151a10660e</string>
+                            <string>f01f03afd6a7561fcc8c464f67b8f524</string>
+                            <string>6caf9ffb84db47a296a267bcb2ea0447</string>
+                        </array>
+                        <key>url</key>
+                        <string>https://download.microsoft.com/download/7/3/A/73A3E4DC-F019-47D1-9951-0453676E059B/dotnet-sdk-2.0.2-osx-x64.pkg</string>
+                    </dict>
+                </array>
+                <key>metadata</key>
+                <dict>
+                    <key>bundle-identifier</key>
+                    <string>com.microsoft.dotnet.sharedframework.Microsoft.NETCore.App.2.0.0.component.osx.x64.pkg</string>
+                    <key>bundle-version</key>
+                    <string>2.0.0</string>
+                    <key>kind</key>
+                    <string>software</string>
+                    <key>sizeInBytes</key>
+                    <integer>140938719</integer>
+                    <key>title</key>
+                    <string>Microsoft .NET Core SDK - 2.0.2 (x64)</string>
+                </dict>
+            </dict>
+        </array>
+    </dict>
+</plist>
