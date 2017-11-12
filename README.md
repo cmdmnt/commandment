@@ -17,7 +17,9 @@ The source code is available under an [MIT license](LICENSE.txt).
 
 ## Documentation
 
+The user, developer and API documentation is available at:
 
+https://mosen.github.io/commandment/    
 
 ## Bugs, issues, etc.
 
