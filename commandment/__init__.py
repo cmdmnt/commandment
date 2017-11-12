@@ -22,6 +22,7 @@ from .profiles.api import profiles_api_app
 from .inventory.api import api_app as inventory_api
 from .mdm.api import api_app as mdm_api
 from .apps.api import api_app as applications_api
+from .sso.oauth.service import oauth
 
 
 def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
@@ -41,6 +42,8 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     db.init_app(app)
     # Use alembic to perform migrations
     # db.create_all(app=app)
+
+    oauth.init_app(app)
 
     app.register_blueprint(enroll_app, url_prefix='/enroll')
     app.register_blueprint(mdm_app)
