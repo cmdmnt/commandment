@@ -24,4 +24,4 @@ https://mosen.github.io/commandment/
 ## Bugs, issues, etc.
 
 Please report any issues, bugs, suggestions, feedback, etc. 
-to the [issue tracker](https://github.com/mosen/commandment/issues) of this project.
+to the [issue tracker](https://github.com/cmdmnt/commandment/issues) of this project.
