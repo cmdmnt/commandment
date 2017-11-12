@@ -20,6 +20,7 @@ export interface IRootState {
     router?: RouterState;
     form?: FormStateMap;
     certificates?: CertificatesState;
+    auth?: { isLoggedIn: boolean; token: string; };
     assistant?: AssistantState;
     configuration?: ConfigurationState;
     organization?: OrganizationState;

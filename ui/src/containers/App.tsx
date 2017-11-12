@@ -1,15 +1,12 @@
-import * as React from 'react';
-import { connect, Dispatch } from 'react-redux';
+import * as React from "react";
+import { connect, Dispatch } from "react-redux";
 
-import {Navigation} from './Navigation';
-import {Login} from '../components/Login';
+import {Navigation} from "../components/Navigation";
 // import {Sidebar} from './Sidebar';
-
 
 export const UnconnectedApp: React.StatelessComponent = ({ children }) => (
     <div>
         <Navigation />
-        <Login />
         {children}
     </div>
 );
