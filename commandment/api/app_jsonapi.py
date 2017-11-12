@@ -5,8 +5,8 @@ from flask import Blueprint
 from flask_rest_jsonapi import Api
 from .resources import CertificatesList, CertificateDetail, CertificateSigningRequestList, \
     CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
-    CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, OrganizationList, \
-    OrganizationDetail, DeviceGroupList, DeviceGroupDetail, DeviceRelationship, \
+    CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, \
+    DeviceGroupList, DeviceGroupDetail, DeviceRelationship, \
     TagsList, TagDetail, TagRelationship, AvailableOSUpdateList, \
     AvailableOSUpdateDetail
 
