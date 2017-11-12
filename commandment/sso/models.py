@@ -25,7 +25,7 @@ class OAuthClient(db.Model):
 
     is_confidential = db.Column(db.Boolean)
 
-    redirect_uris = db.Column(db.Text)
+    _redirect_uris = db.Column(db.Text)
     _default_scopes = db.Column(db.Text)
 
     @property

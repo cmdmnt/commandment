@@ -20,7 +20,7 @@ export interface INavigationProps {
 }
 
 const config = {
-    url: "https://accounts.google.com/o/oauth2/v2/auth",
+    url: window.OAUTH2_URL,
     client: window.OAUTH2_CLIENT_ID,
     redirect: window.OAUTH2_REDIRECT_URL,
     scope: "https://www.googleapis.com/auth/drive.metadata.readonly",

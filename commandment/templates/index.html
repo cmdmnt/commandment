@@ -17,6 +17,7 @@
       {# Configuration passed through to the client via global variables #}
         var OAUTH2_CLIENT_ID = '{{ config['OAUTH2_CLIENT_ID'] }}';
         var OAUTH2_REDIRECT_URL = '{{ config['OAUTH2_REDIRECT_URL'] }}';
+        var OAUTH2_URL = '{{ config['OAUTH2_URL'] }}';
     </script>
     <script src="{{ config['WEBPACK_BASE_URL'] if config['DEBUG'] else '' }}/static/app.js" type="text/javascript"></script>
 </body>

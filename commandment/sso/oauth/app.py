@@ -1,11 +1,13 @@
 from flask import Blueprint, request, render_template
 from commandment.sso.models import OAuthClient
 from commandment.sso.oauth.service import oauth
+from commandment.sso.decorators import login_required
 
 oauth_app = Blueprint('oauth_app', __name__)
 
 
 @oauth_app.route('/authorize', methods=['GET', 'POST'])
+@login_required
 @oauth.authorize_handler
 def authorize(*args, **kwargs):
     if request.method == 'GET':
