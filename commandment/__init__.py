@@ -15,7 +15,6 @@ from .api.configuration import configuration_app
 from .enroll.app import enroll_app
 from .models import db
 from .omdm import omdm_app
-from .sso.oauth import oauth_app
 from .sso.saml import saml_app
 from .dep.app import dep_app
 from .vpp.app import vpp_app

@@ -42,3 +42,10 @@ OAUTH2_REDIRECT_URL = None  # If required to override
 # If loading assets via webpack-dev-server, the URL prefix to use.
 # NOTE: This only takes effect if DEBUG is not set to 0 or None
 WEBPACK_BASE_URL = 'https://localhost:4000'
+
+# All Other Available Settings
+
+# Flask-OAuthlib
+# OAUTH2_PROVIDER_ERROR_URI = '/oauth/errors'
+# OAUTH2_PROVIDER_ERROR_ENDPOINT
+# OAUTH2_PROVIDER_TOKEN_EXPIRES_IN = 3600
