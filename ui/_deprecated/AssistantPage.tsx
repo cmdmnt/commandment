@@ -10,7 +10,7 @@ import {APNSConfiguration} from './assistant/APNSConfiguration';
 import {SSLConfiguration} from "./assistant/SSLConfiguration";
 import {SCEPConfiguration} from "./assistant/SCEPConfiguration";
 import {FinalStep} from "./assistant/FinalStep";
-import {RootState} from "../src/reducers/index";
+import {IRootState} from "../src/reducers/index";
 import {AssistantState} from "../src/reducers/assistant";
 
 interface AssistantPageStateProps {
@@ -32,7 +32,7 @@ interface AssistantPageProps extends AssistantPageDispatchProps, AssistantPageSt
 }
 
 @connect<AssistantPageStateProps, AssistantPageDispatchProps, OwnProps>(
-    (state: RootState, ownProps?: any): AssistantPageStateProps => {
+    (state: IRootState, ownProps?: any): AssistantPageStateProps => {
         return {assistant: state.assistant};
     },
     (dispatch: Dispatch<any>): AssistantPageDispatchProps => {

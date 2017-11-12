@@ -6,7 +6,7 @@ import * as Dropzone from 'react-dropzone';
 
 import {bindActionCreators} from "redux";
 import * as actions from '../actions/profiles';
-import {RootState} from "../reducers/index";
+import {IRootState} from "../reducers/index";
 import {RouteComponentProps} from "react-router";
 import {ProfilesState} from "../reducers/profiles";
 import {IndexActionRequest, UploadActionRequest} from "../actions/profiles";
@@ -133,10 +133,10 @@ export class UnconnectedProfilesPage extends React.Component<ProfilesPageProps, 
 }
 
 export const ProfilesPage = connect<ReduxStateProps, ReduxDispatchProps, ProfilesPageProps>(
-    (state: RootState, ownProps?: any): ReduxStateProps => ({
+    (state: IRootState, ownProps?: any): ReduxStateProps => ({
         profiles: state.profiles
     }),
-    (dispatch: Dispatch<RootState>, ownProps?: any): ReduxDispatchProps => bindActionCreators({
+    (dispatch: Dispatch<IRootState>, ownProps?: any): ReduxDispatchProps => bindActionCreators({
         index: actions.index,
         upload: actions.upload
     }, dispatch)

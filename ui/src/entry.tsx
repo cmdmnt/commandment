@@ -6,7 +6,7 @@ import {render} from 'react-dom';
 import {ConnectedRouter, routerMiddleware} from 'react-router-redux';
 import {AppContainer} from 'react-hot-loader';
 import {configureStore} from './store/configureStore';
-import {RootState} from './reducers';
+import {IRootState} from './reducers';
 
 import {App} from './containers/App';
 import {SCEPPage} from './containers/config/SCEPPage';
@@ -26,7 +26,7 @@ import '../sass/app.scss';
 import {ApplicationsPage} from "./containers/ApplicationsPage";
 import {ApplicationPage} from "./containers/ApplicationPage";
 
-const initialState: RootState = {};
+const initialState: IRootState = {};
 
 
 const history = createHistory();

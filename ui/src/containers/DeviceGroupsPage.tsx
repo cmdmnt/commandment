@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
-import {RootState} from "../reducers/index";
+import {IRootState} from "../reducers/index";
 import {bindActionCreators} from "redux";
 import {Link} from 'react-router-dom';
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
@@ -18,7 +18,7 @@ interface ReduxStateProps {
     device_groups: DeviceGroupsState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: IRootState, ownProps?: any): ReduxStateProps {
     return {
         device_groups: state.device_groups
     };
@@ -29,7 +29,7 @@ interface ReduxDispatchProps {
     index: IndexActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<IRootState>): ReduxDispatchProps {
     return bindActionCreators({
         index
     }, dispatch);

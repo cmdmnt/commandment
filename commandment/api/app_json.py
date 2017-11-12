@@ -82,7 +82,8 @@ def device_test(device_id: int):
     """Testing endpoint for quick and dirty command checking"""
     d = db.session.query(Device).filter(Device.id == device_id).one()
 
-    ia = commands.InstallApplication(ManifestURL='https://localhost:5443/static/appmanifest/munkitools-3.1.0.3430.plist')
+    ia = commands.InstallApplication()
+
     dbc = Command.from_model(ia)
     dbc.device = d
     db.session.add(dbc)

@@ -6,7 +6,7 @@ import {IndexActionRequest} from "../actions/certificates";
 import {bindActionCreators} from "redux";
 import * as apiActions from '../actions/certificates';
 import {CertificatesState} from "../reducers/certificates";
-import {RootState} from "../reducers/index";
+import {IRootState} from "../reducers/index";
 import {RouteComponentProps} from "react-router";
 
 interface OwnProps {
@@ -17,7 +17,7 @@ interface ReduxStateProps {
     certificates: CertificatesState;
 }
 
-function mapStateToProps(state: RootState, ownProps: OwnProps): ReduxStateProps {
+function mapStateToProps(state: IRootState, ownProps: OwnProps): ReduxStateProps {
     return { certificates: state.certificates };
 }
 
@@ -25,7 +25,7 @@ interface ReduxDispatchProps {
     index: IndexActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps: OwnProps): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<IRootState>, ownProps: OwnProps): ReduxDispatchProps {
     return bindActionCreators({
         index: apiActions.index
     }, dispatch);

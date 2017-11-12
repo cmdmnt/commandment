@@ -10,7 +10,7 @@ import {
 import {Command, Device, DeviceRelationship, Tag} from "../models";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../json-api";
 import {ThunkAction} from "redux-thunk";
-import {RootState} from "../reducers/index";
+import {IRootState} from "../reducers/index";
 import {Dispatch} from "react-redux";
 import {Action} from "redux";
 
@@ -46,7 +46,7 @@ export const fetchDevicesIfRequired = (
         pageNumber: number = 1,
         sort?: Array<string>,
         filters?: FlaskFilters
-    ) => (dispatch: Dispatch<RootState>, getState: () => RootState): ThunkAction<void, RootState, {}> => {
+    ) => (dispatch: Dispatch<IRootState>, getState: () => IRootState): ThunkAction<void, IRootState, {}> => {
 
     const { devices } = getState();
     if (devices.lastReceived) {
@@ -97,13 +97,13 @@ export const read: ReadActionRequest = (id: string, include?: Array<string>) => 
 export const READ_CACHE_HIT = 'devices/READ_CACHE_HIT';
 export type READ_CACHE_HIT = typeof READ_CACHE_HIT;
 
-export type CacheFetchActionRequest = (id: string, include?: Array<string>) => ThunkAction<void, RootState, any>;
+export type CacheFetchActionRequest = (id: string, include?: Array<string>) => ThunkAction<void, IRootState, any>;
 
 export const fetchDeviceIfRequired = (
     id: string, include?: Array<string>
 ) => (
-    dispatch: Dispatch<RootState>,
-    getState: () => RootState
+    dispatch: Dispatch<IRootState>,
+    getState: () => IRootState
 ) => {
     const { devices } = getState();
 

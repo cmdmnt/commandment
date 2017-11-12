@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
-import {RootState} from "../reducers/index";
+import {IRootState} from "../reducers/index";
 import {bindActionCreators} from "redux";
 import {Container, Segment, Grid, Header, DropdownProps} from 'semantic-ui-react';
 import {read, ReadActionRequest} from "../actions/profiles";
@@ -27,7 +27,7 @@ interface ReduxStateProps {
     tags: TagsState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: IRootState, ownProps?: any): ReduxStateProps {
     return {
         profile: state.profile.profile,
         tags: state.tags
@@ -41,7 +41,7 @@ interface ReduxDispatchProps {
     patchRelationship: PatchRelationshipActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<IRootState>): ReduxDispatchProps {
     return bindActionCreators({
         read,
         fetchTags,

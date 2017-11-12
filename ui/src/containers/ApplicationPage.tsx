@@ -7,7 +7,7 @@ import {
     post, PostActionRequest,
   //  read, ReadActionRequest
 } from "../actions/applications";
-import {RootState} from "../reducers/index";
+import {IRootState} from "../reducers/index";
 import {bindActionCreators} from "redux";
 
 interface ReduxStateProps {
@@ -55,6 +55,6 @@ class UnconnectedApplicationPage extends React.Component<ReduxStateProps & Redux
 }
 
 export const ApplicationPage  = connect(
-    (state: RootState, ownProps?: OwnProps) => ({}),
-    (dispatch: Dispatch<RootState>, ownProps?: OwnProps) => bindActionCreators({ post }, dispatch)
+    (state: IRootState, ownProps?: OwnProps) => ({}),
+    (dispatch: Dispatch<IRootState>, ownProps?: OwnProps) => bindActionCreators({ post }, dispatch)
 )(UnconnectedApplicationPage);

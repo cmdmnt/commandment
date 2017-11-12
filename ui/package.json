@@ -60,6 +60,7 @@
     "redux-api-middleware": "^2.0.0-beta.3",
     "redux-debounce": "^1.0.1",
     "redux-form": "^6.6.0",
+    "redux-implicit-oauth2": "^1.2.1",
     "redux-thunk": "^2.2.0",
     "reselect": "^3.0.1",
     "resolve-url-loader": "^2.1.1",

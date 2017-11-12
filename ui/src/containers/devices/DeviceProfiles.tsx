@@ -2,7 +2,7 @@ import * as React from 'react';
 import {connect, Dispatch} from "react-redux";
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
 import {SinceNowUTC} from "../../components/griddle/SinceNowUTC";
-import {RootState} from "../../reducers/index";
+import {IRootState} from "../../reducers/index";
 import {InstalledProfilesState} from "../../reducers/device/installed_profiles";
 import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
 import {InstalledProfilesActionRequest, profiles as fetchInstalledProfiles} from "../../actions/device/profiles";
@@ -17,7 +17,7 @@ interface ReduxStateProps {
     profiles?: InstalledProfilesState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: IRootState, ownProps?: any): ReduxStateProps {
     return {
         profiles: state.device.installed_profiles
     }

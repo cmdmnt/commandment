@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Field, formValueSelector} from 'redux-form';
 import {connect} from "react-redux";
-import {RootState} from "../../../reducers/index";
+import {IRootState} from "../../../reducers/index";
 
 enum EAPType {
     TLS = 13,
@@ -39,7 +39,7 @@ interface EAPClientConfigurationProps {
     accept_eap_types: { [eapType: number]: boolean };
 }
 
-function mapStateToProps(state: RootState): EAPClientConfigurationProps {
+function mapStateToProps(state: IRootState): EAPClientConfigurationProps {
     const accept_eap_types = selector(state, 'eap_client_configuration.accept_eap_types');
     
     return {

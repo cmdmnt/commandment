@@ -2,7 +2,7 @@ import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 
 import {bindActionCreators} from "redux";
-import {RootState} from "../reducers/index";
+import {IRootState} from "../reducers/index";
 import {Route, RouteComponentProps} from "react-router";
 import {
     inventory, InventoryActionRequest,
@@ -44,7 +44,7 @@ interface ReduxStateProps {
     percentCapacityUsed: number;
 }
 
-function mapStateToProps(state: RootState, ownProps?: OwnProps): ReduxStateProps {
+function mapStateToProps(state: IRootState, ownProps?: OwnProps): ReduxStateProps {
     return {
         device: state.device,
         tags: state.tags,
@@ -63,7 +63,7 @@ interface ReduxDispatchProps {
     postRelated: PostRelatedActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<IRootState>, ownProps?: OwnProps): ReduxDispatchProps {
     return bindActionCreators({
         push,
         inventory,

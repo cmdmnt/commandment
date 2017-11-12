@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
-import {RootState} from "../reducers/index";
+import {IRootState} from "../reducers/index";
 import {bindActionCreators} from "redux";
 import {Container, Segment, Header} from 'semantic-ui-react';
 import {DeviceGroupForm, FormData as DeviceGroupFormData} from "../forms/DeviceGroupForm";
@@ -27,7 +27,7 @@ interface ReduxStateProps {
     device_group: JSONAPIDetailResponse<DeviceGroup, Device>;
 }
 
-function mapStateToProps(state: RootState, ownProps?: OwnProps): ReduxStateProps {
+function mapStateToProps(state: IRootState, ownProps?: OwnProps): ReduxStateProps {
     return {
         device_group: state.device_groups.editing
     };
@@ -38,7 +38,7 @@ interface ReduxDispatchProps {
     read: ReadActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps) {
+function mapDispatchToProps(dispatch: Dispatch<IRootState>, ownProps?: OwnProps) {
     return bindActionCreators({
         post,
         read

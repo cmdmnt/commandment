@@ -8,7 +8,7 @@ import {
 import {Profile, ProfileRelationship, Tag} from "../models";
 import {JSONAPIDetailResponse} from "../json-api";
 import {ThunkAction} from "redux-thunk";
-import {RootState} from "../reducers/index";
+import {IRootState} from "../reducers/index";
 import {Dispatch} from "react-redux";
 
 
@@ -108,13 +108,13 @@ export const UPLOAD_FAILURE = 'profiles/UPLOAD_FAILURE';
 export type UPLOAD_FAILURE = typeof UPLOAD_FAILURE;
 
 export interface UploadActionRequest {
-    (file: File): ThunkAction<void, RootState, void>;
+    (file: File): ThunkAction<void, IRootState, void>;
 }
 export type UploadActionResponse = RSAAReadActionResponse<UPLOAD_REQUEST, UPLOAD_SUCCESS, UPLOAD_FAILURE, JSONAPIDetailResponse<Profile, undefined>>;
 
-export const upload = (file: File): ThunkAction<void, RootState, void> => (
-    dispatch: Dispatch<RootState>,
-    getState: () => RootState,
+export const upload = (file: File): ThunkAction<void, IRootState, void> => (
+    dispatch: Dispatch<IRootState>,
+    getState: () => IRootState,
     extraArgument: void) => {
 
     const data = new FormData();

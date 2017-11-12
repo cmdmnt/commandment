@@ -5,7 +5,7 @@ import {Grid, Header, Container} from 'semantic-ui-react'
 
 import {bindActionCreators, Store} from "redux";
 import * as actions from '../actions/devices';
-import {RootState} from "../reducers/index";
+import {IRootState} from "../reducers/index";
 import {RouteComponentProps} from "react-router";
 import {DevicesState} from "../reducers/devices";
 import {IndexActionRequest} from "../actions/devices";
@@ -42,7 +42,7 @@ interface ReduxStateProps {
     devices: DevicesState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: OwnProps): ReduxStateProps {
+function mapStateToProps(state: IRootState, ownProps?: OwnProps): ReduxStateProps {
     return {devices: state.devices};
 }
 
@@ -51,7 +51,7 @@ interface ReduxDispatchProps {
     fetchDevicesIfRequired: any;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<IRootState>, ownProps?: OwnProps): ReduxDispatchProps {
     return bindActionCreators({
         index: actions.index,
         fetchDevicesIfRequired: actions.fetchDevicesIfRequired

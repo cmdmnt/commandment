@@ -11,7 +11,6 @@ from .ac2.ac2_app import ac2_app
 from .api.app_jsonapi import api_app, api
 from .api.app_json import flat_api
 from .apns.app import api_push_app
-from .auth import oauth2
 from .api.configuration import configuration_app
 from .enroll.app import enroll_app
 from .models import db
@@ -24,7 +23,6 @@ from .profiles.api import profiles_api_app
 from .inventory.api import api_app as inventory_api
 from .mdm.api import api_app as mdm_api
 from .apps.api import api_app as applications_api
-from .auth.app import auth_app
 
 
 def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
@@ -45,9 +43,6 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     # Use alembic to perform migrations
     # db.create_all(app=app)
 
-    oauth2.init_app(app)
-
-    app.register_blueprint(auth_app)
     app.register_blueprint(enroll_app, url_prefix='/enroll')
     app.register_blueprint(mdm_app)
     app.register_blueprint(configuration_app, url_prefix='/api/v1/configuration')
@@ -56,7 +51,7 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     app.register_blueprint(flat_api, url_prefix='/api')
     app.register_blueprint(profiles_api_app, url_prefix='/api')
     app.register_blueprint(applications_api, url_prefix='/api')
-    app.register_blueprint(oauth_app, url_prefix='/oauth')
+    # app.register_blueprint(oauth_app, url_prefix='/oauth')
     app.register_blueprint(saml_app, url_prefix='/saml')
     app.register_blueprint(omdm_app, url_prefix='/omdm')
     app.register_blueprint(ac2_app)

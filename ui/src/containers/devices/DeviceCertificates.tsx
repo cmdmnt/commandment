@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 import {RouteComponentProps} from 'react-router';
-import {RootState} from "../../reducers/index";
+import {IRootState} from "../../reducers/index";
 import {bindActionCreators} from "redux";
 import {CertificatesActionRequest, certificates as fetchInstalledCertificates} from "../../actions/device/certificates";
 import {InstalledCertificatesState} from "../../reducers/device/installed_certificates";
@@ -17,7 +17,7 @@ interface ReduxStateProps {
     installed_certificates: InstalledCertificatesState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: IRootState, ownProps?: any): ReduxStateProps {
     return {
         installed_certificates: state.device.installed_certificates
     }

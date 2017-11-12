@@ -5,14 +5,14 @@ import * as actions from '../../actions/organization';
 import {bindActionCreators} from "redux";
 import {OrganizationState} from "../../reducers/organization";
 import {OrganizationForm, FormData} from '../../forms/config/OrganizationForm';
-import {RootState} from "../../reducers/index";
+import {IRootState} from "../../reducers/index";
 import {Segment, Header, Container} from 'semantic-ui-react';
 
 interface OrganizationPageState {
     organization: OrganizationState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): OrganizationPageState {
+function mapStateToProps(state: IRootState, ownProps?: any): OrganizationPageState {
     return {
         organization: state.organization
     }

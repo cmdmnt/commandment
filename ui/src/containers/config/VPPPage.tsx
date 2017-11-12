@@ -2,7 +2,7 @@ import * as React from 'react';
 import {connect, Dispatch, MapStateToProps} from 'react-redux';
 import {Container, Header, Item, Icon, Segment} from 'semantic-ui-react';
 import {RouteComponentProps} from "react-router";
-import {RootState} from "../../reducers/index";
+import {IRootState} from "../../reducers/index";
 import {bindActionCreators} from "redux";
 import {read as fetchTokenInfo, TokenActionRequest,
     upload, UploadActionRequest} from "../../actions/vpp";
@@ -61,7 +61,7 @@ export class UnconnectedVPPPage extends React.Component<OwnProps, void> {
 }
 
 export const VPPPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
-    (state: RootState): ReduxStateProps => ({
+    (state: IRootState): ReduxStateProps => ({
         vpp: state.configuration.vpp
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({

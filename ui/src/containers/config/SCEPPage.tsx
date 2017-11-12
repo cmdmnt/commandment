@@ -3,7 +3,7 @@ import {connect, Dispatch, MapStateToProps} from 'react-redux';
 import {RouteComponentProps} from 'react-router';
 import {SCEPPayloadForm, FormData} from '../../forms/payloads/SCEPPayloadForm';
 import * as actions from '../../actions/configuration/scep';
-import {RootState} from "../../reducers/index";
+import {IRootState} from "../../reducers/index";
 import {bindActionCreators} from "redux";
 import {SCEPState} from "../../reducers/configuration/scep";
 import {Container, Header} from 'semantic-ui-react';
@@ -73,7 +73,7 @@ export class UnconnectedSCEPPage extends React.Component<OwnProps, undefined> {
 }
 
 export const SCEPPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
-    (state: RootState): ReduxStateProps => ({
+    (state: IRootState): ReduxStateProps => ({
         scep: state.configuration.scep
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({

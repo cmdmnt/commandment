@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {RootState} from "../reducers/index";
+import {IRootState} from "../reducers/index";
 import { Container, Card, Icon } from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 import {RouteComponentProps} from "react-router";
@@ -89,6 +89,6 @@ export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, 
 }
 
 export const SettingsPage = connect<ReduxStateProps, ReduxDispatchProps, SettingsPageProps>(
-    (state: RootState, ownProps?: any): ReduxStateProps => ({}),
-    (dispatch: Dispatch<RootState>): ReduxDispatchProps => bindActionCreators({}, dispatch)
+    (state: IRootState, ownProps?: any): ReduxStateProps => ({}),
+    (dispatch: Dispatch<IRootState>): ReduxDispatchProps => bindActionCreators({}, dispatch)
 )(UnconnectedSettingsPage);

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {connect, Dispatch} from "react-redux";
-import {RootState} from "../../reducers/index";
+import {IRootState} from "../../reducers/index";
 import {DeviceState} from "../../reducers/device";
 import {bindActionCreators} from "redux";
 import {RouteComponentProps} from "react-router";
@@ -12,7 +12,7 @@ interface ReduxStateProps {
     device: DeviceState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: IRootState, ownProps?: any): ReduxStateProps {
     return {
         device: state.device
     }

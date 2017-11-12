@@ -31,3 +31,14 @@ SSL_RSA_KEY = path.join(dirname, 'ssl', 'server.key')
 # This should not be used in production.
 
 STORAGE_ROOT = path.join(dirname, 'storage')
+
+# OAuth2 Configuration
+
+OAUTH2_CLIENT_ID = ''
+OAUTH2_REDIRECT_URL = None  # If required to override
+
+# Developer settings
+
+# If loading assets via webpack-dev-server, the URL prefix to use.
+# NOTE: This only takes effect if DEBUG is not set to 0 or None
+WEBPACK_BASE_URL = 'https://localhost:4000'

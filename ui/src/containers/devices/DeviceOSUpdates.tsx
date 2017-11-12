@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {connect, Dispatch} from "react-redux";
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import {RootState} from "../../reducers/index";
+import {IRootState} from "../../reducers/index";
 import {AvailableOSUpdatesState} from "../../reducers/device/available_os_updates";
 import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
 import {AvailableOSUpdatesActionRequest, updates as fetchAvailableOSUpdates} from "../../actions/device/updates";
@@ -16,7 +16,7 @@ interface ReduxStateProps {
     updates?: AvailableOSUpdatesState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: IRootState, ownProps?: any): ReduxStateProps {
     return {
         updates: state.device.available_os_updates
     }
