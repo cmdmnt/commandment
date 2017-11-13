@@ -31,7 +31,9 @@
     "@types/storybook__addon-actions": "^3.0.1",
     "@types/storybook__react": "^3.0.5",
     "@types/webpack": "^3.0.13",
-    "@types/webpack-env": "^1.13.2"
+    "@types/webpack-env": "^1.13.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-runtime": "^6.26.0"
   },
   "dependencies": {
     "awesome-typescript-loader": "^3.2.3",
@@ -44,7 +46,7 @@
     "immutable": "^3.8.1",
     "moment": "^2.19.1",
     "node-sass": "^4.5.1",
-    "prop-types": "^15.5.10",
+    "prop-types": "^15.6.0",
     "rc-upload": "^2.3.4",
     "react": "^15.6.1",
     "react-dom": "^15.4.2",
@@ -61,6 +63,7 @@
     "redux-debounce": "^1.0.1",
     "redux-form": "^6.6.0",
     "redux-implicit-oauth2": "^1.2.1",
+    "redux-oidc": "^3.0.0-beta.12",
     "redux-thunk": "^2.2.0",
     "reselect": "^3.0.1",
     "resolve-url-loader": "^2.1.1",

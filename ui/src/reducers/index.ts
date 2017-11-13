@@ -1,7 +1,7 @@
 import {routerReducer as router, RouterState} from "react-router-redux";
 import {combineReducers} from "redux";
 import {FormStateMap, reducer as form} from "redux-form";
-import {authReducer as auth} from "redux-implicit-oauth2";
+import {reducer as oidc, UserState} from "redux-oidc";
 
 import {applications, ApplicationsState} from "./applications";
 import {assistant, AssistantState} from "./assistant";
@@ -32,12 +32,12 @@ export interface IRootState {
     tags?: TagsState;
     profile?: ProfileState;
     applications?: ApplicationsState;
+    oidc?: UserState;
 }
 
 export const rootReducer = combineReducers<IRootState>({
     applications,
     assistant,
-    auth,
     certificates,
     commands,
     configuration,
@@ -45,6 +45,7 @@ export const rootReducer = combineReducers<IRootState>({
     device_groups,
     devices,
     form,
+    oidc,
     organization,
     profile,
     profiles,

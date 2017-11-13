@@ -32,10 +32,10 @@ SSL_RSA_KEY = path.join(dirname, 'ssl', 'server.key')
 
 STORAGE_ROOT = path.join(dirname, 'storage')
 
-# OAuth2 Configuration
+# OpenID Connect Configuration
 
-OAUTH2_CLIENT_ID = ''
-OAUTH2_REDIRECT_URL = None  # If required to override
+OIDC_CLIENT_ID = ''
+OIDC_REDIRECT_URI = None  # If required to override
 
 # Developer settings
 
@@ -45,7 +45,3 @@ WEBPACK_BASE_URL = 'https://localhost:4000'
 
 # All Other Available Settings
 
-# Flask-OAuthlib
-# OAUTH2_PROVIDER_ERROR_URI = '/oauth/errors'
-# OAUTH2_PROVIDER_ERROR_ENDPOINT
-# OAUTH2_PROVIDER_TOKEN_EXPIRES_IN = 3600
