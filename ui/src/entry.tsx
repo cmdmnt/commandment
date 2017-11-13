@@ -27,6 +27,7 @@ import "../sass/app.scss";
 import {ApplicationPage} from "./containers/ApplicationPage";
 import {ApplicationsPage} from "./containers/ApplicationsPage";
 import {userManager} from "./reducers/oidc";
+import {OIDCCallbackPage} from "./containers/sso/OIDCCallbackPage";
 
 const initialState: IRootState = {};
 
