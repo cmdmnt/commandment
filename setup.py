@@ -7,7 +7,7 @@ setup(
     include_package_data=True,
     author="mosen",
     license="MIT",
-    url="https://github.com/mosen/commandment",
+    url="https://github.com/cmdmnt/commandment",
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
@@ -15,39 +15,43 @@ setup(
     ],
     keywords='MDM',
     install_requires=[
+        'Flask-REST-JSONAPI',
+        'flask-marshmallow',
+        'Flask-JWT',
+        'Flask-OAuthlib',
+        'Flask-Cors',
+        'flask',
         'apns2-client>=0.5.3',
         'blinker>=1.4',
-        'biplist>=1.0.1',
-        'cryptography>=1.8.1',
-        'Flask',
-        'Flask-REST-JSONAPI',
-        'Flask-Cors',
-        'flask-marshmallow',
-        'Flask-OAuthlib',
-        'Flask-JWT',
         'passlib',
+        'marshmallow-sqlalchemy',
         'marshmallow-enum',
-        'oscrypto>=0.18.0',
+        'marshmallow',
         'SQLAlchemy>=1.1.6',
+        'cryptography>=1.8.1',
+        'oscrypto>=0.18.0',
+        'alembic>=0.9.1'
         'acme>=0.12.0',
         'semver>=2.7.6',
-        'alembic>=0.9.1'
+        'biplist>=1.0.1',
+        'typing'
     ],
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     tests_require=[
         'pytest',
         'mock',
         'Faker>=0.7.11',
-        'Factory-Boy'
+        'Factory-Boy',
+        'mypy'
     ],
     extras_requires={
         'ReST': [
-            'Sphinx',
-            'sphinxcontrib-napoleon',
             'sphinx-rtd-theme',
             'guzzle-sphinx-theme',
+            'sphinxcontrib-napoleon',
             'sphinxcontrib-httpdomain',
             'sphinxcontrib-plantuml',
+            'Sphinx',
             'sadisplay'
         ],
         'macOS': [
