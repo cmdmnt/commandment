@@ -39,8 +39,8 @@ def app() -> Generator[Flask, None, None]:
 def db(app: Flask) -> Generator[SQLAlchemy, None, None]:
     """Flask-SQLAlchemy Fixture"""
     _db.init_app(app)
-    _db.create_all()
-    #apply_migrations()
+    #_db.create_all()
+    apply_migrations()
 
     yield _db
 
