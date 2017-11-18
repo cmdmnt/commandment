@@ -1,4 +1,4 @@
-language: node_js
+language: python
 node_js:
   - "7"
 python:
@@ -18,9 +18,9 @@ addons:
     debug: true
 install:
   - pip install -r requirements.txt
-  - cd ui && yarn install
+#  - cd ui && yarn install
 script:
-  - NODE_ENV=production ./node_modules/.bin/webpack
-  - cd ..
+#  - NODE_ENV=production ./node_modules/.bin/webpack
+#  - cd ..
   - pytest -v -m "not depsim and not vppsim" tests
 #  - mypy commandment
