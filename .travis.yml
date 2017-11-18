@@ -17,7 +17,7 @@ addons:
     working_dir: ui
     debug: true
 install:
-  - pip3 install -r requirements.txt
+  - pip install -r requirements.txt
   - cd ui && yarn install
 script:
   - NODE_ENV=production ./node_modules/.bin/webpack
