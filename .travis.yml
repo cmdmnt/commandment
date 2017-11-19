@@ -1,8 +1,14 @@
-language: python
-node_js:
-  - "7"
-python:
-  - "3.6"
+matrix:
+  include:
+    - language: python
+      python: 3.6
+      before_script: -
+      install:
+        - pip install -r requirements.txt
+      script:
+        - pytest -v -m "not depsim and not vppsim" tests
+
+
 cache:
   directories:
     - "ui/node_modules"
@@ -12,15 +18,9 @@ cache:
 #  apt:
 #    packages:
 #      - python3.6
-addons:
-  artifacts:
-    working_dir: ui
-    debug: true
-install:
-  - pip install -r requirements.txt
+
 #  - cd ui && yarn install
-script:
 #  - NODE_ENV=production ./node_modules/.bin/webpack
 #  - cd ..
-  - pytest -v -m "not depsim and not vppsim" tests
+
 #  - mypy commandment
