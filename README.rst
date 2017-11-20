@@ -35,3 +35,4 @@ Please report any issues, bugs, suggestions, feedback, etc.
 to the `issue tracker <https://github.com/cmdmnt/commandment/issues>`_ of this project.
 
 Also for discussion, and support, join us in the #commandment channel in the `MacAdmins Slack <http://macadmins.herokuapp.com/>`_ !
+
