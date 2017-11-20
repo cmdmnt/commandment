@@ -11,7 +11,7 @@ matrix:
       install:
         - cd ui && yarn install
       script:
-        - NODE_ENV=production ./node_modules/.bin/webpack
+        ./node_modules/.bin/webpack
 
 env:
   - NODE_ENV=production

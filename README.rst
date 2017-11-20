@@ -1,10 +1,17 @@
-# Commandment Open Source MDM
+===========================
+Commandment Open Source MDM
+===========================
+
+.. image:: https://travis-ci.org/cmdmnt/commandment.svg?branch=master
+   :target: https://travis-ci.org/cmdmnt/commandment
 
 Commandment is an Open Source Apple MDM with support for managing iOS and macOS devices.
 
 The source code is available under an [MIT license](LICENSE.txt).
 
-## Requirements
+------------
+Requirements
+------------
 
 * Apple MDM Push Certificate and private key (in PEM format)
   * Obtain a free Push Certificate from [https://mdmcert.download](https://mdmcert.download)
@@ -12,13 +19,17 @@ The source code is available under an [MIT license](LICENSE.txt).
 * A trusted TLS certificate for the MDM.
 * [Python](https://www.python.org/) 3.6+
 
-## Documentation
+-------------
+Documentation
+-------------
 
 The user, developer and API documentation is available at:
 
 https://mosen.github.io/commandment/    
 
-## Bugs, issues, etc.
+------------------
+Bugs, issues, etc.
+------------------
 
 Please report any issues, bugs, suggestions, feedback, etc. 
 to the [issue tracker](https://github.com/cmdmnt/commandment/issues) of this project.
