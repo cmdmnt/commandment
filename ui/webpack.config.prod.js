@@ -23,10 +23,7 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.jsx']
     },
-
-    devtool: 'cheap-module-eval-source-map',
     target: 'web',
-
     module: {
         rules: [
             {
