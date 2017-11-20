@@ -1,4 +1,4 @@
-jobs:
+matrix:
   include:
     - stage: backend
       language: python
