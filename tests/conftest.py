@@ -12,7 +12,7 @@ from alembic.config import Config
 
 TEST_DATABASE_URI = 'sqlite:///:memory:'
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
-ALEMBIC_CONFIG = os.path.realpath(TEST_DIR + '/../alembic.ini')
+ALEMBIC_CONFIG = os.path.realpath(TEST_DIR + '/alembic_test.ini')
 
 
 def apply_migrations():
@@ -30,16 +30,15 @@ def app() -> Generator[Flask, None, None]:
 
     ctx = a.app_context()
     ctx.push()
-
     yield a
-
     ctx.pop()
 
 
 @pytest.yield_fixture(scope='function')
 def db(app: Flask) -> Generator[SQLAlchemy, None, None]:
     """Flask-SQLAlchemy Fixture"""
-    _db.init_app(app)
+    _db.app = app
+    # _db.init_app(app)
     #_db.create_all()
     apply_migrations()
 
