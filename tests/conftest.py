@@ -16,6 +16,7 @@ ALEMBIC_CONFIG = os.path.realpath(TEST_DIR + '/../alembic.ini')
 
 
 def apply_migrations():
+    """Applies all Alembic migrations."""
     config = Config(ALEMBIC_CONFIG)
     upgrade(config, 'head')
 
