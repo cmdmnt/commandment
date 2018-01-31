@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "19e4330e8f2c7bd969004385d8f06d61840f5f74136a88e1bf8b3d2b6f2418f1"
+            "sha256": "6d44e464388008e989ecfc588ab796e5d52702a13d4bbd8ce4ae68d1ae4f4155"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -108,7 +108,8 @@
         },
         "bixar": {
             "editable": true,
-            "git": "https://github.com/mosen/bixar.git"
+            "git": "https://github.com/mosen/bixar.git",
+            "ref": "a79aeb54a70271308a44642241558e80165527a7"
         },
         "blinker": {
             "hashes": [
@@ -1050,17 +1051,10 @@
         },
         "sphinx": {
             "hashes": [
-                "sha256:b8fb880c8b6522f4c1e1ee2548ef9a16f315d630c6a9e5ab36ce855942c0e794",
-                "sha256:2819287110b6ebc96f3b3eaf620fcbe3f5ea3ee6a4a7dae2a411873d760c8936"
+                "sha256:e5dda221345eba9b69524f8e0b590b4c85a4f9cf6a3807eb48e4a36a78d0ce98",
+                "sha256:90ad56bd773e3efa72adf95b251f75118fea12f9b856eb3fd9198070b973d000"
             ],
-            "version": "==1.7.0b1"
-        },
-        "sphinx-rtd-theme": {
-            "hashes": [
-                "sha256:62ee4752716e698bad7de8a18906f42d33664128eea06c46b718fc7fbd1a9f5c",
-                "sha256:2df74b8ff6fae6965c527e97cca6c6c944886aae474b490e17f92adfbe843417"
-            ],
-            "version": "==0.2.4"
+            "version": "==1.7.0b2"
         },
         "sphinxcontrib-httpdomain": {
             "hashes": [

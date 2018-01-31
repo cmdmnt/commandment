@@ -21,7 +21,6 @@ import sys
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.append(os.path.abspath('../venv/lib/python3.6/site-packages/'))
 #sys.path.append(os.path.abspath('../'))
-#import sphinx_rtd_theme
 import guzzle_sphinx_theme
 
 # -- General configuration ------------------------------------------------
@@ -42,9 +41,8 @@ extensions = [
     'sphinxcontrib.autohttp.flask',
     'sphinxcontrib.autohttp.flaskqref',
     'sphinxcontrib.plantuml',
+    'guzzle_sphinx_theme'
 ]
-
-extensions.append("guzzle_sphinx_theme")
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

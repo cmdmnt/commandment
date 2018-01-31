@@ -56,7 +56,6 @@ UkPostcodeParser = "*"
 
 [dev-packages]
 
-alabaster = "*"
 factory_boy = "*"
 mock = "*"
 mypy = "*"
@@ -64,7 +63,6 @@ pytest = "*"
 pytest-runner = "*"
 sadisplay = "*"
 sphinx = "*"
-sphinx-rtd-theme = "*"
 sphinxcontrib-httpdomain = "*"
 sphinxcontrib-napoleon = "*"
 sphinxcontrib-plantuml = "*"
