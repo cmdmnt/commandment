@@ -9,7 +9,6 @@ name = "pypi"
 
 acme = "==0.18.2"
 aiohttp = "==2.2.5"
-alabaster = "==0.7.10"
 alembic = "==0.9.7"
 "aniso8601" = "==1.2.0"
 apns = "==2.0.1"
@@ -20,7 +19,6 @@ bixar = {git = "https://github.com/mosen/bixar.git", editable=true}
 blinker = "==1.4"
 decorator = "==4.0.11"
 docutils = "==0.14"
-factory_boy = "==2.9.2"
 Flask = "==0.12.2"
 Flask-Alembic = "==2.0.1"
 Flask-Cors = "==3.0.3"
@@ -58,6 +56,8 @@ UkPostcodeParser = "==1.1.1"
 
 [dev-packages]
 
+alabaster = "==0.7.10"
+factory_boy = "==2.9.2"
 mock = "==2.0.0"
 mypy = "==0.521"
 pytest = "==3.2.2"
