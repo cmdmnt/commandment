@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../../_remote/Griddle/Griddle.iml" filepath="$PROJECT_DIR$/../../_remote/Griddle/Griddle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../bixar/bixar.iml" filepath="$PROJECT_DIR$/../bixar/bixar.iml" />
       <module fileurl="file://$PROJECT_DIR$/commandment.iml" filepath="$PROJECT_DIR$/commandment.iml" />
     </modules>
   </component>
