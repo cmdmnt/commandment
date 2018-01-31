@@ -25,7 +25,7 @@ Documentation
 
 The user, developer and API documentation is available at:
 
-https://mosen.github.io/commandment/    
+http://cmdmnt.github.io/commandment/
 
 ------------------
 Bugs, issues, etc.
