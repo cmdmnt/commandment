@@ -1,5 +1,5 @@
-import * as React from 'react';
-import {Icon} from 'semantic-ui-react';
+import * as React from "react";
+import {Icon, SemanticICONS} from "semantic-ui-react";
 
 interface ModelIconProps {
     value: string;
@@ -7,15 +7,15 @@ interface ModelIconProps {
 }
 
 export const ModelIcon = (props: ModelIconProps): JSX.Element => {
-    const icons: { [propName: string]: string; } = {
-       'iMac': 'desktop',
-       'MacBook Pro': 'laptop',
-       'MacBook Air': 'laptop',
-       'Mac Pro': 'trash',
-       'iPhone': 'mobile'
+    const icons: { [propName: string]: SemanticICONS; } = {
+       "iMac": "desktop",
+       "iPhone": "mobile",
+       "MacBook Air": "laptop",
+       "MacBook Pro": "laptop",
+       "Mac Pro": "trash",
     };
 
-    let className = 'question';
+    let className: SemanticICONS = "question";
     if (icons.hasOwnProperty(props.value)) {
         className = icons[props.value];
     }

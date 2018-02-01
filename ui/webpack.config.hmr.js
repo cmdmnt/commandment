@@ -20,7 +20,17 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['.ts', '.tsx', '.js', '.jsx']
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
+      alias: { // avoid lodash duplication: https://www.contentful.com/blog/2017/10/27/put-your-webpack-bundle-on-a-diet-part-3/
+        'lodash-es': 'lodash',
+        'lodash.get': 'lodash/get',
+        'lodash.isfunction': 'lodash/isFunction',
+        'lodash.isobject': 'lodash/isObject',
+        'lodash.merge': 'lodash/merge',
+        'lodash.reduce': 'lodash/reduce',
+        'lodash.set': 'lodash/set',
+        'lodash.unset': 'lodash/unset'
+      }
     },
 
     devtool: 'cheap-module-eval-source-map',
@@ -69,6 +79,7 @@ module.exports = {
         ]
     },
     plugins: [
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
         new webpack.HotModuleReplacementPlugin(),
         new CheckerPlugin()
     ],
@@ -78,6 +89,7 @@ module.exports = {
         publicPath: "https://localhost:4000/static/",
         hot: true,
         port: 4000,
+        disableHostCheck: true,
         https: {
           key: fs.readFileSync('../ssl/server.key'),
           cert: fs.readFileSync('../ssl/server.crt'),

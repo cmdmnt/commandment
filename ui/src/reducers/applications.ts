@@ -1,60 +1,45 @@
 import {isJSONAPIErrorResponsePayload, JSONAPIObject} from "../json-api";
 import {Application} from "../models";
 import * as actions from "../actions/applications";
+import {IResults, ResultsDefaultState} from "./interfaces";
 
-export interface ApplicationsState {
-    items: Array<JSONAPIObject<Application>>;
-    allIds: Array<string>;
-    loading: boolean;
-    error: boolean;
-    errorDetail?: any
-    lastReceived?: Date;
-    currentPage: number;
-    pageSize: number;
-    recordCount?: number;
+export interface ApplicationsState extends IResults<Array<JSONAPIObject<Application>>> {
+    allIds: string[];
 }
 
 const initialState: ApplicationsState = {
-    items: [],
+    ...ResultsDefaultState,
     allIds: [],
-    loading: false,
-    error: false,
-    errorDetail: null,
-    lastReceived: null,
-    currentPage: 1,
-    pageSize: 50
 };
 
 type ApplicationsAction = actions.IndexActionResponse | actions.PostActionResponse | actions.PatchActionResponse;
 
-export function applications (state: ApplicationsState = initialState, action: ApplicationsAction): ApplicationsState {
+export function applications(state: ApplicationsState = initialState, action: ApplicationsAction): ApplicationsState {
     switch (action.type) {
         case actions.INDEX_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
         case actions.INDEX_FAILURE:
             return {
                 ...state,
-                error: true,
-                errorDetail: action.payload
+                error: action.payload,
             };
         case actions.INDEX_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
+                    error: action.payload,
                     loading: false,
-                    error: true,
-                    errorDetail: action.payload
-                }
+                };
             } else {
                 return {
                     ...state,
                     items: action.payload.data,
-                    lastReceived: new Date,
+                    lastReceived: new Date(),
                     loading: false,
-                    recordCount: action.payload.meta.count
+                    recordCount: action.payload.meta.count,
                 };
             }
         default:

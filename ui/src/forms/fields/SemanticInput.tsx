@@ -1,7 +1,8 @@
-import * as React from 'react';
+import * as React from "react";
 import {WrappedFieldProps} from "redux-form";
 import {StatelessComponent} from "react-redux";
-import {Input, Form} from 'semantic-ui-react';
+import * as Input from "semantic-ui-react/dist/es/elements/Input";
+import * as Form from "semantic-ui-react/dist/es/collections/Form";
 import {SemanticWIDTHS} from "semantic-ui-react/src";
 
 interface FieldProps extends WrappedFieldProps<any> {

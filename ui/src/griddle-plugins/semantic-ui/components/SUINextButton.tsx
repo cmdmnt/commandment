@@ -1,5 +1,5 @@
-import * as React from 'react';
-import {Menu, Icon} from 'semantic-ui-react';
+import * as React from "react";
+import {Icon, Menu, SemanticICONS} from "semantic-ui-react";
 
 interface SUINextButtonProps {
     className: string;
@@ -9,7 +9,7 @@ interface SUINextButtonProps {
 }
 
 export const SUINextButton = ({ className, style, hasNext, onClick }: SUINextButtonProps) => (
-    <Menu.Item as='a' icon className={className} style={style} onClick={onClick} disabled={!hasNext} >
-        <Icon name='right chevron'/>
+    <Menu.Item as="a" icon className={className} style={style} onClick={onClick} disabled={!hasNext} >
+        <Icon name={"right chevron" as SemanticICONS}/>
     </Menu.Item>
 );

@@ -1,16 +1,12 @@
-import * as actions from '../actions/profiles';
-import {IndexActionResponse, UploadActionResponse} from '../actions/profiles';
+import * as actions from "../actions/profiles";
+import {IndexActionResponse, UploadActionResponse} from "../actions/profiles";
 import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Profile} from "../models";
 import {ApiError} from "redux-api-middleware";
 import {isApiError} from "../guards";
+import {IResults, ResultsDefaultState} from "./interfaces";
 
-export interface ProfilesState {
-    items: Array<JSONAPIObject<Profile>>;
-    loading: boolean;
-    error: boolean;
-    errorDetail?: ApiError | any;
-    lastReceived?: Date;
+export interface ProfilesState extends IResults<Array<JSONAPIObject<Profile>>> {
     pageProperties: any;
     uploading: boolean;
     uploadError: boolean;
@@ -18,19 +14,15 @@ export interface ProfilesState {
 }
 
 const initialState: ProfilesState = {
-    items: [],
-    loading: false,
-    error: false,
-    errorDetail: null,
-    lastReceived: null,
+    ...ResultsDefaultState,
     pageProperties: {
         currentPage: 1,
         pageSize: 10,
-        recordCount: 0
+        recordCount: 0,
     },
-    uploading: false,
     uploadError: false,
-    uploadErrorDetail: null
+    uploadErrorDetail: null,
+    uploading: false,
 };
 
 type ProfilesAction = IndexActionResponse | UploadActionResponse;
@@ -40,40 +32,38 @@ export function profiles(state: ProfilesState = initialState, action: ProfilesAc
         case actions.INDEX_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
 
         case actions.INDEX_FAILURE:
             return {
                 ...state,
-                error: true,
-                errorDetail: action.payload
+                error: action.payload,
             };
 
         case actions.INDEX_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
+                    error: action.payload,
                     loading: false,
-                    error: true,
-                    errorDetail: action.payload
-                }    
+                };
             } else {
                 return {
                     ...state,
                     items: action.payload.data,
-                    lastReceived: new Date,
+                    lastReceived: new Date(),
                     loading: false,
-                    recordCount: action.payload.meta.count
+                    recordCount: action.payload.meta.count,
                 };
             }
         case actions.UPLOAD_FAILURE:
             if (isApiError(action.payload)) {
                 return {
                     ...state,
-                    uploading: false,
                     uploadError: true,
-                    uploadErrorDetail: action.payload
+                    uploadErrorDetail: action.payload,
+                    uploading: false,
                 };
             }
         default:

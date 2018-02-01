@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {Field, reduxForm, FormProps} from 'redux-form';
-import {Form, Button} from 'semantic-ui-react';
+// import {Form, Button} from 'semantic-ui-react';
+import * as Form from 'semantic-ui-react/dist/es/collections/Form';
+import * as Button from 'semantic-ui-react/dist/es/elements/Button';
 import {SemanticInput} from "./fields/SemanticInput";
 
 export interface FormData {

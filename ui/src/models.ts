@@ -19,7 +19,7 @@ export interface Profile {
     identifier: string;
     organization?: string;
     uuid: string;
-    removal_disallowed?: Boolean;
+    removal_disallowed?: boolean;
     version: number;
     scope?: string;
     removal_date?: Date;

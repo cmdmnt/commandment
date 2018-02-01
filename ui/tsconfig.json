@@ -16,5 +16,10 @@
   "exclude": [
     "node_modules",
     "_deprecated"
-  ]
+  ],
+  "paths": {
+    "lodash/*": [
+      "node_modules/@types/lodash-es/*"
+    ]
+  }
 }
