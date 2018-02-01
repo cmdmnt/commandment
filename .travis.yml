@@ -3,7 +3,8 @@ matrix:
     - language: python
       python: 3.6
       install:
-        - pip install -r requirements.txt
+        - pip install pipenv
+        - pipenv install --system
       script:
         - pytest -v -m "not depsim and not vppsim" tests
     - language: node_js
