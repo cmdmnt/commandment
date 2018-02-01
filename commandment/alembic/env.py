@@ -13,7 +13,7 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from ..models import db
+from commandment.models import db
 # import commandment.vpp.models
 # import commandment.dep.models
 #import commandment.apps.models

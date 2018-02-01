@@ -17,6 +17,7 @@ matrix:
 
 env:
   - NODE_ENV=production
+  - PYTHONPATH=$(pwd)
 
 cache:
   directories:
