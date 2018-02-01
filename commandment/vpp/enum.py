@@ -24,7 +24,7 @@ class VPPUserStatus(Enum):
     """str: Deleted"""
 
 
-AdamID = int
+AdamID = str
 PricingParam = str
 VPPAsset = Tuple[AdamID, PricingParam]
 """VPPAsset: A tuple representing a pair of product adam id and pricing parameter."""

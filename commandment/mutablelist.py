@@ -2,15 +2,13 @@
 Copyright (c) 2015 Jesse Peterson, 2017 Mosen
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
-
-from sqlalchemy.ext.mutable import Mutable
-
-# MutableList didn't make it into SQLAlchemy 1.0.12
-
 try:
     from sqlalchemy.ext.mutable import MutableList
 except ImportError:
+    # MutableList didn't make it into SQLAlchemy 1.0.12
     # This function copied directly from SQLAlchemy source
+    from sqlalchemy.ext.mutable import Mutable
+
     class MutableList(Mutable, list):
         """A list type that implements :class:`.Mutable`.
 

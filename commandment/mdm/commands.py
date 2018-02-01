@@ -23,17 +23,17 @@ class CommandRegistry(type):
 
 class Command(metaclass=CommandRegistry):
 
-    request_type: ClassVar[str] = None
+    # request_type: ClassVar[str] = None
     """request_type (str): The MDM RequestType, as specified in the MDM Specification."""
 
-    require_access: ClassVar[AccessRightsSet] = set()
+    # require_access: ClassVar[AccessRightsSet] = set()
     """require_access (Set[AccessRights]): Access required for the MDM to execute the command on this device."""
 
-    require_platforms: ClassVar[PlatformRequirements] = dict()
+    # require_platforms: ClassVar[PlatformRequirements] = dict()
     """require_platforms (PlatformRequirements): A dict of Platform : version predicate string, to indicate which 
     platforms will accept the command"""
 
-    require_supervised: ClassVar[bool] = False
+    # require_supervised: ClassVar[bool] = False
     """require_supervised (bool): This command requires supervision on iOS/tvOS"""
 
     def __init__(self, uuid=None) -> None:
@@ -50,6 +50,10 @@ class Command(metaclass=CommandRegistry):
 
         self._uuid: UUID = uuid
         self._attrs: Dict[str, Any] = {}
+        self.request_type: Optional[str] = None
+        self.require_access: AccessRightsSet = set()
+        self.require_platforms: PlatformRequirements = dict()
+        self.require_supervised: bool = False
 
     @property
     def uuid(self) -> UUID:
@@ -86,7 +90,7 @@ class Command(metaclass=CommandRegistry):
 
         This default implementation will work for command types that have no parameters.
         """
-        command = {'RequestType': type(self).request_type}
+        command = {'RequestType': self.request_type}
 
         return {
             'CommandUUID': str(self._uuid),
