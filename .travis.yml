@@ -5,7 +5,7 @@ matrix:
       install:
         - pip install pipenv
         - pipenv install --system
-        - alembic upgrade head
+        - PYTHONPATH=$(pwd) alembic upgrade head
       script:
         - pytest -v -m "not depsim and not vppsim" tests
     - language: node_js
@@ -17,7 +17,6 @@ matrix:
 
 env:
   - NODE_ENV=production
-  - PYTHONPATH=$(pwd)
 
 cache:
   directories:
