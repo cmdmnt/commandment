@@ -47,41 +47,12 @@ def schema_upgrades():
                     sa.PrimaryKeyConstraint('id')
                     )
     op.create_index(op.f('ix_applications_bundle_id'), 'applications', ['bundle_id'], unique=False)
-    op.create_index(op.f('ix_applications_discriminator', 'applications', ['discriminator'], unique=False))
-    op.create_table('applications_manifests',
-                    sa.Column('id', sa.Integer(), nullable=False),
-                    sa.Column('bundle_id', sa.String(), nullable=False),
-                    sa.Column('bundle_version', sa.String(), nullable=True),
-                    sa.Column('kind', sa.String(), nullable=True),
-                    sa.Column('size_in_bytes', sa.BigInteger(), nullable=True),
-                    sa.Column('subtitle', sa.String(), nullable=True),
-                    sa.Column('title', sa.String(), nullable=True),
-                    sa.PrimaryKeyConstraint('id')
-                    )
-    op.create_index(op.f('ix_applications_manifests_bundle_id'), 'applications_manifests', ['bundle_id'], unique=False)
-    op.create_index(op.f('ix_applications_manifests_bundle_version'), 'applications_manifests', ['bundle_version'],
-                    unique=False)
-    op.create_table('application_manifest_checksums',
-                    sa.Column('id', sa.Integer(), nullable=False),
-                    sa.Column('application_manifest_id', sa.Integer(), nullable=True),
-                    sa.Column('checksum_index', sa.Integer(), nullable=False),
-                    sa.Column('checksum_value', sa.String(), nullable=False),
-                    sa.ForeignKeyConstraint(['application_manifest_id'], ['applications_manifests.id'], ),
-                    sa.PrimaryKeyConstraint('id')
-                    )
-    op.create_unique_constraint(
-        op.f('uq_application_manifest_checksum_manifest_index'),
-        'application_manifest_checksums', ['application_manifest_id', 'checksum_index'])
+    op.create_index(op.f('ix_applications_discriminator'), 'applications', ['discriminator'], unique=False)
+
 
 
 def schema_downgrades():
     """schema downgrade migrations go here."""
-    op.drop_constraint(op.f('uq_application_manifest_checksum_manifest_index'),
-                       table_name='application_manifest_checksums')
-    op.drop_table('application_manifest_checksums')
-    op.drop_index(op.f('ix_applications_manifests_bundle_version'), table_name='applications_manifests')
-    op.drop_index(op.f('ix_applications_manifests_bundle_id'), table_name='applications_manifests')
-    op.drop_table('applications_manifests')
     op.drop_index(op.f('ix_applications_discriminator'), table_name='applications')
     op.drop_index(op.f('ix_applications_bundle_id'), table_name='applications')
     op.drop_table('applications')

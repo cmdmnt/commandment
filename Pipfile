@@ -54,10 +54,12 @@ semver = "*"
 signxml = "*"
 ukpostcodeparser = "*"
 "pysaml2" = "*"
+sqlalchemy = "*"
 
 
 [dev-packages]
 
+alembic-viz = "*"
 factory-boy = "*"
 mock = "*"
 mypy = "*"
