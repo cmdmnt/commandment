@@ -1,20 +1,20 @@
-import * as React from 'react';
-import {Menu} from 'semantic-ui-react';
+import * as React from "react";
+import {Menu} from "semantic-ui-react";
 
-import './Navigation.scss';
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
+import "./Navigation.scss";
 
-export interface NavigationProps {
+export interface INavigationProps {
 
 }
 
-export const Navigation: React.StatelessComponent<NavigationProps> = (props: NavigationProps) => (
+export const Navigation: React.StatelessComponent<INavigationProps> = (props: INavigationProps) => (
     <Menu>
         <Menu.Item header>CMDMNT</Menu.Item>
-        <MenuItemLink to='/devices'>Devices</MenuItemLink>
-        <MenuItemLink to='/profiles'>Profiles</MenuItemLink>
-        <MenuItemLink to='/applications'>Applications</MenuItemLink>
-        <MenuItemLink to='/settings'>Settings</MenuItemLink>
-        <MenuItemLink to='/device_groups'>Groups</MenuItemLink>
+        <MenuItemLink to="/devices">Devices</MenuItemLink>
+        <MenuItemLink to="/profiles">Profiles</MenuItemLink>
+        <MenuItemLink to="/applications">Applications</MenuItemLink>
+        <MenuItemLink to="/settings">Settings</MenuItemLink>
+        <MenuItemLink to="/device_groups">Groups</MenuItemLink>
     </Menu>
 );

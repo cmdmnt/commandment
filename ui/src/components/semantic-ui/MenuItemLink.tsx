@@ -1,14 +1,14 @@
-import * as React from 'react';
-import {Route, Link} from 'react-router-dom';
-import { Menu } from 'semantic-ui-react';
+import * as React from "react";
+import {Link, Route} from "react-router-dom";
+import { Menu } from "semantic-ui-react";
 
-interface MenuItemLinkProps {
+interface IMenuItemLinkProps {
     to: string;
     activeOnlyWhenExact?: boolean;
     children: any;
 }
 
-export const MenuItemLink = ({ to, children, activeOnlyWhenExact = false }: MenuItemLinkProps) => (
+export const MenuItemLink = ({ to, children, activeOnlyWhenExact = false }: IMenuItemLinkProps) => (
     <Route path={to} exact={activeOnlyWhenExact} children={({ match }) => (
         <Menu.Item as={Link} to={to} active={!!match}>{children}</Menu.Item>
     )}/>

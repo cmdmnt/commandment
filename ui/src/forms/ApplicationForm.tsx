@@ -1,9 +1,9 @@
-import * as React from 'react';
-import {Field, reduxForm, FormProps} from 'redux-form';
-import {Header, Icon, Segment, Message, Input, Button, Grid, Form, Radio} from 'semantic-ui-react';
+import * as React from "react";
+import {Field, FormProps, reduxForm} from "redux-form";
+import {Button, Form, Grid, Header, Icon, Input, Message, Radio, Segment} from "semantic-ui-react";
+import {Application} from "../models";
 import {SemanticInput} from "./fields/SemanticInput";
 import {SemanticTextArea} from "./fields/SemanticTextArea";
-import {Application} from "../models";
 
 export interface FormData extends Application {
 
@@ -13,7 +13,7 @@ interface ApplicationFormProps extends FormProps<FormData, any, any> {
 
 }
 
-const UnconnectedApplicationForm: React.StatelessComponent<ApplicationFormProps> = props => {
+const UnconnectedApplicationForm: React.StatelessComponent<ApplicationFormProps> = (props) => {
         const { error, handleSubmit, pristine, reset, submitting } = props;
 
         return (
@@ -22,50 +22,50 @@ const UnconnectedApplicationForm: React.StatelessComponent<ApplicationFormProps>
                 <Segment attached>
                     <Form.Group>
                         <Field
-                            id='display-name'
-                            label='Display Name'
-                            name='display_name'
+                            id="display-name"
+                            label="Display Name"
+                            name="display_name"
                             component={SemanticInput}
                             width={12}
-                            type='text' required />
+                            type="text" required />
                         <Field
-                            id='version'
-                            label='Version'
-                            name='version'
+                            id="version"
+                            label="Version"
+                            name="version"
                             width={4}
                             component={SemanticInput}
-                            type='text' required />
+                            type="text" required />
                     </Form.Group>
                     <Field
-                        id='description'
-                        label='Description'
-                        name='description'
+                        id="description"
+                        label="Description"
+                        name="description"
                         component={SemanticTextArea}
-                        type='TextArea' />
+                        type="TextArea" />
                     <Field
-                        id='manifest-url'
-                        label='Manifest URL'
-                        name='manifest_url'
+                        id="manifest-url"
+                        label="Manifest URL"
+                        name="manifest_url"
                         component={SemanticInput}
-                        type='text' />
+                        type="text" />
                     <Field
-                        id='management-flags-remove-app'
-                        label='Remove application when MDM profile is removed'
-                        name='management_flags_remove_app'
+                        id="management-flags-remove-app"
+                        label="Remove application when MDM profile is removed"
+                        name="management_flags_remove_app"
                         component={SemanticInput}
-                        type='checkbox' />
+                        type="checkbox" />
                     <Field
-                        id='management-flags-prevent-backup'
-                        label='Prevent backup of application data'
-                        name='management_flags_prevent_backup'
+                        id="management-flags-prevent-backup"
+                        label="Prevent backup of application data"
+                        name="management_flags_prevent_backup"
                         component={SemanticInput}
-                        type='checkbox' />
-                    <Button type='submit' disabled={submitting}>Save</Button>
+                        type="checkbox" />
+                    <Button type="submit" disabled={submitting}>Save</Button>
                 </Segment>
             </Form>
         );
 };
 
 export const ApplicationForm = reduxForm<FormData, ApplicationFormProps, undefined>({
-    form: 'application'
+    form: "application",
 })(UnconnectedApplicationForm);

@@ -1,10 +1,10 @@
-import * as React from 'react';
-import {WrappedFieldProps} from "redux-form";
+import * as React from "react";
 import {StatelessComponent} from "react-redux";
-import * as Form from 'semantic-ui-react/dist/es/collections/Form';
+import {WrappedFieldProps} from "redux-form";
+import {Form} from "semantic-ui-react";
 import {SemanticWIDTHS} from "semantic-ui-react/src";
 
-interface FieldProps extends WrappedFieldProps<any> {
+interface IFieldProps extends WrappedFieldProps<any> {
     label: string;
     type: string;
     id: string;
@@ -14,7 +14,7 @@ interface FieldProps extends WrappedFieldProps<any> {
     action: string;
 }
 
-export const SemanticTextArea: StatelessComponent<FieldProps> = ({input, label, type, meta: { touched, error, warning }, id, tooltip, required, width, action }) => (
+export const SemanticTextArea: StatelessComponent<IFieldProps> = ({input, label, type, meta: { touched, error, warning }, id, tooltip, required, width, action }) => (
     <Form.TextArea
         fluid
         {...input}

@@ -48,7 +48,7 @@ class UnconnectedApplicationPage extends React.Component<ReduxStateProps & Redux
         return (
             <Container>
                 <Header as='h1'>Application</Header>
-                <ApplicationForm onSubmit={this.handleSubmit} initialValues={} />
+                <ApplicationForm onSubmit={this.handleSubmit} />
             </Container>
         )
     }
@@ -56,5 +56,5 @@ class UnconnectedApplicationPage extends React.Component<ReduxStateProps & Redux
 
 export const ApplicationPage  = connect(
     (state: RootState, ownProps?: OwnProps) => ({}),
-    (dispatch: Dispatch<RootState>, ownProps?: OwnProps) => bindActionCreators({ post }, dispatch)
+    (dispatch: Dispatch<RootState>, ownProps?: OwnProps) => bindActionCreators({ post }, dispatch),
 )(UnconnectedApplicationPage);

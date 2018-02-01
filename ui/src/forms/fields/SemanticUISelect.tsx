@@ -1,15 +1,15 @@
-import * as React from 'react';
-import {WrappedFieldProps} from "redux-form";
-import {StatelessComponent} from "react-redux";
-import * as Form from 'semantic-ui-react/dist/es/collections/Form';
+import * as React from "react";
 import {ChangeEvent} from "react";
+import {StatelessComponent} from "react-redux";
+import {WrappedFieldProps} from "redux-form";
+import {Form} from "semantic-ui-react";
 
-interface FieldProps extends WrappedFieldProps<any> {
+interface IFieldProps extends WrappedFieldProps<any> {
     label: string;
     options: Array<{ key: string; value: string; text: string }>;
 }
 
-export const SemanticUISelect: StatelessComponent<FieldProps> = ({ input, meta: { touched, error, warning }, label, options }) => (
+export const SemanticUISelect: StatelessComponent<IFieldProps> = ({ input, meta: { touched, error, warning }, label, options }) => (
     <Form.Select
         {...input}
         label={label}

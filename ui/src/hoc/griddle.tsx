@@ -1,8 +1,6 @@
-import * as React from 'react';
+import * as React from "react";
 
-interface GriddleDecoratorFactory {
-    <P>(WrappedComponent: React.ComponentClass<P>): React.ComponentClass<P>;
-}
+type GriddleDecoratorFactory = <P>(WrappedComponent: React.ComponentClass<P>) => React.ComponentClass<P>;
 
 export interface GriddleDecoratorState {
     currentPage: number;
@@ -33,48 +31,48 @@ export const griddle: GriddleDecoratorFactory = (WrappedComponent: React.Compone
             super(props);
             this.state = {
                 currentPage: 1,
+                filter: "",
                 pageSize: 20,
-                filter: '',
-                sortId: '',
-                sortAscending: true
-            }
+                sortAscending: true,
+                sortId: "",
+            };
         }
 
-        handleNext = () => {
-            this.setState({ currentPage: this.state.currentPage + 1 });
-        };
-
-        handlePrevious = () => {
-            this.setState({ currentPage: this.state.currentPage - 1 });
-        };
-
-        handleGetPage = (pageNumber: number) => {
-            this.setState({ currentPage: pageNumber });
-        };
-
-        handleFilter = (value: string) => {
-            this.setState({ filter: value });
-        };
-
-        handleSort = (sortProperties: { id: string }) => {
-            const ascending = (this.state.sortId != sortProperties.id) ? true : !this.state.sortAscending;
-            this.setState({ sortId: sortProperties.id, sortAscending: ascending });
-        };
-
-        render() {
+        public render() {
             return <WrappedComponent {...this.props}
                                      griddleState={this.state}
                                      events={{
-                onNext: this.handleNext,
-                onPrevious: this.handlePrevious,
-                onGetPage: this.handleGetPage,
-                onSort: this.handleSort,
-                onFilter: this.handleFilter
-            }} />;
+                                         onFilter: this.handleFilter,
+                                         onGetPage: this.handleGetPage,
+                                         onNext: this.handleNext,
+                                         onPrevious: this.handlePrevious,
+                                         onSort: this.handleSort,
+                                     }} />;
+        }
+
+        protected handleNext = () => {
+            this.setState({ currentPage: this.state.currentPage + 1 });
+        }
+
+        protected handlePrevious = () => {
+            this.setState({ currentPage: this.state.currentPage - 1 });
+        }
+
+        protected handleGetPage = (pageNumber: number) => {
+            this.setState({ currentPage: pageNumber });
+        }
+
+        protected handleFilter = (value: string) => {
+            this.setState({ filter: value });
+        }
+
+        protected handleSort = (sortProperties: { id: string }) => {
+            const ascending = (this.state.sortId !== sortProperties.id) ? true : !this.state.sortAscending;
+            this.setState({ sortId: sortProperties.id, sortAscending: ascending });
         }
     }
 
-    let wrappedDisplayName = WrappedComponent.displayName || 'Component';
+    const wrappedDisplayName = WrappedComponent.displayName || "Component";
     (GriddleDecorator as React.ComponentClass<any>).displayName = `GriddleDecorator(${wrappedDisplayName})`;
     return GriddleDecorator;
 };

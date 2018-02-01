@@ -56,7 +56,6 @@ export function profile(state: ProfileState = initialState, action: ProfileActio
                 return {
                     ...state,
                     profile: action.payload.data,
-                    lastReceived: new Date,
                     loading: false,
                     tags
                 };

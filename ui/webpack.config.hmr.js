@@ -79,7 +79,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // Reduces size by not including all locales
         new webpack.HotModuleReplacementPlugin(),
         new CheckerPlugin()
     ],
