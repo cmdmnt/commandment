@@ -1,3 +1,24 @@
-SQLALCHEMY_DATABASE_URI = 'sqlite:////commandment/commandment.db'
+# --------------
+# Flask settings
+# --------------
+
 DEBUG = False
 PORT = 5443
+
+# Configure your Database URI.
+# All SQLAlchemy options are available here:
+# http://flask-sqlalchemy.pocoo.org/2.1/config/
+
+SQLALCHEMY_DATABASE_URI = 'sqlite:////commandment/commandment.db'
+
+# --------------------
+# commandment settings
+# --------------------
+
+PUSH_CERTIFICATE = '/push.p12'
+PUSH_CERTIFICATE_KEY = '/push.key'
+PUSH_CERTIFICATE_PASSWORD = 'sekret'
+
+CA_CERTIFICATE = '/etc/nginx/ssl/ca.crt'
+SSL_CERTIFICATE = '/etc/nginx/ssl/ssl.crt'
+SSL_RSA_KEY = '/etc/nginx/ssl/ssl.key'

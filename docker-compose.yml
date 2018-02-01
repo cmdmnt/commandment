@@ -4,10 +4,12 @@ services:
     build:
       context: .
       dockerfile: .docker/Dockerfile
-    image: commandment:latest
-    volumes:
-      - "./.docker/settings.cfg.docker:/settings.cfg"
-      - "./server.crt:/etc/nginx/ssl.crt"
-      - "./server.key:/etc/nginx/ssl.key"
+    image: cmdmnt/commandment:latest
+#    volumes:
+#      - "./.docker/settings.cfg.docker:/settings.cfg"
+#      - "./server.crt:/etc/nginx/ssl.crt"
+#      - "./server.key:/etc/nginx/ssl.key"
     ports:
       - "8445:443"
+    environment:
+      - SSL_HOSTNAME=commandment.dev

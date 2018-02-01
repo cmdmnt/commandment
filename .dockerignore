@@ -210,4 +210,15 @@ settings.cfg
 # dont copy dev db into context
 *.db
 
+# no certificate(s)
+*.cer
+*.crt
+*.p12
+*.key
+*.pem
+ssl
+
+# no simulator(s)
+simulators
+
 .git

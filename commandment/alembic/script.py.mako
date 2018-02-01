@@ -5,6 +5,9 @@ Revises: ${down_revision | comma,n}
 Create Date: ${create_date}
 
 """
+
+# From: http://alembic.zzzcomputing.com/en/latest/cookbook.html#conditional-migration-elements
+
 from alembic import op
 import sqlalchemy as sa
 import commandment.dbtypes

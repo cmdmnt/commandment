@@ -28,10 +28,16 @@ from .auth.app import auth_app
 
 
 def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
-    """Create the Flask Application
+    """Create the Flask Application.
+
+    Configuration is looked up the following order:
+
+    - default_settings.py in the commandment package.
+    - config_file parameter passed to this factory method.
+    - environment variable ``COMMANDMENT_SETTINGS`` pointing to a .cfg file.
 
     Args:
-        config_file (Union[str, PurePath]): Path to configuration file
+        config_file (Union[str, PurePath]): Path to configuration file.
 
     Returns:
         Instance of the flask application
@@ -40,11 +46,10 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     app.config.from_object('commandment.default_settings')
     if config_file is not None:
         app.config.from_pyfile(config_file)
+    else:
+        app.config.from_envvar('COMMANDMENT_SETTINGS')
 
     db.init_app(app)
-    # Use alembic to perform migrations
-    # db.create_all(app=app)
-
     oauth2.init_app(app)
 
     app.register_blueprint(auth_app)

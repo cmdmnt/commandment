@@ -1,5 +1,5 @@
 # http://flask-sqlalchemy.pocoo.org/2.1/config/
-SQLALCHEMY_DATABASE_URI = 'sqlite:///commandment.db'
+SQLALCHEMY_DATABASE_URI = 'sqlite:////commandment/commandment.db'
 # FSADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 PORT = 5443
