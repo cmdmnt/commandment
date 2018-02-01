@@ -204,4 +204,10 @@ testdata
 # ui output should already be in commandment/static
 ui
 
+# dont use dev local settings
+settings.cfg
+
+# dont copy dev db into context
+*.db
+
 .git

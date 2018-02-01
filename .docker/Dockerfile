@@ -35,9 +35,12 @@ COPY .docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY . /commandment
 WORKDIR /commandment
-RUN pip install -r /commandment/requirements.txt
+RUN pip install pipenv
+RUN pipenv install --system
 COPY ./uwsgi.ini /commandment/uwsgi.ini
 COPY .docker/entry.sh /entry.sh
 RUN touch /commandment/commandment.db
+
+COPY .docker/settings.cfg.docker /commandment/settings.cfg
 
 CMD ["/entry.sh"]
