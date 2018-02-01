@@ -5,6 +5,7 @@ matrix:
       install:
         - pip install pipenv
         - pipenv install --system
+        - alembic upgrade head
       script:
         - pytest -v -m "not depsim and not vppsim" tests
     - language: node_js
