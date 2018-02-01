@@ -13,13 +13,11 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-#from commandment.models import db
+from ..models import db
 # import commandment.vpp.models
 # import commandment.dep.models
 #import commandment.apps.models
-#target_metadata = db.metadata
+target_metadata = db.metadata
 
 
 # other values from the config, defined by the needs of env.py,
