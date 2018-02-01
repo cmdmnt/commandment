@@ -70,7 +70,12 @@ def authenticate(plist_data):
 def token_update(plist_data):
     current_app.logger.info('TokenUpdate received')
     # TODO: check to make sure device == UDID == cert, etc.
-    device = db.session.query(Device).filter(Device.udid == plist_data['UDID']).one()
+    try:
+        device = db.session.query(Device).filter(Device.udid == plist_data['UDID']).one()
+    except NoResultFound:
+        current_app.logger.debug(
+            'Device (UDID: %s) will be unenrolled because the database has no record of this device.', plist_data['UDID'])
+        abort(410)  # Ask the device to unenroll itself because we dont seem to have any records.
 
     # TODO: a TokenUpdate can either be for a device or a user (per OS X extensions)
     if 'UserID' in plist_data:
