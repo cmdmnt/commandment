@@ -178,11 +178,6 @@ device_tags = db.Table(
 class Device(db.Model):
     """An enrolled device.
     
-          token (str): The hex string representing the Device Token, required to push with APNS.
-
-
-          certificate_id (int): The ID of the certificate that this device is using to authenticate itself. May be null
-
     :table: devices
     """
     __tablename__ = 'devices'
@@ -522,9 +517,10 @@ class Command(db.Model):
         """Get the next available command in the queue for the specified device.
 
         The next available command must match these predicates:
+
         - Assigned to this device.
         - The status is "Queued".
-
+        - The `after` field is in the past, or empty.
 
         Args:
             device (Device): The database model matching the device checking in.

@@ -6,6 +6,8 @@ from commandment.inventory import models as inventory_models
 
 
 class ErrorChainItem(Schema):
+    """ErrorChainItem describes an item of the ErrorChain array,
+     which appears when an error occurs with an MDM request."""
     LocalizedDescription = fields.String()
     USEnglishDescription = fields.String()
     ErrorDomain = fields.String()
@@ -13,12 +15,11 @@ class ErrorChainItem(Schema):
 
 
 class CommandResponse(Schema):
+    """CommandResponse is the base class for all MDM Response Schemas."""
     Status = fields.String()
     UDID = fields.UUID()
     CommandUUID = fields.UUID()
     ErrorChain = fields.Nested(ErrorChainItem, many=True)
-
-
 
 
 class OrganizationInfo(Schema):
@@ -31,6 +32,7 @@ class AutoSetupAdminAccount(Schema):
 
 
 class OSUpdateSettings(Schema):
+    """OSUpdateSettings is returned as a nested part of the ``DeviceInformation`` response."""
     CatalogURL = fields.String(attribute='osu_catalog_url')
     IsDefaultCatalog = fields.Boolean(attribute='osu_is_default_catalog')
     PreviousScanDate = fields.Date(attribute='osu_previous_scan_date')
@@ -116,6 +118,11 @@ class DeviceInformation(Schema):
 
 class DeviceInformationResponse(CommandResponse):
     QueryResponses = fields.Nested(DeviceInformation)
+
+
+class InstallApplicationResponse(CommandResponse):
+    Identifier = fields.String()
+    State = fields.String()
 
 
 class HardwareEncryptionCaps(IntFlag):
@@ -256,3 +263,4 @@ class ProfileListItem(Schema):
 
 class ProfileListResponse(CommandResponse):
     ProfileList = fields.Nested(ProfileListItem, many=True)
+
