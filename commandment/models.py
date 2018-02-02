@@ -458,7 +458,7 @@ class Command(db.Model):
                            nullable=True)  # JSON add'l data as input to command builder
     """parameters (str): The parameters that were used when generating the command, serialized into JSON. Omitting the
             RequestType and CommandUUID attributes."""
-    status = db.Column(db.String(1), index=True, nullable=False, default=CommandStatus.Queued.value)
+    status = db.Column(db.Enum(CommandStatus), index=True, nullable=False, default=CommandStatus.Queued)
     """status (CommandStatus): The status of the command."""
     queued_at = db.Column(db.DateTime, default=datetime.datetime.utcnow(), server_default=db.text('CURRENT_TIMESTAMP'))
     """queued_at (datetime.datetime): The datetime (utc) of when the command was created. Defaults to UTC now"""
@@ -706,6 +706,7 @@ class AvailableOSUpdate(db.Model):
     human_readable_name = db.Column(db.String)
     human_readable_name_locale = db.Column(db.String)
     is_config_data_update = db.Column(db.Boolean)
+    """(bool): This update is a config data update eg. for XProtect or Gatekeeper. These arent normally shown"""
     is_critical = db.Column(db.Boolean)
     is_firmware_update = db.Column(db.Boolean)
     metadata_url = db.Column(db.String)

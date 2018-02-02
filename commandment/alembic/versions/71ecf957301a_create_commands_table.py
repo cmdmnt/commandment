@@ -22,7 +22,7 @@ def upgrade():
                     sa.Column('request_type', sa.String(), nullable=False),
                     sa.Column('uuid', commandment.dbtypes.GUID(), nullable=False),
                     sa.Column('parameters', commandment.dbtypes.JSONEncodedDict(), nullable=True),
-                    sa.Column('status', sa.String(length=1), nullable=False),
+                    sa.Column('status', sa.String(length=40), nullable=False),
                     sa.Column('queued_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
                     sa.Column('sent_at', sa.DateTime(), nullable=True),
                     sa.Column('acknowledged_at', sa.DateTime(), nullable=True),

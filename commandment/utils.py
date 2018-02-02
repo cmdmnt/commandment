@@ -12,7 +12,9 @@ def plistify(*args, **kwargs):
     else:
         data = args or kwargs
 
+    mimetype = kwargs.get('mimetype', current_app.config['PLISTIFY_MIMETYPE'])
+
     return current_app.response_class(
         (plistlib.dumps(data), '\n'),
-        mimetype=current_app.config['PLISTIFY_MIMETYPE']
+        mimetype=mimetype
     )

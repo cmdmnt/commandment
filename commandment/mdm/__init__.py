@@ -41,20 +41,34 @@ AccessRightsSet = Set[AccessRights]
 
 
 class CommandStatus(Enum):
-    """CommandStatus describes all the possible states of a command in the device command queue."""
-    #: str: Command has been created but has not been sent.
-    Queued = 'Q'
-    #: str: Command has been sent to the device, but no response has returned.
-    Sent = 'S'
-    #: str: Response has been returned from the device. This is considered completed
-    Acknowledged = 'A'
-    #: str: The command that we sent was invalid, unable to be processed.
-    Invalid = 'I'
-    #: str: The device is busy, this command cannot be processed right now.
-    NotNow = 'N'
-    #  str: This command is considered dead because it timed out, the device timed out, or was orphaned by a
-    #  removed device.
-    Expired = 'E'
+    """CommandStatus describes all the possible states of a command in the device command queue.
+
+    The following statuses are based upon the return status of the MDM client:
+
+    - Acknowledged
+    - Error
+    - CommandFormatError
+    - NotNow
+
+    Additionally, there are statuses to explain the lifecycle of the command before and after the MDM client processes
+    them:
+
+    - Queued: The command was newly created and not yet sent to the device.
+    - Sent: The command has been sent to the device, but no response has come back yet.
+    - Expired: The command was never acknowledged, or the device was removed.
+    """
+
+    # MDM Client Statuses
+    Idle = 'Idle'
+    Acknowledged = 'Acknowledged'
+    Error = 'Error'
+    CommandFormatError = 'CommandFormatError'
+    NotNow = 'NotNow'
+
+    # Commandment Lifecycle Statuses
+    Queued = 'Queued'
+    Sent = 'Sent'
+    Expired = 'Expired'
 
 
 class SettingsItem(Enum):

@@ -11,3 +11,5 @@ PORT = 5443
 # requesting certs (per Apple T&C). Don't force Apple's hand and
 # ruin it for everyone!
 MDMCERT_API_KEY = 'b742461ff981756ca3f924f02db5a12e1f6639a9109db047ead1814aafc058dd'
+
+PLISTIFY_MIMETYPE = 'application/xml'
