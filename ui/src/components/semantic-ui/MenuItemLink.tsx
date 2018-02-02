@@ -5,11 +5,12 @@ import { Menu } from "semantic-ui-react";
 interface IMenuItemLinkProps {
     to: string;
     activeOnlyWhenExact?: boolean;
+    header?: boolean;
     children: any;
 }
 
-export const MenuItemLink = ({ to, children, activeOnlyWhenExact = false }: IMenuItemLinkProps) => (
+export const MenuItemLink = ({ to, children, activeOnlyWhenExact = false, header = false }: IMenuItemLinkProps) => (
     <Route path={to} exact={activeOnlyWhenExact} children={({ match }) => (
-        <Menu.Item as={Link} to={to} active={!!match}>{children}</Menu.Item>
+        <Menu.Item as={Link} to={to} active={!!match} header={header}>{children}</Menu.Item>
     )}/>
 );

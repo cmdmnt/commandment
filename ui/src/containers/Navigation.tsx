@@ -10,7 +10,7 @@ export interface INavigationProps {
 
 export const Navigation: React.StatelessComponent<INavigationProps> = (props: INavigationProps) => (
     <Menu>
-        <Menu.Item header>CMDMNT</Menu.Item>
+        <MenuItemLink header to="/" activeOnlyWhenExact>CMDMNT</MenuItemLink>
         <MenuItemLink to="/devices">Devices</MenuItemLink>
         <MenuItemLink to="/profiles">Profiles</MenuItemLink>
         <MenuItemLink to="/applications">Applications</MenuItemLink>
