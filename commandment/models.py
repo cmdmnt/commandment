@@ -6,6 +6,7 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 Attributes:
     db (SQLAlchemy): A reference to flask SQLAlchemy extensions db instance.
 """
+from typing import Optional, Type
 from flask_sqlalchemy import SQLAlchemy
 
 from cryptography import x509
@@ -513,7 +514,7 @@ class Command(db.Model):
         return cls.query.filter(cls.uuid == uuid).one()
 
     @classmethod
-    def get_next_device_command(cls, device: Device):
+    def next_command(cls, device: Device):
         """Get the next available command in the queue for the specified device.
 
         The next available command must match these predicates:
@@ -532,6 +533,13 @@ class Command(db.Model):
         return cls.query.filter(db.and_(
             cls.device == device,
             cls.status == CommandStatus.Queued.value)).order_by(cls.id).first()
+
+    @classmethod
+    def next(cls, device: Device):  # type: (Type[Command], Device) -> Optional[Command]
+        model = cls.query.filter(db.and_(
+            cls.device == device,
+            cls.status == CommandStatus.Queued.value)).order_by(cls.id).first()
+
 
     def __repr__(self):
         return '<Command ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
