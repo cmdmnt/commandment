@@ -37,7 +37,7 @@ render(
             <AppContainer>
                 <AppLayout>
                     <Route exact path="/applications" component={ApplicationsPage} />
-                    <Route path="/applications/add" component={ApplicationPage} />
+                    <Route path="/applications/add/:platform" component={ApplicationPage} />
                     <Route path="/certificates" component={CertificatesPage} />
                     <Route exact path="/devices" component={DevicesPage} />
                     <Route path="/devices/:id" component={DevicePage} />

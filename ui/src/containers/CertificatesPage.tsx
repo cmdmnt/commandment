@@ -1,13 +1,13 @@
-import * as React from 'react';
-import {connect, Dispatch} from 'react-redux';
-import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
+import Griddle, {ColumnDefinition, RowDefinition} from "griddle-react";
+import * as React from "react";
+import {connect, Dispatch} from "react-redux";
 
-import {IndexActionRequest} from "../actions/certificates";
+import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import * as apiActions from '../actions/certificates';
+import {IndexActionRequest} from "../actions/certificates";
+import * as apiActions from "../actions/certificates";
 import {CertificatesState} from "../reducers/certificates";
 import {RootState} from "../reducers/index";
-import {RouteComponentProps} from "react-router";
 
 interface OwnProps {
 
@@ -27,7 +27,7 @@ interface ReduxDispatchProps {
 
 function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps: OwnProps): ReduxDispatchProps {
     return bindActionCreators({
-        index: apiActions.index
+        index: apiActions.index,
     }, dispatch);
 }
 
@@ -48,11 +48,11 @@ class BaseCertificatesPage extends React.Component<CertificatesPageProps, Certif
 
     handleFilter = (filterText: string) => {
         // TODO: debounce filter text
-    };
+    }
 
     render(): JSX.Element {
         const {
-            certificates
+            certificates,
         } = this.props;
 
         const eventHandlers = {
@@ -60,20 +60,20 @@ class BaseCertificatesPage extends React.Component<CertificatesPageProps, Certif
         };
 
         return (
-            <div className='CertificatesPage top-margin container'>
-                <div className='row'>
-                    <div className='column'>
+            <div className="CertificatesPage top-margin container">
+                <div className="row">
+                    <div className="column">
                         <h1>Certificates</h1>
                     </div>
                 </div>
-                <div className='row'>
-                    <div className='column'>
+                <div className="row">
+                    <div className="column">
                         <Griddle
                             data={certificates.items}
                             pageProperties={{
                                 currentPage: certificates.currentPage,
                                 pageSize: certificates.pageSize,
-                                recordCount: certificates.recordCount
+                                recordCount: certificates.recordCount,
                             }}
                             events={eventHandlers}
                         >
@@ -92,5 +92,5 @@ class BaseCertificatesPage extends React.Component<CertificatesPageProps, Certif
 
 export const CertificatesPage = connect<ReduxStateProps, ReduxDispatchProps, CertificatesPageProps>(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(BaseCertificatesPage);

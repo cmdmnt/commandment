@@ -206,8 +206,8 @@ export const encodeJSONAPIChildIndexParameters = <R>(wrappedActionCreator: Wrapp
     id: string,
     size: number = 10,
     pageNumber: number = 1,
-    sort?: Array<string>,
-    filters?: FlaskFilters
+    sort?: string[],
+    filters?: FlaskFilters,
 ) => {
     let queryParameters = [];
 

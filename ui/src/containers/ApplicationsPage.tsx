@@ -1,44 +1,45 @@
-import * as React from 'react';
-import {connect, Dispatch} from 'react-redux';
-import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
+import Griddle, {ColumnDefinition, RowDefinition} from "griddle-react";
+import * as React from "react";
+import {connect, Dispatch} from "react-redux";
 import {RouteComponentProps} from "react-router";
-import {RootState} from "../reducers/index";
 import {bindActionCreators} from "redux";
+import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
+import {RootState} from "../reducers";
+import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
+import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
+import {ButtonLink} from "../components/semantic-ui/ButtonLink";
 
-interface ReduxStateProps {
-
-}
-
-interface ReduxDispatchProps {
-
-}
-
-
-interface ApplicationsPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
+interface IReduxStateProps {
 
 }
 
-interface ApplicationsPageState {
+interface IReduxDispatchProps {
+
 }
 
-class UnconnectedApplicationsPage extends React.Component<ApplicationsPageProps, ApplicationsPageState> {
+interface IApplicationsPageProps extends IReduxStateProps, IReduxDispatchProps, RouteComponentProps<any> {
+
+}
+
+interface IApplicationsPageState {
+}
+
+class UnconnectedApplicationsPage extends React.Component<IApplicationsPageProps, IApplicationsPageState> {
     render() {
         return (
-            <div className='ApplicationsPage top-margin container'>
-                <div className='row'>
-                    <div className='column'>
-                        <h1>Applications</h1>
-                    </div>
-                </div>
-                <div className='row'>
-
-                </div>
-            </div>
+            <Container className="ApplicationsPage">
+                <Grid>
+                    <Grid.Column>
+                      <Header as="h1">Applications</Header>
+                        <ButtonLink to="/applications/add/macos">Add new Application</ButtonLink>
+                    </Grid.Column>
+                </Grid>
+            </Container>
         );
     }
 }
 
-export const ApplicationsPage = connect<ReduxStateProps, ReduxDispatchProps, ApplicationsPageProps>(
+export const ApplicationsPage = connect<IReduxStateProps, IReduxDispatchProps, IApplicationsPageProps>(
     (state: RootState, ownProps?: any) => ({}),
-    (dispatch: Dispatch<RootState>, ownProps?: any) => bindActionCreators({}, dispatch)
+    (dispatch: Dispatch<RootState>, ownProps?: any) => bindActionCreators({}, dispatch),
 )(UnconnectedApplicationsPage);

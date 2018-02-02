@@ -31,16 +31,16 @@ class AutoSetupAdminAccount(Schema):
 
 
 class OSUpdateSettings(Schema):
-    CatalogURL = fields.String()
-    IsDefaultCatalog = fields.Boolean()
-    PreviousScanDate = fields.Date()
-    PreviousScanResult = fields.String()
-    PerformPeriodicCheck = fields.Boolean()
-    AutomaticCheckEnabled = fields.Boolean()
-    BackgroundDownloadEnabled = fields.Boolean()
-    AutomaticAppInstallationEnabled = fields.Boolean()
-    AutomaticOSInstallationEnabled = fields.Boolean()
-    AutomaticSecurityUpdatesEnabled = fields.Boolean()
+    CatalogURL = fields.String(attribute='osu_catalog_url')
+    IsDefaultCatalog = fields.Boolean(attribute='osu_is_default_catalog')
+    PreviousScanDate = fields.Date(attribute='osu_previous_scan_date')
+    PreviousScanResult = fields.String(attribute='osu_previous_scan_result')
+    PerformPeriodicCheck = fields.Boolean(attribute='osu_perform_periodic_check')
+    AutomaticCheckEnabled = fields.Boolean(attribute='osu_automatic_check_enabled')
+    BackgroundDownloadEnabled = fields.Boolean(attribute='osu_background_download_enabled')
+    AutomaticAppInstallationEnabled = fields.Boolean(attribute='osu_automatic_app_installation_enabled')
+    AutomaticOSInstallationEnabled = fields.Boolean(attribute='osu_automatic_os_installation_enabled')
+    AutomaticSecurityUpdatesEnabled = fields.Boolean(attribute='osu_automatic_security_updates_enabled')
 
 
 class DeviceInformation(Schema):
@@ -106,9 +106,12 @@ class DeviceInformation(Schema):
     CurrentMCC = fields.String(attribute='current_mcc')
     CurrentMNC = fields.String(attribute='current_mnc')
 
-    # @post_load
-    # def make_device(self, data):
-    #     return models.Device(**data)
+    @post_load
+    def normalize_osu(self, data):
+        print(data)
+        for k, v in data.get('os_update_settings', []).items():
+            setattr(data, k, v)
+        return data
 
 
 class DeviceInformationResponse(CommandResponse):
@@ -136,6 +139,17 @@ class FirewallSettings(Schema):
     Applications = fields.Nested(FirewallApplicationItem, many=True)
 
 
+class FirmwarePasswordStatus(Schema):
+    PasswordExists = fields.Boolean()
+    ChangePending = fields.Boolean()
+    AllowOroms = fields.Boolean()
+
+
+class ManagementStatus(Schema):
+    EnrolledViaDEP = fields.Boolean()
+    UserApprovedEnrollment = fields.Boolean()
+
+
 class SecurityInfoResponse(CommandResponse):
     HardwareEncryptionCaps = EnumField(HardwareEncryptionCaps)
     PasscodePresent = fields.Boolean()
@@ -145,8 +159,12 @@ class SecurityInfoResponse(CommandResponse):
     FDE_Enabled = fields.Boolean()
     FDE_HasPersonalRecoveryKey = fields.Boolean()
     FDE_HasInstitutionalRecoveryKey = fields.Boolean()
+    FDE_PersonalRecoveryKeyCMS = fields.String()
+    FDE_PersonalRecoveryKeyDeviceKey = fields.String()
     FirewallSettings = fields.Nested(FirewallSettings)
     SystemIntegrityProtectionEnabled = fields.Boolean()
+    FirmwarePasswordStatus = fields.Nested(FirmwarePasswordStatus)
+    ManagementStatus = fields.Nested(ManagementStatus)
 
 
 class InstalledApplication(Schema):

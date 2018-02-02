@@ -271,7 +271,6 @@ class Device(db.Model):
     """eas_device_identifier (str): Exchange ActiveSync Identifier"""
     is_cloud_backup_enabled = db.Column(db.Boolean)
     """is_cloud_backup_enabled (bool): iCloud backup is enabled."""
-    # TODO: OSUpdateSettings
     local_hostname = db.Column(db.String)
     """local_hostname (str): """
     hostname = db.Column(db.String)
@@ -283,6 +282,20 @@ class Device(db.Model):
     """is_mdm_lost_mode_enabled (bool): MDM Lost mode is enabled."""
     maximum_resident_users = db.Column(db.Integer)
     """maximum_resident_users (int): Maximum number of users that can use Shared iPad."""
+
+    # OSUpdateSettings : Table 8
+    # OSUpdateSettings is flattened
+    osu_catalog_url = db.Column(db.String)
+    """osu_catalog_url (str): Software Update Catalog URL."""
+    osu_is_default_catalog = db.Column(db.Boolean)
+    osu_previous_scan_date = db.Column(db.DateTime)
+    osu_previous_scan_result = db.Column(db.String)
+    osu_perform_periodic_check = db.Column(db.Boolean)
+    osu_automatic_check_enabled = db.Column(db.Boolean)
+    osu_background_download_enabled = db.Column(db.Boolean)
+    osu_automatic_app_installation_enabled = db.Column(db.Boolean)
+    osu_automatic_os_installation_enabled = db.Column(db.Boolean)
+    osu_automatic_security_updates_enabled = db.Column(db.Boolean)
 
     # NetworkInfo : Table 9
     iccid = db.Column(db.String)
@@ -485,6 +498,7 @@ class Command(db.Model):
               Command: The database model, ready to be committed.
         """
         c = cls()
+        assert cmd.request_type is not None
         c.request_type = cmd.request_type
         c.uuid = cmd.uuid
         c.parameters = cmd.parameters

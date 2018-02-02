@@ -1,15 +1,15 @@
-import * as React from 'react';
+import * as React from "react";
 
-interface GriddleValue {
+interface IGriddleValue {
     griddleKey: number;
     value: any;
 }
 
-export const PayloadScopeIcon = (value: GriddleValue): JSX.Element => {
+export const PayloadScopeIcon = (value: IGriddleValue): JSX.Element => {
     const icons: { [propName: string]: string; } = {
-       'System': 'fa-computer',
-       'User': 'fa-user'
+       System: "fa-computer",
+       User: "fa-user",
     };
 
-    return <i className={'fa ' + icons[value.value]} />;
+    return <i className={"fa " + icons[value.value]} />;
 };

@@ -5,7 +5,7 @@ export interface Application {
     purchase_method?: number;
     manifest_url: string;
     management_flags: number;
-    change_management_state: 'Managed' | null;
+    change_management_state: "Managed" | null;
     display_name: string;
     description: string;
     version: string;
@@ -27,7 +27,7 @@ export interface Profile {
     consent_en?: string;
 }
 
-export type ProfileRelationship = 'tags';
+export type ProfileRelationship = "tags";
 
 export interface Command {
     id?: number;
@@ -41,7 +41,6 @@ export interface Command {
     after?: Date;
     ttl: number;
 }
-
 
 export interface Device {
     udid: string;
@@ -111,7 +110,7 @@ export interface Device {
 }
 
 // Valid JSON-API relationships
-export type DeviceRelationship = 'commands' | 'tags' | 'groups' | 'profiles';
+export type DeviceRelationship = "commands" | "tags" | "groups" | "profiles";
 
 export interface DeviceGroup {
     id?: string;
@@ -187,7 +186,7 @@ export interface InstalledPayload {
 export interface AvailableOSUpdate {
     id?: string;
     allows_install_later: boolean;
-    app_identifiers_to_close: Array<string>;
+    app_identifiers_to_close: string[];
     human_readable_name: string;
     human_readable_name_locale: string;
     is_config_data_update: boolean;
@@ -206,7 +205,7 @@ export interface SCEPConfiguration {
     ca_fingerprint: string;
     subject: string;
     key_size: string; // Needs to be string to support redux-form
-    key_type: 'RSA';
+    key_type: "RSA";
     key_usage: string;
     subject_alt_name: string;
     retries: number;

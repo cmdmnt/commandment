@@ -36,14 +36,14 @@ def schema_upgrades():
     op.create_table('installed_payloads',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('profile_id', sa.Integer(), nullable=False),
-    sa.Column('device_id', sa.Integer(), nullable=True),
+    sa.Column('device_id', sa.Integer(), nullable=False),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('display_name', sa.String(), nullable=True),
     sa.Column('identifier', sa.String(), nullable=True),
     sa.Column('organization', sa.String(), nullable=True),
     sa.Column('payload_type', sa.String(), nullable=True),
     sa.Column('uuid', commandment.dbtypes.GUID(), nullable=True),
-    sa.ForeignKeyConstraint(['device_id'], ['devices.id'], ),
+    sa.ForeignKeyConstraint(['device_id'], ['devices.id'], ondelete="CASCADE"),
     sa.ForeignKeyConstraint(['profile_id'], ['installed_profiles.id'], ondelete="CASCADE"),
     sa.PrimaryKeyConstraint('id')
     )

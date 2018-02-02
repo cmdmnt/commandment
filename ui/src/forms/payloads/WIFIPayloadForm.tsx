@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {Field, FormProps, FormSection, formValueSelector, reduxForm} from "redux-form";
 import {EAPClientConfiguration} from "./WIFIPayload/EAPClientConfiguration";
 import {ProxyDetails, WIFIProxyType} from "./WIFIPayload/ProxyDetails";
-import {FormData} from "../ApplicationForm";
+import {IFormData} from "../ApplicationForm";
 
 export type WIFIEncryptionType = "None" | "Any" | "WPA2" | "WPA" | "WEP";
 

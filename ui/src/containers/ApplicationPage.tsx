@@ -1,61 +1,61 @@
-import * as React from 'react';
-import {RouteComponentProps} from "react-router";
+import * as React from "react";
 import {connect, Dispatch} from "react-redux";
+import {RouteComponentProps} from "react-router";
+import {bindActionCreators} from "redux";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
-import {ApplicationForm, FormData as ApplicationFormData} from "../forms/ApplicationForm";
 import {
     post, PostActionRequest,
   //  read, ReadActionRequest
 } from "../actions/applications";
-import {RootState} from "../reducers/index";
-import {bindActionCreators} from "redux";
+import {ApplicationForm, IFormData as ApplicationFormData} from "../forms/ApplicationForm";
+import {RootState} from "../reducers";
 
-interface ReduxStateProps {
+interface IReduxStateProps {
 
 }
 
-interface ReduxDispatchProps {
+interface IReduxDispatchProps {
     post: PostActionRequest;
 }
 
-interface RouteParameters {
-    id?: string;
+interface IRouteParameters {
+    platform: string;
 }
 
-interface OwnProps extends RouteComponentProps<RouteParameters> {
-    
+interface IOwnProps extends RouteComponentProps<IRouteParameters> {
+
 }
 
-class UnconnectedApplicationPage extends React.Component<ReduxStateProps & ReduxDispatchProps & OwnProps, void> {
+class UnconnectedApplicationPage extends React.Component<IReduxStateProps & IReduxDispatchProps & IOwnProps, void> {
 
-    componentWillMount?() {
+    public componentWillMount?() {
         if (this.props.match.params.id) {
             // this.props.read(this.props.match.params.id, ['applications']);
         }
     }
 
-    handleSubmit = (values: ApplicationFormData) => {
+    public handleSubmit = (values: IFormData) => {
         if (this.props.match.params.id) {
             // this.props.patch()
         } else {
             this.props.post(values);
         }
-    };
+    }
 
-    render() {
+    public render() {
         const { } = this.props;
 
         return (
             <Container>
-                <Header as='h1'>Application</Header>
+                <Header as="h1">Application</Header>
                 <ApplicationForm onSubmit={this.handleSubmit} />
             </Container>
-        )
+        );
     }
 }
 
 export const ApplicationPage  = connect(
-    (state: RootState, ownProps?: OwnProps) => ({}),
-    (dispatch: Dispatch<RootState>, ownProps?: OwnProps) => bindActionCreators({ post }, dispatch),
+    (state: RootState, ownProps?: IOwnProps) => ({}),
+    (dispatch: Dispatch<RootState>, ownProps?: IOwnProps) => bindActionCreators({ post }, dispatch),
 )(UnconnectedApplicationPage);

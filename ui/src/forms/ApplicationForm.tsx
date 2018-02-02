@@ -2,26 +2,23 @@ import * as React from "react";
 import {Field, FormProps, reduxForm} from "redux-form";
 import Form from "semantic-ui-react/src/collections/Form";
 import Button from "semantic-ui-react/src/elements/Button";
-import Grid from "semantic-ui-react/src/collections/Grid";
-import Header from "semantic-ui-react/src/elements/Header";
-import Icon from "semantic-ui-react/src/elements/Icon";
-import Input from "semantic-ui-react/src/elements/Input";
 import Message from "semantic-ui-react/src/collections/Message";
 import Segment from "semantic-ui-react/src/elements/Segment";
 
 import {Application} from "../models";
 import {SemanticInput} from "./fields/SemanticInput";
 import {SemanticTextArea} from "./fields/SemanticTextArea";
+import {SemanticCheckbox} from "./fields/SemanticCheckbox";
 
-export interface FormData extends Application {
-
-}
-
-interface ApplicationFormProps extends FormProps<FormData, any, any> {
+export interface IFormData extends Application {
 
 }
 
-const UnconnectedApplicationForm: React.StatelessComponent<ApplicationFormProps> = (props) => {
+interface IApplicationFormProps extends FormProps<IFormData, any, any> {
+
+}
+
+const UnconnectedApplicationForm: React.StatelessComponent<IApplicationFormProps> = (props) => {
         const { error, handleSubmit, pristine, reset, submitting } = props;
 
         return (
@@ -45,6 +42,18 @@ const UnconnectedApplicationForm: React.StatelessComponent<ApplicationFormProps>
                             type="text" required />
                     </Form.Group>
                     <Field
+                        id="itunes-store-id"
+                        label="iTunes store ID"
+                        name="itunes_store_id"
+                        component={SemanticInput}
+                        type="text" />
+                    <Field
+                        id="bundle-id"
+                        label="Bundle Identifier"
+                        name="bundle_id"
+                        component={SemanticInput}
+                        type="text" />
+                    <Field
                         id="description"
                         label="Description"
                         name="description"
@@ -56,24 +65,34 @@ const UnconnectedApplicationForm: React.StatelessComponent<ApplicationFormProps>
                         name="manifest_url"
                         component={SemanticInput}
                         type="text" />
+                </Segment>
+                <Message attached>Management Options</Message>
+                <Segment attached>
                     <Field
                         id="management-flags-remove-app"
                         label="Remove application when MDM profile is removed"
                         name="management_flags_remove_app"
-                        component={SemanticInput}
+                        component={SemanticCheckbox}
                         type="checkbox" />
                     <Field
                         id="management-flags-prevent-backup"
-                        label="Prevent backup of application data"
+                        label="App data cannot be backed up to iCloud or iTunes"
                         name="management_flags_prevent_backup"
-                        component={SemanticInput}
+                        component={SemanticCheckbox}
                         type="checkbox" />
+                    <Field
+                        id="change-management-state"
+                        label="Take management of this application if it is already installed"
+                        name="change_management_state"
+                        component={SemanticCheckbox}
+                        type="checkbox"
+                        value="Managed" />
                     <Button type="submit" disabled={submitting}>Save</Button>
                 </Segment>
             </Form>
         );
 };
 
-export const ApplicationForm = reduxForm<FormData, ApplicationFormProps, undefined>({
+export const ApplicationForm = reduxForm<IFormData, IApplicationFormProps, undefined>({
     form: "application",
 })(UnconnectedApplicationForm);

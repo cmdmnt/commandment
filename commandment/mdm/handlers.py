@@ -10,7 +10,7 @@ from commandment.mdm.app import command_router
 from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList, \
     InstallProfile, AvailableOSUpdates, InstallApplication
 from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse, AvailableOSUpdateListResponse, \
-    ProfileListResponse
+    ProfileListResponse, SecurityInfoResponse
 from ..models import db, Device, Command as DBCommand
 from commandment.inventory.models import InstalledCertificate, InstalledProfile
 
@@ -19,6 +19,18 @@ Queries = DeviceInformation.Queries
 
 @command_router.route('DeviceInformation')
 def ack_device_information(request: DeviceInformation, device: Device, response: dict):
+    """Acknowledge a ``DeviceInformation`` response.
+
+    Args:
+        request (DeviceInformation): The command instance that generated this response.
+        device (Device): The device responding to the command.
+        response (dict): The raw response dictionary, de-serialized from plist.
+    Returns:
+        void: Reserved for future use
+
+    See Also:
+        - `DeviceInformation Command <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/3-MDM_Protocol/MDM_Protocol.html#//apple_ref/doc/uid/TP40017387-CH3-SW15>`_.
+    """
     schema = DeviceInformationResponse()
     result = schema.load(response)
     for k, v in result.data['QueryResponses'].items():
@@ -29,20 +41,9 @@ def ack_device_information(request: DeviceInformation, device: Device, response:
 
 @command_router.route('SecurityInfo')
 def ack_security_info(request: SecurityInfo, device: Device, response: dict):
-    sinfo = response['SecurityInfo']
-    device.passcode_present = sinfo.get('PasscodePresent', None)
-    device.passcode_compliant = sinfo.get('PasscodeCompliant', None)
-    device.passcode_compliant_with_profiles = sinfo.get('PasscodeCompliantWithProfiles', None)
-    device.fde_enabled = sinfo.get('FDE_Enabled', None)
-    device.fde_has_prk = sinfo.get('FDE_HasPersonalRecoveryKey', None)
-    device.fde_has_irk = sinfo.get('FDE_HasInstitutionalRecoveryKey', None)
-    device.sip_enabled = sinfo.get('SystemIntegrityProtectionEnabled', None)
+    schema = SecurityInfoResponse()
+    result = schema.load(response)
 
-    if 'FirewallSettings' in sinfo:
-        fw = sinfo['FirewallSettings']
-        device.firewall_enabled = fw.get('FirewallEnabled', None)
-        device.block_all_incoming = fw.get('BlockAllIncoming', None)
-        device.stealth_mode_enabled = fw.get('StealthMode', None)
 
     db.session.commit()
 
@@ -69,15 +70,20 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
         db.session.delete(p)
 
     desired_profiles = {}
-    for tag in device.tags:
-        for p in tag.profiles:
-            desired_profiles[p.uuid] = p
+    # for tag in device.tags:
+    #     for p in tag.profiles:
+    #         desired_profiles[p.uuid] = p
 
     remove_profiles = []
 
     for profile in profile_list.data['ProfileList']:
         profile.device = device
         profile.device_udid = device.udid
+
+        for payload in profile.payload_content:
+            payload.device = device
+            payload.profile_id = profile.id
+
         db.session.add(profile)
 
         # Reconcile profiles which should be installed

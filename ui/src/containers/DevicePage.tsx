@@ -39,6 +39,7 @@ import {DeviceCommands} from "./devices/DeviceCommands";
 import {DeviceDetail} from "./devices/DeviceDetail";
 import {DeviceOSUpdates} from "./devices/DeviceOSUpdates";
 import {DeviceProfiles} from "./devices/DeviceProfiles";
+import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 
 interface OwnProps {
 
@@ -96,7 +97,7 @@ interface DevicePageState {
 
 class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
 
-    handleAction = (e: SyntheticEvent<any>, {value}: {value: string}) => {
+    protected handleAction = (e: SyntheticEvent<any>, {value}: {value: string}) => {
         e.preventDefault();
         switch (value) {
             case "push":
@@ -111,20 +112,20 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
         }
     }
 
-    handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value: string }) => {
+    protected handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value: string }) => {
         const tag: Tag = {
-            name: value,
             color: "888888",
+            name: value,
         };
 
         this.props.postRelated<Tag>("" + this.props.device.device.id, "tags", tag);
     }
 
-    handleSearchTag = (value: string) => {
+    protected handleSearchTag = (value: string) => {
         this.props.fetchTags(10, 1, [], [{name: "name", op: "ilike", val: `%${value}%`}]);
     }
 
-    handleChangeTag = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
+    protected handleChangeTag = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
         const { value } = data;
 
         const relationships = value.map((v: string) => {
@@ -178,10 +179,11 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                                 onSearch={this.handleSearchTag}
                                 onChange={this.handleChangeTag}
                             />
-                            <Segment>
+                            <Header as="h2" attached>ASD</Header>
+                            <Segment attached>
                                 {device && <MacOSDeviceDetail device={device}/>}
                             </Segment>
-                            <Menu pointing secondary color="purple" inverted>
+                            <Menu pointing secondary color="purple" inverted attached>
                                 <MenuItemLink to={`/devices/${device_id}/detail`}>Detail</MenuItemLink>
                                 <MenuItemLink to={`/devices/${device_id}/certificates`}>Certificates</MenuItemLink>
                                 <MenuItemLink to={`/devices/${device_id}/commands`}>Commands</MenuItemLink>

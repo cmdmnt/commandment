@@ -1,17 +1,17 @@
-import * as React from 'react';
-import {connect, Dispatch} from 'react-redux';
-import {RouteComponentProps} from 'react-router';
-import {RootState} from "../../reducers/index";
+import Griddle, {ColumnDefinition, RowDefinition} from "griddle-react";
+import * as React from "react";
+import {connect, Dispatch} from "react-redux";
+import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {CertificatesActionRequest, certificates as fetchInstalledCertificates} from "../../actions/device/certificates";
-import {InstalledCertificatesState} from "../../reducers/device/installed_certificates";
-import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
-import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
+import {certificates as fetchInstalledCertificates, CertificatesActionRequest} from "../../actions/device/certificates";
 import {CertificateTypeIcon} from "../../components/CertificateTypeIcon";
-import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
 import {CertificateRow} from "../../components/griddle/CertificateRow";
 import {ListTableBody, ListTableContainer} from "../../components/griddle/ListTable";
+import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
+import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
+import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
+import {InstalledCertificatesState} from "../../reducers/device/installed_certificates";
+import {RootState} from "../../reducers/index";
 
 interface ReduxStateProps {
     installed_certificates: InstalledCertificatesState;
@@ -19,8 +19,8 @@ interface ReduxStateProps {
 
 function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
     return {
-        installed_certificates: state.device.installed_certificates
-    }
+        installed_certificates: state.device.installed_certificates,
+    };
 }
 
 interface ReduxDispatchProps {
@@ -29,7 +29,7 @@ interface ReduxDispatchProps {
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
     return bindActionCreators({
-        fetchInstalledCertificates
+        fetchInstalledCertificates,
     }, dispatch);
 }
 
@@ -45,66 +45,65 @@ interface DeviceCertificatesProps extends ReduxStateProps, ReduxDispatchProps, R
 interface DeviceCertificatesState {
 }
 
-
 export class UnconnectedDeviceCertificates extends React.Component<DeviceCertificatesProps, any> {
 
-    componentWillMount?() {
+    public componentWillMount?() {
         this.props.fetchInstalledCertificates(this.props.match.params.id, this.props.griddleState.pageSize);
     }
 
-    componentWillUpdate(nextProps: DeviceCertificatesProps, nextState: DeviceCertificatesState) {
+    public componentWillUpdate(nextProps: DeviceCertificatesProps, nextState: DeviceCertificatesState) {
         const {griddleState} = this.props;
         const {griddleState: nextGriddleState} = nextProps;
 
         if (nextGriddleState.filter !== griddleState.filter || nextGriddleState.currentPage !== griddleState.currentPage) {
             this.props.fetchInstalledCertificates(
-                ''+this.props.match.params.id,
+                "" + this.props.match.params.id,
                 nextGriddleState.pageSize,
                 nextGriddleState.currentPage, [],
-                [{ name: 'x509_cn', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
+                [{ name: "x509_cn", op: "ilike", val: `%${nextGriddleState.filter}%` }]);
         }
     }
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const {
             installed_certificates,
-            griddleState
+            griddleState,
         } = this.props;
 
         return (
-            <div className='DeviceCertificates'>
+            <div className="DeviceCertificates">
                 {installed_certificates.items &&
                 <Griddle
                     data={installed_certificates.items}
                     plugins={[SemanticUIPlugin()]}
                     styleConfig={{
                         classNames: {
-                            Table: 'ui celled table',
-                            NoResults: 'ui message'
-                        }
+                            Table: "ui celled table",
+                            NoResults: "ui message",
+                        },
                     }}
                     events={this.props.events}
                     components={{
                         Layout,
                         Row: CertificateRow,
                         TableContainer: ListTableContainer,
-                        TableBody: ListTableBody
+                        TableBody: ListTableBody,
                     }}
                     pageProperties={{
                         currentPage: griddleState.currentPage,
                         pageSize: griddleState.pageSize,
-                        recordCount: installed_certificates.recordCount
+                        recordCount: installed_certificates.recordCount,
                     }}
                 >
-                    <RowDefinition onClickButton={(e: any) => { console.log('clicked button'); }}>
+                    <RowDefinition onClickButton={(e: any) => { console.log("clicked button"); }}>
                     </RowDefinition>
                 </Griddle>}
             </div>
-        )
+        );
     }
 }
 
 export const DeviceCertificates = connect<ReduxStateProps, ReduxDispatchProps, DeviceCertificatesProps>(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(griddle(UnconnectedDeviceCertificates));

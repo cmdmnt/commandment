@@ -50,10 +50,10 @@ class Command(metaclass=CommandRegistry):
 
         self._uuid: UUID = uuid
         self._attrs: Dict[str, Any] = {}
-        self.request_type: Optional[str] = None
-        self.require_access: AccessRightsSet = set()
-        self.require_platforms: PlatformRequirements = dict()
-        self.require_supervised: bool = False
+        # self.request_type: Optional[str] = None
+        # self.require_access: AccessRightsSet = set()
+        # self.require_platforms: PlatformRequirements = dict()
+        # self.require_supervised: bool = False
 
     @property
     def uuid(self) -> UUID:
