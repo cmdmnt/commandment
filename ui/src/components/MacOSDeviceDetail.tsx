@@ -1,4 +1,4 @@
-import * as moment from "moment";
+import {distanceInWordsToNow} from "date-fns";
 import * as React from "react";
 import {DeviceState} from "../reducers/device";
 import {ModelIcon} from "./ModelIcon";
@@ -18,12 +18,8 @@ interface MacOSDeviceDetailProps {
     device: DeviceState;
 }
 
-export class MacOSDeviceDetail extends React.Component<MacOSDeviceDetailProps, MacOSDeviceDetailState> {
-
-    render(): JSX.Element {
-        const {
-            device,
-        } = this.props;
+export const MacOSDeviceDetail: React.StatelessComponent<MacOSDeviceDetailProps> =
+    ({device}: MacOSDeviceDetailProps) => {
 
         if (!device.device) {
             return (<div className="MacOSDeviceDetail">No device</div>);
@@ -31,14 +27,16 @@ export class MacOSDeviceDetail extends React.Component<MacOSDeviceDetailProps, M
 
         const attributes = device.device.attributes;
 
-        const name = attributes.device_name ? attributes.device_name : "(Untitled)";
-        const niceLastSeen = attributes.last_seen ? moment(attributes.last_seen).fromNow() : "Never";
+        const niceLastSeen = attributes.last_seen ? distanceInWordsToNow(attributes.last_seen) : "Never";
 
         return (
             <Grid columns={3} className="MacOSDeviceDetail">
                 <Grid.Row>
                     <Grid.Column>
-                        <Header as="h1">{name} <Button content="Rename" /></Header>
+                        <Header as="h1">
+                            {attributes.device_name ? attributes.device_name : "(Untitled)"}
+                            <Button content="Rename"/>
+                        </Header>
                         <p>{attributes.hostname}</p>
                     </Grid.Column>
                     <Grid.Column>
@@ -49,28 +47,28 @@ export class MacOSDeviceDetail extends React.Component<MacOSDeviceDetailProps, M
                     <Grid.Column>
                         <List>
                             <List.Item>
-                                <List.Icon name="heartbeat" size="large" verticalAlign="middle" />
+                                <List.Icon name="heartbeat" size="large" verticalAlign="middle"/>
                                 <List.Content>
                                     <List.Header>Last Seen</List.Header>
                                     <List.Description>{niceLastSeen}</List.Description>
                                 </List.Content>
                             </List.Item>
                             <List.Item>
-                                <List.Icon name="disk outline" size="large" verticalAlign="middle" />
+                                <List.Icon name="disk outline" size="large" verticalAlign="middle"/>
                                 <List.Content>
                                     <List.Header>macOS</List.Header>
                                     <List.Description>{attributes.os_version} ({attributes.build_version})</List.Description>
                                 </List.Content>
                             </List.Item>
                             <List.Item>
-                                <List.Icon name="tag" size="large" verticalAlign="middle" />
+                                <List.Icon name="tag" size="large" verticalAlign="middle"/>
                                 <List.Content>
                                     <List.Header>UDID</List.Header>
                                     <List.Description>{attributes.udid}</List.Description>
                                 </List.Content>
                             </List.Item>
                             <List.Item>
-                                <List.Icon name="desktop" size="large" verticalAlign="middle" />
+                                <List.Icon name="desktop" size="large" verticalAlign="middle"/>
                                 <List.Content>
                                     <List.Header>Model</List.Header>
                                     <List.Description>{attributes.model}</List.Description>
@@ -81,21 +79,21 @@ export class MacOSDeviceDetail extends React.Component<MacOSDeviceDetailProps, M
                     <Grid.Column>
                         <List>
                             <List.Item>
-                                <List.Icon name="bluetooth alternative" size="large" verticalAlign="middle" />
+                                <List.Icon name="bluetooth alternative" size="large" verticalAlign="middle"/>
                                 <List.Content>
                                     <List.Header>Bluetooth MAC</List.Header>
                                     <List.Description>{attributes.bluetooth_mac || "Not Available"}</List.Description>
                                 </List.Content>
                             </List.Item>
                             <List.Item>
-                                <List.Icon name="wifi" size="large" verticalAlign="middle" />
+                                <List.Icon name="wifi" size="large" verticalAlign="middle"/>
                                 <List.Content>
                                     <List.Header>Wifi MAC</List.Header>
                                     <List.Description>{attributes.wifi_mac || "Not Available"}</List.Description>
                                 </List.Content>
                             </List.Item>
                             <List.Item>
-                                <List.Icon name="protect" size="large" verticalAlign="middle" />
+                                <List.Icon name="protect" size="large" verticalAlign="middle"/>
                                 <List.Content>
                                     <List.Header>SIP</List.Header>
                                     <List.Description>{attributes.sip_enabled ? "Enabled" : "Disabled"}</List.Description>
@@ -109,6 +107,4 @@ export class MacOSDeviceDetail extends React.Component<MacOSDeviceDetailProps, M
                 </Grid.Row>
             </Grid>
         );
-    }
-
-}
+    };

@@ -1,11 +1,11 @@
-import * as React from 'react';
-import * as moment from 'moment';
+import {distanceInWordsToNow} from "date-fns";
+import * as React from "react";
 
-interface GriddleValue {
+interface IGriddleValue {
     griddleKey: number;
     value: any;
 }
 
-export const SinceNowUTC = (value: GriddleValue): JSX.Element => {
-    return <span>{moment(value.value).fromNow()}</span>;
+export const SinceNowUTC = (value: IGriddleValue): JSX.Element => {
+    return <span>{distanceInWordsToNow(value.value)}</span>;
 };

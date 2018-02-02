@@ -5,7 +5,7 @@ import Header from "semantic-ui-react/src/elements/Header";
 import Icon from "semantic-ui-react/src/elements/Icon";
 import Segment from "semantic-ui-react/src/elements/Segment";
 
-import * as moment from "moment";
+import {format} from "date-fns";
 import {VPPAccount} from "../../models";
 
 export interface IVPPAccountDetailProps extends VPPAccount {
@@ -19,7 +19,7 @@ export const VPPAccountDetail: React.StatelessComponent<IVPPAccountDetailProps> 
                 VPP Token ({props.org_name})
             </Header.Content>
         </Header>
-        Expires {moment(props.exp_date).format()}
+        Expires {format(props.exp_date)}
         <Button icon="download" content=".vpptoken" />
 
     </Segment>
