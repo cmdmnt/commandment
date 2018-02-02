@@ -1,12 +1,17 @@
-import * as React from 'react';
-import {Button, Item, Icon, Segment, Header} from 'semantic-ui-react';
-import {VPPAccount} from "../../models";
-import * as moment from "moment";
+import * as React from "react";
 
-export interface VPPAccountDetailProps extends VPPAccount {
+import Button from "semantic-ui-react/src/elements/Button";
+import Header from "semantic-ui-react/src/elements/Header";
+import Icon from "semantic-ui-react/src/elements/Icon";
+import Segment from "semantic-ui-react/src/elements/Segment";
+
+import * as moment from "moment";
+import {VPPAccount} from "../../models";
+
+export interface IVPPAccountDetailProps extends VPPAccount {
 }
 
-export const VPPAccountDetail: React.StatelessComponent<VPPAccountDetailProps> = (props: VPPAccountDetailProps) => (
+export const VPPAccountDetail: React.StatelessComponent<IVPPAccountDetailProps> = (props: IVPPAccountDetailProps) => (
     <Segment>
         <Header as="h1">
             <Icon name="ticket" />

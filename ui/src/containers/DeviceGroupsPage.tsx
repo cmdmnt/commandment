@@ -1,18 +1,23 @@
-import * as React from 'react';
-import {connect, Dispatch} from 'react-redux';
-import {RootState} from "../reducers/index";
+import Griddle, {ColumnDefinition, RowDefinition} from "griddle-react";
+import * as React from "react";
+import {connect, Dispatch} from "react-redux";
+import {Link} from "react-router-dom";
 import {bindActionCreators} from "redux";
-import {Link} from 'react-router-dom';
-import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import {Grid, Header, Container, Button} from 'semantic-ui-react'
-import {SelectionPlugin} from '../griddle-plugins/selection';
-import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
-import {SimpleLayout} from "../components/griddle/SimpleLayout";
-import {DeviceGroupsState} from "../reducers/device_groups";
-import {index, IndexActionRequest} from '../actions/device_groups';
-import {griddle, GriddleDecoratorState} from "../hoc/griddle";
-import {RouteLinkColumn} from "../components/griddle/RouteLinkColumn";
+import {RootState} from "../reducers/index";
+
+import Grid from "semantic-ui-react/src/collections/Grid";
+import Button from "semantic-ui-react/src/elements/Button";
+import Container from "semantic-ui-react/src/elements/Container";
+import Header from "semantic-ui-react/src/elements/Header";
+
 import {RouteComponentProps} from "react-router";
+import {index, IndexActionRequest} from "../actions/device_groups";
+import {RouteLinkColumn} from "../components/griddle/RouteLinkColumn";
+import {SimpleLayout} from "../components/griddle/SimpleLayout";
+import {SelectionPlugin} from "../griddle-plugins/selection";
+import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
+import {griddle, GriddleDecoratorState} from "../hoc/griddle";
+import {DeviceGroupsState} from "../reducers/device_groups";
 
 interface ReduxStateProps {
     device_groups: DeviceGroupsState;
@@ -20,10 +25,9 @@ interface ReduxStateProps {
 
 function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
     return {
-        device_groups: state.device_groups
+        device_groups: state.device_groups,
     };
 }
-
 
 interface ReduxDispatchProps {
     index: IndexActionRequest;
@@ -31,7 +35,7 @@ interface ReduxDispatchProps {
 
 function mapDispatchToProps(dispatch: Dispatch<RootState>): ReduxDispatchProps {
     return bindActionCreators({
-        index
+        index,
     }, dispatch);
 }
 
@@ -41,9 +45,8 @@ interface DeviceGroupsPageProps extends ReduxStateProps, ReduxDispatchProps, Rou
 }
 
 interface DeviceGroupsPageState {
-    
-}
 
+}
 
 class UnconnectedDeviceGroupsPage extends React.Component<DeviceGroupsPageProps, DeviceGroupsPageState> {
 
@@ -54,37 +57,37 @@ class UnconnectedDeviceGroupsPage extends React.Component<DeviceGroupsPageProps,
     render() {
         const {
             device_groups,
-            griddleState
+            griddleState,
         } = this.props;
 
         return (
-            <Container className='DeviceGroupsPage'>
+            <Container className="DeviceGroupsPage">
                 <Grid>
                     <Grid.Column>
                         <Header as="h1">Groups</Header>
-                        <Button primary as={Link} to='/device_groups/add'>New</Button>
+                        <Button primary as={Link} to="/device_groups/add">New</Button>
 
                         <Griddle
                             data={device_groups.items}
                             pageProperties={{
                                 currentPage: griddleState.currentPage,
                                 pageSize: griddleState.pageSize,
-                                recordCount: device_groups.recordCount
+                                recordCount: device_groups.recordCount,
                             }}
                             styleConfig={{
                                 classNames: {
-                                    Table: 'ui celled table',
-                                    NoResults: 'ui message'
-                                }
+                                    Table: "ui celled table",
+                                    NoResults: "ui message",
+                                },
                             }}
                             plugins={[SemanticUIPlugin()]}
                             components={{
-                                Layout: SimpleLayout
+                                Layout: SimpleLayout,
                             }}
                         >
-                            <RowDefinition onClick={() => console.log('fmeh')}>
-                                <ColumnDefinition title='ID' id='id' customComponent={RouteLinkColumn} urlPrefix='/device_groups/' />
-                                <ColumnDefinition title='Name' id='attributes.name' />
+                            <RowDefinition onClick={() => console.log("fmeh")}>
+                                <ColumnDefinition title="ID" id="id" customComponent={RouteLinkColumn} urlPrefix="/device_groups/" />
+                                <ColumnDefinition title="Name" id="attributes.name" />
                             </RowDefinition>
                         </Griddle>
                     </Grid.Column>
@@ -96,5 +99,5 @@ class UnconnectedDeviceGroupsPage extends React.Component<DeviceGroupsPageProps,
 
 export const DeviceGroupsPage = connect<ReduxStateProps, ReduxDispatchProps, DeviceGroupsPageProps>(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(griddle(UnconnectedDeviceGroupsPage));

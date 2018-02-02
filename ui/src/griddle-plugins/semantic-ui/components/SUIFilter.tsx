@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Input} from 'semantic-ui-react';
+import Input from 'semantic-ui-react/src/elements/Input';
 
 interface SUIFilterProps {
     setFilter: (value: string) => void;

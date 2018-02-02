@@ -2,7 +2,15 @@ import * as React from 'react';
 import {Field, reduxForm, FormProps} from 'redux-form';
 
 import {required, reverseDns} from "../../validations";
-import {Header, Icon, Segment, Message, Divider, Grid, Form} from 'semantic-ui-react';
+
+import Form from "semantic-ui-react/src/collections/Form";
+import Grid from "semantic-ui-react/src/collections/Grid";
+import Header from "semantic-ui-react/src/elements/Header";
+import Icon from "semantic-ui-react/src/elements/Icon";
+import Message from "semantic-ui-react/src/collections/Message";
+import Segment from "semantic-ui-react/src/elements/Segment";
+import Divider from "semantic-ui-react/src/elements/Divider";
+
 import {SemanticInput} from "../fields/SemanticInput";
 import {SemanticUISelect} from "../fields/SemanticUISelect";
 

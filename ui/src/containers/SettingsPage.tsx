@@ -2,7 +2,10 @@ import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RootState} from "../reducers/index";
-import { Container, Card, Icon } from 'semantic-ui-react';
+import Container from "semantic-ui-react/src/elements/Container";
+import Card from "semantic-ui-react/src/views/Card";
+import Icon from "semantic-ui-react/src/elements/Icon";
+
 import {Link} from 'react-router-dom';
 import {RouteComponentProps} from "react-router";
 

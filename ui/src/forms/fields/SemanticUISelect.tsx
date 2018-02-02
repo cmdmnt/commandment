@@ -2,7 +2,7 @@ import * as React from "react";
 import {ChangeEvent} from "react";
 import {StatelessComponent} from "react-redux";
 import {WrappedFieldProps} from "redux-form";
-import {Form} from "semantic-ui-react";
+import Form, {FormComponent, FormProps} from "semantic-ui-react/src/collections/Form";
 
 interface IFieldProps extends WrappedFieldProps<any> {
     label: string;

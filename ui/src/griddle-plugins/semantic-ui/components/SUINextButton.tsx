@@ -1,5 +1,7 @@
 import * as React from "react";
-import {Icon, Menu, SemanticICONS} from "semantic-ui-react";
+import Icon from "semantic-ui-react/src/elements/Icon";
+import {SemanticICONS} from "semantic-ui-react/src";
+import Menu from "semantic-ui-react/src/collections/Menu";
 
 interface SUINextButtonProps {
     className: string;

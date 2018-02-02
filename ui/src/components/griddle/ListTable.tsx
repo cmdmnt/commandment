@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {List} from 'semantic-ui-react';
+import List from "semantic-ui-react/src/elements/List";
 import {object} from 'prop-types';
 import {components} from "griddle-react";
 

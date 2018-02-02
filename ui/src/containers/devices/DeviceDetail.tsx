@@ -1,12 +1,15 @@
-import * as React from 'react';
+import * as React from "react";
 import {connect, Dispatch} from "react-redux";
-import {RootState} from "../../reducers/index";
-import {DeviceState} from "../../reducers/device";
-import {bindActionCreators} from "redux";
 import {RouteComponentProps} from "react-router";
-import { Button, Header, Icon, Grid, List } from 'semantic-ui-react';
-import {CheckListItem} from "../../components/CheckListItem";
+import {bindActionCreators} from "redux";
+import {DeviceState} from "../../reducers/device";
+import {RootState} from "../../reducers/index";
 
+import Grid from "semantic-ui-react/src/collections/Grid";
+import Header from "semantic-ui-react/src/elements/Header";
+import List from "semantic-ui-react/src/elements/List";
+
+import {CheckListItem} from "../../components/CheckListItem";
 
 interface ReduxStateProps {
     device: DeviceState;
@@ -14,8 +17,8 @@ interface ReduxStateProps {
 
 function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
     return {
-        device: state.device
-    }
+        device: state.device,
+    };
 }
 
 interface ReduxDispatchProps {
@@ -43,11 +46,11 @@ interface DeviceDetailComponentState {
 class UnconnectedDeviceDetail extends React.Component<DeviceDetailProps, DeviceDetailComponentState> {
     render() {
         const {
-            device: {device}
+            device: {device},
         } = this.props;
 
         return (
-            <Grid columns={2} className='DeviceDetail'>
+            <Grid columns={2} className="DeviceDetail">
                 <Grid.Row>
                     <Grid.Column>
                         <Header>Security</Header>
@@ -78,11 +81,11 @@ class UnconnectedDeviceDetail extends React.Component<DeviceDetailProps, DeviceD
 
                 </Grid.Row>
             </Grid>
-        )
+        );
     }
 }
 
 export const DeviceDetail = connect<ReduxStateProps, ReduxDispatchProps, any>(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(UnconnectedDeviceDetail);

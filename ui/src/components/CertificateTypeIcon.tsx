@@ -1,5 +1,5 @@
-import * as React from 'react';
-import {Icon} from 'semantic-ui-react';
+import * as React from "react";
+import Icon from "semantic-ui-react/src/elements/Icon";
 
 interface CertificateTypeIconProps {
     value: number;
@@ -7,5 +7,5 @@ interface CertificateTypeIconProps {
 }
 
 export const CertificateTypeIcon: React.StatelessComponent<CertificateTypeIconProps> = (props: CertificateTypeIconProps): JSX.Element => {
-    return <Icon name={props.value ? 'id badge': 'certificate'} />;
+    return <Icon name={props.value ? "id badge" : "certificate"} />;
 };

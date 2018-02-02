@@ -1,6 +1,8 @@
 import * as React from "react";
 import {Field, FormProps, reduxForm} from "redux-form";
-import {Form, Button} from 'semantic-ui-react';
+import Form, {FormComponent, FormProps} from "semantic-ui-react/src/collections/Form";
+import Button from "semantic-ui-react/src/elements/Button";
+
 import {SemanticInput} from "./fields/SemanticInput";
 
 export interface FormData {
@@ -12,7 +14,7 @@ interface DeviceGroupFormProps extends FormProps<FormData, any, any> {
 }
 
 class UnconnectedDeviceGroupForm extends React.Component<DeviceGroupFormProps, undefined> {
-    render() {
+    public render() {
         const {
             handleSubmit,
         } = this.props;

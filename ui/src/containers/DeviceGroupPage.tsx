@@ -2,7 +2,8 @@ import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
 import {RootState} from "../reducers/index";
 import {bindActionCreators} from "redux";
-import {Container, Segment, Header} from 'semantic-ui-react';
+import Container from "semantic-ui-react/src/elements/Container";
+import Header from "semantic-ui-react/src/elements/Header";
 import {DeviceGroupForm, FormData as DeviceGroupFormData} from "../forms/DeviceGroupForm";
 import {
     post, PostActionRequest,

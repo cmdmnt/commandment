@@ -1,21 +1,23 @@
-import * as React from 'react';
-import {Dropdown, DropdownItemProps, DropdownProps, Input} from 'semantic-ui-react';
-import {Tag} from "../models";
+import * as React from "react";
+import Input from "semantic-ui-react/src/elements/Input";
+import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
+import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
+
 import {SyntheticEvent} from "react";
+import {Tag} from "../models";
 
 // Not exported by Dropdown
 interface DropdownOnSearchChangeData extends DropdownProps {
     searchQuery: string;
 }
 
-
 interface TagDropdownProps {
     loading: boolean;
-    tags: Array<DropdownItemProps>;
-    value?: Array<any>;
+    tags: DropdownItemProps[];
+    value?: any[];
     onAddItem: (event: SyntheticEvent<any>, data: object) => void;
     onSearch: (value: string) => void;
-    onChange: (event: SyntheticEvent<any>, values: Array<string>) => void;
+    onChange: (event: SyntheticEvent<any>, values: string[]) => void;
     searchTimeout: number;
 }
 
@@ -30,33 +32,33 @@ export class TagDropdown extends React.Component<TagDropdownProps, TagDropdownSt
     constructor(props: TagDropdownProps) {
         super(props);
         this.state = {
-            value: ''
+            value: "",
         };
     }
 
     performSearch = () => {
-        console.log('perform search');
+        console.log("perform search");
         this.props.onSearch(this.state.value);
-    };
+    }
 
     handleSearchChange = (event: React.SyntheticEvent<HTMLElement>, data: DropdownOnSearchChangeData): void => {
-        console.log('change');
+        console.log("change");
         if (this._timeout) { clearTimeout(this._timeout); }
         this.setState({ value: data.searchQuery });
 
         if (data.length > 0) {
             this._timeout = window.setTimeout(this.performSearch, 400);
         }
-    };
+    }
 
     render() {
         const { tags, loading, onAddItem, value } = this.props;
 
         return (
-            <Dropdown placeholder='Add Tag(s)'
+            <Dropdown placeholder="Add Tag(s)"
                       multiple
                       allowAdditions
-                      additionLabel='Add new tag '
+                      additionLabel="Add new tag "
                       search
                       selection
                       loading={loading}

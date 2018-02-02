@@ -6,7 +6,8 @@ import {bindActionCreators} from "redux";
 import {OrganizationState} from "../../reducers/organization";
 import {OrganizationForm, FormData} from '../../forms/config/OrganizationForm';
 import {RootState} from "../../reducers/index";
-import {Segment, Header, Container} from 'semantic-ui-react';
+import Container from "semantic-ui-react/src/elements/Container";
+import Header from "semantic-ui-react/src/elements/Header";
 
 interface OrganizationPageState {
     organization: OrganizationState;

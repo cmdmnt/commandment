@@ -1,20 +1,25 @@
-import * as React from 'react';
-import {connect, Dispatch} from 'react-redux';
-import {Grid, Container, Table, Header, Message} from 'semantic-ui-react';
-import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import * as Dropzone from 'react-dropzone';
+import * as React from "react";
+import {connect, Dispatch} from "react-redux";
 
-import {bindActionCreators} from "redux";
-import * as actions from '../actions/profiles';
-import {RootState} from "../reducers/index";
+import Grid from "semantic-ui-react/src/collections/Grid";
+import Message from "semantic-ui-react/src/collections/Message";
+import Container from "semantic-ui-react/src/elements/Container";
+import Header from "semantic-ui-react/src/elements/Header";
+
+import Griddle, {ColumnDefinition, RowDefinition} from "griddle-react";
+import * as Dropzone from "react-dropzone";
+
 import {RouteComponentProps} from "react-router";
-import {ProfilesState} from "../reducers/profiles";
+import {bindActionCreators} from "redux";
+import * as actions from "../actions/profiles";
 import {IndexActionRequest, UploadActionRequest} from "../actions/profiles";
-import {PayloadScopeIcon} from '../components/griddle/PayloadScopeIcon';
+import {PayloadScopeIcon} from "../components/griddle/PayloadScopeIcon";
+import {RouteLinkColumn} from "../components/griddle/RouteLinkColumn";
 import {SimpleLayout as Layout} from "../components/griddle/SimpleLayout";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
-import {RouteLinkColumn} from "../components/griddle/RouteLinkColumn";
+import {RootState} from "../reducers/index";
+import {ProfilesState} from "../reducers/profiles";
 
 interface ReduxStateProps {
     profiles: ProfilesState;
@@ -35,7 +40,6 @@ interface ProfilesPageState {
     filter: string;
 }
 
-
 export class UnconnectedProfilesPage extends React.Component<ProfilesPageProps, ProfilesPageState> {
 
     componentWillMount?(): void {
@@ -51,11 +55,11 @@ export class UnconnectedProfilesPage extends React.Component<ProfilesPageProps, 
             || nextGriddleState.sortId !== griddleState.sortId
             || nextGriddleState.sortAscending !== griddleState.sortAscending
         ) {
-            let sortColumnId = '';
+            let sortColumnId = "";
             if (nextGriddleState.sortId) {
-                sortColumnId = nextGriddleState.sortId.substr('attributes.'.length);
+                sortColumnId = nextGriddleState.sortId.substr("attributes.".length);
                 if (!nextGriddleState.sortAscending) {
-                    sortColumnId = '-' + sortColumnId;
+                    sortColumnId = "-" + sortColumnId;
                 }
             }
 
@@ -63,24 +67,24 @@ export class UnconnectedProfilesPage extends React.Component<ProfilesPageProps, 
                 nextGriddleState.pageSize,
                 nextGriddleState.currentPage,
                 [sortColumnId],
-                [{ name: 'display_name', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
+                [{ name: "display_name", op: "ilike", val: `%${nextGriddleState.filter}%` }]);
         }
     }
 
-    handleDrop = (files: Array<File>) => {
+    handleDrop = (files: File[]) => {
         console.dir(files);
         this.props.upload(files[0]);
-    };
+    }
 
     render(): JSX.Element {
         const {
             griddleState,
-            profiles
+            profiles,
         } = this.props;
 
         ///api/v1/upload/profiles
         return (
-            <Container className='ProfilesPage'>
+            <Container className="ProfilesPage">
                 <Grid>
                     <Grid.Column>
                         <Header as="h1">Profiles</Header>
@@ -94,7 +98,6 @@ export class UnconnectedProfilesPage extends React.Component<ProfilesPageProps, 
                                 <Header as="h3">Drop configuration profile or Click to upload</Header>
                             </Dropzone>
 
-
                         {profiles.uploadError &&
                             <Message negative header="Upload error" content={profiles.uploadErrorDetail.message} />
                         }
@@ -105,17 +108,17 @@ export class UnconnectedProfilesPage extends React.Component<ProfilesPageProps, 
                             pageProperties={{
                                 currentPage: griddleState.currentPage,
                                 pageSize: griddleState.pageSize,
-                                recordCount: profiles.recordCount
+                                recordCount: profiles.recordCount,
                             }}
                             styleConfig={{
                                 classNames: {
-                                    Table: 'ui celled table',
-                                    NoResults: 'ui message'
-                                }
+                                    Table: "ui celled table",
+                                    NoResults: "ui message",
+                                },
                             }}
                             events={this.props.events}
                             components={{
-                                Layout
+                                Layout,
                             }}
                         >
                             <RowDefinition>
@@ -134,10 +137,10 @@ export class UnconnectedProfilesPage extends React.Component<ProfilesPageProps, 
 
 export const ProfilesPage = connect<ReduxStateProps, ReduxDispatchProps, ProfilesPageProps>(
     (state: RootState, ownProps?: any): ReduxStateProps => ({
-        profiles: state.profiles
+        profiles: state.profiles,
     }),
     (dispatch: Dispatch<RootState>, ownProps?: any): ReduxDispatchProps => bindActionCreators({
         index: actions.index,
-        upload: actions.upload
-    }, dispatch)
+        upload: actions.upload,
+    }, dispatch),
 )(griddle(UnconnectedProfilesPage));

@@ -1,41 +1,42 @@
-import * as React from 'react';
-import {connect, Dispatch} from 'react-redux';
-import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import {Grid, Header, Container} from 'semantic-ui-react'
+import Griddle, {ColumnDefinition, RowDefinition} from "griddle-react";
+import * as React from "react";
+import {connect, Dispatch} from "react-redux";
+import Grid from "semantic-ui-react/src/collections/Grid";
+import Container from "semantic-ui-react/src/elements/Container";
+import Header from "semantic-ui-react/src/elements/Header";
 
-import {bindActionCreators, Store} from "redux";
-import * as actions from '../actions/devices';
-import {RootState} from "../reducers/index";
+import {components} from "griddle-react";
+import {List, Map} from "immutable";
 import {RouteComponentProps} from "react-router";
-import {DevicesState} from "../reducers/devices";
+import {bindActionCreators, Store} from "redux";
 import {IndexActionRequest} from "../actions/devices";
-import {SinceNowUTC} from "../components/griddle/SinceNowUTC";
-import {SimpleLayout} from '../components/griddle/SimpleLayout';
-import {SelectionPlugin} from '../griddle-plugins/selection';
+import * as actions from "../actions/devices";
 import {DeviceColumn} from "../components/griddle/DeviceColumn";
+import {SimpleLayout} from "../components/griddle/SimpleLayout";
+import {SinceNowUTC} from "../components/griddle/SinceNowUTC";
 import {MultiAttrCellPlugin} from "../griddle-plugins/multiattr-cell/index";
+import {SelectionPlugin} from "../griddle-plugins/selection";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
-import {List, Map} from "immutable";
-import {components} from "griddle-react";
-
+import {DevicesState} from "../reducers/devices";
+import {RootState} from "../reducers/index";
 
 const rowDataSelector = (state: Map<string, any>, { griddleKey }: { griddleKey?: string }) => {
     return state
-        .get('data')
-        .find((rowMap: any) => rowMap.get('griddleKey') === griddleKey)
+        .get("data")
+        .find((rowMap: any) => rowMap.get("griddleKey") === griddleKey)
         .toJSON();
 };
 
 const enhancedWithRowData = connect((state, props: components.RowProps) => {
     return {
         // rowData will be available into MyCustomComponent
-        rowData: rowDataSelector(state, props)
+        rowData: rowDataSelector(state, props),
     };
 });
 
 interface OwnProps {
-    
+
 }
 
 interface ReduxStateProps {
@@ -54,7 +55,7 @@ interface ReduxDispatchProps {
 function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps): ReduxDispatchProps {
     return bindActionCreators({
         index: actions.index,
-        fetchDevicesIfRequired: actions.fetchDevicesIfRequired
+        fetchDevicesIfRequired: actions.fetchDevicesIfRequired,
     }, dispatch);
 }
 
@@ -67,7 +68,6 @@ interface DevicesPageState {
     filter: string;
 }
 
-
 class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPageState> {
 
     componentWillMount?(): void {
@@ -78,11 +78,11 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
     render(): JSX.Element {
         const {
             griddleState,
-            devices
+            devices,
         } = this.props;
 
         return (
-            <Container className='DevicesPage'>
+            <Container className="DevicesPage">
                 <Grid>
                     <Grid.Column>
                         <Header as="h1">Devices</Header>
@@ -92,21 +92,21 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
                             pageProperties={{
                                 currentPage: griddleState.currentPage,
                                 pageSize: griddleState.pageSize,
-                                recordCount: devices.recordCount
+                                recordCount: devices.recordCount,
                             }}
                             styleConfig={{
                                 classNames: {
-                                    Table: 'ui celled table'
-                                }
+                                    Table: "ui celled table",
+                                },
                             }}
                             events={this.props.events}
                             plugins={[SemanticUIPlugin(), SelectionPlugin()]}
                             components={{
-                                Layout: SimpleLayout
+                                Layout: SimpleLayout,
                             }}
                         >
-                            <RowDefinition onClick={() => console.log('fmeh')}>
-                                <ColumnDefinition title='Device' id="id,attributes.model_name,attributes.device_name"
+                            <RowDefinition onClick={() => console.log("fmeh")}>
+                                <ColumnDefinition title="Device" id="id,attributes.model_name,attributes.device_name"
                                                   customComponent={enhancedWithRowData(DeviceColumn)}/>
 
                                 <ColumnDefinition title="Last Seen" id="attributes.last_seen"
@@ -122,5 +122,5 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
 
 export const DevicesPage = connect<ReduxStateProps, ReduxDispatchProps, DevicesPageProps>(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(griddle(UnconnectedDevicesPage));

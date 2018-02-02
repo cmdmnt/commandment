@@ -1,6 +1,14 @@
 import * as React from "react";
 import {Field, FormProps, reduxForm} from "redux-form";
-import {Button, Form, Grid, Header, Icon, Input, Message, Radio, Segment} from "semantic-ui-react";
+import Form from "semantic-ui-react/src/collections/Form";
+import Button from "semantic-ui-react/src/elements/Button";
+import Grid from "semantic-ui-react/src/collections/Grid";
+import Header from "semantic-ui-react/src/elements/Header";
+import Icon from "semantic-ui-react/src/elements/Icon";
+import Input from "semantic-ui-react/src/elements/Input";
+import Message from "semantic-ui-react/src/collections/Message";
+import Segment from "semantic-ui-react/src/elements/Segment";
+
 import {Application} from "../models";
 import {SemanticInput} from "./fields/SemanticInput";
 import {SemanticTextArea} from "./fields/SemanticTextArea";

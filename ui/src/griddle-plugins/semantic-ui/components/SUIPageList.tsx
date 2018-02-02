@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Table, Menu, Icon} from 'semantic-ui-react';
+import Menu from "semantic-ui-react/src/collections/Menu";
 import {Dispatch} from 'react-redux';
 import {Action} from 'redux';
 

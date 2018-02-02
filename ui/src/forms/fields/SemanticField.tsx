@@ -1,10 +1,10 @@
-import * as React from 'react';
-import {WrappedFieldProps} from "redux-form";
-import {StatelessComponent} from "react-redux";
-import {Form} from "semantic-ui-react";
+import * as React from "react";
 import {SyntheticEvent} from "react";
+import {StatelessComponent} from "react-redux";
+import {WrappedFieldProps} from "redux-form";
+import Form, {FormComponent, FormProps} from "semantic-ui-react/src/collections/Form";
 
-interface FieldProps extends WrappedFieldProps<any> {
+interface IFieldProps extends WrappedFieldProps<any> {
     label: string;
     type: string;
     id: string;
@@ -14,7 +14,8 @@ interface FieldProps extends WrappedFieldProps<any> {
     placeholder: string;
 }
 
-export const SemanticField: StatelessComponent<FieldProps> = ({ input, label, type, meta: { touched, error, warning }, id, required, inline, control, placeholder }) => (
+export const SemanticField: StatelessComponent<IFieldProps> = ({
+   input, label, type, meta: { touched, error, warning }, id, required, inline, control, placeholder }) => (
     <Form.Field
         id={id}
         {...input}

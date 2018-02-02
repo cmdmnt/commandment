@@ -41,10 +41,12 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: ['awesome-typescript-loader'],
-        // options: {
-        //   getCustomTransformers: () => ({ before: [lodashTransformer] })
-        // }
+        use: ['awesome-typescript-loader']
+      },
+      {
+        test: /\.js$/,
+        include: /node_modules\/semantic-ui-react/,
+        loader: "babel-loader"
       },
       {
         test: /\.scss$/,
@@ -92,9 +94,13 @@ module.exports = {
     ]
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production')
+    }),
     extractSass,
     new CheckerPlugin(),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new BundleAnalyzerPlugin(),
+    new webpack.optimize.UglifyJsPlugin()
   ]
 };

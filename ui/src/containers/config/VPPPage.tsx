@@ -1,15 +1,16 @@
-import * as React from 'react';
-import {connect, Dispatch, MapStateToProps} from 'react-redux';
-import {Container, Header, Item, Icon, Segment} from 'semantic-ui-react';
+import * as React from "react";
+import {connect, Dispatch, MapStateToProps} from "react-redux";
+import Container from "semantic-ui-react/src/elements/Container";
+import Header from "semantic-ui-react/src/elements/Header";
+
+import * as Dropzone from "react-dropzone";
 import {RouteComponentProps} from "react-router";
-import {RootState} from "../../reducers/index";
 import {bindActionCreators} from "redux";
 import {read as fetchTokenInfo, TokenActionRequest,
     upload, UploadActionRequest} from "../../actions/vpp";
-import {VPPState} from "../../reducers/configuration/vpp";
 import {VPPAccountDetail} from "../../components/vpp/VPPAccountDetail";
-import * as Dropzone from "react-dropzone";
-
+import {VPPState} from "../../reducers/configuration/vpp";
+import {RootState} from "../../reducers/index";
 
 interface RouteProps {
 
@@ -34,18 +35,18 @@ export class UnconnectedVPPPage extends React.Component<OwnProps, void> {
         this.props.fetchTokenInfo();
     }
 
-    handleDrop = (files: Array<File>) => {
+    handleDrop = (files: File[]) => {
         this.props.upload(files[0]);
-    };
+    }
 
     render() {
         const {
-            vpp: {data, loading}
+            vpp: {data, loading},
         } = this.props;
 
         return (
-            <Container className='VPPPage'>
-                <Header as='h1'>Volume Purchase Programme Configuration</Header>
+            <Container className="VPPPage">
+                <Header as="h1">Volume Purchase Programme Configuration</Header>
                 <Dropzone
                     onDrop={this.handleDrop}
                     className="dropzone"
@@ -56,16 +57,16 @@ export class UnconnectedVPPPage extends React.Component<OwnProps, void> {
                 </Dropzone>
                 {data && <VPPAccountDetail {...data} />}
             </Container>
-        )
+        );
     }
 }
 
 export const VPPPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
     (state: RootState): ReduxStateProps => ({
-        vpp: state.configuration.vpp
+        vpp: state.configuration.vpp,
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({
         fetchTokenInfo,
-        upload
-    }, dispatch)
+        upload,
+    }, dispatch),
 )(UnconnectedVPPPage);

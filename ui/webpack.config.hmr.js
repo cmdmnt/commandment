@@ -43,6 +43,11 @@ module.exports = {
                 use: ['react-hot-loader/webpack', 'awesome-typescript-loader']
             },
             {
+                test: /\.js$/,
+                include: /node_modules\/semantic-ui-react/,
+                loader: "babel-loader"
+            },
+            {
                 test: /\.scss$/,
                 use: [{
                     loader: 'style-loader'

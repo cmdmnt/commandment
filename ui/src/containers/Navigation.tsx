@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Menu} from "semantic-ui-react";
+import Menu from "semantic-ui-react/src/collections/Menu";
 
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import "./Navigation.scss";

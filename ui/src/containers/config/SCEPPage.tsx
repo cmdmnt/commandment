@@ -6,7 +6,8 @@ import * as actions from '../../actions/configuration/scep';
 import {RootState} from "../../reducers/index";
 import {bindActionCreators} from "redux";
 import {SCEPState} from "../../reducers/configuration/scep";
-import {Container, Header} from 'semantic-ui-react';
+import Container from "semantic-ui-react/src/elements/Container";
+import Header from "semantic-ui-react/src/elements/Header";
 
 
 interface ReduxStateProps {

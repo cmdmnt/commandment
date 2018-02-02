@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {RouteComponentProps} from "react-router";
 import {connect, Dispatch} from "react-redux";
-import {Container, Header} from "semantic-ui-react";
+import Container from "semantic-ui-react/src/elements/Container";
+import Header from "semantic-ui-react/src/elements/Header";
 import {ApplicationForm, FormData as ApplicationFormData} from "../forms/ApplicationForm";
 import {
     post, PostActionRequest,
