@@ -35,11 +35,10 @@ export const MacOSDeviceDetail: React.StatelessComponent<MacOSDeviceDetailProps>
                     <Grid.Column>
                         <Header as="h1">
                             {attributes.device_name ? attributes.device_name : "(Untitled)"}
-                            <Button content="Rename"/>
                         </Header>
                         <p>{attributes.hostname}</p>
                     </Grid.Column>
-                    <Grid.Column>
+                    <Grid.Column floated="right">
                         <Header as="h1" color="grey" textAlign="right">{attributes.serial_number}</Header>
                     </Grid.Column>
                 </Grid.Row>
@@ -102,7 +101,7 @@ export const MacOSDeviceDetail: React.StatelessComponent<MacOSDeviceDetailProps>
                         </List>
                     </Grid.Column>
                     <Grid.Column>
-
+                        <Button content="Rename" size="small" compact />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

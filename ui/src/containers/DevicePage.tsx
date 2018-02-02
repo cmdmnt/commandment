@@ -166,24 +166,25 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                 <Grid>
                     <Grid.Row>
                         <Grid.Column>
-                            <Dropdown inline text="action" onChange={this.handleAction} options={[
-                                {text: "Force Push", value: "push"},
-                                {text: "Inventory", value: "inventory"},
-                                {text: "Test", value: "test"},
-                            ]}></Dropdown>
-                            <TagDropdown
-                                loading={device.tagsLoading}
-                                tags={tagChoices}
-                                value={deviceTags}
-                                onAddItem={this.handleAddTag}
-                                onSearch={this.handleSearchTag}
-                                onChange={this.handleChangeTag}
-                            />
-                            <Header as="h2" attached>ASD</Header>
-                            <Segment attached>
+                            <Segment>
                                 {device && <MacOSDeviceDetail device={device}/>}
                             </Segment>
-                            <Menu pointing secondary color="purple" inverted attached>
+                            <Segment attached>
+                                <Dropdown inline button text="action" onChange={this.handleAction} options={[
+                                    {text: "Force Push", value: "push"},
+                                    {text: "Inventory", value: "inventory"},
+                                    {text: "Test", value: "test"},
+                                ]}></Dropdown>
+                                <TagDropdown
+                                    loading={device.tagsLoading}
+                                    tags={tagChoices}
+                                    value={deviceTags}
+                                    onAddItem={this.handleAddTag}
+                                    onSearch={this.handleSearchTag}
+                                    onChange={this.handleChangeTag}
+                                />
+                            </Segment>
+                            <Menu pointing secondary color="purple" inverted>
                                 <MenuItemLink to={`/devices/${device_id}/detail`}>Detail</MenuItemLink>
                                 <MenuItemLink to={`/devices/${device_id}/certificates`}>Certificates</MenuItemLink>
                                 <MenuItemLink to={`/devices/${device_id}/commands`}>Commands</MenuItemLink>

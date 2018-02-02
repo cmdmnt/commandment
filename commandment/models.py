@@ -521,7 +521,10 @@ class Command(db.Model):
     def get_next_device_command(cls, device: Device):
         """Get the next available command in the queue for the specified device.
 
-        TODO: Explain this process here
+        The next available command must match these predicates:
+        - Assigned to this device.
+        - The status is "Queued".
+
 
         Args:
             device (Device): The database model matching the device checking in.

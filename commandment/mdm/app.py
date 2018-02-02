@@ -195,6 +195,8 @@ def check_out(plist_data):
 def mdm():
     """MDM connection endpoint.
 
+    Most MDM communication is via this URI.
+
     This endpoint delivers and handles incoming command responses.
     Such as: `Idle`, `NotNow`, `Acknowledged`.
 
@@ -210,12 +212,6 @@ def mdm():
         device = db.session.query(Device).filter(Device.udid == g.plist_data['UDID']).one()
     except NoResultFound:
         return abort(410)  # Unmanage devices that we dont have a record of
-
-    # if g.device.udid != g.plist_data['UDID']:
-    #     # see note in device_cert_check() about old device cert sometimes
-    #     # being provided
-    #     current_app.logger.info('provided UDID does not match device UDID')
-    #     abort(400, 'invalid input data')
 
     if 'UserID' in g.plist_data:
         # Note that with DEP this is an opportune time to queue up an 
@@ -236,7 +232,8 @@ def mdm():
     device.last_seen = datetime.utcnow()
     db.session.commit()
 
-    print(g.plist_data)
+    if current_app.config['DEBUG']:
+        print(g.plist_data)
 
     if status != 'Idle':
 
@@ -255,7 +252,7 @@ def mdm():
             elif status == 'Error':
                 command.status = CommandStatus.Invalid.value
             else:
-                current_app.logger.warning('unrecognised command status: {}'.format(status))
+                current_app.logger.error('unrecognised command status: {}'.format(status))
 
             command.acknowledged_at = datetime.utcnow()
             db.session.commit()
@@ -264,8 +261,7 @@ def mdm():
             # that were given to generate the command
             cmd = Command.new_request_type(command.request_type, command.parameters, command.uuid)
 
-            # TODO: route the response to the correct handler
-            current_app.logger.debug('Routing command handler')
+            # route the response by the handler type corresponding to that command
             command_router.handle(cmd, device, g.plist_data)
 
         except NoResultFound:
