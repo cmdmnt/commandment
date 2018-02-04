@@ -14,8 +14,6 @@ import {SCEPPage} from "./containers/config/SCEPPage";
 import {CertificatesPage} from "./containers/CertificatesPage";
 import {OrganizationPage} from "./containers/config/OrganizationPage";
 import {VPPPage} from "./containers/config/VPPPage";
-import {DeviceGroupPage} from "../_deprecated/DeviceGroupPage";
-import {DeviceGroupsPage} from "../_deprecated/DeviceGroupsPage";
 import {DevicePage} from "./containers/DevicePage";
 import {DevicesPage} from "./containers/DevicesPage";
 import {ProfilePage} from "./containers/ProfilePage";
@@ -41,10 +39,6 @@ render(
                     <Route path="/certificates" component={CertificatesPage} />
                     <Route exact path="/devices" component={DevicesPage} />
                     <Route path="/devices/:id" component={DevicePage} />
-
-                    <Route exact path="/device_groups" component={DeviceGroupsPage} />
-                    <Route path="/device_groups/add" component={DeviceGroupPage} />
-                    <Route path="/device_groups/:id" component={DeviceGroupPage} />
 
                     <Route exact path="/profiles" component={ProfilesPage} />
                     <Route path="/profiles/:id" component={ProfilePage} />
