@@ -12,6 +12,7 @@ import {AvailableOSUpdatesState} from "../../reducers/device/available_os_update
 import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
 import Checkbox from "semantic-ui-react/dist/commonjs/modules/Checkbox/Checkbox";
 import {FlaskFilters} from "../../actions/constants";
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
 interface IReduxStateProps {
     is_supervised?: boolean;
@@ -93,14 +94,14 @@ class BaseDeviceOSUpdates extends React.Component<IDeviceOSUpdatesProps, IBaseDe
 
         return (
             <div className="DeviceOSUpdates container">
+                <Checkbox label="Hide configuration data updates (XProtect, Gatekeeper)"
+                          checked={this.state.hide_config_updates}
+                          onChange={(e) => this.setState({ hide_config_updates: !this.state.hide_config_updates })}
+                />
                 {is_supervised ?
-                    <Button size="small">Update All</Button> :
-                    <Button size="small" title="Unsupervised" disabled>Update All</Button> }
-
-                    <Checkbox label="Hide configuration data updates (XProtect, Gatekeeper)"
-                              checked={this.state.hide_config_updates}
-                              onChange={(e) => this.setState({ hide_config_updates: !this.state.hide_config_updates })}
-                    />
+                    <Button size="small" floated="right">Update All</Button> :
+                    <Button size="small" title="Unsupervised" floated="right" disabled>Update All</Button> }
+                <Divider/>
                 {updates &&
                 <Griddle
                     data={updates.items}

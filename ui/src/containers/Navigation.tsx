@@ -15,6 +15,5 @@ export const Navigation: React.StatelessComponent<INavigationProps> = (props: IN
         <MenuItemLink to="/profiles">Profiles</MenuItemLink>
         <MenuItemLink to="/applications">Applications</MenuItemLink>
         <MenuItemLink to="/settings">Settings</MenuItemLink>
-        <MenuItemLink to="/device_groups">Groups</MenuItemLink>
     </Menu>
 );

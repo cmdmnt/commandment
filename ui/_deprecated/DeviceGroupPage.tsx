@@ -1,20 +1,20 @@
 import * as React from 'react';
 import {connect, Dispatch} from 'react-redux';
-import {RootState} from "../reducers/index";
+import {RootState} from "../src/reducers/index";
 import {bindActionCreators} from "redux";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
-import {DeviceGroupForm, FormData as DeviceGroupFormData} from "../forms/DeviceGroupForm";
+import {DeviceGroupForm, FormData as DeviceGroupFormData} from "../src/forms/DeviceGroupForm";
 import {
     post, PostActionRequest,
     read, ReadActionRequest
-} from "../actions/device_groups";
+} from "../src/actions/device_groups";
 import {RouteComponentProps} from "react-router";
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import {Device, DeviceGroup} from "../models";
-import {JSONAPIDetailResponse} from "../json-api";
-import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
-import {SimpleLayout as Layout} from "../components/griddle/SimpleLayout";
+import {Device, DeviceGroup} from "../src/models";
+import {JSONAPIDetailResponse} from "../src/json-api";
+import {SemanticUIPlugin} from "../src/griddle-plugins/semantic-ui/index";
+import {SimpleLayout as Layout} from "../src/components/griddle/SimpleLayout";
 
 interface RouteProps {
     id?: string;

@@ -16,7 +16,8 @@ interface IFieldProps extends WrappedFieldProps<any> {
     action: string;
 }
 
-export const SemanticInput: StatelessComponent<IFieldProps> = ({input, label, type, meta: { touched, error, warning }, id, tooltip, required, width, action }) => (
+export const SemanticInput: StatelessComponent<IFieldProps> = ({
+   input, label, type, meta: { touched, error, warning }, id, tooltip, required, width, action }) => (
     <Form.Input
         fluid
         {...input}

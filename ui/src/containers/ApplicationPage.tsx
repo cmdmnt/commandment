@@ -8,7 +8,7 @@ import {
     post, PostActionRequest,
   //  read, ReadActionRequest
 } from "../actions/applications";
-import {ApplicationForm, IFormData as ApplicationFormData} from "../forms/ApplicationForm";
+import {ApplicationForm, IFormData, IFormData as ApplicationFormData} from "../forms/ApplicationForm";
 import {RootState} from "../reducers";
 
 interface IReduxStateProps {
@@ -49,9 +49,13 @@ class UnconnectedApplicationPage extends React.Component<IReduxStateProps & IRed
         return (
             <Container>
                 <Header as="h1">Application</Header>
-                <ApplicationForm onSubmit={this.handleSubmit} />
+                <ApplicationForm onSubmit={this.handleSubmit} onClickFetch={this.fetchManifestURL} />
             </Container>
         );
+    }
+
+    public fetchManifestURL = (e: any) => {
+
     }
 }
 
