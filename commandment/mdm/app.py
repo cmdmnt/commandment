@@ -2,7 +2,7 @@
 Copyright (c) 2015 Jesse Peterson, 2017 Mosen
 Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
-from flask import Blueprint, make_response, abort
+from flask import Blueprint, make_response, abort, jsonify
 from flask import g
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from commandment.mdm import CommandStatus
