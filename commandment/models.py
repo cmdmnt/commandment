@@ -381,6 +381,9 @@ class Device(db.Model):
     certificate_id = db.Column(db.Integer, db.ForeignKey('certificates.id'))
     certificate = db.relationship('Certificate', backref='devices')
 
+    dep_profile_id = db.Column(db.Integer, db.ForeignKey('dep_profiles.id'))
+    dep_profile = db.relationship('DEPProfile', backref='devices')
+
     tags = db.relationship(
         'Tag',
         secondary=device_tags,
@@ -411,22 +414,6 @@ class Device(db.Model):
 
     def __repr__(self):
         return '<Device ID=%r UDID=%r SerialNo=%r>' % (self.id, self.udid, self.serial_number)
-
-
-device_group_devices = db.Table(
-    'device_group_devices',
-    db.metadata,
-    db.Column('device_group_id', db.ForeignKey('device_groups.id'), primary_key=True),
-    db.Column('device_id', db.ForeignKey('devices.id'), primary_key=True),
-)
-
-
-class DeviceGroup(db.Model):
-    __tablename__ = 'device_groups'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-
 
 
 class CommandSequence(db.Model):
@@ -543,11 +530,6 @@ class Command(db.Model):
 
     def __repr__(self):
         return '<Command ID=%r UUID=%r qstatus=%r>' % (self.id, self.uuid, self.status)
-
-
-
-
-
 
 
 class DeviceUser(db.Model):
