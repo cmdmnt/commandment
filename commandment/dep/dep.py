@@ -6,6 +6,9 @@ from requests_oauthlib import OAuth1
 import re
 from datetime import timedelta, datetime
 from locale import atof
+from cryptography import x509
+from cryptography.hazmat.primitives.asymmetric import rsa
+import json
 
 from commandment.dep import DEPProfileRemovals
 from .errors import DEPError
@@ -35,6 +38,7 @@ class DEP:
                  consumer_secret: str = None,
                  access_token: str = None,
                  access_secret: str = None,
+                 access_token_expiry: Optional[datetime.date] = None,
                  url: str = "https://mdmenrollment.apple.com") -> None:
 
         self._auth_session_token = None
@@ -53,6 +57,17 @@ class DEP:
         })
         self._token: Optional[str] = None
         self._retry_after: Optional[datetime] = None
+
+    @classmethod
+    def from_token(cls, token: str):  # (str) -> DEP
+        """Instantiate the DEP client instance from a string holding the service token json content."""
+        stoken = json.loads(token)
+        return cls(**stoken)
+
+    @classmethod
+    def decrypted_from_smime(cls, path: str, private_key: rsa.RSAPrivateKey):   # (str, rsa.RSAPrivateKey) -> DEP
+        """TODO: not implemented"""
+        pass
 
     def _response_hook(self, r: requests.Response, *args, **kwargs):
         """This method always exists as a response hook in order to keep some of the state returned by the
@@ -118,6 +133,19 @@ class DEP:
 
     def account(self) -> Union[None, dict]:
         """Get Account Details
+
+        The details are returned in the following dict format::
+
+            {
+                'server_name': 'MDM Server Name entered in the portal',
+                'server_uuid': '<32 char UUID without separators>',
+                'facilitator_id': 'E-mail of facilitator',
+                'admin_id': 'Administrator E-mail Address',
+                'org_name': 'Organization Name',
+                'org_email': 'Organization E-mail',
+                'org_phone': 'Organization Contact Phone',
+                'org_address': 'Organization Physical Address'
+            }
 
         Returns:
                Union[None, dict]: The account information, or None if it failed.
