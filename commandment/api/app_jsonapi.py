@@ -6,7 +6,7 @@ from flask_rest_jsonapi import Api
 from .resources import CertificatesList, CertificateDetail, CertificateSigningRequestList, \
     CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
     CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, \
-    DeviceGroupList, DeviceGroupDetail, DeviceRelationship, \
+    DeviceRelationship, \
     TagsList, TagDetail, TagRelationship, AvailableOSUpdateList, \
     AvailableOSUpdateDetail
 
@@ -33,10 +33,6 @@ api.route(DeviceList, 'devices_list', '/v1/devices', '/v1/device_groups/<int:dev
 api.route(DeviceDetail, 'device_detail', '/v1/devices/<int:device_id>')
 api.route(DeviceRelationship, 'device_commands', '/v1/devices/<int:device_id>/relationships/commands')
 api.route(DeviceRelationship, 'device_tags', '/v1/devices/<int:device_id>/relationships/tags')
-
-api.route(DeviceGroupList, 'device_groups_list', '/v1/device_groups', '/v1/devices/<int:device_id>/groups')
-api.route(DeviceGroupDetail, 'device_group_detail', '/v1/device_groups/<int:device_group_id>')
-api.route(DeviceRelationship, 'device_group_devices', '/v1/device_groups/<int:device_group_id>/relationship/devices')
 
 
 # Organizations

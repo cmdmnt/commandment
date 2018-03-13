@@ -3,10 +3,9 @@
 """
 
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
-    CertificateSigningRequestSchema, OrganizationSchema, DeviceGroupSchema, TagSchema, AvailableOSUpdateSchema
+    CertificateSigningRequestSchema, OrganizationSchema, TagSchema, AvailableOSUpdateSchema
 from commandment.models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
-    SSLCertificate, Organization, DeviceGroup, \
-    Tag, AvailableOSUpdate
+    SSLCertificate, Organization, Tag, AvailableOSUpdate
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
 
@@ -23,21 +22,6 @@ class DeviceDetail(ResourceDetail):
         'model': Device,
         'url_field': 'device_id'
     }
-
-
-class DeviceGroupList(ResourceList):
-    schema = DeviceGroupSchema
-    data_layer = {'session': db.session, 'model': DeviceGroup}
-
-
-class DeviceGroupDetail(ResourceDetail):
-    schema = DeviceGroupSchema
-    data_layer = {
-        'session': db.session,
-        'model': DeviceGroup,
-        'url_field': 'device_group_id'
-    }
-
 
 class DeviceRelationship(ResourceRelationship):
     schema = DeviceSchema
