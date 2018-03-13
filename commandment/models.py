@@ -602,6 +602,8 @@ class SCEPConfig(db.Model):
     __tablename__ = 'scep_config'
 
     id = db.Column(db.Integer, primary_key=True)
+    enabled = db.Column(db.Boolean, default=False)
+    """enabled (boolean): If enabled, use SCEP, otherwise use internal CA to generate identities for clients."""
     url = db.Column(db.String, nullable=False)
 
     challenge_enabled = db.Column(db.Boolean, default=False)

@@ -5,13 +5,15 @@ dirname = path.dirname(__file__)
 # This will also be used as the self signed certificate dnsname
 PUBLIC_HOSTNAME = 'commandment.dev'
 
+# Development mode listen port
+PORT = 5443
+
 # Configure your Database URI.
 # All SQLAlchemy options are available here:
 # http://flask-sqlalchemy.pocoo.org/2.1/config/
 SQLALCHEMY_DATABASE_URI = 'sqlite:///commandment.db'
 
-# Development mode listen port
-PORT = 5443
+
 
 # You may supply the certificate as a pair of PEM encoded files, or as a .p12 container.
 # If you supply .p12 it will be encoded as a PEM keypair
@@ -23,6 +25,7 @@ PUSH_CERTIFICATE_PASSWORD = 'sekret'  # for pkcs12 only
 # These can also be generated at start up.
 # Normally SSL should be handled by Apache/Nginx/etc.
 
+# Specify the Enterprise CA here if Apple Devices won't natively trust your CA.
 CA_CERTIFICATE = path.join(dirname, 'ssl', 'ca.crt')
 SSL_CERTIFICATE = path.join(dirname, 'ssl', 'server.crt')
 SSL_RSA_KEY = path.join(dirname, 'ssl', 'server.key')
