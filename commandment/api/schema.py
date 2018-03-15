@@ -22,7 +22,7 @@ class DeviceSchema(Schema):
     topic = fields.Str()
 
     build_version = fields.Str()
-    device_name = fields.Str()
+    device_name = fields.Str(dump_only=True)  # Modification only available through `Settings` MDM command (DeviceName).
     model = fields.Str()
     model_name = fields.Str()
     os_version = fields.Str()
@@ -31,8 +31,8 @@ class DeviceSchema(Schema):
 
     awaiting_configuration = fields.Bool()
     last_seen = fields.DateTime(dump_only=True)
-    hostname = fields.Str()
-    local_hostname = fields.Str()
+    hostname = fields.Str()  # Modification only available through `Settings` MDM command (HostName).
+    local_hostname = fields.Str()  # Modification only available through `Settings` MDM command (DeviceName).
     available_device_capacity = fields.Float()
     device_capacity = fields.Float()
     wifi_mac = fields.Str()
@@ -89,14 +89,6 @@ class DeviceSchema(Schema):
         type_='installed_applications'
     )
 
-    groups = Relationship(
-        related_view='api_app.device_group_detail',
-        related_view_kwargs={'device_group_id': '<id>'},
-        many=True,
-        schema='DeviceGroupSchema',
-        type_='device_groups'
-    )
-
     tags = Relationship(
         related_view='api_app.tag_detail',
         related_view_kwargs={'tag_id': '<id>'},
@@ -104,31 +96,6 @@ class DeviceSchema(Schema):
         schema='TagSchema',
         type_='tags'
     )
-
-
-
-class DeviceGroupSchema(Schema):
-    id = fields.Int(dump_only=True)
-    name = fields.Str()
-
-    devices = Relationship(
-        related_view='api_app.device_detail',
-        related_view_kwargs={'device_id': '<id>'},
-        many=True,
-        schema='DeviceSchema',
-        type_='devices',
-    )
-
-    class Meta:
-        type_ = 'device_groups'
-        self_view = 'api_app.device_group_detail'
-        self_view_kwargs = {'device_group_id': '<id>'}
-        self_view_many = 'api_app.device_groups_list'
-        strict = True
-
-
-
-
 
 
 class PrivateKeySchema(Schema):

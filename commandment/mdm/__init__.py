@@ -2,6 +2,74 @@ from typing import Set
 from enum import IntFlag, auto, Enum
 
 
+class CommandType(Enum):
+    ProfileList = 'ProfileList'
+    InstallProfile = 'InstallProfile'
+    RemoveProfile = 'RemoveProfile'
+    ProvisioningProfileList = 'ProvisioningProfileList'
+    InstallProvisioningProfile = 'InstallProvisioningProfile'
+    RemoveProvisioningProfile = 'RemoveProvisioningProfile'
+    CertificateList = 'CertificateList'
+    InstalledApplicationList = 'InstalledApplicationList'
+    DeviceInformation = 'DeviceInformation'
+    SecurityInfo = 'SecurityInfo'
+    DeviceLock = 'DeviceLock'
+    RestartDevice = 'RestartDevice'
+    ShutDownDevice = 'ShutDownDevice'
+    ClearPasscode = 'ClearPasscode'
+    EraseDevice = 'EraseDevice'
+    RequestMirroring = 'RequestMirroring'
+    StopMirroring = 'StopMirroring'
+    Restrictions = 'Restrictions'
+    ClearRestrictionsPasscode = 'ClearRestrictionsPasscode'
+
+    # Shared iPad
+    UserList = 'UserList'
+    UnlockUserAccount = 'UnlockUserAccount'
+    LogOutUser = 'LogOutUser'
+    DeleteUser = 'DeleteUser'
+
+    EnableLostMode = 'EnableLostMode'
+    PlayLostModeSound = 'PlayLostModeSound'
+    DisableLostMode = 'DisableLostMode'
+    DeviceLocation = 'DeviceLocation'
+
+    # Managed Applications
+    InstallApplication = 'InstallApplication'
+    ApplyRedemptionCode = 'ApplyRedemptionCode'
+    ManagedApplicationList = 'ManageApplicationList'
+    RemoveApplication = 'RemoveApplication'
+    InviteToProgram = 'InviteToProgram'
+    ValidateApplications = 'ValidateApplications'
+
+    # Books
+    InstallMedia = 'InstallMedia'
+    ManagedMediaList = 'ManagedMediaList'
+    RemoveMedia = 'RemoveMedia'
+
+    Settings = 'Settings'
+
+    ManagedApplicationConfiguration = 'ManagedApplicationConfiguration'
+    ApplicationConfiguration = 'ApplicationConfiguration'
+    ManagedApplicationAttributes = 'ManagedApplicationAttributes'
+    ManagedApplicationFeedback = 'ManagedApplicationFeedback'
+    AccountConfiguration = 'AccountConfiguration'
+
+    SetFirmwarePassword = 'SetFirmwarePassword'
+    VerifyFirmwarePassword = 'VerifyFirmwarePassword'
+
+    SetAutoAdminPassword = 'SetAutoAdminPassword'
+    DeviceConfigured = 'DeviceConfigured'
+    ScheduleOSUpdate = 'ScheduleOSUpdate'
+    ScheduleOSUpdateScan = 'ScheduleOSUpdateScan'
+    AvailableOSUpdates = 'AvailableOSUpdates'
+    OSUpdateStatus = 'OSUpdateStatus'
+
+    ActiveNSExtensions = 'ActiveNSExtensions'
+    NSExtensionMappings = 'NSExtensionMappings'
+    RotateFileVaultKey = 'RotateFileVaultKey'
+
+
 class Platform(Enum):
     """The platform of the managed device."""
     Unknown = 'Unknown'  # Not enough information
