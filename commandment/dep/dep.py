@@ -9,10 +9,13 @@ from locale import atof
 from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import rsa
 import json
+import logging
 
 from commandment.dep import DEPProfileRemovals
 from .errors import DEPError
 from email.utils import parsedate  # Necessary for HTTP-Date
+
+logger = logging.getLogger(__name__)
 
 
 class DEPAuth(AuthBase):
@@ -51,7 +54,7 @@ class DEP:
         self._url = url
         self._session = requests.session()
         self._session.headers.update({
-            "X-Server-Protocol-Version": "2",
+            "X-Server-Protocol-Version": "3",
             "Content-Type": "application/json;charset=UTF8",
             "User-Agent": DEP.UserAgent,
         })
@@ -150,6 +153,7 @@ class DEP:
         Returns:
                Union[None, dict]: The account information, or None if it failed.
         """
+        logger.debug("Fetching DEP account information")
         res = self.send(requests.Request("GET", self._url + "/account"))
         return res.json()
 
@@ -247,7 +251,7 @@ class DEP:
         res = self.send(req)
         return res.json()
 
-    def profile(self, uuid: str) -> dict:
+    def profile(self, uuid: str = None) -> dict:
         """Get an existing profile by its UUID.
 
         Args:
@@ -256,7 +260,8 @@ class DEP:
         Returns:
               dict: Profile
         """
-        req = requests.Request("GET", self._url + "/profile", params={'profile_uuid': uuid})
+        params = {'profile_uuid': uuid} if uuid is not None else None
+        req = requests.Request("GET", self._url + "/profile", params=params)
         res = self.send(req)
         return res.json()
 
