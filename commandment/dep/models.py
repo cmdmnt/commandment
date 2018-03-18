@@ -72,7 +72,7 @@ class DEPProfile(db.Model):
     auto_advance_setup = db.Column(db.Boolean)
     support_email_address = db.Column(db.String)
     org_magic = db.Column(db.String)
-    #  skip_setup_items = db.Column(db.Enum(SkipSetupSteps))
+    # skip_setup_items = db.Column(db.Enum(SkipSetupSteps))
     department = db.Column(db.String)
 
     anchor_certs = db.relationship(

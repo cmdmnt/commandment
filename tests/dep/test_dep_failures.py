@@ -1,6 +1,6 @@
 import pytest
 from commandment.dep.dep import DEP
-from commandment.dep.errors import DEPError
+from commandment.dep.errors import DEPServiceError
 
 @pytest.mark.depsim
 class TestDEPFailures:
@@ -16,7 +16,7 @@ class TestDEPFailures:
     def test_token_failure(self, dep: DEP, expected_status: int, expected_text: str):
         try:
             dep.fetch_token()
-        except DEPError as e:
+        except DEPServiceError as e:
             assert e.response.status_code == expected_status
             assert e.text == expected_text
 
@@ -28,7 +28,7 @@ class TestDEPFailures:
         try:
             dep.fetch_token()
             dep.account()
-        except DEPError as e:
+        except DEPServiceError as e:
             assert e.response.status_code == expected_status
             assert e.text == expected_text
 

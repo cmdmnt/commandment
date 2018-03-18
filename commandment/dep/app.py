@@ -10,6 +10,7 @@ from commandment.plistutil.nonewriter import dumps as dumps_none
 from commandment.profiles.plist_schema import ProfileSchema
 from commandment.profiles import PROFILE_CONTENT_TYPE
 from .resources import DEPProfileList, DEPProfileDetail, DEPProfileRelationship
+import plistlib
 
 dep_app = Blueprint('dep_app', __name__)
 api = Api(blueprint=dep_app)
@@ -24,18 +25,28 @@ def account():
     pass
 
 
-@dep_app.route('/dep/profile', methods=["POST"])
-#@verify_cms_signers
+@dep_app.route('/dep/enroll', methods=["POST"])
+@verify_cms_signers
 def profile():
     """Accept a CMS Signed DER encoded XML data containing device information.
 
-    This starts the DEP enrollment process.
+    This starts the DEP enrollment process. The absolute url to this endpoint should be present in the DEP profile's
+    enrollment URL.
+
+    The signed data contains a plist with the following keys:
+
+    :UDID: The device’s UDID.
+    :SERIAL: The device's Serial Number.
+    :PRODUCT: The device’s product type: e.g., iPhone5,1.
+    :VERSION: The OS version installed on the device: e.g., 7A182.
+    :IMEI: The device’s IMEI (if available).
+    :MEID: The device’s MEID (if available).
+    :LANGUAGE: The user’s currently-selected language: e.g., en.
 
     See Also:
-        - **Request to a Profile URL** in the MDM Protocol Reference.
+        - `Mobile Device Management Protocol: Request to a Profile URL <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/4-Profile_Management/ProfileManagement.html#//apple_ref/doc/uid/TP40017387-CH7-SW242>`_.
     """
-    # TODO: Do something with signed request data???
-    #g.plist_data = plistlib.loads(g.signed_data)
+    g.plist_data = plistlib.loads(g.signed_data)
     profile = generate_enroll_profile()
 
     schema = ProfileSchema()

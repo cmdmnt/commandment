@@ -5,14 +5,13 @@ from requests.auth import AuthBase
 from requests_oauthlib import OAuth1
 import re
 from datetime import timedelta, datetime
+from dateutil import parser as dateparser
 from locale import atof
-from cryptography import x509
-from cryptography.hazmat.primitives.asymmetric import rsa
 import json
 import logging
 
 from commandment.dep import DEPProfileRemovals
-from .errors import DEPError
+from .errors import DEPServiceError, DEPClientError
 from email.utils import parsedate  # Necessary for HTTP-Date
 
 logger = logging.getLogger(__name__)
@@ -41,16 +40,23 @@ class DEP:
                  consumer_secret: str = None,
                  access_token: str = None,
                  access_secret: str = None,
-                 access_token_expiry: Optional[datetime.date] = None,
+                 access_token_expiry: Optional[str] = None,
                  url: str = "https://mdmenrollment.apple.com") -> None:
 
-        self._auth_session_token = None
+        self._session_token: Optional[str] = None
         self._oauth = OAuth1(
             consumer_key,
             client_secret=consumer_secret,
             resource_owner_key=access_token,
             resource_owner_secret=access_secret,
         )
+
+        if access_token_expiry is not None:
+            access_token_expiry_date = dateparser.parse(access_token_expiry)
+            self._access_token_expiry = access_token_expiry_date
+        else:
+            self._access_token_expiry = None
+
         self._url = url
         self._session = requests.session()
         self._session.headers.update({
@@ -58,19 +64,17 @@ class DEP:
             "Content-Type": "application/json;charset=UTF8",
             "User-Agent": DEP.UserAgent,
         })
-        self._token: Optional[str] = None
         self._retry_after: Optional[datetime] = None
+
+    @property
+    def session_token(self) -> Optional[str]:
+        return self._session_token
 
     @classmethod
     def from_token(cls, token: str):  # (str) -> DEP
         """Instantiate the DEP client instance from a string holding the service token json content."""
         stoken = json.loads(token)
         return cls(**stoken)
-
-    @classmethod
-    def decrypted_from_smime(cls, path: str, private_key: rsa.RSAPrivateKey):   # (str, rsa.RSAPrivateKey) -> DEP
-        """TODO: not implemented"""
-        pass
 
     def _response_hook(self, r: requests.Response, *args, **kwargs):
         """This method always exists as a response hook in order to keep some of the state returned by the
@@ -87,7 +91,7 @@ class DEP:
 
         # If the service gives us another session token, that replaces our current token.
         if 'X-ADM-Auth-Session' in r.headers:
-            self._token = r.headers['X-ADM-Auth-Session']
+            self._session_token = r.headers['X-ADM-Auth-Session']
 
         # If the service wants to rate limit us, store that information locally.
         if 'Retry-After' in r.headers:
@@ -98,7 +102,7 @@ class DEP:
             else:  # HTTP Date
                 self._retry_after = datetime(*parsedate(after)[:6])
 
-    def send(self, req: requests.Request, **kwargs) -> requests.Response:
+    def send(self, req: requests.Request, **kwargs) -> Optional[requests.Response]:
         """Send a request to the DEP service.
 
         If the service responds that the token has expired, fetch a new session token and re-issue the request.
@@ -108,8 +112,17 @@ class DEP:
         Returns:
               requests.Response: The response
         """
+        if self._access_token_expiry is not None and datetime.now() > self._access_token_expiry:
+            raise DEPClientError("DEP Service Token has expired, please generate a new one.")
+
+        if self._retry_after is not None:  # refuse to send request
+            return None
+
+        if self.session_token is None:
+            self.fetch_token()
+
         req.hooks = dict(response=self._response_hook)
-        req.auth = DEPAuth(self._token)
+        req.auth = DEPAuth(self._session_token)
 
         prepared = self._session.prepare_request(req)
 
@@ -118,7 +131,7 @@ class DEP:
         try:
             res.raise_for_status()
         except requests.HTTPError as e:
-            raise DEPError(response=res, request=res.request) from e
+            raise DEPServiceError(response=res, request=res.request) from e
 
         return res
 
@@ -132,10 +145,10 @@ class DEP:
         try:
             res.raise_for_status()
         except requests.HTTPError as e:
-            raise DEPError(response=res, request=res.request) from e
+            raise DEPServiceError(response=res, request=res.request) from e
 
-        self._token = res.json().get("auth_session_token", None)
-        return self._token
+        self._session_token = res.json().get("auth_session_token", None)
+        return self._session_token
 
     def account(self) -> Union[None, dict]:
         """Get Account Details
