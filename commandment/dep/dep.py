@@ -281,9 +281,22 @@ class DEP:
         res = self.send(req)
         return res.json()
 
-    def activation_lock(self, serial_number: str,
-                        escrow_key: Union[str, None] = None,
-                        lost_message: Union[str, None] = None):
+    def activation_lock(self,
+                        serial_number: str,
+                        escrow_key: Optional[str] = None,
+                        lost_message: Optional[str] = None):
+        """Lock a device with Activation Lock."""
+        pass
+
+    def activation_lock_bypass(self,
+                               serial_number: str,
+                               product_type: str,
+                               org_name: str,
+                               guid: str,
+                               escrow_key: str,
+                               imei: Optional[str] = None,
+                               meid: Optional[str] = None):
+        """Remove Activation Lock from a device."""
         pass
 
     def disown(self, *serial_numbers: List[str]):
