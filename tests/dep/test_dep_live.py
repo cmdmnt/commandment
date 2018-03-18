@@ -43,11 +43,15 @@ class TestDEPLive:
     #         for d in page:
     #             print(d)
 
-    def test_define_profile(self, dep: DEP, dep_profile: dict):
-        result = dep.define_profile(dep_profile)
-        assert 'profile_uuid' in result
-        print(result['profile_uuid'])
+    # def test_define_profile(self, dep_live: DEP, dep_profile: dict):
+    #     token = dep_live.fetch_token()
+    #     result = dep_live.define_profile(dep_profile)
+    #     assert 'profile_uuid' in result
+    #     assert 'devices' in result
+    #     # 
+    #     print(result['profile_uuid'])
 
-    def test_list_profiles(self, dep: DEP):
-        profiles = dep.profile()
+    def test_get_profile(self, dep_live: DEP):
+        token = dep_live.fetch_token()
+        profiles = dep_live.profile('')
         print(profiles)

@@ -82,6 +82,9 @@ class DEP:
         See Also:
             - `Footnote about **X-ADM-Auth-Session** under Response Payload <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/4-Profile_Management/ProfileManagement.html#//apple_ref/doc/uid/TP40017387-CH7-SW2>`_.
         """
+        if r.status_code == 401:  # Token may be expired, or token is invalid
+            pass  # TODO: Need token refresh as decorator
+
         # If the service gives us another session token, that replaces our current token.
         if 'X-ADM-Auth-Session' in r.headers:
             self._token = r.headers['X-ADM-Auth-Session']
@@ -251,7 +254,7 @@ class DEP:
         res = self.send(req)
         return res.json()
 
-    def profile(self, uuid: str = None) -> dict:
+    def profile(self, uuid: str) -> dict:
         """Get an existing profile by its UUID.
 
         Args:
@@ -268,6 +271,13 @@ class DEP:
     def activation_lock(self, serial_number: str,
                         escrow_key: Union[str, None] = None,
                         lost_message: Union[str, None] = None):
+        pass
+
+    def disown(self, *serial_numbers: List[str]):
+        """Disown devices.
+
+        This action is PERMANENT (except in the case of iPads added via Apple Configurator 2).
+        """
         pass
 
 
