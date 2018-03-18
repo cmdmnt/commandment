@@ -30,11 +30,11 @@ class TestDEPLive:
         assert 'devices' in devices
         assert 'fetched_until' in devices
         assert 'more_to_follow' in devices
-        # assert len(devices['devices']) == 500
         
-    # def test_device_details(self, dep: DEP):
-    #     dep.fetch_token()
-    #     device_details = dep.device_detail()
+    def test_device_details(self, dep_live: DEP, live_device: str):
+        dep_live.fetch_token()
+        device_details = dep_live.device_detail(live_device)
+        print(device_details)
 
     # def test_fetch_cursor(self, dep: DEP):
     #     dep.fetch_token()
@@ -51,7 +51,7 @@ class TestDEPLive:
     #     # 
     #     print(result['profile_uuid'])
 
-    def test_get_profile(self, dep_live: DEP):
-        token = dep_live.fetch_token()
-        profiles = dep_live.profile('')
+    def test_get_profile(self, dep_live: DEP, live_dep_profile: str):
+        dep_live.fetch_token()
+        profiles = dep_live.profile(live_dep_profile)
         print(profiles)

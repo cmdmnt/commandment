@@ -214,7 +214,7 @@ class DEP:
         else:
             return DEPFetchCursor(self)
 
-    def device_detail(self, *serial_numbers: List[str]):
+    def device_detail(self, *serial_numbers: Union[str, List[str]]):
         """Fetch detail about a list of devices
 
         Args:

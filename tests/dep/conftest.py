@@ -22,6 +22,16 @@ def live_token() -> str:
 
 
 @pytest.fixture
+def live_device() -> str:
+    return os.environ.get('DEP_DEVICE_UUID')
+
+
+@pytest.fixture
+def live_dep_profile() -> str:
+    return os.environ.get('DEP_PROFILE_UUID')
+
+
+@pytest.fixture
 def dep(simulator_token: dict) -> DEP:
     d = DEP(
         consumer_key=simulator_token['consumer_key'],
