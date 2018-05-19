@@ -1,36 +1,30 @@
 matrix:
   include:
-    - language: python
-      python: 3.6
-      install:
-        - pip install pipenv
-        - pipenv install --system
-        - PYTHONPATH=$(pwd) alembic upgrade head
-      script:
-        - pytest -v -m "not depsim and not dep and not vppsim" tests
-    - language: node_js
-      node_js: 7
-      install:
-        - cd ui && yarn install
-      script:
-        ./node_modules/.bin/webpack
-
+  - language: python
+    python: 3.6
+    install:
+      - pip install pipenv
+      - pipenv install --system
+      - PYTHONPATH=$(pwd) alembic upgrade head
+    script:
+      - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
+  - language: node_js
+    node_js: 7
+    install:
+      - cd ui && yarn install
+    script: "./node_modules/.bin/webpack"
 env:
   - NODE_ENV=production
   - COMMANDMENT_SETTINGS="testdata/travis-ci-settings.cfg"
-
 cache:
   directories:
-    - "ui/node_modules"
-    - $HOME/.cache/pip
-    - $HOME/.cache/yarn
-#addons:
-#  apt:
-#    packages:
-#      - python3.6
-
-#  - cd ui && yarn install
-#  - NODE_ENV=production ./node_modules/.bin/webpack
-#  - cd ..
-
-#  - mypy commandment
+    - ui/node_modules
+    - "$HOME/.cache/pip"
+    - "$HOME/.cache/yarn"
+deploy:
+  provider: s3
+  access_key_id: AKIAJ2UQM6XSA2LT275A
+  bucket: com.github.mosen.commandment.static
+  skip_cleanup: true
+  secret_access_key:
+    secure: QMKUT0l2IY2Dy3XUReO+v4jOuBwwUMOMm8+DtTdWna3Jvp2gjIwkGN1D5fy173KBj50IfAXl6cLPauUvlBoE0/DjLZc7i0EqR+AAcRYnVniZs8Zy5RBEZ17BjpEyqP+5AaWzNpy66E/T33mUBnaCSvx0SyUv1cEfWX+gm0eHD+OfX1vITZsjWcRBR6fvn+sMNi/cb5gAjdAI0eDcDaSdq0/8kE5D28fXDpWAUstcJMfOwujiAsxo3WLii+4cKN9YuXqTeCO+H14KaRBc+N5QwDa1oVZIp1bRTUIDimjx7HhM8yqIOjCySpona5rLPAIojqP0nvbzYnefKw3tWLCe35pTn0b1/ElXSYTT0v4/tZjpfqm4QAv5O2RO9/7A8uICSwdkUwVZo0lrZ8P5nKWuYr94mRVxqMJWJAxVb2GPqWytUzQxaq8DXli2Fz2pgxJGRHE2QEVvYV0kfh8/v9y7s/kKyGGwN9AhHTLQVw4Oj0JoZOBxJbfOSuowV9vtzR+wM2ZbYqUfKsVhxnZeHmv5zaUNWDGrf/+Cx8iZO0gqfc/vsM4BS4zuM5PjrPaEYaObrlDNKrzDMpLgBF0mKPpoPAlFRkidmO0aVXX47ifmHxSrlWEH4WhuC91CSIdj9vgEeIbzacLow0hJUkqaWOMqH8Zp3zpE50b/EEJTtOmG/Ec=
