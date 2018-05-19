@@ -50,9 +50,8 @@ def db(app: Flask) -> Generator[SQLAlchemy, None, None]:
     _db.app = app
     # _db.init_app(app)
     #_db.create_all()
-
     yield _db
-    _db.drop_all()
+    # _db.drop_all()
 
 
 @pytest.yield_fixture(scope='function')
