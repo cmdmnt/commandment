@@ -3,13 +3,24 @@ from flask import Blueprint, request, abort, send_file, current_app, jsonify
 from sqlalchemy.orm.exc import NoResultFound
 
 from commandment.models import db, Device, Certificate, RSAPrivateKey
-from commandment.pki import serialization
+from commandment.pki import serialization, ssl
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
 from .push import push_to_device
 from .schema import PushResponseFlatSchema
+from .mdmcert import submit_mdmcert_request
 
 api_push_app = Blueprint('api_push_app', __name__)
+
+MDMCERT_REQ_URL = 'https://mdmcert.download/api/v1/signrequest'
+
+# PLEASE! Do not take this key and use it for another product/project. It's
+# only for Commandment's use. If you'd like to get your own (free!) key
+# contact the mdmcert.download administrators and get your own key for your
+# own project/product.  We're trying to keep statistics on which products are
+# requesting certs (per Apple T&C). Don't force Apple's hand and
+# ruin it for everyone!
+MDMCERT_API_KEY = 'b742461ff981756ca3f924f02db5a12e1f6639a9109db047ead1814aafc058dd'
 
 
 @api_push_app.route('/v1/devices/<int:device_id>/push', methods=['POST', 'GET'])
@@ -159,3 +170,15 @@ def upload_push_certificate_private():
 # elif request.headers['Accept'] == 'application/x-pkcs12':
 #     cert = c.to_crypto()
 #     return None
+
+
+@api_push_app.route('/v1/push/certificate/generate_csr', methods=['GET'])
+def generate_push_certificate_csr():
+    """Generate a signed push certificate for upload to the Apple Push Certificate Portal.
+
+    :resheader Content-Type: application/x-pem-file
+    :resheader Content-Type: application/x-x509-user-cert
+    :resheader Content-Type: application/x-x509-ca-cert
+    """
+    private_key, csr = ssl.generate_signing_request('commandment')
+    # json_response = submit_mdmcert_request()

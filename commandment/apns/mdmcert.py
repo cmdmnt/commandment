@@ -30,7 +30,7 @@ def submit_mdmcert_request(email: str, csr: x509.CertificateSigningRequest,
 
     Args:
           email (str): Your registered mdmcert.download e-mail address.
-          api_key (str): Your reigstered mdmcert.download API key.
+          api_key (str): Your registered mdmcert.download API key.
           csr (cryptography.x509.CertificateSigningRequest): The MDM CSR to sign.
           encrypt_with (cryptography.x509.Certificate): The certificate which will be used to encrypt the response.
 

@@ -6,7 +6,6 @@ from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
-from commandment.mdmcert import submit_mdmcert_request
 
 ENCRYPTION_CERT = os.path.join(os.path.dirname(__file__), '..', 'commandment.crt')
 
