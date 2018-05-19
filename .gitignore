@@ -162,3 +162,6 @@ scep_settings.cfg
 # dont ever commit vpp tokens if they are downloaded into the root
 *.vpptoken
 deptoken.json
+
+# mypy
+.mypy_cache
