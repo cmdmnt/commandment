@@ -1,5 +1,6 @@
 import pytest
 import os
+import plistlib
 from flask import Response
 from tests.client import MDMClient
 from commandment.mdm import CommandStatus
@@ -30,4 +31,6 @@ class TestAvailableOSUpdates:
 
         d: Device = session.query(Device).filter(Device.udid == '00000000-1111-2222-3333-444455556666').one()
         updates = d.available_os_updates
-        assert len(updates) == 3
+
+        plist = plistlib.loads(available_os_updates_request.encode('utf8'))
+        assert len(updates) == len(plist['AvailableOSUpdates'])

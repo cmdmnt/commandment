@@ -3,6 +3,7 @@ from flask import Response
 from tests.client import MDMClient
 
 
+@pytest.mark.usefixtures("device")
 class TestCheckin:
 
     def test_authenticate(self, client: MDMClient, authenticate_request: str):
@@ -12,16 +13,16 @@ class TestCheckin:
         assert response.status_code == 200
         
     def test_tokenupdate(self, client: MDMClient, tokenupdate_request: str):
-        """Test a client attempting to update its token after being unenrolled."""
+        """Test a client attempting to update its token after being unenrolled is forced to unenroll via code 410."""
         response: Response = client.put('/checkin', data=tokenupdate_request, content_type='text/xml')
-        assert response.status_code != 410
-        assert response.status_code == 200
+        assert response.status_code != 200
+        assert response.status_code == 410
 
-    def test_user_tokenupdate(self, client: MDMClient, tokenupdate_user_request: str):
-        """Test a TokenUpdate message on the user channel."""
-        response: Response = client.put('/checkin', data=tokenupdate_user_request, content_type='text/xml')
-        assert response.status_code != 410
-        assert response.status_code == 200
+    # def test_user_tokenupdate(self, client: MDMClient, tokenupdate_user_request: str):
+    #     """Test a TokenUpdate message on the user channel."""
+    #     response: Response = client.put('/checkin', data=tokenupdate_user_request, content_type='text/xml')
+    #     assert response.status_code != 410
+    #     assert response.status_code == 200
 
     def test_checkout(self, client: MDMClient, checkout_request: str):
         """Test a CheckOut message"""
