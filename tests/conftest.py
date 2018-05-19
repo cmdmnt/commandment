@@ -10,14 +10,18 @@ from tests.client import MDMClient
 from alembic.command import upgrade
 from alembic.config import Config
 
+# For testing, every test uses an in-memory database with migrations that are applied in the fixture setup phase.
+# This ensures every test is fully isolated.
+# Issues with running upgrade() in a fixture: https://github.com/miguelgrinberg/Flask-Migrate/issues/153
 TEST_DATABASE_URI = 'sqlite:///:memory:'
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 ALEMBIC_CONFIG = os.path.realpath(TEST_DIR + '/alembic_test.ini')
 
 
-def apply_migrations():
+def apply_migrations(connection):
     """Applies all Alembic migrations."""
     config = Config(ALEMBIC_CONFIG)
+    config.attributes['connection'] = connection
     upgrade(config, 'head')
 
 
@@ -35,12 +39,15 @@ def app() -> Generator[Flask, None, None]:
 
 
 @pytest.yield_fixture(scope='function')
-def db(app: Flask) -> Generator[SQLAlchemy, None, None]:
+def db(app: Flask, connection) -> Generator[SQLAlchemy, None, None]:
     """Flask-SQLAlchemy Fixture"""
+
+
     _db.app = app
     # _db.init_app(app)
     #_db.create_all()
-    apply_migrations()
+
+    apply_migrations(connection)
 
     yield _db
 
@@ -48,9 +55,15 @@ def db(app: Flask) -> Generator[SQLAlchemy, None, None]:
 
 
 @pytest.yield_fixture(scope='function')
-def session(db: SQLAlchemy) -> Generator[scoped_session, None, None]:
-    """SQLAlchemy session Fixture"""
+def connection():
     connection = db.engine.connect()
+    yield connection
+    connection.close()
+
+
+@pytest.yield_fixture(scope='function')
+def session(connection, db: SQLAlchemy) -> Generator[scoped_session, None, None]:
+    """SQLAlchemy session Fixture"""
     # transaction = connection.begin()
 
     options = dict(bind=connection) #  , binds={})
@@ -62,7 +75,6 @@ def session(db: SQLAlchemy) -> Generator[scoped_session, None, None]:
 
     # transaction.rollback()
     session.remove()
-    connection.close()
 
 
 @pytest.fixture(scope='function')
