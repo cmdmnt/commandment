@@ -5,17 +5,15 @@ matrix:
       install:
         - pip install pipenv
         - pipenv install --system
-#        - PYTHONPATH=$(pwd) alembic -c ./tests/alembic_test.ini upgrade head
       script:
         - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
     - language: node_js
       node_js: 7
       install:
         - cd ui && yarn install
+      env: NODE_ENV=production
       script: "./node_modules/.bin/webpack"
-env:
-  global:
-    - NODE_ENV=production
+
 cache:
   directories:
     - ui/node_modules
@@ -25,6 +23,8 @@ cache:
 before_deploy:
   - mkdir $TRAVIS_BUILD_DIR/build
   - cd $TRAVIS_BUILD_DIR && tar cvfz build/static.tar.gz commandment/static
+  - cd $TRAVIS_BUILD_DIR && tar cvfz build/virtualenv.tar.gz $(pipenv --venv)
+
 deploy:
   provider: s3
   access_key_id: AKIAJ2UQM6XSA2LT275A

@@ -11,6 +11,8 @@ TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 
 @pytest.fixture(scope='function')
 def available_os_updates_command(session):
+    """Creates an AvailableOSUpdates command that has been sent to the fixture device so that it can be marked
+    acknowledged when the fake response comes in."""
     c = Command(
         uuid='00000000-1111-2222-3333-444455556666',
         request_type='AvailableOSUpdates',
