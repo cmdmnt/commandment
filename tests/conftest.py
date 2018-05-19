@@ -13,7 +13,7 @@ from alembic.config import Config
 # For testing, every test uses an in-memory database with migrations that are applied in the fixture setup phase.
 # This ensures every test is fully isolated.
 
-TEST_DATABASE_URI = 'sqlite://'
+TEST_DATABASE_URI = 'sqlite:////tmp/test.db'
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 ALEMBIC_CONFIG = os.path.realpath(TEST_DIR + '/alembic_test.ini')
 TEST_APP_CONFIG = os.path.realpath(TEST_DIR + '/../travis-ci-settings.cfg')
@@ -45,7 +45,7 @@ def app() -> Generator[Flask, None, None]:
 
 
 @pytest.yield_fixture(scope='function')
-def db(app: Flask, connection) -> Generator[SQLAlchemy, None, None]:
+def db(app: Flask) -> Generator[SQLAlchemy, None, None]:
     """Flask-SQLAlchemy Fixture"""
     _db.app = app
     # _db.init_app(app)
