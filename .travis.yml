@@ -24,7 +24,7 @@ cache:
     - "$HOME/.cache/yarn"
     - "$HOME/virtualenv"  # pipenv will install here
 before_deploy:
-  - tar cvfz static.tar.gz commandment/static
+  - tar cvfz static.tar.gz "$BUILD_DIR/commandment/static"
 deploy:
   provider: s3
   access_key_id: AKIAJ2UQM6XSA2LT275A
