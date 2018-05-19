@@ -56,7 +56,7 @@ def db(app: Flask, connection) -> Generator[SQLAlchemy, None, None]:
 
 @pytest.yield_fixture(scope='function')
 def connection():
-    connection = db.engine.connect()
+    connection = _db.engine.connect()
     yield connection
     connection.close()
 
