@@ -37,12 +37,14 @@ def downgrade():
 def schema_upgrades():
     """schema upgrade migrations go here."""
     op.add_column('devices', sa.Column('dep_profile_id', sa.Integer(), nullable=True))
-    op.create_foreign_key(None, 'devices', 'dep_profiles', ['dep_profile_id'], ['id'])
+    # Unsupported on SQLite3
+    # op.create_foreign_key(None, 'devices', 'dep_profiles', ['dep_profile_id'], ['id'])
 
 
 def schema_downgrades():
     """schema downgrade migrations go here."""
-    op.drop_constraint(None, 'devices', type_='foreignkey')
+    # Unsupported on SQLite3
+    # op.drop_constraint(None, 'devices', type_='foreignkey')
     op.drop_column('devices', 'dep_profile_id')
 
 
