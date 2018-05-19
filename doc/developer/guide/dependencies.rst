@@ -1,6 +1,7 @@
 Dependencies
 ============
 
+These are the dependencies for developing with commandment. You won't need all of these to actually run it.
 
 Installing backend dependencies
 -------------------------------
@@ -21,6 +22,8 @@ It's as easy as::
 You can also get an isolated environment using something such as `Anaconda <https://www.continuum.io/downloads>`_, which
 is not covered here.
 
+On Linux you should be able to install python 3 using your distributions packaging tools such as **yum** or **apt-get**.
+
 NodeJS 7+
 ^^^^^^^^^
 
@@ -33,53 +36,31 @@ Setting up the environment
 This part will assume that you have now cloned the git repository somewhere on your system. Usually within your own
 home folder.
 
-Virtualenv
-^^^^^^^^^^
+Pipenv
+^^^^^^
 
-Because we want to keep all the dependency versions tied to the project and not mixed in with other python projects on
-your system, we use `virtualenv <https://virtualenv.pypa.io/en/stable/>`_.
+To download the Python dependencies, you first need `pipenv <https://docs.pipenv.org/>`_. You can install pipenv by
+running::
 
-If you don't have virtualenv for some reason, you can run::
+	$ pip3 install pipenv
 
-    $ pip3 install virtualenv
-
-To install it for use with python 3.
-
-To create a new virtualenv, called **venv**, run this in the cloned repository location::
-
-    $ virtualenv -p python3.6 venv
-
-This will create a new virtualenv specifically for Python 3.6, inside the **venv** directory.
-
-Before we can install all of the commandment dependencies, we need to activate the virtual environment. This is so the
-dependencies are installed into **venv** and not **/usr/local** somewhere.
-
-To activate the virtualenv run::
-
-    $ . ./venv/activate
-
-Your prompt should then change to ``(venv) hostname:dir $``.
+See the **pipenv** documentation for information about how to install it on other Linux distributions.
 
 Python dependencies
 ^^^^^^^^^^^^^^^^^^^
 
-Now that the virtualenv is active, we can install all of the Python dependencies, using the **requirements.txt** in the
-repository.
+To install python dependencies, change to the commandment directory and run::
 
-.. note:: In a normal setup, the dependencies listed in setup.py would be used instead.
+	$ pipenv install
 
-Run this command to fetch all of the Python dependencies::
+This should download and install all python requirements.
 
-    $ pip install -r ./requirements.txt
-
-Now you're done with all the backend, you can move on to the front end build process.
+.. note:: This supersedes the :file:requirements.txt method.
 
 Front end dependencies
 ----------------------
 
 All of the front end code is contained within the **ui** subdirectory, so make that your current working directory.
-
-.. note:: The Python virtualenv has zero impact on the front end build
 
 First, you need to install all of the **node** dependencies. For this i recommend `yarn <https://yarnpkg.com>`_, which you
 can install by running::
@@ -93,5 +74,3 @@ Then, to install all front end dependencies you can run::
 From the ui directory.
 
 You now have the tools to develop both the backend and front end code.
-
-

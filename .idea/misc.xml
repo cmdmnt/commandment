@@ -7,6 +7,6 @@
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="PythonCompatibilityInspectionAdvertiser">
-    <option name="version" value="2" />
+    <option name="version" value="3" />
   </component>
 </project>
