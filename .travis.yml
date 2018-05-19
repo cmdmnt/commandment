@@ -1,18 +1,18 @@
 matrix:
   include:
-  - language: python
-    python: 3.6
-    install:
-      - pip install pipenv
-      - pipenv install --system
-      - PYTHONPATH=$(pwd) alembic upgrade head
-    script:
-      - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
-  - language: node_js
-    node_js: 7
-    install:
-      - cd ui && yarn install
-    script: "./node_modules/.bin/webpack"
+    - language: python
+      python: 3.6
+      install:
+        - pip install pipenv
+        - pipenv install --system
+        - PYTHONPATH=$(pwd) alembic upgrade head
+      script:
+        - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
+    - language: node_js
+      node_js: 7
+      install:
+        - cd ui && yarn install
+      script: "./node_modules/.bin/webpack"
 env:
   - NODE_ENV=production
   - COMMANDMENT_SETTINGS="testdata/travis-ci-settings.cfg"
