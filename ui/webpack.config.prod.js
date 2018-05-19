@@ -2,7 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const {CheckerPlugin} = require('awesome-typescript-loader');
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const {createLodashTransformer} = require('typescript-plugin-lodash');
 const lodashTransformer = createLodashTransformer();
 
@@ -100,7 +99,6 @@ module.exports = {
     extractSass,
     new CheckerPlugin(),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new BundleAnalyzerPlugin(),
     new webpack.optimize.UglifyJsPlugin()
   ]
 };
