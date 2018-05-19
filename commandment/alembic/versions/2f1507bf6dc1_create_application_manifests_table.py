@@ -55,7 +55,7 @@ def schema_upgrades():
         sa.Column('checksum_index', sa.Integer(), nullable=False),
         sa.Column('checksum_value', sa.String(), nullable=False),
         sa.ForeignKeyConstraint(['application_manifest_id'], ['application_manifests.id'], ondelete="CASCADE"),
-        sa.UniqueConstraint('application_manifest_id', 'checksum_index', name='uq_application_checksum_index')
+        # sa.UniqueConstraint('application_manifest_id', 'checksum_index', name='uq_application_checksum_index')
     )
 
     # Commented items from an earlier migration:
