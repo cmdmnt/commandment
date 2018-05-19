@@ -5,7 +5,7 @@ matrix:
       install:
         - pip install pipenv
         - pipenv install --system
-        - PYTHONPATH=$(pwd) alembic -c ./tests/alembic_test.ini upgrade head
+#        - PYTHONPATH=$(pwd) alembic -c ./tests/alembic_test.ini upgrade head
       script:
         - pytest -x -v -m "not depsim and not dep and not vppsim and not vpp" tests
     - language: node_js
