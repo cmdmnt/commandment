@@ -14,8 +14,9 @@ matrix:
         - cd ui && yarn install
       script: "./node_modules/.bin/webpack"
 env:
-  - NODE_ENV=production
-  - COMMANDMENT_SETTINGS="testdata/travis-ci-settings.cfg"
+  global:
+    - NODE_ENV=production
+    - COMMANDMENT_SETTINGS="testdata/travis-ci-settings.cfg"
 cache:
   directories:
     - ui/node_modules
