@@ -8,11 +8,12 @@ TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 
 
 @pytest.fixture()
-def profile_list_response():
+def profile_list_response() -> str:
     with open(os.path.join(TEST_DIR, '../../testdata/ProfileList/10.11.x.xml'), 'r') as fd:
         plist_data = fd.read()
 
     return plist_data
+
 
 @pytest.mark.usefixtures("device")
 class TestProfileList:
