@@ -40,7 +40,12 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: ['awesome-typescript-loader']
+        use: [{
+          loader: 'awesome-typescript-loader',
+          options: {
+            errorsAsWarnings: true
+          }
+        }]
       },
       {
         test: /\.js$/,
