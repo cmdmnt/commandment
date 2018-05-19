@@ -36,9 +36,9 @@ def downgrade():
 
 def schema_upgrades():
     """schema upgrade migrations go here."""
-    op.alter_column('application_manifest_checksums', 'application_manifest_id',
-               existing_type=sa.INTEGER(),
-               nullable=True)
+    # op.alter_column('application_manifest_checksums', 'application_manifest_id',
+    #            existing_type=sa.INTEGER(),
+    #            nullable=True)
     op.drop_constraint('uq_application_checksum_index', 'application_manifest_checksums', type_='unique')
     op.drop_constraint(None, 'application_manifest_checksums', type_='foreignkey')
     op.create_foreign_key(None, 'application_manifest_checksums', 'application_manifests', ['application_manifest_id'], ['id'])
@@ -69,9 +69,9 @@ def schema_downgrades():
     op.drop_constraint(None, 'application_manifest_checksums', type_='foreignkey')
     op.create_foreign_key(None, 'application_manifest_checksums', 'application_manifests', ['application_manifest_id'], ['id'], ondelete='CASCADE')
     op.create_unique_constraint('uq_application_checksum_index', 'application_manifest_checksums', ['application_manifest_id', 'checksum_index'])
-    op.alter_column('application_manifest_checksums', 'application_manifest_id',
-               existing_type=sa.INTEGER(),
-               nullable=False)
+    # op.alter_column('application_manifest_checksums', 'application_manifest_id',
+    #            existing_type=sa.INTEGER(),
+    #            nullable=False)
 
 
 def data_upgrades():

@@ -51,7 +51,7 @@ def schema_upgrades():
     op.create_table(
         'application_manifest_checksums',
         sa.Column('id', sa.Integer(), primary_key=True),
-        sa.Column('application_manifest_id', sa.Integer(), nullable=False),
+        sa.Column('application_manifest_id', sa.Integer(), nullable=True),
         sa.Column('checksum_index', sa.Integer(), nullable=False),
         sa.Column('checksum_value', sa.String(), nullable=False),
         sa.ForeignKeyConstraint(['application_manifest_id'], ['application_manifests.id'], ondelete="CASCADE"),
