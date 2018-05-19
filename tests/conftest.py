@@ -12,8 +12,8 @@ from alembic.config import Config
 
 # For testing, every test uses an in-memory database with migrations that are applied in the fixture setup phase.
 # This ensures every test is fully isolated.
-# Issues with running upgrade() in a fixture: https://github.com/miguelgrinberg/Flask-Migrate/issues/153
-TEST_DATABASE_URI = 'sqlite:///:memory:'
+
+TEST_DATABASE_URI = 'sqlite://'
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 ALEMBIC_CONFIG = os.path.realpath(TEST_DIR + '/alembic_test.ini')
 
@@ -21,6 +21,11 @@ ALEMBIC_CONFIG = os.path.realpath(TEST_DIR + '/alembic_test.ini')
 def apply_migrations(connection):
     """Applies all Alembic migrations."""
     config = Config(ALEMBIC_CONFIG)
+
+    # Issues with running upgrade() in a fixture with SQLite in-memory:
+    # https://github.com/miguelgrinberg/Flask-Migrate/issues/153
+    # Basically: Alembic always spawns a new connection from upgrade() unless you specify a connection
+    # in config.attributes['connection']
     config.attributes['connection'] = connection
     upgrade(config, 'head')
 
@@ -41,31 +46,22 @@ def app() -> Generator[Flask, None, None]:
 @pytest.yield_fixture(scope='function')
 def db(app: Flask, connection) -> Generator[SQLAlchemy, None, None]:
     """Flask-SQLAlchemy Fixture"""
-
-
     _db.app = app
     # _db.init_app(app)
     #_db.create_all()
 
-    apply_migrations(connection)
-
     yield _db
 
-    _db.drop_all()
+    # _db.drop_all()
 
 
 @pytest.yield_fixture(scope='function')
-def connection():
-    connection = _db.engine.connect()
-    yield connection
-    connection.close()
-
-
-@pytest.yield_fixture(scope='function')
-def session(connection, db: SQLAlchemy) -> Generator[scoped_session, None, None]:
+def session(db: SQLAlchemy) -> Generator[scoped_session, None, None]:
     """SQLAlchemy session Fixture"""
+    connection = _db.engine.connect()
     # transaction = connection.begin()
 
+    apply_migrations(connection)
     options = dict(bind=connection) #  , binds={})
     session = db.create_scoped_session(options=options)
 
