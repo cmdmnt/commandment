@@ -41,7 +41,7 @@ def schema_upgrades():
     #            nullable=True)
     #op.drop_constraint('uq_application_checksum_index', 'application_manifest_checksums', type_='unique')
     #op.drop_constraint(None, 'application_manifest_checksums', type_='foreignkey')
-    op.create_foreign_key(None, 'application_manifest_checksums', 'application_manifests', ['application_manifest_id'], ['id'])
+    #op.create_foreign_key(None, 'application_manifest_checksums', 'application_manifests', ['application_manifest_id'], ['id'])
     op.add_column('application_manifests', sa.Column('full_size_image_needs_shine', sa.Boolean(), nullable=True))
     op.add_column('application_manifests', sa.Column('full_size_image_url', sa.String(), nullable=True))
     op.alter_column('application_manifests', 'bundle_id',
@@ -66,7 +66,7 @@ def schema_downgrades():
                nullable=True)
     op.drop_column('application_manifests', 'full_size_image_url')
     op.drop_column('application_manifests', 'full_size_image_needs_shine')
-    op.drop_constraint(None, 'application_manifest_checksums', type_='foreignkey')
+    #op.drop_constraint(None, 'application_manifest_checksums', type_='foreignkey')
     #op.create_foreign_key(None, 'application_manifest_checksums', 'application_manifests', ['application_manifest_id'], ['id'], ondelete='CASCADE')
     #op.create_unique_constraint('uq_application_checksum_index', 'application_manifest_checksums', ['application_manifest_id', 'checksum_index'])
     # op.alter_column('application_manifest_checksums', 'application_manifest_id',
