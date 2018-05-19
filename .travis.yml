@@ -16,7 +16,6 @@ matrix:
 env:
   global:
     - NODE_ENV=production
-    - COMMANDMENT_SETTINGS="../travis-ci-settings.cfg"
 cache:
   directories:
     - ui/node_modules

@@ -16,6 +16,7 @@ from alembic.config import Config
 TEST_DATABASE_URI = 'sqlite://'
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 ALEMBIC_CONFIG = os.path.realpath(TEST_DIR + '/alembic_test.ini')
+TEST_APP_CONFIG = os.path.realpath(TEST_DIR + '/../travis-ci-settings.cfg')
 
 
 def apply_migrations(connection):
@@ -33,7 +34,7 @@ def apply_migrations(connection):
 @pytest.yield_fixture(scope='function')
 def app() -> Generator[Flask, None, None]:
     """Flask Application Fixture"""
-    a = create_app()
+    a = create_app(TEST_APP_CONFIG)
     a.config['TESTING'] = True
     a.config['SQLALCHEMY_DATABASE_URI'] = TEST_DATABASE_URI
 
