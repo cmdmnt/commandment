@@ -44,9 +44,9 @@ def schema_upgrades():
     #op.create_foreign_key(None, 'application_manifest_checksums', 'application_manifests', ['application_manifest_id'], ['id'])
     op.add_column('application_manifests', sa.Column('full_size_image_needs_shine', sa.Boolean(), nullable=True))
     op.add_column('application_manifests', sa.Column('full_size_image_url', sa.String(), nullable=True))
-    op.alter_column('application_manifests', 'bundle_id',
-               existing_type=sa.VARCHAR(),
-               nullable=False)
+    # op.alter_column('application_manifests', 'bundle_id',
+    #            existing_type=sa.VARCHAR(),
+    #            nullable=False)
     op.create_index(op.f('ix_application_manifests_bundle_id'), 'application_manifests', ['bundle_id'], unique=False)
     op.create_index(op.f('ix_application_manifests_bundle_version'), 'application_manifests', ['bundle_version'], unique=False)
     # op.drop_constraint('uq_application_bundle_version', 'application_manifests', type_='unique')
@@ -61,9 +61,9 @@ def schema_downgrades():
     # op.create_unique_constraint('uq_application_bundle_version', 'application_manifests', ['bundle_id', 'bundle_version'])
     op.drop_index(op.f('ix_application_manifests_bundle_version'), table_name='application_manifests')
     op.drop_index(op.f('ix_application_manifests_bundle_id'), table_name='application_manifests')
-    op.alter_column('application_manifests', 'bundle_id',
-               existing_type=sa.VARCHAR(),
-               nullable=True)
+    # op.alter_column('application_manifests', 'bundle_id',
+    #            existing_type=sa.VARCHAR(),
+    #            nullable=True)
     op.drop_column('application_manifests', 'full_size_image_url')
     op.drop_column('application_manifests', 'full_size_image_needs_shine')
     #op.drop_constraint(None, 'application_manifest_checksums', type_='foreignkey')

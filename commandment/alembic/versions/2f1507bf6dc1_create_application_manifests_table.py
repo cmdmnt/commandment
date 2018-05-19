@@ -35,7 +35,7 @@ def schema_upgrades():
     op.create_table(
         'application_manifests',
         sa.Column('id', sa.Integer(), primary_key=True),
-        sa.Column('bundle_id', sa.String()),
+        sa.Column('bundle_id', sa.String(), nullable=False),
         sa.Column('bundle_version', sa.String()),
         sa.Column('kind', sa.String()),
         sa.Column('size_in_bytes', sa.BigInteger()),
