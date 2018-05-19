@@ -17,6 +17,7 @@ matrix:
 
 env:
   - NODE_ENV=production
+  - COMMANDMENT_SETTINGS="$TRAVIS_BUILD_DIR/testdata/travis-ci-settings.cfg"
 
 cache:
   directories:
