@@ -49,7 +49,10 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        include: /node_modules\/semantic-ui-react/,
+        include: [
+          path.resolve(__dirname, "node_modules/semantic-ui-react"),
+          path.resolve(__dirname, "node_modules/byte-size")
+        ],
         loader: "babel-loader"
       },
       {
