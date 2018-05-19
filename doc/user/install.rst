@@ -13,7 +13,7 @@ Manual Installation
 - Install Pre-requisites::
 
     $ brew install python3
-    $ brew install uwsgi
+    $ brew install uwsgi --with-python --with-python3
     $ brew install nginx
 
 - Unpack commandment to :file:`/usr/local/commandment`.
