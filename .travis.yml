@@ -32,5 +32,4 @@ deploy:
   skip_cleanup: true
   secret_access_key:
     secure: QMKUT0l2IY2Dy3XUReO+v4jOuBwwUMOMm8+DtTdWna3Jvp2gjIwkGN1D5fy173KBj50IfAXl6cLPauUvlBoE0/DjLZc7i0EqR+AAcRYnVniZs8Zy5RBEZ17BjpEyqP+5AaWzNpy66E/T33mUBnaCSvx0SyUv1cEfWX+gm0eHD+OfX1vITZsjWcRBR6fvn+sMNi/cb5gAjdAI0eDcDaSdq0/8kE5D28fXDpWAUstcJMfOwujiAsxo3WLii+4cKN9YuXqTeCO+H14KaRBc+N5QwDa1oVZIp1bRTUIDimjx7HhM8yqIOjCySpona5rLPAIojqP0nvbzYnefKw3tWLCe35pTn0b1/ElXSYTT0v4/tZjpfqm4QAv5O2RO9/7A8uICSwdkUwVZo0lrZ8P5nKWuYr94mRVxqMJWJAxVb2GPqWytUzQxaq8DXli2Fz2pgxJGRHE2QEVvYV0kfh8/v9y7s/kKyGGwN9AhHTLQVw4Oj0JoZOBxJbfOSuowV9vtzR+wM2ZbYqUfKsVhxnZeHmv5zaUNWDGrf/+Cx8iZO0gqfc/vsM4BS4zuM5PjrPaEYaObrlDNKrzDMpLgBF0mKPpoPAlFRkidmO0aVXX47ifmHxSrlWEH4WhuC91CSIdj9vgEeIbzacLow0hJUkqaWOMqH8Zp3zpE50b/EEJTtOmG/Ec=
-  file:
-    - "static.tar.gz"
+  file: "static.tar.gz"
