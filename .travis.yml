@@ -22,6 +22,7 @@ cache:
     - ui/node_modules
     - "$HOME/.cache/pip"
     - "$HOME/.cache/yarn"
+    - "$HOME/virtualenv"  # pipenv will install here
 deploy:
   provider: s3
   access_key_id: AKIAJ2UQM6XSA2LT275A
