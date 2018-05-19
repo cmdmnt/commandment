@@ -45,7 +45,7 @@ def schema_upgrades():
         sa.Column('display_image_needs_shine', sa.Boolean()),
         sa.Column('full_image_url', sa.String()),
         sa.Column('full_image_needs_shine', sa.Boolean()),
-        sa.UniqueConstraint('bundle_id', 'bundle_version', name='uq_application_bundle_version')
+        # sa.UniqueConstraint('bundle_id', 'bundle_version', name='uq_application_bundle_version')
     )
 
     op.create_table(
@@ -54,7 +54,7 @@ def schema_upgrades():
         sa.Column('application_manifest_id', sa.Integer(), nullable=True),
         sa.Column('checksum_index', sa.Integer(), nullable=False),
         sa.Column('checksum_value', sa.String(), nullable=False),
-        sa.ForeignKeyConstraint(['application_manifest_id'], ['application_manifests.id'], ondelete="CASCADE"),
+        # sa.ForeignKeyConstraint(['application_manifest_id'], ['application_manifests.id'], ondelete="CASCADE"),
         # sa.UniqueConstraint('application_manifest_id', 'checksum_index', name='uq_application_checksum_index')
     )
 
