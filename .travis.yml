@@ -24,7 +24,7 @@ before_deploy:
   - mkdir $TRAVIS_BUILD_DIR/build
   - cd $TRAVIS_BUILD_DIR && tar cvfz build/static.tar.gz commandment/static
   - cd $TRAVIS_BUILD_DIR && tar cvfz build/backend.tar.gz commandment Pipfile Pipfile.lock settings.cfg.example
-  - cd $TRAVIS_BUILD_DIR && tar -C "$(pipenv --venv)" cvfz $TRAVIS_BUILD_DIR/build/virtualenv.tar.gz $(pipenv --venv)
+  - cd $TRAVIS_BUILD_DIR && tar cvfz build/virtualenv.tar.gz $(pipenv --venv)
 
 deploy:
   provider: s3
