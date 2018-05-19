@@ -43,8 +43,11 @@ def schema_upgrades():
         sa.Column('title', sa.String()),
         sa.Column('display_image_url', sa.String()),
         sa.Column('display_image_needs_shine', sa.Boolean()),
-        sa.Column('full_image_url', sa.String()),
-        sa.Column('full_image_needs_shine', sa.Boolean()),
+        sa.Column('full_size_image_url', sa.String()),
+        sa.Column('full_size_image_needs_shine', sa.Boolean()),
+
+        #op.add_column('application_manifests', sa.Column('full_size_image_needs_shine', sa.Boolean(), nullable=True))
+        #op.add_column('application_manifests', sa.Column('full_size_image_url', sa.String(), nullable=True))
         # sa.UniqueConstraint('bundle_id', 'bundle_version', name='uq_application_bundle_version')
     )
 
