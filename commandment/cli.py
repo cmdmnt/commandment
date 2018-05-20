@@ -5,14 +5,12 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 
 import os
-import atexit
-import werkzeug.serving
 from commandment import create_app
-from commandment.pki.ssl import generate_self_signed_certificate, generate_signing_request
+from commandment.pki.ssl import generate_self_signed_certificate
 from cryptography.hazmat.primitives import serialization
 
 from commandment.apns.push import get_apns
-from commandment.runner import start_runner, stop_runner
+
 
 def server():
     """Run server in standalone development mode."""

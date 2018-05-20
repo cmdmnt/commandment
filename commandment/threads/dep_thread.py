@@ -16,7 +16,7 @@ Todo:
 
 import threading
 import datetime
-from .models import db, Device
+from commandment.models import db, Device
 
 runner_thread = None
 runner_start = 5

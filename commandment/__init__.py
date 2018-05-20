@@ -68,7 +68,7 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     app.register_blueprint(dep_app)
     app.register_blueprint(vpp_app)
 
-    # SPA Entry Point
+    # SPA Entry Point (when not behind nginx or apache)
     @app.route('/')
     def index():
         """Main entry point for the administrator web application."""
