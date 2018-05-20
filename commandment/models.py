@@ -105,8 +105,9 @@ class Certificate(db.Model):
         m.discriminator = type.value
 
         subject: x509.Name = certificate.subject
-
-        # m.x509_cn = subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
+        cns = subject.get_attributes_for_oid(NameOID.COMMON_NAME)
+        if cns is not None:
+            m.x509_cn = cns[0].value
 
         return m
 

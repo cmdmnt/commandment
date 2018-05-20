@@ -71,7 +71,7 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     app.register_blueprint(vpp_app)
 
     # Threads
-    startup_thread.start()
+    startup_thread.start(app)
 
     # SPA Entry Point (when not behind nginx or apache)
     @app.route('/')
