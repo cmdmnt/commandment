@@ -10,9 +10,11 @@ from typing import Optional, Type
 from flask_sqlalchemy import SQLAlchemy
 
 from cryptography import x509
+from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import rsa
 import datetime
 from enum import Enum, IntEnum
 from sqlalchemy.ext.mutable import MutableDict
@@ -35,6 +37,7 @@ class CertificateType(Enum):
     """
     CSR = 'csr'
     PUSH = 'mdm.pushcert'
+    ENCRYPT = 'mdm.encrypt'
     WEB = 'mdm.webcrt'
     CA = 'mdm.cacert'
     DEVICE = 'mdm.device'
@@ -91,6 +94,22 @@ class Certificate(db.Model):
         'polymorphic_identity': 'certificates',
     }
 
+    @classmethod
+    def from_crypto_type(cls, certificate: x509.Certificate, type: CertificateType):
+        # type: (type, x509.Certificate, CertificateType) -> Certificate
+        m = cls()
+        m.pem_data = certificate.public_bytes(serialization.Encoding.PEM)
+        m.not_after = certificate.not_valid_after
+        m.not_before = certificate.not_valid_before
+        m.fingerprint = certificate.fingerprint(hashes.SHA1())
+        m.discriminator = type.value
+
+        subject: x509.Name = certificate.subject
+
+        # m.x509_cn = subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
+
+        return m
+
 
 class RSAPrivateKey(db.Model):
     """RSA Private Key Model"""
@@ -105,6 +124,28 @@ class RSAPrivateKey(db.Model):
         backref='rsa_private_key',
         lazy='dynamic'
     )
+
+    @classmethod
+    def from_crypto(cls, private_key: rsa.RSAPrivateKeyWithSerialization):
+        """Convert a cryptography RSAPrivateKey object to an SQLAlchemy model."""
+        # type: (type, rsa.RSAPrivateKeyWithSerialization) -> RSAPrivateKey
+        m = cls()
+        m.pem_data = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+
+        return m
+
+    def to_crypto(self) -> rsa.RSAPrivateKey:
+        """Convert an SQLAlchemy RSAPrivateKey model to a cryptography RSA Private Key."""
+        pk = serialization.load_pem_private_key(
+            self.pem_data,
+            backend=default_backend(),
+            password=None,
+        )
+        return pk
 
 
 class CertificateSigningRequest(Certificate):
@@ -133,6 +174,11 @@ class CACertificate(Certificate):
     __mapper_args__ = {
         'polymorphic_identity': CertificateType.CA.value
     }
+
+    @classmethod
+    def from_crypto(cls, certificate: x509.Certificate):
+        m = Certificate.from_crypto_type(certificate, CertificateType.CA)
+        return m
 
 
 class DeviceIdentityCertificate(Certificate):

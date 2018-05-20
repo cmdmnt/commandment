@@ -26,6 +26,8 @@ from .mdm.api import api_app as mdm_api
 from .apps.api import api_app as applications_api
 from .auth.app import auth_app
 
+from .threads import startup_thread
+
 
 def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     """Create the Flask Application.
@@ -67,6 +69,9 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     app.register_blueprint(ac2_app)
     app.register_blueprint(dep_app)
     app.register_blueprint(vpp_app)
+
+    # Threads
+    startup_thread.start()
 
     # SPA Entry Point (when not behind nginx or apache)
     @app.route('/')
