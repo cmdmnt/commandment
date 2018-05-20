@@ -9,8 +9,8 @@ matrix:
         - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
       before_deploy:
         - mkdir $TRAVIS_BUILD_DIR/build
-        - cd $TRAVIS_BUILD_DIR && tar cvfz build/backend.tar.gz commandment Pipfile Pipfile.lock settings.cfg.example
-        - cd $TRAVIS_BUILD_DIR && tar cvfz build/virtualenv.tar.gz $(pipenv --venv)
+        - cd $TRAVIS_BUILD_DIR && tar cfz build/backend.tar.gz commandment Pipfile Pipfile.lock settings.cfg.example
+        - cd $TRAVIS_BUILD_DIR && tar cfz build/virtualenv.tar.gz $(pipenv --venv)
     - language: node_js
       node_js: 7
       install:
@@ -18,7 +18,8 @@ matrix:
       env: NODE_ENV=production
       script: "./node_modules/.bin/webpack"
       before_deploy:
-        - cd $TRAVIS_BUILD_DIR && tar cvfz build/static.tar.gz commandment/static
+        - mkdir $TRAVIS_BUILD_DIR/build
+        - cd $TRAVIS_BUILD_DIR && tar cfz build/static.tar.gz commandment/static
 cache:
   directories:
     - ui/node_modules
