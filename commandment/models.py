@@ -155,6 +155,24 @@ class CertificateSigningRequest(Certificate):
         'polymorphic_identity': CertificateType.CSR.value
     }
 
+    @classmethod
+    def from_crypto(cls, csr: x509.CertificateSigningRequest):
+        # type: (type, x509.CertificateSigningRequest, CertificateType) -> Certificate
+        m = cls()
+        m.pem_data = csr.public_bytes(serialization.Encoding.PEM)
+        m.not_before = datetime.datetime.utcnow()
+        m.not_after = datetime.datetime.utcnow() + datetime.timedelta(days=700)
+        m.fingerprint = "NONE"
+
+        m.discriminator = CertificateType.CSR.value
+
+        subject: x509.Name = csr.subject
+        cns = subject.get_attributes_for_oid(NameOID.COMMON_NAME)
+        if cns is not None:
+            m.x509_cn = cns[0].value
+
+        return m
+
 
 class SSLCertificate(Certificate):
     """Polymorphic single table inheritance specifically for SSL certificates assigned to the MDM for HTTPS traffic."""
@@ -168,6 +186,11 @@ class PushCertificate(Certificate):
     __mapper_args__ = {
         'polymorphic_identity': CertificateType.PUSH.value
     }
+
+    @classmethod
+    def from_crypto(cls, certificate: x509.Certificate):
+        m = Certificate.from_crypto_type(certificate, CertificateType.PUSH)
+        return m
 
 
 class CACertificate(Certificate):
@@ -649,7 +672,7 @@ class SCEPConfig(db.Model):
     __tablename__ = 'scep_config'
 
     id = db.Column(db.Integer, primary_key=True)
-    enabled = db.Column(db.Boolean, default=False)
+    # enabled = db.Column(db.Boolean, default=False)
     """enabled (boolean): If enabled, use SCEP, otherwise use internal CA to generate identities for clients."""
     url = db.Column(db.String, nullable=False)
 

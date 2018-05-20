@@ -65,7 +65,7 @@ class FixedLocationResponse(Response):
     # relative location headers. now permitted in rfc7231 sect. 7.1.2
     autocorrect_location_header = False
 
-admin_mdmcert_app = Blueprint('admin_mdmcert_app', __name__)
+# admin_mdmcert_app = Blueprint('admin_mdmcert_app', __name__)
 
 
 #
