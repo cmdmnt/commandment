@@ -5,7 +5,8 @@
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
     CertificateSigningRequestSchema, OrganizationSchema, TagSchema, AvailableOSUpdateSchema
 from commandment.models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
-    SSLCertificate, Organization, Tag, AvailableOSUpdate
+    SSLCertificate, Organization, Tag, AvailableOSUpdate, Command
+from commandment.mdm import commands as mdmcommands, CommandType
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
 
@@ -22,6 +23,29 @@ class DeviceDetail(ResourceDetail):
         'model': Device,
         'url_field': 'device_id'
     }
+
+    def before_patch(self, args, kwargs, data=None):
+        """Custom logic when updating a device:
+
+        - If the `device_name` field would change, we queue a new Settings command to change the name of the device.
+        - If there already was an undelivered Settings command, it should be replaced by the new one.
+        - If the `hostname` field would change, that should also be sent via a Settings command (will be coalesced with Device Name).
+        """
+        if 'device_name' in data or 'hostname' in data:
+            # settings_commands = self.data_layer['model'].commands
+            cmd: mdmcommands.Settings = mdmcommands.Command.new_request_type("Settings", {})
+
+            if 'device_name' in data:
+                cmd.device_name = data['device_name']
+                del data['device_name']
+
+            if 'hostname' in data:
+                cmd.hostname = data['hostname']
+                del data['hostname']
+
+            model = Command.from_model(cmd)
+            self.data_layer['session'].add(model)
+
 
 class DeviceRelationship(ResourceRelationship):
     schema = DeviceSchema

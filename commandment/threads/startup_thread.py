@@ -53,7 +53,7 @@ def startup_callback():
     ).not_valid_after(
         datetime.datetime.utcnow() + datetime.timedelta(days=900)
     ).add_extension(
-        x509.BasicConstraints(ca=True, path_length=None)
+        x509.BasicConstraints(ca=True, path_length=None), critical=True
     ).sign(key, hashes.SHA256(), default_backend())
 
     cert_model = CACertificate.from_crypto(cert)

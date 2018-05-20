@@ -22,7 +22,13 @@ class DeviceSchema(Schema):
     topic = fields.Str()
 
     build_version = fields.Str()
-    device_name = fields.Str(dump_only=True)  # Modification only available through `Settings` MDM command (DeviceName).
+
+    # device_name and hostname are "pseudo" read-only in that writing them does not affect the field but enqueues
+    # an MDM command to change the name.
+    device_name = fields.Str()
+    hostname = fields.Str()
+    local_hostname = fields.Str(dump_only=True)
+
     model = fields.Str()
     model_name = fields.Str()
     os_version = fields.Str()
@@ -31,8 +37,7 @@ class DeviceSchema(Schema):
 
     awaiting_configuration = fields.Bool()
     last_seen = fields.DateTime(dump_only=True)
-    hostname = fields.Str()  # Modification only available through `Settings` MDM command (HostName).
-    local_hostname = fields.Str()  # Modification only available through `Settings` MDM command (DeviceName).
+
     available_device_capacity = fields.Float()
     device_capacity = fields.Float()
     wifi_mac = fields.Str()

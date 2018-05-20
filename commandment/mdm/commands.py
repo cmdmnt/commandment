@@ -575,6 +575,22 @@ class Settings(Command):
         self._settings: Dict[str, Any] = {}
 
     @property
+    def device_name(self) -> Optional[str]:
+        return self._settings.get('DeviceName', None)
+
+    @device_name.setter
+    def device_name(self, value: str) -> None:
+        self._settings['DeviceName'] = value
+
+    @property
+    def hostname(self) -> Optional[str]:
+        return self._settings.get('HostName', None)
+
+    @hostname.setter
+    def hostname(self, value: str) -> None:
+        self._settings['HostName'] = value
+
+    @property
     def voice_roaming(self) -> Optional[bool]:
         return self._settings.get('VoiceRoaming', None)
 
@@ -614,6 +630,6 @@ class Settings(Command):
             'CommandUUID': str(self._uuid),
             'Command': {
                 'RequestType': type(self).request_type,
-                'Settings': []
+                'Settings': self._settings,
             }
         }
