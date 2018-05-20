@@ -12,7 +12,7 @@ import {Navigation} from "./Navigation";
  *
  * @see https://github.com/ReactTraining/react-router/issues/4975
  */
-export class AppLayout extends React.Component<{}, void> {
+export class AppLayout extends React.Component<{}, {}> {
     public render() {
         const {children} = this.props;
 

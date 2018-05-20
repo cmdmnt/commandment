@@ -91,8 +91,8 @@ def verify_cms_signers(f):
         if current_app.testing:
             return f(*args, **kwargs)
 
-        current_app.logger.debug('Verifying CMS Request Data for request to ', request.url)
-    
+        current_app.logger.debug('Verifying CMS Request Data for request to %s', request.url)
+
         if request.headers['Content-Type'] != "application/pkcs7-signature":
             raise TypeError("verify_cms_signers expects application/pkcs7-signature, got: {}".format(
                 request.headers['Content-Type']))

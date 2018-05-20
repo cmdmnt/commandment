@@ -23,6 +23,7 @@ import {SettingsPage} from "./containers/SettingsPage";
 import "../sass/app.scss";
 import {ApplicationPage} from "./containers/ApplicationPage";
 import {ApplicationsPage} from "./containers/ApplicationsPage";
+import {DashboardPage} from "./containers/DashboardPage";
 
 const initialState: RootState = {};
 
@@ -34,6 +35,7 @@ render(
         <ConnectedRouter history={history}>
             <AppContainer>
                 <AppLayout>
+                    <Route exact path="/" component={DashboardPage} />
                     <Route exact path="/applications" component={ApplicationsPage} />
                     <Route path="/applications/add/:platform" component={ApplicationPage} />
                     <Route path="/certificates" component={CertificatesPage} />

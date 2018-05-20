@@ -12,7 +12,7 @@ interface SUIFilterState {
 
 export class SUIFilter extends React.Component<SUIFilterProps, SUIFilterState> {
 
-    _timeout: number;
+    _timeout: any;
 
     static defaultProps = {
         searchTimeoutMs: 400

@@ -143,12 +143,13 @@ fabric.properties
 *.iml
 .idea
 
-# commandment
+# SQLite3
 *.db
+*.db-journal
 
 # Flask settings.cfg
 settings.cfg
-scep_settings.cfg
+
 
 # dont ever commit certs
 *.pem

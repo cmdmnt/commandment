@@ -169,6 +169,7 @@ def ota_authenticate():
     # TODO: This should Validate to iPhone Device CA but we can't because:
     # http://www.openradar.me/31423312
     device_attributes = plistlib.loads(signed_data)
+
     current_app.logger.debug(device_attributes)
 
     try:
@@ -178,19 +179,23 @@ def ota_authenticate():
     except MultipleResultsFound:
         abort(500, 'Multiple organizations, backup your database and start again')
 
-    # Reply SCEP
-    profile = Profile(
-        identifier=org.payload_prefix + '.ota.phase3',
-        uuid=uuid4(),
-        display_name='Commandment OTA SCEP Enrollment',
-        description='Retrieves a SCEP Certificate to complete OTA Enrollment',
-        organization=org.name,
-        version=1,
-        scope=PayloadScope.System,
-    )
+    # TODO: Behold, the stupidest thing ever just to get this working, theres no way this should be prod:
+    if 'CHALLENGE' in device_attributes:
+        # Reply SCEP
+        profile = Profile(
+            identifier=org.payload_prefix + '.ota.phase3',
+            uuid=uuid4(),
+            display_name='Commandment OTA SCEP Enrollment',
+            description='Retrieves a SCEP Certificate to complete OTA Enrollment',
+            organization=org.name,
+            version=1,
+            scope=PayloadScope.System,
+        )
 
-    scep_payload = scep_payload_from_configuration()
-    profile.payloads.append(scep_payload)
+        scep_payload = scep_payload_from_configuration()
+        profile.payloads.append(scep_payload)
+    else:
+        profile = generate_enroll_profile()
 
     schema = profile_schema.ProfileSchema()
     result = schema.dump(profile)

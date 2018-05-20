@@ -86,7 +86,11 @@ def push_to_device(device: Device) -> apns2.Response:
     
     Args:
         device (Device): The device model to push to, must have a valid apns token and push magic
-          
+
+    Raises:
+        ssl.SSLError [SSL: SSLV3_ALERT_CERTIFICATE_EXPIRED] sslv3 alert certificate expired (_ssl.c:777) if the push
+            certificate has expired and the system attempts a push.
+
     Returns:
         APNS2Client Response object
     """

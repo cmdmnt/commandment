@@ -12,6 +12,7 @@ from cryptography.hazmat.primitives import hashes
 from .push import push_to_device
 from .schema import PushResponseFlatSchema
 from .mdmcert import submit_mdmcert_request
+import ssl
 
 api_push_app = Blueprint('api_push_app', __name__)
 
@@ -38,9 +39,13 @@ def push(device_id: int):
     """
     device = db.session.query(Device).filter(Device.id == device_id).one()
     if device.token is None or device.push_magic is None:
-        abort(400, 'Cannot request push on a device that has no device token or push magic')
+        abort(jsonify(error=True, message='Cannot request push on a device that has no device token or push magic'))
 
-    response = push_to_device(device)
+    try:
+        response = push_to_device(device)
+    except ssl.SSLError:
+        abort(jsonify(error=True, message="The push certificate has expired"))
+
     current_app.logger.info(response)
     device.last_push_at = datetime.utcnow()
     if response.status_code == 200:
