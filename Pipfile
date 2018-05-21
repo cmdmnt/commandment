@@ -1,12 +1,9 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
 acme = "*"
 aiohttp = "*"
 alembic = "*"
@@ -15,7 +12,7 @@ apns = "*"
 "apns2-client" = "*"
 babel = "*"
 biplist = "*"
-bixar = {git = "https://github.com/mosen/bixar.git", editable=true}
+bixar = {git = "https://github.com/mosen/bixar.git", editable = true}
 blinker = "*"
 decorator = "*"
 docutils = "*"
@@ -57,9 +54,7 @@ ukpostcodeparser = "*"
 sqlalchemy = "*"
 sphinxcontrib-httpdomain = "*"
 
-
 [dev-packages]
-
 alembic-viz = "*"
 factory-boy = "*"
 mock = "*"
