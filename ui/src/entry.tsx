@@ -1,7 +1,7 @@
 import createHistory from "history/createBrowserHistory";
 import * as React from "react";
 import {render} from "react-dom";
-import {AppContainer} from "react-hot-loader";
+import {hot} from "react-hot-loader";
 import {Provider} from "react-redux";
 import {Route} from "react-router";
 import {ConnectedRouter, routerMiddleware} from "react-router-redux";
@@ -33,24 +33,22 @@ const store = configureStore(initialState, routerMiddleware(history));
 render(
     <Provider store={store}>
         <ConnectedRouter history={history}>
-            <AppContainer>
-                <AppLayout>
-                    <Route exact path="/" component={DashboardPage} />
-                    <Route exact path="/applications" component={ApplicationsPage} />
-                    <Route path="/applications/add/:platform" component={ApplicationPage} />
-                    <Route path="/certificates" component={CertificatesPage} />
-                    <Route exact path="/devices" component={DevicesPage} />
-                    <Route path="/devices/:id" component={DevicePage} />
+            <AppLayout>
+                <Route exact path="/" component={DashboardPage} />
+                <Route exact path="/applications" component={ApplicationsPage} />
+                <Route path="/applications/add/:platform" component={ApplicationPage} />
+                <Route path="/certificates" component={CertificatesPage} />
+                <Route exact path="/devices" component={DevicesPage} />
+                <Route path="/devices/:id" component={DevicePage} />
 
-                    <Route exact path="/profiles" component={ProfilesPage} />
-                    <Route path="/profiles/:id" component={ProfilePage} />
+                <Route exact path="/profiles" component={ProfilesPage} />
+                <Route path="/profiles/:id" component={ProfilePage} />
 
-                    <Route exact path="/settings" component={SettingsPage} />
-                    <Route path="/settings/scep" component={SCEPPage} />
-                    <Route path="/settings/organization" component={OrganizationPage} />
-                    <Route path="/settings/vpp" component={VPPPage} />
-                </AppLayout>
-            </AppContainer>
+                <Route exact path="/settings" component={SettingsPage} />
+                <Route path="/settings/scep" component={SCEPPage} />
+                <Route path="/settings/organization" component={OrganizationPage} />
+                <Route path="/settings/vpp" component={VPPPage} />
+            </AppLayout>
         </ConnectedRouter>
     </Provider>,
     document.getElementById("root") as HTMLElement,

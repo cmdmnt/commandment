@@ -65,3 +65,4 @@ sphinxcontrib-plantuml = "*"
 sphinxcontrib-websupport = "*"
 guzzle-sphinx-theme = "*"
 typing = "*"
+"e1839a8" = {path = ".", editable = true}

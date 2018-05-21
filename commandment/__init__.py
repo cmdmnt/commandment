@@ -17,7 +17,7 @@ from .enroll.app import enroll_app
 from .models import db
 from .omdm import omdm_app
 from .sso.oauth import oauth_app
-from .sso.saml import saml_app
+#from .sso.saml import saml_app
 from .dep.app import dep_app
 from .vpp.app import vpp_app
 from .profiles.api import profiles_api_app
@@ -64,7 +64,7 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     app.register_blueprint(profiles_api_app, url_prefix='/api')
     app.register_blueprint(applications_api, url_prefix='/api')
     app.register_blueprint(oauth_app, url_prefix='/oauth')
-    app.register_blueprint(saml_app, url_prefix='/saml')
+    #app.register_blueprint(saml_app, url_prefix='/saml')
     app.register_blueprint(omdm_app, url_prefix='/omdm')
     app.register_blueprint(ac2_app)
     app.register_blueprint(dep_app)

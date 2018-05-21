@@ -107,6 +107,5 @@ module.exports = {
     extractSass,
     new CheckerPlugin(),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new webpack.optimize.UglifyJsPlugin()
   ]
 };

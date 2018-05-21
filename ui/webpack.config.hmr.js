@@ -6,7 +6,6 @@ const {CheckerPlugin} = require('awesome-typescript-loader');
 module.exports = {
     entry: {
         app: [
-            'react-hot-loader/patch',
             'webpack-dev-server/client?https://localhost:4000',
             'webpack/hot/only-dev-server',
             './src/entry.tsx'
@@ -40,7 +39,7 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: ['react-hot-loader/webpack', 'awesome-typescript-loader']
+                use: ['awesome-typescript-loader'] // 'react-hot-loader/webpack',
             },
             {
                 test: /\.js$/,

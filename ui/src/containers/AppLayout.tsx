@@ -1,4 +1,5 @@
 import * as React from "react";
+import {hot} from "react-hot-loader";
 
 import {Navigation} from "./Navigation";
 
@@ -12,7 +13,7 @@ import {Navigation} from "./Navigation";
  *
  * @see https://github.com/ReactTraining/react-router/issues/4975
  */
-export class AppLayout extends React.Component<{}, {}> {
+class AppLayoutCool extends React.Component<{}, {}> {
     public render() {
         const {children} = this.props;
 
@@ -24,3 +25,6 @@ export class AppLayout extends React.Component<{}, {}> {
         );
     }
 }
+
+export const AppLayout = hot(module)(AppLayoutCool);
+

@@ -16,10 +16,5 @@ If you are working on live changes and want to see the results immediately, you 
 
     $ npm start
 
-To start the webpack dev server [#f1]_.
 
-
-.. rubric:: Footnotes
-
-.. [#f1] `webpack-dev-server <https://webpack.js.org/configuration/dev-server/>`_.
 
