@@ -1,11 +1,11 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
   
   <!-- Licensed under the Apache 2.0 License -->
   <link rel="stylesheet" type="text/css" href="../_static/fonts/open-sans/stylesheet.css" />
@@ -16,32 +16,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
     <title>User Documentation &#8212; commandment 1.0 documentation</title>
-    
     <link rel="stylesheet" href="../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="User Guide" href="guide/index.html" />
+    <link rel="next" title="Preface" href="preface.html" />
     <link rel="prev" title="Welcome to commandment’s documentation!" href="../index.html" />
   
    
 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -55,7 +43,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="guide/index.html" title="User Guide"
+          <a href="preface.html" title="Preface"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../index.html" title="Welcome to commandment’s documentation!"
@@ -70,29 +58,19 @@
       </div>
   <div id="left-column">
     <div class="sphinxsidebar">
-        <a href="
-    ../index.html" class="text-logo">Commandment</a>
-        
-<div class="sidebar-block">
-  <div class="sidebar-wrapper">
-    <h2>Table Of Contents</h2>
-  </div>
-  <div class="sidebar-toc">
-    
-    
-      <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">User Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide/index.html">User Guide</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../developer/index.html">Developer Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../internal/index.html">Internals Reference</a></li>
-</ul>
-
-    
-  </div>
-</div>
-        
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">Welcome to commandment’s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="preface.html"
+                        title="next chapter">Preface</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
     <div id="main-search">
@@ -106,6 +84,7 @@
     </div>
   </div>
 </div>
+      
     </div>
   </div>
         <div id="right-column">
@@ -124,8 +103,21 @@
 <h1>User Documentation<a class="headerlink" href="#user-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="guide/index.html">User Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide/preface.html">Preface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preface.html">Preface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="preface.html#apns-mdm-certificate">APNS MDM Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preface.html#tls-web-certificate">TLS/Web Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preface.html#device-identity-certificate">Device Identity Certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#macos">macOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#database-connection">Database Connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#self-signed-ssl-certificate">Self-Signed SSL Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#mdm-push-certificate">MDM Push Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#complete-reference">Complete Reference</a></li>
 </ul>
 </li>
 </ul>
@@ -138,11 +130,11 @@
   <div class="footer-relations">
     
       <div class="pull-left">
-        <a class="btn btn-default" href="../index.html" title="previous chapter (use the left arrow)">Welcome to commandment&#8217;s documentation!</a>
+        <a class="btn btn-default" href="../index.html" title="previous chapter (use the left arrow)">Welcome to commandment’s documentation!</a>
       </div>
     
       <div class="pull-right">
-        <a class="btn btn-default" href="guide/index.html" title="next chapter (use the right arrow)">User Guide</a>
+        <a class="btn btn-default" href="preface.html" title="next chapter (use the right arrow)">Preface</a>
       </div>
     </div>
     <div class="clearer"></div>
@@ -163,7 +155,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="guide/index.html" title="User Guide"
+          <a href="preface.html" title="Preface"
              >next</a> |</li>
         <li class="right" >
           <a href="../index.html" title="Welcome to commandment’s documentation!"

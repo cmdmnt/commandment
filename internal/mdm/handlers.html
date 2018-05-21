@@ -1,0 +1,269 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>MDM Command Response Handlers &#8212; commandment 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="MDM Types" href="types.html" />
+    <link rel="prev" title="MDM Blueprint" href="app.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="types.html" title="MDM Types"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="app.html" title="MDM Blueprint"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">MDM</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="app.html"
+                        title="previous chapter">MDM Blueprint</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="types.html"
+                        title="next chapter">MDM Types</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/internal/mdm/handlers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Internals Reference</a></li>
+              
+                <li><a href="index.html">MDM</a></li>
+              
+              <li>MDM Command Response Handlers</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="module-commandment.mdm.handlers">
+<span id="mdm-command-response-handlers"></span><h1>MDM Command Response Handlers<a class="headerlink" href="#module-commandment.mdm.handlers" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="commandment.mdm.handlers.ack_available_os_updates">
+<code class="descclassname">commandment.mdm.handlers.</code><code class="descname">ack_available_os_updates</code><span class="sig-paren">(</span><em>request: commandment.mdm.commands.AvailableOSUpdates</em>, <em>device: commandment.models.Device</em>, <em>response: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/mdm/handlers.html#ack_available_os_updates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.mdm.handlers.ack_available_os_updates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acknowledge a response to AvailableOSUpdates</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="commandment.mdm.handlers.ack_device_information">
+<code class="descclassname">commandment.mdm.handlers.</code><code class="descname">ack_device_information</code><span class="sig-paren">(</span><em>request: commandment.mdm.commands.DeviceInformation</em>, <em>device: commandment.models.Device</em>, <em>response: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/mdm/handlers.html#ack_device_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.mdm.handlers.ack_device_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acknowledge a <code class="docutils literal notranslate"><span class="pre">DeviceInformation</span></code> response.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> (<em>DeviceInformation</em>) – The command instance that generated this response.</li>
+<li><strong>device</strong> (<a class="reference internal" href="../core/models/device.html#commandment.models.Device" title="commandment.models.Device"><em>Device</em></a>) – The device responding to the command.</li>
+<li><strong>response</strong> (<em>dict</em>) – The raw response dictionary, de-serialized from plist.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Reserved for future use</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">void</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<ul class="last simple">
+<li><a class="reference external" href="https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/3-MDM_Protocol/MDM_Protocol.html#//apple_ref/doc/uid/TP40017387-CH3-SW15">DeviceInformation Command</a>.</li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="commandment.mdm.handlers.ack_install_application">
+<code class="descclassname">commandment.mdm.handlers.</code><code class="descname">ack_install_application</code><span class="sig-paren">(</span><em>request: commandment.mdm.commands.InstallApplication</em>, <em>device: commandment.models.Device</em>, <em>response: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/mdm/handlers.html#ack_install_application"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.mdm.handlers.ack_install_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acknowledge a response to InstallApplication. Usually just contains Queued: True/False</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="commandment.mdm.handlers.ack_install_profile">
+<code class="descclassname">commandment.mdm.handlers.</code><code class="descname">ack_install_profile</code><span class="sig-paren">(</span><em>request: commandment.mdm.commands.InstallProfile</em>, <em>device: commandment.models.Device</em>, <em>response: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/mdm/handlers.html#ack_install_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.mdm.handlers.ack_install_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acknowledge a response to <code class="docutils literal notranslate"><span class="pre">InstallProfile</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="commandment.mdm.handlers.ack_installed_app_list">
+<code class="descclassname">commandment.mdm.handlers.</code><code class="descname">ack_installed_app_list</code><span class="sig-paren">(</span><em>request: commandment.mdm.commands.InstalledApplicationList</em>, <em>device: commandment.models.Device</em>, <em>response: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/mdm/handlers.html#ack_installed_app_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.mdm.handlers.ack_installed_app_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acknowledge a response to <code class="docutils literal notranslate"><span class="pre">InstalledApplicationList</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">There is no composite key which can uniquely identify an item in the installed applications list.
+Some applications may not contain any version information at all. For this reason, the entire list of installed
+applications is cleared before inserting a new list.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> (<em>InstalledApplicationList</em>) – An instance of the command that generated this response from the managed
+device.</li>
+<li><strong>device</strong> (<a class="reference internal" href="../core/models/device.html#commandment.models.Device" title="commandment.models.Device"><em>Device</em></a>) – The device responding</li>
+<li><strong>response</strong> (<em>dict</em>) – The dictionary containing the parsed plist response from the device.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Nothing is returned but this behaviour is subject to change.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">void</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="commandment.mdm.handlers.ack_profile_list">
+<code class="descclassname">commandment.mdm.handlers.</code><code class="descname">ack_profile_list</code><span class="sig-paren">(</span><em>request: commandment.mdm.commands.ProfileList</em>, <em>device: commandment.models.Device</em>, <em>response: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/mdm/handlers.html#ack_profile_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.mdm.handlers.ack_profile_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acknowledge a <code class="docutils literal notranslate"><span class="pre">ProfileList</span></code> response.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> (<em>ProfileList</em>) – The command instance that generated this response.</li>
+<li><strong>device</strong> (<a class="reference internal" href="../core/models/device.html#commandment.models.Device" title="commandment.models.Device"><em>Device</em></a>) – The device responding to the command.</li>
+<li><strong>response</strong> (<em>dict</em>) – The raw response dictionary, de-serialized from plist.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Reserved for future use</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">void</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="app.html" title="previous chapter (use the left arrow)">MDM Blueprint</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="types.html" title="next chapter (use the right arrow)">MDM Types</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="types.html" title="MDM Types"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="app.html" title="MDM Blueprint"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >MDM</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

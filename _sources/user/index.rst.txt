@@ -5,7 +5,10 @@ User Documentation
 .. toctree::
     :maxdepth: 2
 
-    guide/index
+    preface
+    install
+    configuration
+    
 
 
     

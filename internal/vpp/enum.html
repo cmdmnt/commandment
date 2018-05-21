@@ -1,11 +1,11 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
   
   <!-- Licensed under the Apache 2.0 License -->
   <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
@@ -16,20 +16,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
     <title>VPP Types &#8212; commandment 1.0 documentation</title>
-    
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
@@ -40,8 +29,7 @@
   
    
 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -62,7 +50,7 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">VPP</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">VPP - Volume Purchasing Programme</a> &#187;</li> 
       </ul>
     </div>
     <div class="container-wrapper">
@@ -72,33 +60,19 @@
       </div>
   <div id="left-column">
     <div class="sphinxsidebar">
-        <a href="
-    ../../index.html" class="text-logo">Commandment</a>
-        
-<div class="sidebar-block">
-  <div class="sidebar-wrapper">
-    <h2>Table Of Contents</h2>
-  </div>
-  <div class="sidebar-toc">
-    
-    
-      <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../user/index.html">User Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Internals Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../flask/index.html">Flask Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../models/index.html">ORM (SQLAlchemy) Models</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">VPP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../workers/index.html">Worker Threads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../push.html">push</a></li>
-</ul>
-</li>
-</ul>
-
-    
-  </div>
-</div>
-        
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="decorators.html"
+                        title="previous chapter">Decorators</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="errors.html"
+                        title="next chapter">VPP Errors</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/internal/vpp/enum.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
     <div id="main-search">
@@ -112,6 +86,7 @@
     </div>
   </div>
 </div>
+      
     </div>
   </div>
         <div id="right-column">
@@ -122,7 +97,7 @@
               
                 <li><a href="../index.html">Internals Reference</a></li>
               
-                <li><a href="index.html">VPP</a></li>
+                <li><a href="index.html">VPP - Volume Purchasing Programme</a></li>
               
               <li>VPP Types</li>
             </ol>
@@ -135,8 +110,7 @@
 <dl class="attribute">
 <dt id="commandment.vpp.enum.LicenseAssociation">
 <code class="descclassname">commandment.vpp.enum.</code><code class="descname">LicenseAssociation</code><a class="headerlink" href="#commandment.vpp.enum.LicenseAssociation" title="Permalink to this definition">¶</a></dt>
-<dd><p>LicenseAssociation: A tuple representing a combination of a product by adam id and a type of association operation</p>
-<p>alias of <code class="xref py py-class docutils literal"><span class="pre">Tuple</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Tuple</span></code></p>
 </dd></dl>
 
 <dl class="class">
@@ -146,13 +120,13 @@
 <dl class="attribute">
 <dt id="commandment.vpp.enum.LicenseAssociationType.ClientUserID">
 <code class="descname">ClientUserID</code><em class="property"> = 'ClientUserID'</em><a class="headerlink" href="#commandment.vpp.enum.LicenseAssociationType.ClientUserID" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> &#8211; Associate user to license by Client ID</p>
+<dd><p><em>str</em> – Associate user to license by Client ID</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="commandment.vpp.enum.LicenseAssociationType.SerialNumber">
 <code class="descname">SerialNumber</code><em class="property"> = 'SerialNumber'</em><a class="headerlink" href="#commandment.vpp.enum.LicenseAssociationType.SerialNumber" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> &#8211; Associate device to license by Serial Number</p>
+<dd><p><em>str</em> – Associate device to license by Serial Number</p>
 </dd></dl>
 
 </dd></dl>
@@ -160,9 +134,7 @@
 <dl class="attribute">
 <dt id="commandment.vpp.enum.LicenseDisassociation">
 <code class="descclassname">commandment.vpp.enum.</code><code class="descname">LicenseDisassociation</code><a class="headerlink" href="#commandment.vpp.enum.LicenseDisassociation" title="Permalink to this definition">¶</a></dt>
-<dd><p>LicenseDisassociation: A tuple representing a combination of a product by adam id and a type of
-disassociation operation</p>
-<p>alias of <code class="xref py py-class docutils literal"><span class="pre">Tuple</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Tuple</span></code></p>
 </dd></dl>
 
 <dl class="class">
@@ -172,19 +144,19 @@ disassociation operation</p>
 <dl class="attribute">
 <dt id="commandment.vpp.enum.LicenseDisassociationType.ClientUserID">
 <code class="descname">ClientUserID</code><em class="property"> = 'ClientUserID'</em><a class="headerlink" href="#commandment.vpp.enum.LicenseDisassociationType.ClientUserID" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> &#8211; Disassociate license from user by Client ID</p>
+<dd><p><em>str</em> – Disassociate license from user by Client ID</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="commandment.vpp.enum.LicenseDisassociationType.LicenseID">
 <code class="descname">LicenseID</code><em class="property"> = 'LicenseID'</em><a class="headerlink" href="#commandment.vpp.enum.LicenseDisassociationType.LicenseID" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> &#8211; Disassociate license by ID regardless of User/Device</p>
+<dd><p><em>str</em> – Disassociate license by ID regardless of User/Device</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="commandment.vpp.enum.LicenseDisassociationType.SerialNumber">
 <code class="descname">SerialNumber</code><em class="property"> = 'SerialNumber'</em><a class="headerlink" href="#commandment.vpp.enum.LicenseDisassociationType.SerialNumber" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> &#8211; Disassociate license from device by Serial Number</p>
+<dd><p><em>str</em> – Disassociate license from device by Serial Number</p>
 </dd></dl>
 
 </dd></dl>
@@ -192,8 +164,7 @@ disassociation operation</p>
 <dl class="attribute">
 <dt id="commandment.vpp.enum.VPPAsset">
 <code class="descclassname">commandment.vpp.enum.</code><code class="descname">VPPAsset</code><a class="headerlink" href="#commandment.vpp.enum.VPPAsset" title="Permalink to this definition">¶</a></dt>
-<dd><p>VPPAsset: A tuple representing a pair of product adam id and pricing parameter.</p>
-<p>alias of <code class="xref py py-class docutils literal"><span class="pre">Tuple</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Tuple</span></code></p>
 </dd></dl>
 
 <dl class="class">
@@ -203,13 +174,13 @@ disassociation operation</p>
 <dl class="attribute">
 <dt id="commandment.vpp.enum.VPPPricingParam.HighQuality">
 <code class="descname">HighQuality</code><em class="property"> = 'PLUS'</em><a class="headerlink" href="#commandment.vpp.enum.VPPPricingParam.HighQuality" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> &#8211; High Quality - Does not apply to Software</p>
+<dd><p><em>str</em> – High Quality - Does not apply to Software</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="commandment.vpp.enum.VPPPricingParam.StandardQuality">
 <code class="descname">StandardQuality</code><em class="property"> = 'STDQ'</em><a class="headerlink" href="#commandment.vpp.enum.VPPPricingParam.StandardQuality" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> &#8211; Standard Quality</p>
+<dd><p><em>str</em> – Standard Quality</p>
 </dd></dl>
 
 </dd></dl>
@@ -221,19 +192,19 @@ disassociation operation</p>
 <dl class="attribute">
 <dt id="commandment.vpp.enum.VPPProductType.Application">
 <code class="descname">Application</code><em class="property"> = 8</em><a class="headerlink" href="#commandment.vpp.enum.VPPProductType.Application" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; Don&#8217;t ask me</p>
+<dd><p><em>int</em> – Don’t ask me</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="commandment.vpp.enum.VPPProductType.Publication">
 <code class="descname">Publication</code><em class="property"> = 10</em><a class="headerlink" href="#commandment.vpp.enum.VPPProductType.Publication" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; An ebook</p>
+<dd><p><em>int</em> – An ebook</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="commandment.vpp.enum.VPPProductType.Software">
 <code class="descname">Software</code><em class="property"> = 7</em><a class="headerlink" href="#commandment.vpp.enum.VPPProductType.Software" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; An piece of software</p>
+<dd><p><em>int</em> – An piece of software</p>
 </dd></dl>
 
 </dd></dl>
@@ -245,25 +216,25 @@ disassociation operation</p>
 <dl class="attribute">
 <dt id="commandment.vpp.enum.VPPUserStatus.Associated">
 <code class="descname">Associated</code><em class="property"> = 'Associated'</em><a class="headerlink" href="#commandment.vpp.enum.VPPUserStatus.Associated" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> &#8211; Associated</p>
+<dd><p><em>str</em> – Associated</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="commandment.vpp.enum.VPPUserStatus.Deleted">
 <code class="descname">Deleted</code><em class="property"> = 'Deleted'</em><a class="headerlink" href="#commandment.vpp.enum.VPPUserStatus.Deleted" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> &#8211; Deleted</p>
+<dd><p><em>str</em> – Deleted</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="commandment.vpp.enum.VPPUserStatus.Registered">
 <code class="descname">Registered</code><em class="property"> = 'Registered'</em><a class="headerlink" href="#commandment.vpp.enum.VPPUserStatus.Registered" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> &#8211; Registered</p>
+<dd><p><em>str</em> – Registered</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="commandment.vpp.enum.VPPUserStatus.Retired">
 <code class="descname">Retired</code><em class="property"> = 'Retired'</em><a class="headerlink" href="#commandment.vpp.enum.VPPUserStatus.Retired" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> &#8211; Retired (can still be changed back)</p>
+<dd><p><em>str</em> – Retired (can still be changed back)</p>
 </dd></dl>
 
 </dd></dl>
@@ -308,7 +279,7 @@ disassociation operation</p>
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="index.html" >VPP</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="index.html" >VPP - Volume Purchasing Programme</a> &#187;</li> 
       </ul>
     </div>
 <script type="text/javascript">

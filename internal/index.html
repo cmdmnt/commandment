@@ -1,11 +1,11 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
   
   <!-- Licensed under the Apache 2.0 License -->
   <link rel="stylesheet" type="text/css" href="../_static/fonts/open-sans/stylesheet.css" />
@@ -16,32 +16,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
     <title>Internals Reference &#8212; commandment 1.0 documentation</title>
-    
     <link rel="stylesheet" href="../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Flask Endpoints" href="flask/index.html" />
+    <link rel="next" title="Commandment Core" href="core/index.html" />
     <link rel="prev" title="Organization" href="../developer/rest/organization.html" />
   
    
 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -55,7 +43,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="flask/index.html" title="Flask Endpoints"
+          <a href="core/index.html" title="Commandment Core"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../developer/rest/organization.html" title="Organization"
@@ -70,33 +58,19 @@
       </div>
   <div id="left-column">
     <div class="sphinxsidebar">
-        <a href="
-    ../index.html" class="text-logo">Commandment</a>
-        
-<div class="sidebar-block">
-  <div class="sidebar-wrapper">
-    <h2>Table Of Contents</h2>
-  </div>
-  <div class="sidebar-toc">
-    
-    
-      <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../user/index.html">User Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developer/index.html">Developer Documentation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Internals Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="flask/index.html">Flask Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/index.html">ORM (SQLAlchemy) Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vpp/index.html">VPP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers/index.html">Worker Threads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="push.html">push</a></li>
-</ul>
-</li>
-</ul>
-
-    
-  </div>
-</div>
-        
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../developer/rest/organization.html"
+                        title="previous chapter">Organization</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="core/index.html"
+                        title="next chapter">Commandment Core</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/internal/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
     <div id="main-search">
@@ -110,6 +84,7 @@
     </div>
   </div>
 </div>
+      
     </div>
   </div>
         <div id="right-column">
@@ -128,26 +103,37 @@
 <h1>Internals Reference<a class="headerlink" href="#internals-reference" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="flask/index.html">Flask Endpoints</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="flask/configuration.html">Configuration Blueprint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flask/enroll.html">Enrollment Blueprint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flask/mdm_app.html">MDM Blueprint</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core/index.html">Commandment Core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core/models/index.html">ORM (SQLAlchemy) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/signals.html">Signals</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="models/index.html">ORM (SQLAlchemy) Models</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="models/certificate.html">Certificate</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/certificate_request.html">CertificateRequest</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/command.html">Command</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/device.html">Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/organization.html">Organization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/installed_profile.html">InstalledProfile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/installed_certificate.html">InstalledCertificate</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/installed_application.html">InstalledApplication</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/profile.html">Profile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/rsa_private_key.html">PrivateKey</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/api.html">Non-Standardised API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/json-api.html">JSON-API v1</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="vpp/index.html">VPP</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="cms/index.html">CMS - Cryptographic Message Syntax / PKCS#7</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cms/decorators.html">Decorators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dep/index.html">DEP - Device Enrollment Programme</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dep/dep.html">DEP Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dep/types.html">DEP Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dep/models.html">SQLAlchemy Models</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="enroll/index.html">Enrollment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="enroll/app.html">Enrollment Blueprint</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mdm/index.html">MDM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mdm/app.html">MDM Blueprint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mdm/handlers.html">MDM Command Response Handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mdm/types.html">MDM Types</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vpp/index.html">VPP - Volume Purchasing Programme</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="vpp/decorators.html">Decorators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vpp/enum.html">VPP Types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vpp/errors.html">VPP Errors</a></li>
@@ -174,7 +160,7 @@
       </div>
     
       <div class="pull-right">
-        <a class="btn btn-default" href="flask/index.html" title="next chapter (use the right arrow)">Flask Endpoints</a>
+        <a class="btn btn-default" href="core/index.html" title="next chapter (use the right arrow)">Commandment Core</a>
       </div>
     </div>
     <div class="clearer"></div>
@@ -195,7 +181,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="flask/index.html" title="Flask Endpoints"
+          <a href="core/index.html" title="Commandment Core"
              >next</a> |</li>
         <li class="right" >
           <a href="../developer/rest/organization.html" title="Organization"

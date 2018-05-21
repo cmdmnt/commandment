@@ -1,0 +1,8 @@
+@startuml
+start
+:device has commands;
+:at least one command is "Queued" status;
+:command does not have "after" date;
+
+end
+@enduml

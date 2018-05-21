@@ -1,0 +1,192 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>InstalledApplication &#8212; commandment 1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Profile" href="profile.html" />
+    <link rel="prev" title="InstalledCertificate" href="installed_certificate.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="profile.html" title="Profile"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installed_certificate.html" title="InstalledCertificate"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../index.html" >Commandment Core</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="index.html" accesskey="U">ORM (SQLAlchemy) Models</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installed_certificate.html"
+                        title="previous chapter">InstalledCertificate</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="profile.html"
+                        title="next chapter">Profile</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/internal/core/models/installed_application.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../../index.html">Docs</a></li>
+              
+                <li><a href="../../index.html">Internals Reference</a></li>
+              
+                <li><a href="../index.html">Commandment Core</a></li>
+              
+                <li><a href="index.html">ORM (SQLAlchemy) Models</a></li>
+              
+              <li>InstalledApplication</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="installedapplication">
+<h1>InstalledApplication<a class="headerlink" href="#installedapplication" title="Permalink to this headline">¶</a></h1>
+<p class="plantuml">
+<img src="../../../_images/plantuml-6b633ac0d93e14b0cc0d288bfd3997dbedea86f4.png" alt="&#64;startuml
+
+skinparam defaultFontName Courier
+
+Class installed_applications {
+    INTEGER                  ★ id                                         
+    INTEGER                  ☆ device_id                                  
+    VARCHAR                  ⚪ bundle_identifier                          
+    BIGINT                   ⚪ bundle_size                                
+    CHAR[32]                 ⚪ device_udid                                
+    BIGINT                   ⚪ dynamic_size                               
+    BOOLEAN                  ⚪ is_validated                               
+    VARCHAR                  ⚪ name                                       
+    VARCHAR                  ⚪ short_version                              
+    VARCHAR                  ⚪ version                                    
+    INDEX[bundle_identifier] » ix_installed_applications_bundle_identifier
+    INDEX[device_udid]       » ix_installed_applications_device_udid      
+    INDEX[version]           » ix_installed_applications_version          
+}
+
+right footer generated by sadisplay v0.4.8
+
+&#64;enduml" />
+</p>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="installed_certificate.html" title="previous chapter (use the left arrow)">InstalledCertificate</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="profile.html" title="next chapter (use the right arrow)">Profile</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="profile.html" title="Profile"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installed_certificate.html" title="InstalledCertificate"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../index.html" >Commandment Core</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="index.html" >ORM (SQLAlchemy) Models</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

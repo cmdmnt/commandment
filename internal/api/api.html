@@ -1,0 +1,397 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Non-Standardised API &#8212; commandment 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="JSON-API v1" href="json-api.html" />
+    <link rel="prev" title="API" href="index.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="json-api.html" title="JSON-API v1"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="API"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">API</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">API</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="json-api.html"
+                        title="next chapter">JSON-API v1</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/internal/api/api.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Internals Reference</a></li>
+              
+                <li><a href="index.html">API</a></li>
+              
+              <li>Non-Standardised API</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="non-standardised-api">
+<h1>Non-Standardised API<a class="headerlink" href="#non-standardised-api" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="45%" />
+<col width="35%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Resource</th>
+<th class="head">Operation</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#post--api-v1-upload-profiles">POST /api/v1/upload/profiles</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#get--api-v1-organization">GET /api/v1/organization</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#get--api-v1-rsa_private_keys-(int-rsa_private_key_id)-download">GET /api/v1/rsa_private_keys/(int:rsa_private_key_id)/download</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#get--api-v1-download-certificates-(int-certificate_id)">GET /api/v1/download/certificates/(int:certificate_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#get--api-v1-download-profiles-(int-profile_id)">GET /api/v1/download/profiles/(int:profile_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#get--api-v1-devices-inventory-(int-device_id)">GET /api/v1/devices/inventory/(int:device_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#post--api-v1-devices-test-(int-device_id)">POST /api/v1/devices/test/(int:device_id)</a></td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+<dl class="post">
+<dt id="post--api-v1-upload-profiles">
+<code class="descname">POST </code><code class="descname">/api/v1/upload/profiles</code><a class="headerlink" href="#post--api-v1-upload-profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload a custom profile using multipart/form-data I.E from an upload input.</p>
+<p>Encrypted profiles are not supported.</p>
+<p>The profiles contents will be stored using the following process:
+- For the top level profile (and each payload) there is a marshmallow schema which maps the payload keys into</p>
+<blockquote>
+<div>the SQLAlchemy model keys. It is also the responsibility of the marshmallow schema to be the validator for 
+uploaded profiles.</div></blockquote>
+<ul class="simple">
+<li>The profile itself is inserted as a Profile model.</li>
+<li><dl class="first docutils">
+<dt>Each payload is unmarshalled using marshmallow to a specific Payload model. Each specific model contains a join</dt>
+<dd>table inheritance to the base <code class="docutils literal notranslate"><span class="pre">payloads</span></code> table.</dd>
+</dl>
+</li>
+</ul>
+<p>The returned body contains a jsonapi object with details of the newly created profile and associated payload ID’s.</p>
+<p>Note: Does not support <code class="docutils literal notranslate"><span class="pre">application/x-www-form-urlencoded</span></code></p>
+<dl class="docutils">
+<dt>TODO:</dt>
+<dd><ul class="first last simple">
+<li>Support signed profiles</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-5.3.2">Accept</a> – application/vnd.api+json</li>
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – multipart/form-data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/vnd.api+json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a> – profile created</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> – If the request contained malformed or missing payload data.</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a> – If something else went wrong with parsing or persisting the payload(s)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-organization">
+<code class="descname">GET </code><code class="descname">/api/v1/organization</code><a class="headerlink" href="#get--api-v1-organization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve information about the MDM home organization.</p>
+<p>Only returns a pseudo JSON-API representation because the standard has no definition for
+<cite>singleton</cite> resources.</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-rsa_private_keys-(int-rsa_private_key_id)-download">
+<code class="descname">GET </code><code class="descname">/api/v1/rsa_private_keys/</code><span class="sig-paren">(</span><em class="property">int: </em><em>rsa_private_key_id</em><span class="sig-paren">)</span><code class="descname">/download</code><a class="headerlink" href="#get--api-v1-rsa_private_keys-(int-rsa_private_key_id)-download" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download an RSA private key in PEM or DER format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-5.3.2">Accept</a> – application/x-pem-file</li>
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-5.3.2">Accept</a> – application/pkcs8</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/x-pem-file</li>
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/pkcs8</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – OK</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">404 Not Found</a> – Not found</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> – Can’t produce requested encoding</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-download-certificates-(int-certificate_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/download/certificates/</code><span class="sig-paren">(</span><em class="property">int: </em><em>certificate_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-download-certificates-(int-certificate_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a certificate in PEM format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-5.3.2">Accept</a> – application/x-pem-file</li>
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-5.3.2">Accept</a> – application/x-x509-user-cert</li>
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-5.3.2">Accept</a> – application/x-x509-ca-cert</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/x-pem-file</li>
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/x-x509-user-cert</li>
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/x-x509-ca-cert</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – OK</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">404 Not Found</a> – There is no certificate configured</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> – Can’t produce requested encoding</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-download-profiles-(int-profile_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/download/profiles/</code><span class="sig-paren">(</span><em class="property">int: </em><em>profile_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-download-profiles-(int-profile_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a profile.</p>
+<p>The profile is reconstructed from its database representation.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>profile_id (int): The profile id</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-5.3.2">Accept</a> – application/x-apple-aspen-config</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/x-apple-aspen-config</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – </li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">404 Not Found</a> – </li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-inventory-(int-device_id)">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/inventory/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-v1-devices-inventory-(int-device_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tell a device to produce a full inventory immediately.</p>
+<p>This is mostly for testing right now.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – OK</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--api-v1-devices-test-(int-device_id)">
+<code class="descname">POST </code><code class="descname">/api/v1/devices/test/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#post--api-v1-devices-test-(int-device_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Testing endpoint for quick and dirty command checking</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="index.html" title="previous chapter (use the left arrow)">API</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="json-api.html" title="next chapter (use the right arrow)">JSON-API v1</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="json-api.html" title="JSON-API v1"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="API"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >API</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

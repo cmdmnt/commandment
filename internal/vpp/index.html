@@ -1,11 +1,11 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
   
   <!-- Licensed under the Apache 2.0 License -->
   <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
@@ -15,33 +15,21 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>VPP &#8212; commandment 1.0 documentation</title>
-    
+    <title>VPP - Volume Purchasing Programme &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Decorators" href="decorators.html" />
-    <link rel="prev" title="PrivateKey" href="../models/rsa_private_key.html" />
+    <link rel="prev" title="MDM Types" href="../mdm/types.html" />
   
    
 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -58,7 +46,7 @@
           <a href="decorators.html" title="Decorators"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../models/rsa_private_key.html" title="PrivateKey"
+          <a href="../mdm/types.html" title="MDM Types"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Internals Reference</a> &#187;</li> 
@@ -71,33 +59,19 @@
       </div>
   <div id="left-column">
     <div class="sphinxsidebar">
-        <a href="
-    ../../index.html" class="text-logo">Commandment</a>
-        
-<div class="sidebar-block">
-  <div class="sidebar-wrapper">
-    <h2>Table Of Contents</h2>
-  </div>
-  <div class="sidebar-toc">
-    
-    
-      <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../user/index.html">User Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Internals Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../flask/index.html">Flask Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../models/index.html">ORM (SQLAlchemy) Models</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">VPP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../workers/index.html">Worker Threads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../push.html">push</a></li>
-</ul>
-</li>
-</ul>
-
-    
-  </div>
-</div>
-        
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../mdm/types.html"
+                        title="previous chapter">MDM Types</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="decorators.html"
+                        title="next chapter">Decorators</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/internal/vpp/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
     <div id="main-search">
@@ -111,6 +85,7 @@
     </div>
   </div>
 </div>
+      
     </div>
   </div>
         <div id="right-column">
@@ -121,15 +96,16 @@
               
                 <li><a href="../index.html">Internals Reference</a></li>
               
-              <li>VPP</li>
+              <li>VPP - Volume Purchasing Programme</li>
             </ol>
           </div>
           
           <div class="document clearer body">
             
-  <div class="section" id="vpp">
-<h1>VPP<a class="headerlink" href="#vpp" title="Permalink to this headline">¶</a></h1>
-<p>Details of the <strong>commandment.vpp</strong> package</p>
+  <div class="section" id="vpp-volume-purchasing-programme">
+<h1>VPP - Volume Purchasing Programme<a class="headerlink" href="#vpp-volume-purchasing-programme" title="Permalink to this headline">¶</a></h1>
+<p>Details of the <strong>commandment.vpp</strong> package.</p>
+<p>This package implements all of the functionality related to Apple’s <strong>Volume Purchase Programme</strong>.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="decorators.html">Decorators</a></li>
@@ -147,7 +123,7 @@
   <div class="footer-relations">
     
       <div class="pull-left">
-        <a class="btn btn-default" href="../models/rsa_private_key.html" title="previous chapter (use the left arrow)">PrivateKey</a>
+        <a class="btn btn-default" href="../mdm/types.html" title="previous chapter (use the left arrow)">MDM Types</a>
       </div>
     
       <div class="pull-right">
@@ -175,7 +151,7 @@
           <a href="decorators.html" title="Decorators"
              >next</a> |</li>
         <li class="right" >
-          <a href="../models/rsa_private_key.html" title="PrivateKey"
+          <a href="../mdm/types.html" title="MDM Types"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Internals Reference</a> &#187;</li> 

@@ -152,3 +152,6 @@ ENV/
 # No IDEA
 .idea
 *.iml
+
+.DS_Store
+
