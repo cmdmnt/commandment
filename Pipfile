@@ -55,6 +55,7 @@ signxml = "*"
 ukpostcodeparser = "*"
 "pysaml2" = "*"
 sqlalchemy = "*"
+sphinxcontrib-httpdomain = "*"
 
 
 [dev-packages]
