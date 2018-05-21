@@ -1,0 +1,719 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>commandment.vpp.vpp &#8212; commandment 1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../../index.html">Docs</a></li>
+              
+                <li><a href="../../index.html">Module code</a></li>
+              
+              <li>commandment.vpp.vpp</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <h1>Source code for commandment.vpp.vpp</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Volume Purchase Programme Support</span>
+
+<span class="sd">TODO:</span>
+<span class="sd">    - Not all error conditions are unit tested.</span>
+<span class="sd">    - Only the license cursor has been tested.</span>
+<span class="sd">    - The license assignment method remains untested.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Text</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+
+<span class="kn">from</span> <span class="nn">commandment.vpp.decorators</span> <span class="k">import</span> <span class="n">raise_error_replies</span>
+<span class="kn">from</span> <span class="nn">commandment.vpp.enum</span> <span class="k">import</span> <span class="n">LicenseAssociation</span><span class="p">,</span> <span class="n">LicenseDisassociation</span><span class="p">,</span> <span class="n">LicenseAssociationType</span><span class="p">,</span> \
+    <span class="n">LicenseDisassociationType</span><span class="p">,</span> <span class="n">VPPPricingParam</span>
+
+<span class="n">SERVICE_CONFIG_URL</span> <span class="o">=</span> <span class="s1">&#39;https://vpp.itunes.apple.com/WebObjects/MZFinance.woa/wa/VPPServiceConfigSrv&#39;</span>
+<span class="sd">&quot;&quot;&quot;str: The default production URL to fetch VPP service configuration from.&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">encode_stoken</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Encode a dict containing the sToken properties into a base64 token for use with VPP.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">          token (dict): Token containing the &#39;token&#39;, &#39;expDate&#39;, and &#39;orgName&#39; fields.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">          bytes: Base64 encoded token.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">urlsafe_b64encode</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">VPPCursor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generic base class for operations on endpoints that require a token to retrieve multiple pages of records.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">          _current (dict): Current results.</span>
+<span class="sd">          _vpp (VPP): Instance of the VPP object that generated this cursor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">batch_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Optional[int]: Number of records returned in this batch.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;batchCount&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">total</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Optional[int]: Number of records in total that will be returned.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;totalCount&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">batch_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Optional[str]: The batch token, if a batch fetch is in progress and is not complete.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;batchToken&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">since_modified_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Optional[str]: The since modified token, if a batch fetch is not in progress, but a fetch has been</span>
+<span class="sd">        made.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sinceModifiedToken&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">since_modified_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">vpp</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Text</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">since_modified_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current</span><span class="p">[</span><span class="s1">&#39;sinceModifiedToken&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">since_modified_token</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="n">vpp</span>
+
+
+<span class="k">class</span> <span class="nc">VPPUserCursor</span><span class="p">(</span><span class="n">VPPCursor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;VPPUserCursor represents a batch fetch operation on the `getVPPUsersSrv` endpoint.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">          includes_retired (bool): This fetch operation includes users that have been marked as *Retired*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Optional[List[dict]]: The current set of users in the cursor result, or None if there are no results.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">includes_retired</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">vpp</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VPPUserCursor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">vpp</span><span class="o">=</span><span class="n">vpp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">includes_retired</span> <span class="o">=</span> <span class="n">includes_retired</span>
+
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            next VPPUserCursor or None when batch is exhausted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">next_cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vpp</span><span class="o">.</span><span class="n">users</span><span class="p">(</span><span class="n">batch_token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_token</span><span class="p">)</span>
+            <span class="n">next_cursor</span><span class="o">.</span><span class="n">includes_retired</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes_retired</span>
+
+            <span class="k">return</span> <span class="n">next_cursor</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">class</span> <span class="nc">VPPLicenseCursor</span><span class="p">(</span><span class="n">VPPCursor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;VPPLicenseCursor represents a batch fetch operation on the `getVPPLicensesSrv` endpoint.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">licenses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Optional[List[dict]]: The current set of licenses in the cursor result, or None if there are</span>
+<span class="sd">        no results.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;licenses&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VPPLicenseCursor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            next VPPLicenseCursor or None when batch is exhausted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">next_cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vpp</span><span class="o">.</span><span class="n">licenses</span><span class="p">(</span><span class="n">batch_token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_token</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="n">next_cursor</span><span class="o">.</span><span class="n">_current</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="VPPLicenseOperation"><a class="viewcode-back" href="../../../internal/vpp/operations.html#commandment.vpp.vpp.VPPLicenseOperation">[docs]</a><span class="k">class</span> <span class="nc">VPPLicenseOperation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;VPPLicenseOperation represents a number of license operations on a single Adam ID (iTunes Store Product).</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">          _association_type (LicenseAssociationType): This specifies the type of association this license operation</span>
+<span class="sd">            represents. The API only accepts one of these in a single request.</span>
+<span class="sd">          _disassociation_type (LicenseDisassociationType): This specifies the type of disassociation this license</span>
+<span class="sd">            operation represents. The API only accepts one of these in a single request.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># _vpp: VPP</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">adam_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adam_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pricing_param</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pricing_param</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">associations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">LicenseAssociationType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">LicenseAssociation</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_association_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_associate</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">disassociations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">LicenseDisassociationType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">LicenseDisassociation</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disassociation_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disassociate</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adam_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;STDQ&#39;</span><span class="p">,</span>
+                 <span class="n">license_association_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LicenseAssociationType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">license_disassociation_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LicenseDisassociationType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adam_id</span> <span class="o">=</span> <span class="n">adam_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pricing_param</span> <span class="o">=</span> <span class="n">pricing_param</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_associate</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LicenseAssociation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disassociate</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LicenseDisassociation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_association_type</span> <span class="o">=</span> <span class="n">license_association_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disassociation_type</span> <span class="o">=</span> <span class="n">license_disassociation_type</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">association_type</span><span class="p">:</span> <span class="n">LicenseAssociationType</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_association_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_association_type</span> <span class="o">=</span> <span class="n">association_type</span>
+        <span class="k">elif</span> <span class="n">association_type</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_association_type</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;You cannot specify two different types of association in a license operation.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_associate</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">association_type</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">additions_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">association_type</span><span class="p">:</span> <span class="n">LicenseAssociationType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">LicenseAssociation</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">association_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_associate</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disassociation_type</span><span class="p">:</span> <span class="n">LicenseDisassociationType</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disassociation_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_disassociation_type</span> <span class="o">=</span> <span class="n">disassociation_type</span>
+        <span class="k">elif</span> <span class="n">disassociation_type</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disassociation_type</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;You cannot specify two different types of disassociation in a license operation.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disassociate</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">disassociation_type</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">removals_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disassociation_type</span><span class="p">:</span> <span class="n">LicenseDisassociationType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">LicenseDisassociation</span><span class="p">]:</span></div>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">disassociation_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disassociate</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="VPPUserLicenseOperation"><a class="viewcode-back" href="../../../internal/vpp/operations.html#commandment.vpp.vpp.VPPUserLicenseOperation">[docs]</a><span class="k">class</span> <span class="nc">VPPUserLicenseOperation</span><span class="p">(</span><span class="n">VPPLicenseOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This object represents a batch operation on a license which will be associated to or disassociated from an</span>
+<span class="sd">    MDM user. AKA VPP User License Assignment.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">          adam_id (int): The Adam ID of the iTunes Store asset to manage.</span>
+<span class="sd">          pricing_param (str): The pricing parameter, defaults to &#39;STDQ&#39; (Standard Quality)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VPPUserLicenseOperation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_association_type</span> <span class="o">=</span> <span class="n">LicenseAssociationType</span><span class="o">.</span><span class="n">ClientUserID</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disassociation_type</span> <span class="o">=</span> <span class="n">LicenseDisassociationType</span><span class="o">.</span><span class="n">ClientUserID</span>
+
+
+<div class="viewcode-block" id="VPPDeviceLicenseOperation"><a class="viewcode-back" href="../../../internal/vpp/operations.html#commandment.vpp.vpp.VPPDeviceLicenseOperation">[docs]</a><span class="k">class</span> <span class="nc">VPPDeviceLicenseOperation</span><span class="p">(</span><span class="n">VPPLicenseOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This object represents a batch operation on a license which will be associated to or disassociated from a</span>
+<span class="sd">    Device Serial Number. AKA VPP Device License Assignment.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">          adam_id (int): The Adam ID of the iTunes Store asset to manage.</span>
+<span class="sd">          pricing_param (str): The pricing parameter, defaults to &#39;STDQ&#39; (Standard Quality)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VPPDeviceLicenseOperation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_association_type</span> <span class="o">=</span> <span class="n">LicenseAssociationType</span><span class="o">.</span><span class="n">SerialNumber</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disassociation_type</span> <span class="o">=</span> <span class="n">LicenseDisassociationType</span><span class="o">.</span><span class="n">SerialNumber</span>
+
+
+<div class="viewcode-block" id="VPP"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP">[docs]</a><span class="k">class</span> <span class="nc">VPP</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    VPP Object. The main VPP API wrapper class.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        VPP.AssociationProperties (dict): Mapping of the LicenseAssociationType enum to the expected JSON keys in</span>
+<span class="sd">            the request.</span>
+<span class="sd">        VPP.DisassociationProperties (dict): Mapping of the LicenseDisassociationType enum to the expected JSON keys</span>
+<span class="sd">            in the request.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">AssociationProperties</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">LicenseAssociationType</span><span class="o">.</span><span class="n">ClientUserID</span><span class="p">:</span> <span class="s1">&#39;associateClientUserIdStrs&#39;</span><span class="p">,</span>
+        <span class="n">LicenseAssociationType</span><span class="o">.</span><span class="n">SerialNumber</span><span class="p">:</span> <span class="s1">&#39;associateSerialNumbers&#39;</span>
+    <span class="p">}</span>
+
+    <span class="n">DisassociationProperties</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">LicenseDisassociationType</span><span class="o">.</span><span class="n">SerialNumber</span><span class="p">:</span> <span class="s1">&#39;disassociateSerialNumbers&#39;</span><span class="p">,</span>
+        <span class="n">LicenseDisassociationType</span><span class="o">.</span><span class="n">ClientUserID</span><span class="p">:</span> <span class="s1">&#39;disassociateClientUserIdStrs&#39;</span><span class="p">,</span>
+        <span class="n">LicenseDisassociationType</span><span class="o">.</span><span class="n">LicenseID</span><span class="p">:</span> <span class="s1">&#39;disassociateLicenseIdStrs&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stoken</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">vpp_service_config_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SERVICE_CONFIG_URL</span><span class="p">,</span> <span class="n">service_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The VPP class is a wrapper around a requests session and provides an API for interacting with Apple&#39;s VPP</span>
+<span class="sd">        service.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stoken (str): Service Token</span>
+<span class="sd">            vpp_service_config_url (str): URL to the VPPServiceConfigSrv endpoint. defaults to Apple&#39;s live server.</span>
+<span class="sd">            service_config (dict): Dictionary containing service config, if you do not want to fetch it (testing only).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stoken</span> <span class="o">=</span> <span class="n">stoken</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">service_config</span><span class="p">:</span>
+            <span class="n">fetched_service_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_config</span><span class="p">(</span><span class="n">vpp_service_config_url</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span> <span class="o">=</span> <span class="n">fetched_service_config</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span> <span class="o">=</span> <span class="n">service_config</span>
+
+    <span class="k">def</span> <span class="nf">_fetch_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_config_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Fetch the service configuration from Apple, which contains all of the URLs required for VPP.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            service_config_url (str): The VPPServiceConfigSrv URL to use</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">service_config_url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<div class="viewcode-block" id="VPP.register_user"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.register_user">[docs]</a>    <span class="nd">@raise_error_replies</span>
+    <span class="k">def</span> <span class="nf">register_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">managed_apple_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register an MDM user with VPP.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            client_user_id (str): A unique string, usually a UUID to identify the user in the MDM.</span>
+<span class="sd">            email (str): The e-mail address of the user.</span>
+<span class="sd">            facilitator_member_id (str): Currently unused</span>
+<span class="sd">            managed_apple_id (str): Currently unused</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Containing the decoded body of the reply from the VPP service, eg::</span>
+
+<span class="sd">                { &quot;status&quot;: 0,</span>
+<span class="sd">                    &quot;user&quot;: {</span>
+<span class="sd">                      &quot;userId&quot;: 2878111686099947,</span>
+<span class="sd">                      &quot;email&quot;: &quot;vpp-test@localhost&quot;,</span>
+<span class="sd">                      &quot;status&quot;: &quot;Registered&quot;,</span>
+<span class="sd">                      &quot;inviteUrl&quot;: &quot;http://localhost:8080/D1971F9DD5F8E67BDD&quot;,</span>
+<span class="sd">                      &quot;inviteCode&quot;: &quot;D1971F9DD5F8E67BDD&quot;,</span>
+<span class="sd">                      &quot;clientUserIdStr&quot;: &quot;F33D9E0F-CDE3-427E-A444-B137BEF9EFA2&quot;</span>
+<span class="sd">                    }</span>
+<span class="sd">                }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;registerUserSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+            <span class="s1">&#39;clientUserIdStr&#39;</span><span class="p">:</span> <span class="n">client_user_id</span><span class="p">,</span>
+            <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">email</span><span class="p">,</span>
+            <span class="s1">&#39;sToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stoken</span><span class="p">,</span>
+        <span class="p">}))</span></div>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<div class="viewcode-block" id="VPP.get_user"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.get_user">[docs]</a>    <span class="nd">@raise_error_replies</span>
+    <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">its_id_hash</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the status of a user by their unique ID.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            client_user_id (str): A unique string, usually a UUID to identify the user in the MDM. You can use this OR</span>
+<span class="sd">                the user_id to identify the user.</span>
+<span class="sd">            its_id_hash (str): (Optional) iTunes Store ID hash</span>
+<span class="sd">            facilitator_member_id:</span>
+<span class="sd">            user_id (int): User ID which uniquely identifies the user with the iTunes store.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Containing the reply from the service.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_body</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stoken</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;userId&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;clientUserIdStr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">client_user_id</span>
+            <span class="k">if</span> <span class="n">its_id_hash</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;itsIdHash&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">its_id_hash</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;getUserSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<div class="viewcode-block" id="VPP.users"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.users">[docs]</a>    <span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_retired</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">batch_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">since_modified_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VPPUserCursor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            include_retired (int): 0 - do not include retired users, 1 - include retired users</span>
+<span class="sd">            facilitator_member_id: Currently unused</span>
+<span class="sd">            batch_token (str): Batch token (if being called from a cursor)</span>
+<span class="sd">            since_modified_token (str): Since modified token (if requesting a time delta)</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_body</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stoken</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">include_retired</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;includeRetired&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">batch_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;batchToken&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_token</span>
+        <span class="k">elif</span> <span class="n">since_modified_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;sinceModifiedToken&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">since_modified_token</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;getUsersSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">VPPUserCursor</span><span class="p">(</span><span class="n">includes_retired</span><span class="o">=</span><span class="p">(</span><span class="n">include_retired</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="n">results</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="bp">self</span>
+</div>
+        <span class="k">return</span> <span class="n">cursor</span>
+
+<div class="viewcode-block" id="VPP.retire_user"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.retire_user">[docs]</a>    <span class="nd">@raise_error_replies</span>
+    <span class="k">def</span> <span class="nf">retire_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unregister a user from VPP.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            client_user_id (str): A unique string, usually a UUID to identify the user in the MDM. You can use this OR</span>
+<span class="sd">                the user_id to identify the user.</span>
+<span class="sd">            facilitator_member_id: Currently unused</span>
+<span class="sd">            user_id (int): User ID which uniquely identifies the user with the iTunes store.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Containing the reply from the service.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_body</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stoken</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;userId&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;clientUserIdStr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">client_user_id</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;retireUserSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<div class="viewcode-block" id="VPP.edit_user"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.edit_user">[docs]</a>    <span class="nd">@raise_error_replies</span>
+    <span class="k">def</span> <span class="nf">edit_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">email</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">managed_apple_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Edit a user&#39;s VPP record.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            client_user_id (str): A unique string, usually a UUID to identify the user in the MDM. You can use this OR</span>
+<span class="sd">                the user_id to identify the user.</span>
+<span class="sd">            facilitator_member_id: Currently unused</span>
+<span class="sd">            email (str): Supply an E-mail address to update the current address.</span>
+<span class="sd">            user_id (int): User ID which uniquely identifies the user with the iTunes store.</span>
+<span class="sd">            managed_apple_id (str): Managed Apple ID</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Containing the reply from the service.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_body</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stoken</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;userId&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;clientUserIdStr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">client_user_id</span>
+
+        <span class="k">if</span> <span class="n">email</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email</span>
+
+        <span class="k">if</span> <span class="n">managed_apple_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;managedAppleIDStr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">managed_apple_id</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;editUserSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<div class="viewcode-block" id="VPP.assets"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.assets">[docs]</a>    <span class="nd">@raise_error_replies</span>
+    <span class="k">def</span> <span class="nf">assets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_license_counts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get assets for which the organization has licenses.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            include_license_counts (bool): Include counts of total/assigned/unassigned licenses.</span>
+<span class="sd">            facilitator_member_id: Currently unused</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[dict]: List of VPP assets for which this organization has licenses.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_body</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;sToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stoken</span><span class="p">,</span>
+            <span class="s1">&#39;includeLicenseCounts&#39;</span><span class="p">:</span> <span class="n">include_license_counts</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;getVPPAssetsSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<div class="viewcode-block" id="VPP.manage"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.manage">[docs]</a>    <span class="k">def</span> <span class="nf">manage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adam_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;STDQ&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VPPLicenseOperation</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Manage VPP licenses for the given Adam ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            adam_id (str): The Adam ID</span>
+<span class="sd">            pricing_param (str): The pricing param defaults to &#39;STDQ&#39; but may be &#39;PLUS&#39; for things which aren&#39;t</span>
+<span class="sd">            software.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VPPLicenseOperation: an instance of a VPP license operation which can be modified to add or remove devices,</span>
+<span class="sd">            and then submitted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">op</span> <span class="o">=</span> <span class="n">VPPLicenseOperation</span><span class="p">(</span><span class="n">adam_id</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">)</span>
+        <span class="n">op</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="bp">self</span></div>
+        <span class="k">return</span> <span class="n">op</span>
+
+<div class="viewcode-block" id="VPP.manage_user_licenses"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.manage_user_licenses">[docs]</a>    <span class="k">def</span> <span class="nf">manage_user_licenses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adam_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;STDQ&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VPPUserLicenseOperation</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Manage VPP User License Assignment.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            adam_id (str): The Adam ID</span>
+<span class="sd">            pricing_param (str): The pricing param defaults to &#39;STDQ&#39; but may be &#39;PLUS&#39; for things which aren&#39;t</span>
+<span class="sd">            software.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VPPUserLicenseOperation: an instance of a VPP license operation which can be modified to add or remove license</span>
+<span class="sd">                associations by user client id</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">op</span> <span class="o">=</span> <span class="n">VPPUserLicenseOperation</span><span class="p">(</span><span class="n">adam_id</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">)</span>
+        <span class="n">op</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="bp">self</span></div>
+        <span class="k">return</span> <span class="n">op</span>
+
+<div class="viewcode-block" id="VPP.manage_device_licenses"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.manage_device_licenses">[docs]</a>    <span class="k">def</span> <span class="nf">manage_device_licenses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adam_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;STDQ&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VPPDeviceLicenseOperation</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Manage VPP Device License Assignment.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            adam_id (str): The Adam ID</span>
+<span class="sd">            pricing_param (str): The pricing param defaults to &#39;STDQ&#39; but may be &#39;PLUS&#39; for things which aren&#39;t</span>
+<span class="sd">            software.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VPPDeviceLicenseOperation: an instance of a VPP license operation which can be modified to add or remove</span>
+<span class="sd">                license associations by device serial number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">op</span> <span class="o">=</span> <span class="n">VPPDeviceLicenseOperation</span><span class="p">(</span><span class="n">adam_id</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">)</span>
+        <span class="n">op</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="bp">self</span></div>
+        <span class="k">return</span> <span class="n">op</span>
+
+<div class="viewcode-block" id="VPP.licenses"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.licenses">[docs]</a>    <span class="k">def</span> <span class="nf">licenses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">adam_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">pricing_param</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VPPPricingParam</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">assigned_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">batch_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">since_modified_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VPPLicenseCursor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve a list of licenses matching the supplied criteria.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">              adam_id (int): Get licenses that match this Adam ID</span>
+<span class="sd">              pricing_param (Optional[VPPPricingParam]): Get licenses that match this &#39;Quality&#39; param.</span>
+<span class="sd">              assigned_only (bool): Return only licenses that are assigned to users, if this value is true.</span>
+<span class="sd">              facilitator_member_id (str): Currently unused</span>
+<span class="sd">              batch_token (str): Supplied if there are more results to fetch.</span>
+<span class="sd">              since_modified_token (str): Supplied if you want to fetch results modified since a certain date. This will</span>
+<span class="sd">                be supplied on the last page of your most recent set of results.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">              VPPLicenseCursor: A cursor that can be used to fetch all remaining results, pre-populated with the first</span>
+<span class="sd">                page.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_body</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stoken</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">assigned_only</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;assignedOnly&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">batch_token</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;batchToken&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_token</span>
+        <span class="k">if</span> <span class="n">since_modified_token</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;sinceModifiedToken&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">since_modified_token</span>
+
+        <span class="c1"># These parameters are normally ignored if a batch/modified token is supplied.</span>
+        <span class="k">if</span> <span class="n">batch_token</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">since_modified_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">adam_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;adamId&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adam_id</span>
+            <span class="k">if</span> <span class="n">pricing_param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;pricingParam&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pricing_param</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;getLicensesSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span>
+        <span class="n">reply</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">VPPLicenseCursor</span><span class="p">(</span><span class="n">vpp</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="n">reply</span>
+</div>
+        <span class="k">return</span> <span class="n">cursor</span>
+
+<div class="viewcode-block" id="VPP.save"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">:</span> <span class="n">VPPLicenseOperation</span><span class="p">,</span> <span class="n">notify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Execute a license management operation, represented by a VPPLicenseOperation or subclass.</span>
+
+<span class="sd">        This provides a more convenient interface than bulk_update_licenses.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">              operation (VPPLicenseOperation): The license operation to perform.</span>
+<span class="sd">              notify (bool): Optional. Notify devices of license disassociation.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">              dict: Reply from the license endpoint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">atype</span><span class="p">,</span> <span class="n">associations</span> <span class="o">=</span> <span class="n">operation</span><span class="o">.</span><span class="n">associations</span>
+        <span class="n">dtype</span><span class="p">,</span> <span class="n">disassociations</span> <span class="o">=</span> <span class="n">operation</span><span class="o">.</span><span class="n">disassociations</span>
+
+        <span class="n">request_body</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;sToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stoken</span><span class="p">,</span>
+            <span class="s1">&#39;adamIdStr&#39;</span><span class="p">:</span> <span class="n">operation</span><span class="o">.</span><span class="n">adam_id</span><span class="p">,</span>
+            <span class="s1">&#39;pricingParam&#39;</span><span class="p">:</span> <span class="n">operation</span><span class="o">.</span><span class="n">pricing_param</span><span class="p">,</span>
+            <span class="s1">&#39;notifyDisassociation&#39;</span><span class="p">:</span> <span class="n">notify</span><span class="p">,</span>
+            <span class="n">VPP</span><span class="o">.</span><span class="n">AssociationProperties</span><span class="p">[</span><span class="n">atype</span><span class="p">]:</span> <span class="n">associations</span><span class="p">,</span>
+            <span class="n">VPP</span><span class="o">.</span><span class="n">DisassociationProperties</span><span class="p">[</span><span class="n">dtype</span><span class="p">]:</span> <span class="n">disassociations</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;manageVPPLicensesByAdamIdSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span>
+        <span class="n">reply</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</div>
+        <span class="k">return</span> <span class="n">reply</span>
+
+<div class="viewcode-block" id="VPP.bulk_update_licenses"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.bulk_update_licenses">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_update_licenses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">adam_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                             <span class="n">association_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LicenseAssociationType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">associate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">disassociation_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LicenseDisassociationType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">disassociate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">pricing_param</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;STDQ&#39;</span><span class="p">,</span>
+                             <span class="n">notify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Perform a batch operation of license associations and disassociations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">              adam_id (int): Adam ID - The iTunes Store Product for which licenses will be managed.</span>
+<span class="sd">              association_type (Optional[LicenseAssociationType]): Provide an association type if associate length &gt; 0</span>
+<span class="sd">              associate (Optional[List[str]]): A list of values that will be used to associate licenses, corresponding</span>
+<span class="sd">                to the association_type</span>
+<span class="sd">              disassociation_type (Optional[LicenseDisassociationType]): Provide a disassociation type if disassociate</span>
+<span class="sd">                length &gt; 0.</span>
+<span class="sd">              disassociate (Optional[List[str]]): A list of values that will be used to disassociate licenses,</span>
+<span class="sd">                corresponding to the association_type</span>
+<span class="sd">              pricing_param (str): Defaults to Standard Quality &#39;STDQ&#39;</span>
+<span class="sd">              notify (bool): Notify disassociation, default is False</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - manageVPPLicensesByAdamIdSrv</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_body</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;sToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stoken</span><span class="p">,</span>
+            <span class="s1">&#39;adamIdStr&#39;</span><span class="p">:</span> <span class="n">adam_id</span><span class="p">,</span>
+            <span class="s1">&#39;pricingParam&#39;</span><span class="p">:</span> <span class="n">pricing_param</span><span class="p">,</span>
+            <span class="s1">&#39;notifyDisassociation&#39;</span><span class="p">:</span> <span class="n">notify</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">association_type</span> <span class="ow">in</span> <span class="n">VPP</span><span class="o">.</span><span class="n">AssociationProperties</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="n">VPP</span><span class="o">.</span><span class="n">AssociationProperties</span><span class="p">[</span><span class="n">association_type</span><span class="p">]]</span> <span class="o">=</span> <span class="n">associate</span>
+
+        <span class="k">if</span> <span class="n">disassociation_type</span> <span class="ow">in</span> <span class="n">VPP</span><span class="o">.</span><span class="n">DisassociationProperties</span><span class="p">:</span>
+            <span class="n">request_body</span><span class="p">[</span><span class="n">VPP</span><span class="o">.</span><span class="n">DisassociationProperties</span><span class="p">[</span><span class="n">disassociation_type</span><span class="p">]]</span> <span class="o">=</span> <span class="n">disassociate</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;manageVPPLicensesByAdamIdSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span>
+        <span class="n">reply</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</div></div>
+        <span class="k">return</span> <span class="n">reply</span>
+</pre></div>
+
+          </div>
+            
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

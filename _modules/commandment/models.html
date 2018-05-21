@@ -1,0 +1,887 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>commandment.models &#8212; commandment 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Module code</a></li>
+              
+              <li>commandment.models</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <h1>Source code for commandment.models</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Copyright (c) 2015 Jesse Peterson, 2017 Mosen</span>
+<span class="sd">Licensed under the MIT license. See the included LICENSE.txt file for details.</span>
+
+<span class="sd">Attributes:</span>
+<span class="sd">    db (SQLAlchemy): A reference to flask SQLAlchemy extensions db instance.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span> <span class="nn">flask_sqlalchemy</span> <span class="k">import</span> <span class="n">SQLAlchemy</span>
+
+<span class="kn">from</span> <span class="nn">cryptography</span> <span class="k">import</span> <span class="n">x509</span>
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.backends</span> <span class="k">import</span> <span class="n">default_backend</span>
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives</span> <span class="k">import</span> <span class="n">serialization</span>
+<span class="kn">from</span> <span class="nn">cryptography.x509.oid</span> <span class="k">import</span> <span class="n">NameOID</span>
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives</span> <span class="k">import</span> <span class="n">hashes</span>
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives.asymmetric</span> <span class="k">import</span> <span class="n">rsa</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">IntEnum</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.mutable</span> <span class="k">import</span> <span class="n">MutableDict</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.hybrid</span> <span class="k">import</span> <span class="n">hybrid_property</span>
+<span class="kn">from</span> <span class="nn">.mutablelist</span> <span class="k">import</span> <span class="n">MutableList</span>
+<span class="kn">from</span> <span class="nn">.dbtypes</span> <span class="k">import</span> <span class="n">GUID</span><span class="p">,</span> <span class="n">JSONEncodedDict</span>
+<span class="kn">from</span> <span class="nn">.mdm</span> <span class="k">import</span> <span class="n">CommandStatus</span><span class="p">,</span> <span class="n">Platform</span><span class="p">,</span> <span class="n">commands</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">from</span> <span class="nn">binascii</span> <span class="k">import</span> <span class="n">hexlify</span>
+<span class="kn">from</span> <span class="nn">biplist</span> <span class="k">import</span> <span class="n">Data</span> <span class="k">as</span> <span class="n">NSData</span>
+<span class="kn">from</span> <span class="nn">.profiles.certificates</span> <span class="k">import</span> <span class="n">KeyUsage</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">CertificateType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A list of the polymorphic identities available for subclasses of Certificate.</span>
+
+<span class="sd">    The enumerated type hints what the certificate is intended to be used for.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">CSR</span> <span class="o">=</span> <span class="s1">&#39;csr&#39;</span>
+    <span class="n">PUSH</span> <span class="o">=</span> <span class="s1">&#39;mdm.pushcert&#39;</span>
+    <span class="n">ENCRYPT</span> <span class="o">=</span> <span class="s1">&#39;mdm.encrypt&#39;</span>
+    <span class="n">WEB</span> <span class="o">=</span> <span class="s1">&#39;mdm.webcrt&#39;</span>
+    <span class="n">CA</span> <span class="o">=</span> <span class="s1">&#39;mdm.cacert&#39;</span>
+    <span class="n">DEVICE</span> <span class="o">=</span> <span class="s1">&#39;mdm.device&#39;</span>
+    <span class="n">STOKEN</span> <span class="o">=</span> <span class="s1">&#39;dep.stoken&#39;</span>
+    <span class="n">ANCHOR</span> <span class="o">=</span> <span class="s1">&#39;dep.anchor&#39;</span>
+    <span class="n">SUPERVISION</span> <span class="o">=</span> <span class="s1">&#39;dep.supervision&#39;</span>
+
+
+<div class="viewcode-block" id="Certificate"><a class="viewcode-back" href="../../internal/core/models/certificate.html#commandment.models.Certificate">[docs]</a><span class="k">class</span> <span class="nc">Certificate</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Polymorphic base for certificate types.</span>
+<span class="sd">    </span>
+<span class="sd">    These certificate classes are only intended to be used for storing certificates related to running the MDM or</span>
+<span class="sd">    certificates issued by the MDM internal CA or SCEP service.</span>
+<span class="sd">    </span>
+<span class="sd">    Note that X.509 name attributes have fixed lengths as defined in `RFC5280`_. </span>
+<span class="sd">    </span>
+<span class="sd">    :table: certificates</span>
+<span class="sd">           </span>
+<span class="sd">    .. _RFC5280:</span>
+<span class="sd">       http://www.ietf.org/rfc/rfc5280.txt </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;certificates&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;id (int): Primary Key&quot;&quot;&quot;</span>
+    <span class="n">pem_data</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Text</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;pem_data (str): PEM Encoded Certificate Data&quot;&quot;&quot;</span>
+    <span class="n">rsa_private_key_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;rsa_private_keys.id&#39;</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;rsa_private_key_id (int): Foreign key reference to an RSAPrivateKey IF the private key was generated by us.&quot;&quot;&quot;</span>
+    <span class="n">x509_cn</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;x509_cn (str): X.509 Common Name&quot;&quot;&quot;</span>
+    <span class="n">x509_ou</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;x509_ou (str): X.509 Organizational Unit&quot;&quot;&quot;</span>
+    <span class="n">x509_o</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;x509_o (str): X.509 Organization&quot;&quot;&quot;</span>
+    <span class="n">x509_c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;x509_c (str): X.509 2 letter Country Code&quot;&quot;&quot;</span>
+    <span class="n">x509_st</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">128</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;x509_st (str): X.509 State or Location&quot;&quot;&quot;</span>
+    <span class="n">not_before</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">(</span><span class="n">timezone</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;not_before (datetime): Certificate validity - not before&quot;&quot;&quot;</span>
+    <span class="n">not_after</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">(</span><span class="n">timezone</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;not_after (datetime): Certificate validity - not after&quot;&quot;&quot;</span>
+    <span class="c1"># SHA-256 hash of DER-encoded certificate</span>
+    <span class="n">fingerprint</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Unique</span>
+    <span class="sd">&quot;&quot;&quot;fingerprint (str): SHA-256 hash of certificate&quot;&quot;&quot;</span>
+    <span class="n">push_topic</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Only required for push certificate</span>
+    <span class="sd">&quot;&quot;&quot;push_topic (str): Only present for Push Certificates, the x.509 User ID field value&quot;&quot;&quot;</span>
+    <span class="n">discriminator</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;discriminator (str): The type of certificate&quot;&quot;&quot;</span>
+
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;polymorphic_on&#39;</span><span class="p">:</span> <span class="n">discriminator</span><span class="p">,</span>
+        <span class="s1">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="s1">&#39;certificates&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_crypto_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">certificate</span><span class="p">:</span> <span class="n">x509</span><span class="o">.</span><span class="n">Certificate</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">CertificateType</span><span class="p">):</span>
+        <span class="c1"># type: (type, x509.Certificate, CertificateType) -&gt; Certificate</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">pem_data</span> <span class="o">=</span> <span class="n">certificate</span><span class="o">.</span><span class="n">public_bytes</span><span class="p">(</span><span class="n">serialization</span><span class="o">.</span><span class="n">Encoding</span><span class="o">.</span><span class="n">PEM</span><span class="p">)</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">not_after</span> <span class="o">=</span> <span class="n">certificate</span><span class="o">.</span><span class="n">not_valid_after</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">not_before</span> <span class="o">=</span> <span class="n">certificate</span><span class="o">.</span><span class="n">not_valid_before</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">fingerprint</span> <span class="o">=</span> <span class="n">certificate</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">(</span><span class="n">hashes</span><span class="o">.</span><span class="n">SHA1</span><span class="p">())</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">discriminator</span> <span class="o">=</span> <span class="nb">type</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="n">subject</span><span class="p">:</span> <span class="n">x509</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="n">certificate</span><span class="o">.</span><span class="n">subject</span>
+        <span class="n">cns</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">get_attributes_for_oid</span><span class="p">(</span><span class="n">NameOID</span><span class="o">.</span><span class="n">COMMON_NAME</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">x509_cn</span> <span class="o">=</span> <span class="n">cns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+</div>
+        <span class="k">return</span> <span class="n">m</span>
+
+
+<div class="viewcode-block" id="RSAPrivateKey"><a class="viewcode-back" href="../../internal/core/models/rsa_private_key.html#commandment.models.RSAPrivateKey">[docs]</a><span class="k">class</span> <span class="nc">RSAPrivateKey</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;RSA Private Key Model&quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;rsa_private_keys&#39;</span>
+
+    <span class="c1">#: id db.Column</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">pem_data</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Text</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">certificates</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span>
+        <span class="s1">&#39;Certificate&#39;</span><span class="p">,</span>
+        <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;rsa_private_key&#39;</span><span class="p">,</span>
+        <span class="n">lazy</span><span class="o">=</span><span class="s1">&#39;dynamic&#39;</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="RSAPrivateKey.from_crypto"><a class="viewcode-back" href="../../internal/core/models/rsa_private_key.html#commandment.models.RSAPrivateKey.from_crypto">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_crypto</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">private_key</span><span class="p">:</span> <span class="n">rsa</span><span class="o">.</span><span class="n">RSAPrivateKeyWithSerialization</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert a cryptography RSAPrivateKey object to an SQLAlchemy model.&quot;&quot;&quot;</span>
+        <span class="c1"># type: (type, rsa.RSAPrivateKeyWithSerialization) -&gt; RSAPrivateKey</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">pem_data</span> <span class="o">=</span> <span class="n">private_key</span><span class="o">.</span><span class="n">private_bytes</span><span class="p">(</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="n">serialization</span><span class="o">.</span><span class="n">Encoding</span><span class="o">.</span><span class="n">PEM</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="n">serialization</span><span class="o">.</span><span class="n">PrivateFormat</span><span class="o">.</span><span class="n">PKCS8</span><span class="p">,</span>
+            <span class="n">encryption_algorithm</span><span class="o">=</span><span class="n">serialization</span><span class="o">.</span><span class="n">NoEncryption</span><span class="p">(),</span>
+        <span class="p">)</span>
+</div>
+        <span class="k">return</span> <span class="n">m</span>
+
+<div class="viewcode-block" id="RSAPrivateKey.to_crypto"><a class="viewcode-back" href="../../internal/core/models/rsa_private_key.html#commandment.models.RSAPrivateKey.to_crypto">[docs]</a>    <span class="k">def</span> <span class="nf">to_crypto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rsa</span><span class="o">.</span><span class="n">RSAPrivateKey</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Convert an SQLAlchemy RSAPrivateKey model to a cryptography RSA Private Key.&quot;&quot;&quot;</span>
+        <span class="n">pk</span> <span class="o">=</span> <span class="n">serialization</span><span class="o">.</span><span class="n">load_pem_private_key</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pem_data</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">default_backend</span><span class="p">(),</span>
+            <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">pk</span>
+
+
+<div class="viewcode-block" id="CertificateSigningRequest"><a class="viewcode-back" href="../../internal/core/models/certificate_request.html#commandment.models.CertificateSigningRequest">[docs]</a><span class="k">class</span> <span class="nc">CertificateSigningRequest</span><span class="p">(</span><span class="n">Certificate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Polymorphic single table inheritance specifically for Certificate Signing Requests.&quot;&quot;&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">CertificateType</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">value</span>
+    <span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_crypto</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">csr</span><span class="p">:</span> <span class="n">x509</span><span class="o">.</span><span class="n">CertificateSigningRequest</span><span class="p">):</span>
+        <span class="c1"># type: (type, x509.CertificateSigningRequest, CertificateType) -&gt; Certificate</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">pem_data</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">public_bytes</span><span class="p">(</span><span class="n">serialization</span><span class="o">.</span><span class="n">Encoding</span><span class="o">.</span><span class="n">PEM</span><span class="p">)</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">not_before</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">not_after</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">700</span><span class="p">)</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">fingerprint</span> <span class="o">=</span> <span class="s2">&quot;NONE&quot;</span>
+
+        <span class="n">m</span><span class="o">.</span><span class="n">discriminator</span> <span class="o">=</span> <span class="n">CertificateType</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="n">subject</span><span class="p">:</span> <span class="n">x509</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">subject</span>
+        <span class="n">cns</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">get_attributes_for_oid</span><span class="p">(</span><span class="n">NameOID</span><span class="o">.</span><span class="n">COMMON_NAME</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">x509_cn</span> <span class="o">=</span> <span class="n">cns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+</div>
+        <span class="k">return</span> <span class="n">m</span>
+
+
+<span class="k">class</span> <span class="nc">SSLCertificate</span><span class="p">(</span><span class="n">Certificate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Polymorphic single table inheritance specifically for SSL certificates assigned to the MDM for HTTPS traffic.&quot;&quot;&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">CertificateType</span><span class="o">.</span><span class="n">WEB</span><span class="o">.</span><span class="n">value</span>
+    <span class="p">}</span>
+
+
+<span class="k">class</span> <span class="nc">PushCertificate</span><span class="p">(</span><span class="n">Certificate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Polymorphic single table inheritance specifically for APNS MDM Push Certificates assigned to the MDM.&quot;&quot;&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">CertificateType</span><span class="o">.</span><span class="n">PUSH</span><span class="o">.</span><span class="n">value</span>
+    <span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_crypto</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">certificate</span><span class="p">:</span> <span class="n">x509</span><span class="o">.</span><span class="n">Certificate</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">Certificate</span><span class="o">.</span><span class="n">from_crypto_type</span><span class="p">(</span><span class="n">certificate</span><span class="p">,</span> <span class="n">CertificateType</span><span class="o">.</span><span class="n">PUSH</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">m</span>
+
+
+<span class="k">class</span> <span class="nc">CACertificate</span><span class="p">(</span><span class="n">Certificate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Polymorphic single table inheritance specifically for Certificate Authorities generated by this MDM.&quot;&quot;&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">CertificateType</span><span class="o">.</span><span class="n">CA</span><span class="o">.</span><span class="n">value</span>
+    <span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_crypto</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">certificate</span><span class="p">:</span> <span class="n">x509</span><span class="o">.</span><span class="n">Certificate</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">Certificate</span><span class="o">.</span><span class="n">from_crypto_type</span><span class="p">(</span><span class="n">certificate</span><span class="p">,</span> <span class="n">CertificateType</span><span class="o">.</span><span class="n">CA</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">m</span>
+
+
+<span class="k">class</span> <span class="nc">DeviceIdentityCertificate</span><span class="p">(</span><span class="n">Certificate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Polymorphic single table inheritance specifically for device identity certificates.&quot;&quot;&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">CertificateType</span><span class="o">.</span><span class="n">DEVICE</span><span class="o">.</span><span class="n">value</span>
+    <span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_crypto</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">certificate</span><span class="p">:</span> <span class="n">x509</span><span class="o">.</span><span class="n">Certificate</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">pem_data</span> <span class="o">=</span> <span class="n">certificate</span><span class="o">.</span><span class="n">public_bytes</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="n">serialization</span><span class="o">.</span><span class="n">Encoding</span><span class="o">.</span><span class="n">PEM</span><span class="p">)</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">not_after</span> <span class="o">=</span> <span class="n">certificate</span><span class="o">.</span><span class="n">not_valid_after</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">not_before</span> <span class="o">=</span> <span class="n">certificate</span><span class="o">.</span><span class="n">not_valid_before</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">fingerprint</span> <span class="o">=</span> <span class="n">certificate</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">(</span><span class="n">hashes</span><span class="o">.</span><span class="n">SHA1</span><span class="p">())</span>
+
+        <span class="n">subject</span><span class="p">:</span> <span class="n">x509</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="n">certificate</span><span class="o">.</span><span class="n">subject</span>
+
+
+        <span class="n">m</span><span class="o">.</span><span class="n">x509_cn</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">get_attributes_for_oid</span><span class="p">(</span><span class="n">NameOID</span><span class="o">.</span><span class="n">COMMON_NAME</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+        <span class="c1"># m.x509_c = subject.get_attributes_for_oid(NameOID.COUNTRY_NAME)</span>
+        <span class="c1"># m.x509_o = subject.get_attributes_for_oid(NameOID.ORGANIZATION_NAME)</span>
+        <span class="c1"># m.x509_ou = subject.get_attributes_for_oid(NameOID.ORGANIZATIONAL_UNIT_NAME)</span>
+        <span class="c1"># m.x509_st = subject.get_attributes_for_oid(NameOID.STATE_OR_PROVINCE_NAME)</span>
+
+        <span class="k">return</span> <span class="n">m</span>
+
+
+<span class="k">class</span> <span class="nc">CellularTechnology</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="n">Nothing</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">GSM</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">CDMA</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">Both</span> <span class="o">=</span> <span class="mi">3</span>
+
+
+<span class="n">device_tags</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span>
+    <span class="s1">&#39;device_tags&#39;</span><span class="p">,</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="s1">&#39;device_id&#39;</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;devices.id&#39;</span><span class="p">)),</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="s1">&#39;tag_id&#39;</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;tags.id&#39;</span><span class="p">)),</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="Device"><a class="viewcode-back" href="../../internal/core/models/device.html#commandment.models.Device">[docs]</a><span class="k">class</span> <span class="nc">Device</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An enrolled device.</span>
+<span class="sd">    </span>
+<span class="sd">    :table: devices</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;devices&#39;</span>
+
+    <span class="c1"># Common attributes</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;id (int):&quot;&quot;&quot;</span>
+    <span class="n">udid</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;udid (str): Unique Device Identifier&quot;&quot;&quot;</span>
+    <span class="n">last_seen</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;last_seen (datetime.datetime): When the device last contacted the MDM.&quot;&quot;&quot;</span>
+    <span class="n">is_enrolled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;is_enrolled (bool): Whether the MDM should consider this device enrolled.&quot;&quot;&quot;</span>
+
+    <span class="c1"># APNS / Push</span>
+    <span class="n">topic</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;topic (str): The APNS topic the device is listening on.&quot;&quot;&quot;</span>
+    <span class="n">push_magic</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;push_magic (str): The UUID that establishes a unique relationship between the device and the MDM.&quot;&quot;&quot;</span>
+    <span class="c1"># The APNS device token is stored in base64 format. Descriptors are added to handle this encoding and decoding</span>
+    <span class="c1"># to bytes automatically.</span>
+    <span class="n">_token</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">tokenupdate_at</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">)</span>
+    <span class="c1"># if null there are no outstanding push notifications. If this contains anything then dont attempt to deliver</span>
+    <span class="c1"># another APNS push.</span>
+    <span class="n">last_push_at</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;last_push_at (datetime.datetime): The datetime when the last push was sent to APNS for this device.&quot;&quot;&quot;</span>
+    <span class="n">last_apns_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;last_apns_id (str): The UUID of the last apns command sent.&quot;&quot;&quot;</span>
+    <span class="c1"># if the time delta between last_push_at and last_seen is &gt;= several days to a week,</span>
+    <span class="c1"># this should count as a failed push, and potentially declare the device as dead.</span>
+    <span class="n">failed_push_count</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Table 5</span>
+    <span class="n">last_cloud_backup_date</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;last_cloud_backup_date (datetime): The date of the last iCloud backup.&quot;&quot;&quot;</span>
+    <span class="n">awaiting_configuration</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;awaiting_configuration (bool): True if device is waiting at Setup Assistant&quot;&quot;&quot;</span>
+
+    <span class="c1"># Table 6</span>
+    <span class="n">itunes_store_account_is_active</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;itunes_store_account_is_active (bool): the user is currently logged into an active iTunes Store account.&quot;&quot;&quot;</span>
+    <span class="n">itunes_store_account_hash</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;itunes_store_account_hash (str): a hash of the iTunes Store account currently logged in.&quot;&quot;&quot;</span>
+
+    <span class="c1"># DeviceInformation : Table 7</span>
+    <span class="n">device_name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>  <span class="c1"># Authenticate</span>
+    <span class="sd">&quot;&quot;&quot;device_name (str): Name of the device&quot;&quot;&quot;</span>
+    <span class="n">os_version</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>  <span class="c1"># Authenticate</span>
+    <span class="sd">&quot;&quot;&quot;os_version (str): The operating system version number.&quot;&quot;&quot;</span>
+    <span class="n">build_version</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>  <span class="c1"># Authenticate</span>
+    <span class="sd">&quot;&quot;&quot;build_version (str): DeviceInformation BuildVersion&quot;&quot;&quot;</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>  <span class="c1"># Authenticate</span>
+    <span class="sd">&quot;&quot;&quot;model_name (str): Longer name of the hardware model&quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>  <span class="c1"># Authenticate</span>
+    <span class="sd">&quot;&quot;&quot;model (str): Name of the hardware model&quot;&quot;&quot;</span>
+    <span class="n">product_name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>  <span class="c1"># Authenticate</span>
+    <span class="sd">&quot;&quot;&quot;product_name (str): The base product name of the hardware&quot;&quot;&quot;</span>
+    <span class="n">serial_number</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Authenticate</span>
+    <span class="sd">&quot;&quot;&quot;serial_number (str): The hardware serial number&quot;&quot;&quot;</span>
+    <span class="n">device_capacity</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Float</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;device_capacity (float): total capacity (base 1024 gigabytes)&quot;&quot;&quot;</span>
+    <span class="n">available_device_capacity</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Float</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;device_available_capacity (float): available capacity (base 1024 gigabytes)&quot;&quot;&quot;</span>
+    <span class="n">battery_level</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;battery_level (float): battery level, between 0.0 and 1.0. -1.0 if information is not available.&quot;&quot;&quot;</span>
+    <span class="n">cellular_technology</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Enum</span><span class="p">(</span><span class="n">CellularTechnology</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;cellular_technology (CellularTechnology): cellular technology.&quot;&quot;&quot;</span>
+    <span class="n">imei</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;imei (str): IMEI number (if device is GSM).&quot;&quot;&quot;</span>
+    <span class="n">meid</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;meid (str): MEID number (if device is CSMA).&quot;&quot;&quot;</span>
+    <span class="n">modem_firmware_version</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;modem_firmware_version (str): The baseband firmware version.&quot;&quot;&quot;</span>
+    <span class="n">is_supervised</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;is_supervised (bool): Device is supervised&quot;&quot;&quot;</span>
+    <span class="n">is_device_locator_service_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;is_device_locator_service_enabled (bool): Find My iPhone/Mac enabled.&quot;&quot;&quot;</span>
+    <span class="n">is_activation_lock_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;is_activation_lock_enabled (bool): Device has Activation Lock enabled.&quot;&quot;&quot;</span>
+    <span class="n">is_do_not_disturb_in_effect</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;is_do_not_disturb_in_effect (bool): Device has DND enabled.&quot;&quot;&quot;</span>
+    <span class="n">device_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>  <span class="c1"># ATV</span>
+    <span class="sd">&quot;&quot;&quot;device_id (str): Device ID (ATV)&quot;&quot;&quot;</span>
+    <span class="n">eas_device_identifier</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;eas_device_identifier (str): Exchange ActiveSync Identifier&quot;&quot;&quot;</span>
+    <span class="n">is_cloud_backup_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;is_cloud_backup_enabled (bool): iCloud backup is enabled.&quot;&quot;&quot;</span>
+    <span class="n">local_hostname</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;local_hostname (str): &quot;&quot;&quot;</span>
+    <span class="n">hostname</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;hostname (str): &quot;&quot;&quot;</span>
+    <span class="n">sip_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;sip_enabled (bool): System Integrity Protection is enabled.&quot;&quot;&quot;</span>
+    <span class="c1"># TODO: ActiveManagedUsers</span>
+    <span class="n">is_mdm_lost_mode_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;is_mdm_lost_mode_enabled (bool): MDM Lost mode is enabled.&quot;&quot;&quot;</span>
+    <span class="n">maximum_resident_users</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;maximum_resident_users (int): Maximum number of users that can use Shared iPad.&quot;&quot;&quot;</span>
+
+    <span class="c1"># OSUpdateSettings : Table 8</span>
+    <span class="c1"># OSUpdateSettings is flattened</span>
+    <span class="n">osu_catalog_url</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;osu_catalog_url (str): Software Update Catalog URL.&quot;&quot;&quot;</span>
+    <span class="n">osu_is_default_catalog</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">osu_previous_scan_date</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">)</span>
+    <span class="n">osu_previous_scan_result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">osu_perform_periodic_check</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">osu_automatic_check_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">osu_background_download_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">osu_automatic_app_installation_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">osu_automatic_os_installation_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">osu_automatic_security_updates_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+
+    <span class="c1"># NetworkInfo : Table 9</span>
+    <span class="n">iccid</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;iccid (str): The ICC identifier for the SIM card.&quot;&quot;&quot;</span>
+    <span class="n">bluetooth_mac</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;bluetooth_mac (str): The bluetooth MAC address&quot;&quot;&quot;</span>
+    <span class="n">wifi_mac</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;wifi_mac (str): The WiFi MAC address&quot;&quot;&quot;</span>
+    <span class="c1"># TODO: EthernetMACs</span>
+    <span class="n">current_carrier_network</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;current_carrier_network (str): Name of the current carrier network.&quot;&quot;&quot;</span>
+    <span class="n">sim_carrier_network</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;sim_carrier_network (str): Name of the home carrier network.&quot;&quot;&quot;</span>
+    <span class="n">subscriber_carrier_network</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;subscriber_carrier_network (str): Name of the home carrier network (replaces sim_carrier_network).&quot;&quot;&quot;</span>
+    <span class="n">carrier_settings_version</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;carrier_settings_version (str): Version of the current carrier settings file.&quot;&quot;&quot;</span>
+    <span class="n">phone_number</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;phone_number (str): Raw phone number without punctuation.&quot;&quot;&quot;</span>
+    <span class="n">voice_roaming_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;voice_roaming_enabled (bool): Voice Roaming is enabled in settings.&quot;&quot;&quot;</span>
+    <span class="n">data_roaming_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;data_roaming_enabled (bool): Data Roaming is enabled in settings.&quot;&quot;&quot;</span>
+    <span class="n">is_roaming</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;is_roaming (bool): The device is currently roaming.&quot;&quot;&quot;</span>
+    <span class="n">personal_hotspot_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;personal_hotspot_enabled (bool): Personal HotSpot is currently turned on.&quot;&quot;&quot;</span>
+    <span class="n">subscriber_mcc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;subscriber_mcc (str): Home Mobile Country Code (numeric)&quot;&quot;&quot;</span>
+    <span class="n">subscriber_mnc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;subscriber_mnc (str): Home Mobile Network Code (numeric)&quot;&quot;&quot;</span>
+    <span class="n">current_mcc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;current_mcc (str): Current Mobile Country Code (numeric)&quot;&quot;&quot;</span>
+    <span class="n">current_mnc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;current_mnc (str): Current Mobile Network Code (numeric)&quot;&quot;&quot;</span>
+
+    <span class="c1"># SecurityInfo</span>
+    <span class="c1"># hardware_encryption_caps = db.Column(DBEnum(HardwareEncryptionCaps))</span>
+    <span class="n">passcode_present</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;passcode_present (bool): Device has a passcode.&quot;&quot;&quot;</span>
+    <span class="n">passcode_compliant</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;passcode_compliant (bool): The passcode is compliant with all requirements (incl Exchange accounts).&quot;&quot;&quot;</span>
+    <span class="n">passcode_compliant_with_profiles</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;passcode_compliant_with_profiles (bool): The passcode is compliant with profile requirements.&quot;&quot;&quot;</span>
+    <span class="n">passcode_lock_grace_period_enforced</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;passcode_lock_grace_period_enforced (int): The current enforced time in seconds before unlock passcode will </span>
+<span class="sd">    be required.&quot;&quot;&quot;</span>
+    <span class="n">fde_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;fde_enabled (bool): Whether full disk encryption is enabled or not.&quot;&quot;&quot;</span>
+    <span class="n">fde_has_prk</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;fde_has_prk (bool): Whether FDE has a personal recovery key set.&quot;&quot;&quot;</span>
+    <span class="n">fde_has_irk</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;fde_has_irk (bool): Whether FDE has an institutional recovery key set.&quot;&quot;&quot;</span>
+    <span class="n">fde_personal_recovery_key_cms</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">LargeBinary</span><span class="p">)</span>  <span class="c1"># 10.13</span>
+    <span class="sd">&quot;&quot;&quot;fde_personal_recovery_key_cms (bytes): If Escrow is enabled, contains the encrypted PRK&quot;&quot;&quot;</span>
+    <span class="n">fde_personal_recovery_key_device_key</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>  <span class="c1"># 10.13</span>
+    <span class="sd">&quot;&quot;&quot;fde_personal_recovery_key_device_key (str):&quot;&quot;&quot;</span>
+    <span class="n">firewall_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;firewall_enabled (bool): Application firewall is enabled.&quot;&quot;&quot;</span>
+    <span class="n">block_all_incoming</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;block_all_incoming (bool): All incoming connections are blocked.&quot;&quot;&quot;</span>
+    <span class="n">stealth_mode_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;stealth_mode_enabled (bool): Stealth mode is enabled.&quot;&quot;&quot;</span>
+
+    <span class="c1"># ActivationLockBypassCode</span>
+    <span class="n">activation_lock_escrow_key</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;activation_lock_escrow_key (str): The activation lock bypass code generated by the device&quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO: Blocked Applications</span>
+
+    <span class="nd">@hybrid_property</span>
+    <span class="k">def</span> <span class="nf">token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_token</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_token</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_token</span><span class="p">)</span>
+
+    <span class="nd">@token</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_token</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hex_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve the device token in hex encoding, necessary for the APNS2 client.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_token</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">hexlify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
+
+    <span class="n">certificate_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;certificates.id&#39;</span><span class="p">))</span>
+    <span class="n">certificate</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;Certificate&#39;</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;devices&#39;</span><span class="p">)</span>
+
+    <span class="n">dep_profile_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;dep_profiles.id&#39;</span><span class="p">))</span>
+    <span class="n">dep_profile</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;DEPProfile&#39;</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;devices&#39;</span><span class="p">)</span>
+
+    <span class="n">tags</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span>
+        <span class="s1">&#39;Tag&#39;</span><span class="p">,</span>
+        <span class="n">secondary</span><span class="o">=</span><span class="n">device_tags</span><span class="p">,</span>
+        <span class="n">back_populates</span><span class="o">=</span><span class="s1">&#39;devices&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">_unlock_token</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;unlock_token&#39;</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">unlock_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unlock_token</span>
+
+    <span class="nd">@unlock_token</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">unlock_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">NSData</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_unlock_token</span> <span class="o">=</span> <span class="n">NSData</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;base64&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_unlock_token</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">platform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Platform</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;iMac&#39;</span><span class="p">,</span> <span class="s1">&#39;MacBook Pro&#39;</span><span class="p">,</span> <span class="s1">&#39;MacBook Air&#39;</span><span class="p">,</span> <span class="s1">&#39;Mac Pro&#39;</span><span class="p">]:</span>  <span class="c1"># TODO: obviously not sufficient</span>
+            <span class="k">return</span> <span class="n">Platform</span><span class="o">.</span><span class="n">macOS</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;iPhone&#39;</span><span class="p">,</span> <span class="s1">&#39;iPad&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">Platform</span><span class="o">.</span><span class="n">iOS</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Platform</span><span class="o">.</span><span class="n">Unknown</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="k">return</span> <span class="s1">&#39;&lt;Device ID=</span><span class="si">%r</span><span class="s1"> UDID=</span><span class="si">%r</span><span class="s1"> SerialNo=</span><span class="si">%r</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">udid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">serial_number</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">CommandSequence</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A command sequence represents a series of commands where all members must succeed in order for the sequence to</span>
+<span class="sd">    succeed. I.E a single failure or timeout in the sequence stops the delivery of every other member.</span>
+
+<span class="sd">    :table: command_sequences</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;command_sequences&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Command"><a class="viewcode-back" href="../../internal/core/models/command.html#commandment.models.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The command model represents a single MDM command that should be, has been, or has failed to be delivered to</span>
+<span class="sd">    a single enrolled device.</span>
+<span class="sd">    </span>
+<span class="sd">    :table: commands</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;commands&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;id (int): ID&quot;&quot;&quot;</span>
+    <span class="n">request_type</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># string representation of our local command handler</span>
+    <span class="sd">&quot;&quot;&quot;request_type (str): The command RequestType attribute&quot;&quot;&quot;</span>
+    <span class="n">uuid</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">GUID</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;uuid (GUID): Globally unique command UUID&quot;&quot;&quot;</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">MutableDict</span><span class="o">.</span><span class="n">as_mutable</span><span class="p">(</span><span class="n">JSONEncodedDict</span><span class="p">),</span>
+                           <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># JSON add&#39;l data as input to command builder</span>
+    <span class="sd">&quot;&quot;&quot;parameters (str): The parameters that were used when generating the command, serialized into JSON. Omitting the</span>
+<span class="sd">            RequestType and CommandUUID attributes.&quot;&quot;&quot;</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Enum</span><span class="p">(</span><span class="n">CommandStatus</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">CommandStatus</span><span class="o">.</span><span class="n">Queued</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;status (CommandStatus): The status of the command.&quot;&quot;&quot;</span>
+    <span class="n">queued_at</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">(),</span> <span class="n">server_default</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="s1">&#39;CURRENT_TIMESTAMP&#39;</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;queued_at (datetime.datetime): The datetime (utc) of when the command was created. Defaults to UTC now&quot;&quot;&quot;</span>
+    <span class="n">sent_at</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;sent_at (datetime.datetime): The datetime (utc) of when the command was delivered to the client.&quot;&quot;&quot;</span>
+    <span class="n">acknowledged_at</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;acknowledged_at (datetime.datetime): The datetime (utc) of when the Acknowledged, Error or NotNow response was</span>
+<span class="sd">        returned.&quot;&quot;&quot;</span>
+    <span class="c1"># command must only be sent after this date</span>
+    <span class="n">after</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;after (datetime.datetime): If not null, the command must not be sent until this datetime is in the past.&quot;&quot;&quot;</span>
+
+    <span class="c1"># number of retries remaining until dead</span>
+    <span class="n">ttl</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;ttl (int): The number of retries remaining until the command will be dead/expired.&quot;&quot;&quot;</span>
+
+    <span class="n">device_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;devices.id&#39;</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;device_id (int): The device ID on the devices table.&quot;&quot;&quot;</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;Device&#39;</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;commands&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;device (Device): The instance of the related device.&quot;&quot;&quot;</span>
+
+    <span class="c1"># device_user_id = db.Column(ForeignKey(&#39;device_users.id&#39;), nullable=True)</span>
+    <span class="c1"># device_user = relationship(&#39;DeviceUser&#39;, backref=&#39;commands&#39;)</span>
+
+<div class="viewcode-block" id="Command.from_model"><a class="viewcode-back" href="../../internal/core/models/command.html#commandment.models.Command.from_model">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cmd</span><span class="p">:</span> <span class="n">commands</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method turns a subclass of commands.Command into an SQLAlchemy model.</span>
+<span class="sd">        The parameters of the command are encoded as a JSON dictionary inside the parameters column.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">              cmd (commands.Command): The command to be turned into a database model.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">              Command: The database model, ready to be committed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">cmd</span><span class="o">.</span><span class="n">request_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">request_type</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">request_type</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">uuid</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">parameters</span>
+</div>
+        <span class="k">return</span> <span class="n">c</span>
+
+<div class="viewcode-block" id="Command.find_by_uuid"><a class="viewcode-back" href="../../internal/core/models/command.html#commandment.models.Command.find_by_uuid">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">find_by_uuid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find and return an instance of the Command model matching the given UUID string.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">              uuid (str): The command UUID</span>
+<span class="sd">              </span>
+<span class="sd">        Returns:</span>
+<span class="sd">              Command: Instance of the command, if any</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">uuid</span> <span class="o">==</span> <span class="n">uuid</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Command.next_command"><a class="viewcode-back" href="../../internal/core/models/command.html#commandment.models.Command.next_command">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">next_command</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the next available command in the queue for the specified device.</span>
+
+<span class="sd">        The next available command must match these predicates:</span>
+
+<span class="sd">        - Assigned to this device.</span>
+<span class="sd">        - The status is &quot;Queued&quot;.</span>
+<span class="sd">        - The `after` field is in the past, or empty.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (Device): The database model matching the device checking in.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Command: The next command model to be processed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># d == d AND (q_status == Q OR (q_status == R AND result == &#39;NotNow&#39;))</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">and_</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="n">device</span><span class="p">,</span></div>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">CommandStatus</span><span class="o">.</span><span class="n">Queued</span><span class="o">.</span><span class="n">value</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">):</span>  <span class="c1"># type: (Type[Command], Device) -&gt; Optional[Command]</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">and_</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="n">device</span><span class="p">,</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">CommandStatus</span><span class="o">.</span><span class="n">Queued</span><span class="o">.</span><span class="n">value</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="k">return</span> <span class="s1">&#39;&lt;Command ID=</span><span class="si">%r</span><span class="s1"> UUID=</span><span class="si">%r</span><span class="s1"> qstatus=</span><span class="si">%r</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">DeviceUser</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This model represents a managed user from the standpoint of the MDM.</span>
+<span class="sd">    It exists to support the macOS user channel extension.</span>
+
+<span class="sd">    :table: device_users</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;device_users&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">device_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;devices.id&#39;</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;(int): Device foreign key ID.&quot;&quot;&quot;</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;Device&#39;</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;device_users&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;(db.relationship): Device relationship&quot;&quot;&quot;</span>
+    <span class="n">device_udid</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">GUID</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;(GUID): Device UDID&quot;&quot;&quot;</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">GUID</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;user_id (GUID): Local user&#39;s GUID, or network user&#39;s GUID from Directory Record.&quot;&quot;&quot;</span>
+    <span class="n">long_name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;long_name (str): The full name of the user&quot;&quot;&quot;</span>
+    <span class="n">short_name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;short_name (str): The short (username) of the user&quot;&quot;&quot;</span>
+    <span class="n">need_sync_response</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>  <span class="c1"># This is kind of transitive but added anyway.</span>
+    <span class="n">user_configuration</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">digest_challenge</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">auth_token</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Organization"><a class="viewcode-back" href="../../internal/core/models/organization.html#commandment.models.Organization">[docs]</a><span class="k">class</span> <span class="nc">Organization</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The MDM home organization configuration.</span>
+<span class="sd">    </span>
+<span class="sd">    These attributes are used as the defaults for several other services where an org name is required.</span>
+<span class="sd">    Such as Certificate requests and Profile detail.</span>
+<span class="sd">    </span>
+<span class="sd">    :table: organizations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;organizations&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;id (int): ID&quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;name (string): Name&quot;&quot;&quot;</span>
+    <span class="n">payload_prefix</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;payload_prefix (string): The reverse-dns style prefix to use for all generated profiles.&quot;&quot;&quot;</span>
+
+    <span class="c1"># http://www.ietf.org/rfc/rfc5280.txt</span>
+    <span class="c1"># maximum string lengths are well defined by this RFC and this schema follows those recommendations</span>
+    <span class="c1"># this x.509 name is used in the subject of the internal CA and issued certificates</span>
+    <span class="n">x509_ou</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;x509_ou (string): The x.509 Organizational Unit for generating certificates.&quot;&quot;&quot;</span>
+    <span class="n">x509_o</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;x509_o (string): The x.509 Organization for generating certificates.&quot;&quot;&quot;</span>
+    <span class="n">x509_st</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">128</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;x509_st (string): The x.509 State for generating certificates.&quot;&quot;&quot;</span>
+    <span class="n">x509_c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span></div>
+    <span class="sd">&quot;&quot;&quot;x509_c (string): The 2 letter x.509 country code for generating certificates. &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">SCEPConfig</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This table holds a single row containing information used to generate the SCEP enrollment profile.</span>
+<span class="sd">    </span>
+<span class="sd">    :table: scep_config</span>
+<span class="sd">    </span>
+<span class="sd">    See Also:</span>
+<span class="sd">          - `https://tools.ietf.org/html/rfc3280.html`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;scep_config&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># enabled = db.Column(db.Boolean, default=False)</span>
+    <span class="sd">&quot;&quot;&quot;enabled (boolean): If enabled, use SCEP, otherwise use internal CA to generate identities for clients.&quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">challenge_enabled</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">challenge</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">ca_fingerprint</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">subject</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># eg. O=x/OU=y/CN=z</span>
+    <span class="n">key_size</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">key_type</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;RSA&#39;</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">key_usage</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Enum</span><span class="p">(</span><span class="n">KeyUsage</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="n">KeyUsage</span><span class="o">.</span><span class="n">All</span><span class="p">)</span>
+
+    <span class="n">retries</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">retry_delay</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">certificate_renewal_time_interval</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">SubjectAlternativeNameType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Types of SubjectAlternativeNames that can be added using cryptography SAN extension.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also:</span>
+<span class="sd">          - `https://tools.ietf.org/html/rfc3280.html`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">RFC822Name</span> <span class="o">=</span> <span class="s1">&#39;RFC822Name&#39;</span>
+    <span class="sd">&quot;&quot;&quot;E-mail address, see: https://tools.ietf.org/html/rfc822&quot;&quot;&quot;</span>
+
+    <span class="n">DNSName</span> <span class="o">=</span> <span class="s1">&#39;DNSName&#39;</span>
+    <span class="n">UniformResourceIdentifier</span> <span class="o">=</span> <span class="s1">&#39;UniformResourceIdentifier&#39;</span>
+    <span class="n">DirectoryName</span> <span class="o">=</span> <span class="s1">&#39;DirectoryName&#39;</span>
+    <span class="n">RegisteredID</span> <span class="o">=</span> <span class="s1">&#39;RegisteredID&#39;</span>
+    <span class="n">IPAddress</span> <span class="o">=</span> <span class="s1">&#39;IPAddress&#39;</span>
+    <span class="n">OtherName</span> <span class="o">=</span> <span class="s1">&#39;OtherName&#39;</span>
+    <span class="c1"># TODO: ntPrincipal</span>
+
+
+<span class="k">class</span> <span class="nc">SubjectAlternativeName</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This table holds SANs included in the SCEP enrollment request.</span>
+<span class="sd">    </span>
+<span class="sd">    :table: subject_alternative_names</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;subject_alternative_names&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">discriminator</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Enum</span><span class="p">(</span><span class="n">SubjectAlternativeNameType</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">str_value</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">octet_value</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">LargeBinary</span><span class="p">)</span>  <span class="c1"># For IPAddress</span>
+
+
+<span class="k">class</span> <span class="nc">Tag</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This table holds tags, which are categories that are many-to-many and polymorphic to different types of</span>
+<span class="sd">    objects.&quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;tags&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;888888&#39;</span><span class="p">)</span>
+
+    <span class="n">devices</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span>
+        <span class="s2">&quot;Device&quot;</span><span class="p">,</span>
+        <span class="n">secondary</span><span class="o">=</span><span class="n">device_tags</span><span class="p">,</span>
+        <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># profiles = db.relationship(</span>
+    <span class="c1">#     &quot;Profiles&quot;,</span>
+    <span class="c1">#     secondary=profile_tags,</span>
+    <span class="c1">#     back_populates=&quot;tags&quot;,</span>
+    <span class="c1"># )</span>
+
+
+<span class="k">class</span> <span class="nc">AvailableOSUpdate</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This table holds the results of `AvailableOSUpdates` queries.&quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;available_os_updates&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">device_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;devices.id&#39;</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;(int): Device foreign key ID.&quot;&quot;&quot;</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;Device&#39;</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;available_os_updates&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;(db.relationship): Device relationship&quot;&quot;&quot;</span>
+
+    <span class="n">allows_install_later</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">app_identifiers_to_close</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">MutableList</span><span class="o">.</span><span class="n">as_mutable</span><span class="p">(</span><span class="n">JSONEncodedDict</span><span class="p">))</span>
+    <span class="n">human_readable_name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">human_readable_name_locale</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">is_config_data_update</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;(bool): This update is a config data update eg. for XProtect or Gatekeeper. These arent normally shown&quot;&quot;&quot;</span>
+    <span class="n">is_critical</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">is_firmware_update</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">metadata_url</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">product_key</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">restart_required</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+            
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">commandment 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

@@ -154,4 +154,10 @@ ENV/
 *.iml
 
 .DS_Store
+.mypy_cache
+
+ui
+simulators
+testdata
+settings.cfg
 
