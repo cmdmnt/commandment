@@ -88,15 +88,15 @@ export class UnconnectedProfilesPage extends React.Component<ProfilesPageProps, 
                 <Grid>
                     <Grid.Column>
                         <Header as="h1">Profiles</Header>
-                            <Dropzone
-                                onDrop={this.handleDrop}
-                                className="dropzone"
-                                activeClassName="dropzone-active"
-                                rejectClassName="dropzone-reject"
-                                style={{}}
-                                accept="application/x-apple-aspen-config">
-                                <Header as="h3">Drop configuration profile or Click to upload</Header>
-                            </Dropzone>
+                            {/*<Dropzone*/}
+                                {/*onDrop={this.handleDrop}*/}
+                                {/*className="dropzone"*/}
+                                {/*activeClassName="dropzone-active"*/}
+                                {/*rejectClassName="dropzone-reject"*/}
+                                {/*style={{}}*/}
+                                {/*accept="application/x-apple-aspen-config">*/}
+                                {/*<Header as="h3">Drop configuration profile or Click to upload</Header>*/}
+                            {/*</Dropzone>*/}
 
                         {profiles.uploadError &&
                             <Message negative header="Upload error" content={profiles.uploadErrorDetail.message} />

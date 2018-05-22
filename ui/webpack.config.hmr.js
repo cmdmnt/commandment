@@ -11,7 +11,7 @@ module.exports = {
             './src/entry.tsx'
         ]
     },
-
+    mode: 'development',
     output: {
         path: path.resolve(__dirname, "..", "commandment", "static"),
         filename: 'app.js',

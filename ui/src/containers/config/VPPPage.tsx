@@ -47,14 +47,14 @@ export class UnconnectedVPPPage extends React.Component<OwnProps, void> {
         return (
             <Container className="VPPPage">
                 <Header as="h1">Volume Purchase Programme Configuration</Header>
-                <Dropzone
-                    onDrop={this.handleDrop}
-                    className="dropzone"
-                    activeClassName="dropzone-active"
-                    rejectClassName="dropzone-reject"
-                    style={{}}>
-                    <Header as="h3">Drop .vpptoken or Click to upload</Header>
-                </Dropzone>
+                {/*<Dropzone*/}
+                    {/*onDrop={this.handleDrop}*/}
+                    {/*className="dropzone"*/}
+                    {/*activeClassName="dropzone-active"*/}
+                    {/*rejectClassName="dropzone-reject"*/}
+                    {/*style={{}}>*/}
+                    {/*<Header as="h3">Drop .vpptoken or Click to upload</Header>*/}
+                {/*</Dropzone>*/}
                 {data && <VPPAccountDetail {...data} />}
             </Container>
         );
