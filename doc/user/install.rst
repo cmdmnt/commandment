@@ -17,8 +17,8 @@ Manual Installation
     $ brew install nginx
 
 - Unpack commandment to :file:`/usr/local/commandment`.
-- Use this example `NGiNX configuration </_static/config/nginx-commandment.conf>`_.
-- Use this example `uWSGI configuration </_static/config/uwsgi-commandment.ini>`_.
+- Use this example :download:`NGiNX configuration </_static/config/nginx-commandment.conf>`
+- Use this example :download:`uWSGI configuration </_static/config/uwsgi-commandment.ini>`
 
 .. note:: At this stage you should have an MDM Push Certificate and SSL Certificate ready so that your devices will talk
     to the MDM service. You should also decide whether to use `SCEPy <https://github.com/mosen/SCEPy>`_ for testing or

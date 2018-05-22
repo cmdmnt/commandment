@@ -3,8 +3,19 @@ Dependencies
 
 These are the dependencies for developing with commandment. You won't need all of these to actually run it.
 
-Installing backend dependencies
--------------------------------
+Quick Start (Using Homebrew)
+----------------------------
+
+First clone the repository, then install dependencies::
+
+	$ brew install python3 nodejs yarn
+	$ pip install pipenv
+	$ pipenv install
+	$ cd ui && yarn install
+
+
+The long version
+----------------
 
 Python 3.6+
 ^^^^^^^^^^^
@@ -29,6 +40,10 @@ NodeJS 7+
 
 All of the front end tooling requires NodeJS. You can download and install an official package from `here <https://nodejs.org/en/>`_.
 I use `nvm <https://github.com/creationix/nvm>`_ to run multiple NodeJS versions at a time, for testing purposes.
+You may also run::
+
+	$ brew install nodejs
+
 
 Setting up the environment
 --------------------------
@@ -42,7 +57,7 @@ Pipenv
 To download the Python dependencies, you first need `pipenv <https://docs.pipenv.org/>`_. You can install pipenv by
 running::
 
-	$ pip3 install pipenv
+	$ pip install pipenv
 
 See the **pipenv** documentation for information about how to install it on other Linux distributions.
 
@@ -53,9 +68,9 @@ To install python dependencies, change to the commandment directory and run::
 
 	$ pipenv install
 
-This should download and install all python requirements.
+This should download and install all python requirements into a new virtualenv.
 
-.. note:: This supersedes the :file:requirements.txt method.
+.. note:: This supersedes the :file:`requirements.txt` method.
 
 Front end dependencies
 ----------------------
