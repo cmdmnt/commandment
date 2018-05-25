@@ -1,4 +1,5 @@
 import os.path
+from typing import Optional
 from flask import abort, current_app
 
 from commandment.enroll.profiles import scep_payload_from_configuration, ca_trust_payload_from_configuration, \
@@ -13,7 +14,7 @@ from commandment.profiles.models import Profile, MDMPayload
 from uuid import uuid4
 
 
-def generate_enroll_profile() -> Profile:
+def generate_enroll_profile(identity: Optional[x509.Certificate] = None) -> Profile:
     """Generate an enrollment profile.
 
     If the user specified a CA certificate, we assume that it won't be trusted by default, so it is included in the
@@ -68,10 +69,12 @@ def generate_enroll_profile() -> Profile:
         ssl_payload = ssl_trust_payload_from_configuration()
         profile.payloads.append(ssl_payload)
 
-    scep_payload = scep_payload_from_configuration()
-    profile.payloads.append(scep_payload)
-
-    cert_uuid = scep_payload.uuid
+    if identity is None:
+        scep_payload = scep_payload_from_configuration()
+        profile.payloads.append(scep_payload)
+        cert_uuid = scep_payload.uuid
+    else:
+        identity_payload = None  # Not yet implemented
 
     from commandment.mdm import AccessRights
 

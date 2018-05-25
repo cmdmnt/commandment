@@ -2,7 +2,7 @@ import os.path
 from uuid import uuid4
 from flask import abort, current_app
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from commandment.profiles.models import SCEPPayload, PEMCertificatePayload
+from commandment.profiles.models import SCEPPayload, PEMCertificatePayload, PKCS12CertificatePayload
 from commandment.models import db, Organization, SCEPConfig
 
 
@@ -98,3 +98,24 @@ def ssl_trust_payload_from_configuration() -> PEMCertificatePayload:
             version=1
         )
         return pem_payload
+
+
+def identity_payload() -> PKCS12CertificatePayload:
+    """Generate a PKCS#12 certificate payload for device identity."""
+    try:
+        org = db.session.query(Organization).one()
+    except NoResultFound:
+        abort(500, 'No organization is configured, cannot generate enrollment profile.')
+    except MultipleResultsFound:
+        abort(500, 'Multiple organizations, backup your database and start again')
+
+    pkcs12_payload = PKCS12CertificatePayload(
+        uuid=uuid4(),
+        identifier=org.payload_prefix + '.identity',
+        display_name='Device Identity Certificate',
+        description='Required to identify your device to the MDM',
+        type='com.apple.security.pkcs12',
+        version=1
+    )
+
+    return pkcs12_payload

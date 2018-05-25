@@ -180,6 +180,7 @@ def ota_authenticate():
         abort(500, 'Multiple organizations, backup your database and start again')
 
     # TODO: Behold, the stupidest thing ever just to get this working, theres no way this should be prod:
+    # Phase 4 does not send a challenge but phase 3 does
     if 'CHALLENGE' in device_attributes:
         # Reply SCEP
         profile = Profile(
@@ -196,6 +197,7 @@ def ota_authenticate():
         profile.payloads.append(scep_payload)
     else:
         profile = generate_enroll_profile()
+    # profile = generate_enroll_profile()
 
     schema = profile_schema.ProfileSchema()
     result = schema.dump(profile)

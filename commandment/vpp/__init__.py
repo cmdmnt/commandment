@@ -6,6 +6,6 @@ def get_vpp() -> VPP:
     vpp = getattr(g, '_vpp', None)
 
     if vpp is None:
-        vpp = VPP(current_app.config['VPP_STOKEN'])
+        g._vpp = VPP(current_app.config['VPP_STOKEN'])
 
     return vpp
