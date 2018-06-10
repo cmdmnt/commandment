@@ -16,9 +16,9 @@ build_python:
 #    - python
   before_script:
     - python -V
-    - pip install virtualenv
-    - virtualenv venv
-    - source venv/bin/activate
+#    - pip install virtualenv
+#    - virtualenv venv
+#    - source venv/bin/activate
   script:
 #    - apt-get update -qy
 #    - apt-get install -y python-dev python-pip
