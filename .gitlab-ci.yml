@@ -1,5 +1,9 @@
 build_python:
   stage: build
+  script:
+    - apt-get update -qy
+    - apt-get install -y python-dev python-pip
+    - pip install pipenv
 
 build_js:
   stage: build
@@ -11,10 +15,6 @@ build_js:
 
 test:
   stage: test
-  script:
-    - apt-get update -qy
-    - apt-get install -y python-dev python-pip
-    - pip install pipenv
     - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
     
 
