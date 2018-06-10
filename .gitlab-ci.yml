@@ -1,9 +1,21 @@
 image: python:3.6.5-stretch
 
+variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - .cache/
+    - venv/
+
 build_python:
   stage: build
 #  tags:
 #    - python
+  before_script:
+    - python -V
   script:
 #    - apt-get update -qy
 #    - apt-get install -y python-dev python-pip
