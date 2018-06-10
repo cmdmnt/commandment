@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
-    <mapping directory="$PROJECT_DIR$/../bixar" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../_github/SCEPy" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../_github/apkg" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../_github/bixar" vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../griddle-plugin-mselection" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../../_remote/Griddle" vcs="Git" />
   </component>
 </project>
