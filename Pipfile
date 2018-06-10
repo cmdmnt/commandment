@@ -12,7 +12,7 @@ apns = "*"
 "apns2-client" = "*"
 babel = "*"
 biplist = "*"
-bixar = {git = "https://github.com/mosen/bixar.git", editable = true}
+bixar = {git = "https://gitlab.com/cmdmnt/bixar.git", editable = true}
 blinker = "*"
 decorator = "*"
 docutils = "*"
