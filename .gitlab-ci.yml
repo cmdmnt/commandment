@@ -1,12 +1,18 @@
+image: python:3.6.5-stretch
+
 build_python:
   stage: build
+  tags:
+    - python
   script:
-    - apt-get update -qy
-    - apt-get install -y python-dev python-pip
+#    - apt-get update -qy
+#    - apt-get install -y python-dev python-pip
     - pip install pipenv
 
 build_js:
   stage: build
+  tags:
+    - js
   script:
     - apt-get update -qy
     - apt-get install -y apt-transport-https
@@ -16,10 +22,13 @@ build_js:
     - apt-get install -y nodejs yarn
     - cd ui && yarn install
     - NODE_ENV=production webpack
-#
-#test:
-#  stage: test
-#    - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
-#
+
+python_test:
+  stage: test
+  tags:
+    - python
+  script:
+    - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
+
 
     
