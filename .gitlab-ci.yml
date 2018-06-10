@@ -12,10 +12,10 @@ build_js:
     - apt-get install -y nodejs
     - cd ui && yarn install
     - NODE_ENV=production webpack
-
-test:
-  stage: test
-    - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
-    
+#
+#test:
+#  stage: test
+#    - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
+#
 
     
