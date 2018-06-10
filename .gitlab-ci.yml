@@ -2,8 +2,8 @@ image: python:3.6.5-stretch
 
 build_python:
   stage: build
-  tags:
-    - python
+#  tags:
+#    - python
   script:
 #    - apt-get update -qy
 #    - apt-get install -y python-dev python-pip
@@ -11,8 +11,8 @@ build_python:
 
 build_js:
   stage: build
-  tags:
-    - js
+#  tags:
+#    - js
   script:
     - apt-get update -qy
     - apt-get install -y apt-transport-https
@@ -25,8 +25,8 @@ build_js:
 
 test_python:
   stage: test
-  tags:
-    - python
+#  tags:
+#    - python
   script:
     - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
 
