@@ -39,6 +39,9 @@ build_js:
     - apt-get install -y yarn
     - cd ui && yarn install
     - NODE_ENV=production ./node_modules/.bin/webpack
+  artifacts:
+    paths:
+      - commandment/static/
 
 test_python:
   stage: test
