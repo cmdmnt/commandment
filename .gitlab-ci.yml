@@ -9,6 +9,7 @@ cache:
     - node_modules/
     - .cache/
     - venv/
+    - /root/.local/share/virtualenvs/
 
 build_python:
   stage: build
@@ -23,7 +24,7 @@ build_python:
 #    - apt-get update -qy
 #    - apt-get install -y python-dev python-pip
     - pip install pipenv
-    - pipenv install --dev
+    - pipenv install --system --dev
 
 build_js:
   stage: build
