@@ -3,13 +3,11 @@ image: python:3.6.5-stretch
 variables:
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
 
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - node_modules/
-    - .cache/
-    - venv/
-    - /root/.local/share/virtualenvs/
+#cache:
+#  key: ${CI_COMMIT_REF_SLUG}
+#  paths:
+#    - node_modules/
+#
 
 build_python:
   stage: build
@@ -25,6 +23,12 @@ build_python:
 #    - apt-get install -y python-dev python-pip
     - pip install pipenv
     - pipenv install --system --dev
+  cache:
+    key: backend
+    paths:
+      - .cache/
+      - venv/
+      - /root/.local/share/virtualenvs/
 
 build_js:
   stage: build
@@ -43,13 +47,26 @@ build_js:
   artifacts:
     paths:
       - commandment/static/
+  cache:
+    key: frontend
+    paths:
+      - node_modules/
 
 test_python:
   stage: test
 #  tags:
 #    - python
+  before_script:
+    - pip install pipenv
+    - pipenv install --system --dev
   script:
     - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
+  cache:
+    key: backend
+    paths:
+      - .cache/
+      - venv/
+      - /root/.local/share/virtualenvs/
 
 
     
