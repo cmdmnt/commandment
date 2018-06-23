@@ -70,6 +70,13 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
     app.register_blueprint(dep_app)
     app.register_blueprint(vpp_app)
 
+    try:
+        from scepy.blueprint import scep_app
+        app.register_blueprint(scep_app, url_prefix='/scep')
+        app.logger.info('Registered SCEPy service at /scep')
+    except ImportError:
+        app.logger.warning("SCEP will not be available, cannot load SCEPy")
+
     # Threads
     startup_thread.start(app)
 

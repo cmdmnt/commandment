@@ -33,7 +33,7 @@ setup(
         'marshmallow==2.13.1',
         'marshmallow-enum==1.4.1',
         'marshmallow-jsonapi==0.18.0',
-        'marshmallow-sqlalchemy==0.13.2',
+        'marshmallow-sqlalchemy==0.14.0',
         'oscrypto==0.19.1',
         'passlib==1.7.1',
         'semver',
