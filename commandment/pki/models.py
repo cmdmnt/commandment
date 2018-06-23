@@ -1,3 +1,7 @@
+"""
+This module contains the SQLAlchemy models for PKI related functionality.
+"""
+
 from commandment.models import db, CertificateSigningRequest, CertificateType, DeviceIdentityCertificate, CACertificate, RSAPrivateKey
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -26,7 +30,7 @@ class CertificateAuthority(db.Model):
     rsa_private_key = db.relationship('RSAPrivateKey', backref='certificate_authority')
 
     @classmethod
-    def create(cls, common_name: str = 'COMMANDMENT-CA'):
+    def create(cls, common_name: str = 'COMMANDMENT-CA', key_size=2048):
         ca = cls()
         ca.common_name = common_name
         name = x509.Name([
@@ -36,7 +40,7 @@ class CertificateAuthority(db.Model):
 
         private_key = rsa.generate_private_key(
             public_exponent=65537,
-            key_size=2048,
+            key_size=key_size,
             backend=default_backend(),
         )
         ca.rsa_private_key = RSAPrivateKey.from_crypto(private_key)
@@ -68,11 +72,15 @@ class CertificateAuthority(db.Model):
         """
         Create a Certificate Signing Request with the specified Common Name.
 
+        The private key model is automatically committed to the database.
+        This is also true for the certificate signing request.
+
         Args:
             common_name (str): The certificate Common Name attribute
 
         Returns:
-            Tuple[rsa.RSAPrivateKeyWithSerialization, x509.CertificateSigningRequest]
+            Tuple[rsa.RSAPrivateKeyWithSerialization, x509.CertificateSigningRequest] - A tuple containing the RSA
+            Private key that was generated, along with the CSR.
         """
         private_key = rsa.generate_private_key(
             public_exponent=65537,
@@ -107,10 +115,12 @@ class CertificateAuthority(db.Model):
 
     def sign(self, request: x509.CertificateSigningRequest) -> x509.Certificate:
         """
-        Sign a Certificate Signing Request
+        Sign a Certificate Signing Request.
+
+        The issued certificate is automatically persisted to the database.
 
         Args:
-            request (x509.CertificateSigningRequest): The CSR object
+            request (x509.CertificateSigningRequest): The CSR object (cryptography) not the SQLAlchemy model.
 
         Returns:
             x509.Certificate: A signed certificate

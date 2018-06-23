@@ -1,3 +1,11 @@
+"""
+The enroll blueprint covers all enrolment scenarios such as:
+
+- Over-the-Air profile delivery
+- Direct enrolment (delivering a com.apple.mdm payload)
+
+"""
+
 from uuid import uuid4
 import plistlib
 
@@ -15,12 +23,6 @@ from commandment.enroll.util import generate_enroll_profile
 from commandment.cms.decorators import verify_cms_signers
 
 enroll_app = Blueprint('enroll_app', __name__)
-
-
-@enroll_app.route('/')
-def index():
-    """Show the enrollment page"""
-    return render_template('enroll.html')
 
 
 def base64_to_pem(crypto_type, b64_text, width=76):
