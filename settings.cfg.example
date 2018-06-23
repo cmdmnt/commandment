@@ -44,3 +44,27 @@ SSL_RSA_KEY = path.join(dirname, 'ssl', 'server.key')
 # If not using external storage, the path to the root directory for upload storage.
 # This should not be used in production.
 STORAGE_ROOT = path.join(dirname, 'storage')
+
+# -------------------------
+# SCEP via SCEPy (optional)
+# -------------------------
+
+# Directory where certs, revocation lists, serials etc will be kept
+SCEPY_CA_ROOT = "/path/to/ca"
+
+# X.509 Name Attributes used to generate the CA Certificate
+SCEPY_CA_X509_CN = 'SCEPY-CA'
+SCEPY_CA_X509_O = 'SCEPy'
+SCEPY_CA_X509_C = 'AU'
+
+# SubjectAltName extension is always on and will use this DNSName
+SAN_DNSNAME = 'scepy.dev'
+
+# (Optional) SCEP static challenge
+SCEPY_CHALLENGE = 'sekret'
+
+# Raw data will be dumped to this directory for inspection with tools such as OpenSSL (openssl asn1parse)
+SCEPY_DUMP_DIR = '/tmp/scepy_dump'
+
+
+SCEPY_FORCE_DEGENERATE_FOR_SINGLE_CERT = False

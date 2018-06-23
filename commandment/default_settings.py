@@ -14,3 +14,23 @@ MDMCERT_API_KEY = 'b742461ff981756ca3f924f02db5a12e1f6639a9109db047ead1814aafc05
 
 PLISTIFY_MIMETYPE = 'application/xml'
 
+
+# Internal CA - Certificate X.509 Attributes
+INTERNAL_CA_CN = 'COMMANDMENT-CA'
+INTERNAL_CA_O = 'Commandment'
+
+
+# --------------
+# SCEPy Defaults
+# --------------
+
+# Directory where certs, revocation lists, serials etc will be kept
+SCEPY_CA_ROOT = "CA"
+
+# X.509 Name Attributes used to generate the CA Certificate
+SCEPY_CA_X509_CN = 'SCEPY-CA'
+SCEPY_CA_X509_O = 'SCEPy'
+SCEPY_CA_X509_C = 'US'
+
+# Force a single certificate to be returned as a PKCS#7 Degenerate instead of raw DER data
+SCEPY_FORCE_DEGENERATE_FOR_SINGLE_CERT = False
