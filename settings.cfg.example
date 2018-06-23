@@ -22,6 +22,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///commandment.db'
 # [APNS]
 # You may supply the certificate as a pair of PEM encoded files, or as a .p12 container.
 # If you supply .p12 it will be encoded as a PEM keypair
+# -----
 PUSH_CERTIFICATE = '../push.pem'
 PUSH_KEY = '../push.key'
 PUSH_CERTIFICATE_PASSWORD = 'sekret'  # for pkcs12 only
@@ -31,18 +32,20 @@ PUSH_CERTIFICATE_PASSWORD = 'sekret'  # for pkcs12 only
 # Normally SSL should be handled by Apache/Nginx/etc.
 
 # [SSL]
-
 # Specify the Enterprise CA here if Apple Devices won't natively trust your CA eg. If you are using a
-# self-signed certificate.
+# self-signed CA or Enterprise CA Certificate.
+# -----
 CA_CERTIFICATE = path.join(dirname, 'ssl', 'ca.crt')
 
-# Specify the development web server SSL certificate
+# Specify the development web server SSL certificate.
+# This only applies if you are running via the CLI or flask run
+# -----
 SSL_CERTIFICATE = path.join(dirname, 'ssl', 'server.crt')
 SSL_RSA_KEY = path.join(dirname, 'ssl', 'server.key')
 
-
 # If not using external storage, the path to the root directory for upload storage.
 # This should not be used in production.
+# -----
 STORAGE_ROOT = path.join(dirname, 'storage')
 
 # -------------------------
@@ -50,9 +53,11 @@ STORAGE_ROOT = path.join(dirname, 'storage')
 # -------------------------
 
 # Directory where certs, revocation lists, serials etc will be kept
+# -----
 SCEPY_CA_ROOT = "/path/to/ca"
 
-# X.509 Name Attributes used to generate the CA Certificate
+# X.509 Name Attributes used to generate the CA Certificate.
+# -----
 SCEPY_CA_X509_CN = 'SCEPY-CA'
 SCEPY_CA_X509_O = 'SCEPy'
 SCEPY_CA_X509_C = 'AU'
@@ -60,11 +65,14 @@ SCEPY_CA_X509_C = 'AU'
 # SubjectAltName extension is always on and will use this DNSName
 SAN_DNSNAME = 'scepy.dev'
 
-# (Optional) SCEP static challenge
+# (Optional) SCEP static challenge. This will have to be part of your SCEP profile
+# -----
 SCEPY_CHALLENGE = 'sekret'
 
 # Raw data will be dumped to this directory for inspection with tools such as OpenSSL (openssl asn1parse)
+# -----
 SCEPY_DUMP_DIR = '/tmp/scepy_dump'
 
-
+# If the GetCACert would return a single cert, force it to use a CMS degenerate case?
+# -----
 SCEPY_FORCE_DEGENERATE_FOR_SINGLE_CERT = False
