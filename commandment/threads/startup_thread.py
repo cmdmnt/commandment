@@ -47,8 +47,8 @@ def generate_ca(app: Flask):
             db.session.add(key_model)
 
             subject = issuer = x509.Name([
-                x509.NameAttribute(NameOID.COMMON_NAME, "COMMANDMENT-CA"),
-                x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Commandment")
+                x509.NameAttribute(NameOID.COMMON_NAME, app.config.get('INTERNAL_CA_CN', 'COMMANDMENT-CA')),
+                x509.NameAttribute(NameOID.ORGANIZATION_NAME, app.config.get('INTERNAL_CA_O', 'Commandment'))
             ])
 
             logger.debug("Generating CA Certificate for COMMANDMENT-CA")
@@ -126,13 +126,14 @@ def run_migrations(app: Flask):
 def startup_callback(app: Flask):
     """Run the StartUp Thread jobs"""
     logger.debug("Started Thread: Startup")
-    generate_ca(app)
     split_pkcs12(app)
     run_migrations(app)
+    generate_ca(app)
 
 
 def start(app: Flask):
     """Start the StartUp thread"""
+    logger.info('Startup thread will run in 5 seconds')
     startup_thread = threading.Timer(startup_delay, startup_callback, [app])
     startup_thread.daemon = True
     startup_thread.start()

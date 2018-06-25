@@ -46,13 +46,13 @@ DEMO_SCEP_CONFIG = {
 
 def upgrade():
     schema_upgrades()
-    if context.get_x_argument(as_dictionary=True).get('data', None):
-        data_upgrades()
+    # if context.get_x_argument(as_dictionary=True).get('data', None):
+    #     data_upgrades()
 
 
 def downgrade():
-    if context.get_x_argument(as_dictionary=True).get('data', None):
-        data_downgrades()
+    # if context.get_x_argument(as_dictionary=True).get('data', None):
+    #     data_downgrades()
     schema_downgrades()
 
 

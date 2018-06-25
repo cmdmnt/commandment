@@ -6,6 +6,10 @@ ALEMBIC = {
     'script_location': '%(here)s/alembic/versions'
 }
 
+ALEMBIC_CONTEXT = {
+
+}
+
 # http://flask-sqlalchemy.pocoo.org/2.1/config/
 SQLALCHEMY_DATABASE_URI = 'sqlite:///commandment/commandment.db'
 # FSADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.
