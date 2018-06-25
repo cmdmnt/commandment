@@ -88,30 +88,36 @@ def split_pkcs12(app: Flask):
 
             if not os.path.exists(pem_key_path) or not os.path.exists(pem_certificate_path):
                 app.logger.info('You provided a PKCS#12 push certificate, we will have to encode it as PEM to continue...')
-                app.logger.info('.key and .crt files will be saved in the same location')
-
+                app.logger.info('.key and .crt files will be saved in the same location: %s, %s', pem_key_path, pem_certificate_path)
                 with open(push_certificate_path, 'rb') as fd:
                     if 'PUSH_CERTIFICATE_PASSWORD' in app.config:
                         key, certificate, intermediates = parse_pkcs12(fd.read(), bytes(app.config['PUSH_CERTIFICATE_PASSWORD'], 'utf8'))
                     else:
                         key, certificate, intermediates = parse_pkcs12(fd.read())
 
-                crypto_key = serialization.load_der_private_key(key.dump(), None, default_backend())
-                with open(pem_key_path, 'wb') as fd:
-                    fd.write(crypto_key.private_bytes(
-                        encoding=serialization.Encoding.PEM,
-                        format=serialization.PrivateFormat.PKCS8,
-                        encryption_algorithm=serialization.NoEncryption()))
+                try:
+                    crypto_key = serialization.load_der_private_key(key.dump(), None, default_backend())
+                    with open(pem_key_path, 'wb') as fd:
+                        fd.write(crypto_key.private_bytes(
+                            encoding=serialization.Encoding.PEM,
+                            format=serialization.PrivateFormat.PKCS8,
+                            encryption_algorithm=serialization.NoEncryption()))
 
-                crypto_cert = x509.load_der_x509_certificate(certificate.dump(), default_backend())
-                with open(pem_certificate_path, 'wb') as fd:
-                    fd.write(crypto_cert.public_bytes(serialization.Encoding.PEM))
+                    crypto_cert = x509.load_der_x509_certificate(certificate.dump(), default_backend())
+                    with open(pem_certificate_path, 'wb') as fd:
+                        fd.write(crypto_cert.public_bytes(serialization.Encoding.PEM))
+                except PermissionError:
+                    app.logger.error('Could not write out .key or .crt file. You will not be able to push APNS messages')
+                    app.logger.error('This means your MDM is BROKEN until you fix permissions')
+            else:
+                app.logger.info('.p12 already split into PEM/KEY components')
 
 
 def startup_callback(app: Flask):
     """Run the StartUp Thread jobs"""
     logger.debug("Started Thread: Startup")
     generate_ca(app)
+    split_pkcs12(app)
 
 
 def start(app: Flask):
