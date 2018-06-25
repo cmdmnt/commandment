@@ -7,6 +7,7 @@ import threading
 import logging
 import datetime
 import os
+from flask_alembic import Alembic
 from oscrypto.keys import parse_pkcs12
 from commandment.models import db, CACertificate, CertificateSigningRequest, RSAPrivateKey
 from cryptography.hazmat.backends import default_backend
@@ -113,11 +114,21 @@ def split_pkcs12(app: Flask):
                 app.logger.info('.p12 already split into PEM/KEY components')
 
 
+def run_migrations(app: Flask):
+    """Run the database migrations."""
+    with app.app_context():
+        app.logger.info('Running Alembic Migrations')
+        alembic = Alembic()
+        alembic.init_app(app, run_mkdir=False)
+        alembic.upgrade('head')
+
+
 def startup_callback(app: Flask):
     """Run the StartUp Thread jobs"""
     logger.debug("Started Thread: Startup")
     generate_ca(app)
     split_pkcs12(app)
+    run_migrations(app)
 
 
 def start(app: Flask):

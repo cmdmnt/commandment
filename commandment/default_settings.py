@@ -1,8 +1,16 @@
+# Flask Dev Server
+PORT = 5443
+
+# Flask-Alembic imports configuration from here instead of the alembic.ini
+ALEMBIC = {
+    'script_location': '%(here)s/alembic/versions'
+}
+
 # http://flask-sqlalchemy.pocoo.org/2.1/config/
 SQLALCHEMY_DATABASE_URI = 'sqlite:///commandment/commandment.db'
 # FSADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-PORT = 5443
+
 
 # PLEASE! Do not take this key and use it for another product/project. It's
 # only for Commandment's use. If you'd like to get your own (free!) key
