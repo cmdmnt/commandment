@@ -17,7 +17,7 @@ class DeviceAttributes(Enum):
     COMPROMISED = 'COMPROMISED'
     DeviceID = 'DeviceID'
 #    SPIROM = 'SPIROM'
-    MLB = 'MLB'
+#    MLB = 'MLB'
 
 
 AllDeviceAttributes = {
@@ -34,6 +34,6 @@ AllDeviceAttributes = {
     DeviceAttributes.COMPROMISED.value,
     DeviceAttributes.DeviceID.value,
 #    DeviceAttributes.SPIROM.value,
-    DeviceAttributes.MLB.value,
+#    DeviceAttributes.MLB.value,
 }
 
