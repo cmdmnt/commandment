@@ -95,14 +95,14 @@ class Certificate(db.Model):
     }
 
     @classmethod
-    def from_crypto_type(cls, certificate: x509.Certificate, type: CertificateType):
-        # type: (type, x509.Certificate, CertificateType) -> Certificate
+    def from_crypto_type(cls, certificate: x509.Certificate, certtype: CertificateType):
+        # type: (certtype, x509.Certificate, CertificateType) -> Certificate
         m = cls()
         m.pem_data = certificate.public_bytes(serialization.Encoding.PEM)
         m.not_after = certificate.not_valid_after
         m.not_before = certificate.not_valid_before
-        m.fingerprint = certificate.fingerprint(hashes.SHA1())
-        m.discriminator = type.value
+        m.fingerprint = certificate.fingerprint(hashes.SHA256())
+        m.discriminator = certtype.value
 
         subject: x509.Name = certificate.subject
         cns = subject.get_attributes_for_oid(NameOID.COMMON_NAME)
@@ -162,7 +162,9 @@ class CertificateSigningRequest(Certificate):
         m.pem_data = csr.public_bytes(serialization.Encoding.PEM)
         m.not_before = datetime.datetime.utcnow()
         m.not_after = datetime.datetime.utcnow() + datetime.timedelta(days=700)
-        m.fingerprint = "NONE"
+        h = hashes.Hash(hashes.SHA256(), default_backend())
+        h.update(m.pem_data)
+        m.fingerprint = h.finalize()
 
         m.discriminator = CertificateType.CSR.value
 
@@ -200,8 +202,8 @@ class CACertificate(Certificate):
     }
 
     @classmethod
-    def from_crypto(cls, certificate: x509.Certificate):
-        m = Certificate.from_crypto_type(certificate, CertificateType.CA)
+    def from_crypto(cls, certificate: x509.Certificate):  # type: () -> CACertificate
+        m = cls.from_crypto_type(certificate, CertificateType.CA)
         return m
 
 
@@ -217,12 +219,14 @@ class DeviceIdentityCertificate(Certificate):
         m.pem_data = certificate.public_bytes(encoding=serialization.Encoding.PEM)
         m.not_after = certificate.not_valid_after
         m.not_before = certificate.not_valid_before
-        m.fingerprint = certificate.fingerprint(hashes.SHA1())
+        m.fingerprint = certificate.fingerprint(hashes.SHA256())
 
         subject: x509.Name = certificate.subject
 
+        cns = subject.get_attributes_for_oid(NameOID.COMMON_NAME)
+        if cns is not None:
+            m.x509_cn = cns[0].value
 
-        m.x509_cn = subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
         # m.x509_c = subject.get_attributes_for_oid(NameOID.COUNTRY_NAME)
         # m.x509_o = subject.get_attributes_for_oid(NameOID.ORGANIZATION_NAME)
         # m.x509_ou = subject.get_attributes_for_oid(NameOID.ORGANIZATIONAL_UNIT_NAME)

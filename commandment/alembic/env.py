@@ -17,6 +17,7 @@ from commandment.models import db
 # import commandment.vpp.models
 import commandment.dep.models
 #import commandment.apps.models
+import commandment.pki.models
 target_metadata = db.metadata
 
 

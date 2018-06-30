@@ -59,9 +59,10 @@ class CertificateAuthority(db.Model):
             datetime.datetime.utcnow() + datetime.timedelta(days=365)
         ).add_extension(
             x509.BasicConstraints(ca=True, path_length=None), True
-        ).sign(ca.private_key, hashes.SHA256(), default_backend())
+        ).sign(private_key, hashes.SHA256(), default_backend())
 
-        ca.certificate = CACertificate.from_crypto(certificate)
+        ca_certificate_model = CACertificate.from_crypto(certificate)
+        ca.certificate = ca_certificate_model
 
         db.session.add(ca)
         db.session.commit()
@@ -128,17 +129,29 @@ class CertificateAuthority(db.Model):
         b = x509.CertificateBuilder()
         self.serial += 1
 
+        private_key_model = self.rsa_private_key
+        private_key = private_key_model.to_crypto()
+        # ca_certificate_model = self.certificate
+        # ca_certificate = ca_certificate_model.to_crypto()
+
+        name = x509.Name([
+            x509.NameAttribute(NameOID.COMMON_NAME, self.common_name),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, 'commandment')
+        ])
+
         cert = b.not_valid_before(
             datetime.datetime.utcnow()
         ).not_valid_after(
-            datetime.datetime.utcnow() + self.validity_period
+            datetime.datetime.utcnow() + datetime.timedelta(days=self.validity_period)
         ).serial_number(
             self.serial
         ).issuer_name(
-            self.name
+            name
         ).subject_name(
             request.subject
-        ).sign(self.private_key, hashes.SHA256(), default_backend())
+        ).public_key(
+            request.public_key()
+        ).sign(private_key, hashes.SHA256(), default_backend())
 
         cert_model = DeviceIdentityCertificate().from_crypto(cert)
         db.session.add(cert_model)

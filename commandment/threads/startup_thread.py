@@ -16,6 +16,7 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 import sqlalchemy
+from commandment.pki.ca import get_ca
 from flask import Flask
 
 startup_thread = None
@@ -27,51 +28,8 @@ logger = logging.getLogger(__name__)
 def generate_ca(app: Flask):
     """Generate internal CA certificate for sandbox setups."""
     with app.app_context():
-        try:
-            ca_certificate = db.session.query(CACertificate).filter_by(x509_cn='COMMANDMENT-CA').one()
-            logger.debug("COMMANDMENT-CA already generated")
-
-        except sqlalchemy.orm.exc.MultipleResultsFound:
-            logger.error("Multiple COMMANDMENT-CA Certificates were found, this should never happen.")
-
-        except sqlalchemy.orm.exc.NoResultFound:
-            logger.debug("Generating Private Key for COMMANDMENT-CA")
-            # Create CA Certificate if not Available to bootstrap internal CA
-            # Issue a Certificate to receive encrypted replies from mdmcert.download
-            key = rsa.generate_private_key(
-                public_exponent=65537,
-                key_size=2048,
-                backend=default_backend()
-            )
-            key_model = RSAPrivateKey.from_crypto(key)
-            db.session.add(key_model)
-
-            subject = issuer = x509.Name([
-                x509.NameAttribute(NameOID.COMMON_NAME, app.config.get('INTERNAL_CA_CN', 'COMMANDMENT-CA')),
-                x509.NameAttribute(NameOID.ORGANIZATION_NAME, app.config.get('INTERNAL_CA_O', 'Commandment'))
-            ])
-
-            logger.debug("Generating CA Certificate for COMMANDMENT-CA")
-            cert = x509.CertificateBuilder().subject_name(
-                subject
-            ).issuer_name(
-                issuer
-            ).public_key(
-                key.public_key()
-            ).serial_number(
-                x509.random_serial_number()
-            ).not_valid_before(
-                datetime.datetime.utcnow()
-            ).not_valid_after(
-                datetime.datetime.utcnow() + datetime.timedelta(days=900)
-            ).add_extension(
-                x509.BasicConstraints(ca=True, path_length=None), critical=True
-            ).sign(key, hashes.SHA256(), default_backend())
-
-            cert_model = CACertificate.from_crypto(cert)
-            db.session.add(cert_model)
-
-            db.session.commit()
+        app.logger.info('Generating Internal CA if necessary...')
+        ca = get_ca()  # Implicit creation of `certificate_authority` row and certificates
 
 
 def split_pkcs12(app: Flask):

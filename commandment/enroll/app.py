@@ -13,7 +13,8 @@ from flask import current_app, render_template, abort, Blueprint, make_response,
 import os
 
 from commandment.enroll import AllDeviceAttributes
-from commandment.enroll.profiles import ca_trust_payload_from_configuration, scep_payload_from_configuration
+from commandment.enroll.profiles import ca_trust_payload_from_configuration, scep_payload_from_configuration, \
+    identity_payload
 from commandment.profiles.models import MDMPayload, Profile, PEMCertificatePayload, DERCertificatePayload, SCEPPayload
 from commandment.profiles import PROFILE_CONTENT_TYPE, plist_schema as profile_schema, PayloadScope
 from commandment.models import db, Organization, SCEPConfig
@@ -21,6 +22,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from commandment.plistutil.nonewriter import dumps as dumps_none
 from commandment.enroll.util import generate_enroll_profile
 from commandment.cms.decorators import verify_cms_signers
+from commandment.pki.ca import get_ca
 
 enroll_app = Blueprint('enroll_app', __name__)
 
@@ -89,7 +91,13 @@ def trust_mobileconfig():
 @enroll_app.route('/profile', methods=['GET', 'POST'])
 def enroll():
     """Generate an enrollment profile."""
-    profile = generate_enroll_profile()
+
+    ca = get_ca()
+    key, csr = ca.create_device_csr('device-identity')
+    device_certificate = ca.sign(csr)
+
+    pkcs12_payload = identity_payload(key, device_certificate, 'sekret')
+    profile = generate_enroll_profile(pkcs12_payload)
 
     schema = profile_schema.ProfileSchema()
     result = schema.dump(profile)
@@ -120,7 +128,9 @@ def ota_enroll():
         'PayloadDisplayName': 'Commandment Profile Service',
         'PayloadDescription': 'Enrolls your device with Commandment',
         'PayloadContent': [{
-            'URL': 'https://{}:{}/enroll/ota_authenticate'.format(current_app.config['PUBLIC_HOSTNAME'], current_app.config['PORT']),
+            'URL': 'https://{}:{}/enroll/ota_authenticate'.format(
+                current_app.config['PUBLIC_HOSTNAME'], current_app.config['PORT']
+            ),
             'DeviceAttributes': list(AllDeviceAttributes),
             'Challenge': 'TODO',
         }],

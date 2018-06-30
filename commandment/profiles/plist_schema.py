@@ -56,7 +56,8 @@ class ConsentTextSchema(Schema):
     en = fields.String(attribute='consent_en')
 
 
-@register_payload_schema('com.apple.security.pem', 'com.apple.security.root', 'com.apple.security.pkcs1')
+@register_payload_schema('com.apple.security.pem', 'com.apple.security.root', 'com.apple.security.pkcs1',
+                         'com.apple.security.pkcs12')
 class CertificatePayloadSchema(Payload):
     PayloadCertificateFileName = fields.Str(attribute='certificate_file_name')
     PayloadContent = fields.Raw(attribute='payload_content')

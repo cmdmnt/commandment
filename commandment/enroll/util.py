@@ -10,11 +10,11 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.x509.name import NameOID
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from commandment.profiles import PayloadScope
-from commandment.profiles.models import Profile, MDMPayload
+from commandment.profiles.models import Profile, MDMPayload, PKCS12CertificatePayload
 from uuid import uuid4
 
 
-def generate_enroll_profile(identity: Optional[x509.Certificate] = None) -> Profile:
+def generate_enroll_profile(pkcs12_payload: Optional[PKCS12CertificatePayload] = None) -> Profile:
     """Generate an enrollment profile.
 
     If the user specified a CA certificate, we assume that it won't be trusted by default, so it is included in the
@@ -24,6 +24,10 @@ def generate_enroll_profile(identity: Optional[x509.Certificate] = None) -> Prof
 
     You need to have an organization configured to generate organization information in the profile, and to establish
     the payload prefix.
+
+    Args:
+        pkcs12_payload (Optional[PKCS12CertificatePayload): A PKCS#12 Payload if we are supplying device identity without
+            using SCEP
 
     """
     try:
@@ -69,12 +73,13 @@ def generate_enroll_profile(identity: Optional[x509.Certificate] = None) -> Prof
         ssl_payload = ssl_trust_payload_from_configuration()
         profile.payloads.append(ssl_payload)
 
-    if identity is None:
+    if pkcs12_payload is None:
         scep_payload = scep_payload_from_configuration()
         profile.payloads.append(scep_payload)
         cert_uuid = scep_payload.uuid
     else:
-        identity_payload = None  # Not yet implemented
+        profile.payloads.append(pkcs12_payload)
+        cert_uuid = pkcs12_payload.uuid
 
     from commandment.mdm import AccessRights
 

@@ -14,18 +14,20 @@ def create_pkcs12(
 
     p12 = OpenSSL.crypto.PKCS12()
 
-    key_bytes = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption(),
-    )
-    p12.set_privatekey(key_bytes)
+    # key_bytes = private_key.private_bytes(
+    #     encoding=serialization.Encoding.PEM,
+    #     format=serialization.PrivateFormat.PKCS8,
+    #     encryption_algorithm=serialization.NoEncryption(),
+    # )
+    pkey = OpenSSL.crypto.PKey.from_cryptography_key(private_key)
+    p12.set_privatekey(pkey)
 
-    certificate_bytes = certificate.public_bytes(
-        encoding=serialization.Encoding.DER
-    )
+    # certificate_bytes = certificate.public_bytes(
+    #     encoding=serialization.Encoding.DER
+    # )
 
-    p12.set_certificate(certificate_bytes)
+    cert = OpenSSL.crypto.X509.from_cryptography(certificate)
+    p12.set_certificate(cert)
 
     return p12.export(passphrase)
 

@@ -1,9 +1,13 @@
 import os.path
+from typing import Optional
 from uuid import uuid4
 from flask import abort, current_app
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from commandment.profiles.models import SCEPPayload, PEMCertificatePayload, PKCS12CertificatePayload
 from commandment.models import db, Organization, SCEPConfig
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography import x509
+from commandment.pki.openssl import create_pkcs12
 
 
 def scep_payload_from_configuration() -> SCEPPayload:
@@ -100,7 +104,9 @@ def ssl_trust_payload_from_configuration() -> PEMCertificatePayload:
         return pem_payload
 
 
-def identity_payload() -> PKCS12CertificatePayload:
+def identity_payload(private_key: rsa.RSAPrivateKeyWithSerialization,
+                     certificate: x509.Certificate,
+                     passphrase: Optional[str] = None) -> PKCS12CertificatePayload:
     """Generate a PKCS#12 certificate payload for device identity."""
     try:
         org = db.session.query(Organization).one()
@@ -109,12 +115,17 @@ def identity_payload() -> PKCS12CertificatePayload:
     except MultipleResultsFound:
         abort(500, 'Multiple organizations, backup your database and start again')
 
+    pkcs12_data = create_pkcs12(private_key, certificate, passphrase)
+
     pkcs12_payload = PKCS12CertificatePayload(
         uuid=uuid4(),
+        certificate_file_name='device_identity.p12',
         identifier=org.payload_prefix + '.identity',
         display_name='Device Identity Certificate',
         description='Required to identify your device to the MDM',
         type='com.apple.security.pkcs12',
+        password=passphrase,
+        payload_content=pkcs12_data,
         version=1
     )
 
