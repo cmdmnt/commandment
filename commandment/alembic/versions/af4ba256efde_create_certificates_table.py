@@ -34,7 +34,7 @@ def upgrade():
                     sa.ForeignKeyConstraint(['rsa_private_key_id'], ['rsa_private_keys.id'], ),
                     sa.PrimaryKeyConstraint('id')
                     )
-    op.create_index(op.f('ix_certificates_fingerprint'), 'certificates', ['fingerprint'], unique=True)
+    op.create_index(op.f('ix_certificates_fingerprint'), 'certificates', ['fingerprint'], unique=False)
 
 
 def downgrade():
