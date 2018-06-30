@@ -28,6 +28,7 @@ class CommandRouter(object):
         self._handlers: CommandHandlers = {}
 
     def handle(self, command: commands.Command, device: Device, response: dict):
+        current_app.logger.debug('Looking for handler using command: {}'.format(command.request_type))
         if command.request_type in self._handlers:
             return self._handlers[command.request_type](command, device, response)
         else:
@@ -67,6 +68,8 @@ class PlistRouter(object):
         self.kv_routes: List[Dict[str, Any]] = []
 
     def view(self):
+        current_app.logger.debug(request.data)
+
         try:
             plist_data = biplist.readPlistFromString(request.data)
         except biplist.NotBinaryPlistException:

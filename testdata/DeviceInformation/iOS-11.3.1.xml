@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CommandUUID</key>
+	<string>3ab89975-490b-4f33-80c7-0982069272ba</string>
+	<key>QueryResponses</key>
+	<dict>
+		<key>AvailableDeviceCapacity</key>
+		<real>15.468269348144531</real>
+		<key>BluetoothMAC</key>
+		<string>00:00:00:00:00:00</string>
+		<key>BuildVersion</key>
+		<string>15E302</string>
+		<key>DataRoamingEnabled</key>
+		<false/>
+		<key>DeviceCapacity</key>
+		<real>26.914535522460938</real>
+		<key>DeviceName</key>
+		<string>iPad</string>
+		<key>IsRoaming</key>
+		<false/>
+		<key>Model</key>
+		<string>MD786X</string>
+		<key>ModelName</key>
+		<string>iPad</string>
+		<key>OSVersion</key>
+		<string>11.3.1</string>
+		<key>ProductName</key>
+		<string>iPad4,1</string>
+		<key>SerialNumber</key>
+		<string>C00000000004</string>
+		<key>SubscriberMCC</key>
+		<string></string>
+		<key>SubscriberMNC</key>
+		<string></string>
+		<key>UDID</key>
+		<string>1c111c111c111c111c111c111c111c111c111c11</string>
+		<key>VoiceRoamingEnabled</key>
+		<false/>
+		<key>WiFiMAC</key>
+		<string>00:00:00:00:00:00</string>
+	</dict>
+	<key>Status</key>
+	<string>Acknowledged</string>
+	<key>UDID</key>
+	<string>1c111c111c111c111c111c111c111c111c111c11</string>
+</dict>
+</plist>

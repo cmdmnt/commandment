@@ -85,9 +85,14 @@ def token_update(plist_data):
 
     if not device.token:  # First contact
         device.is_enrolled = True
-        device_certificate = DeviceIdentityCertificate.from_crypto(g.signers[0])
-        db.session.add(device_certificate)
-        device.certificate = device_certificate
+
+        if hasattr(g, 'signers'):
+            device_certificate = DeviceIdentityCertificate.from_crypto(g.signers[0])
+            db.session.add(device_certificate)
+            device.certificate = device_certificate
+        else:
+            pass  # TODO: if in debug mode this should not throw an exception to deal with cert troubleshooting
+
         device_enrolled.send(device)
         queue_full_inventory(device)
 
@@ -215,7 +220,10 @@ def mdm():
     db.session.commit()
 
     if current_app.config['DEBUG']:
-        print(g.plist_data)
+        try:
+            print(g.plist_data)
+        except UnicodeEncodeError:
+            print('Cannot DEBUG print plist request, unencodable characters')
 
     if status != CommandStatus.Idle:  # this device is responding to an earlier command.
         if 'CommandUUID' not in g.plist_data:

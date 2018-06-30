@@ -126,12 +126,11 @@ def verify_cms_signers_header(f):
 
         try:
             signers, signed_data = _verify_cms_signers(detached_signature, detached=True)
+            g.signers = signers
+            g.signed_data = signed_data
         except InvalidSignature as e:
             current_app.logger.warn("Invalid Signature in Mdm-Signature header")
-            return abort(403)
-
-        g.signers = signers
-        g.signed_data = signed_data
+            # return abort(403)
 
         return f(*args, **kwargs)
 

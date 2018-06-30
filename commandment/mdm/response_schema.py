@@ -111,7 +111,7 @@ class DeviceInformation(Schema):
     @post_load
     def normalize_osu(self, data):
         print(data)
-        for k, v in data.get('os_update_settings', []).items():
+        for k, v in data.get('os_update_settings', {}).items():
             setattr(data, k, v)
         return data
 

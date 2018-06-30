@@ -1,4 +1,5 @@
 from binascii import hexlify
+import uuid
 
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
@@ -78,7 +79,9 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
 
     for profile in profile_list.data['ProfileList']:
         profile.device = device
-        profile.device_udid = device.udid
+
+        # device.udid may have dashes (macOS) or not (iOS)
+        profile.device_udid = uuid.uuid4()
 
         for payload in profile.payload_content:
             payload.device = device
@@ -120,7 +123,10 @@ def ack_certificate_list(request: CertificateList, device: Device, response: dic
     for cert in certificates:
         ic = InstalledCertificate()
         ic.device = device
-        ic.device_udid = device.udid
+        # ic.device_udid = device.udid
+        # iOS doesnt use a parseable format
+        ic.device_udid = uuid.uuid4()
+
         ic.x509_cn = cert.get('CommonName', None)
         ic.is_identity = cert.get('IsIdentity', None)
 

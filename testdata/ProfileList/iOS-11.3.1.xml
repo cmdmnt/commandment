@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CommandUUID</key>
+	<string>2d1d3845-3e06-4687-a357-b343ebb17888</string>
+	<key>ProfileList</key>
+	<array>
+		<dict>
+			<key>HasRemovalPasscode</key>
+			<false/>
+			<key>IsEncrypted</key>
+			<false/>
+			<key>IsManaged</key>
+			<false/>
+			<key>PayloadContent</key>
+			<array>
+				<dict>
+					<key>PayloadDescription</key>
+					<string>Required for your device to trust the server</string>
+					<key>PayloadDisplayName</key>
+					<string>Certificate Authority</string>
+					<key>PayloadIdentifier</key>
+					<string>dev.commandment.ca</string>
+					<key>PayloadType</key>
+					<string>com.apple.security.root</string>
+					<key>PayloadVersion</key>
+					<integer>1</integer>
+				</dict>
+				<dict>
+					<key>PayloadDescription</key>
+					<string>Required for your device to trust the server</string>
+					<key>PayloadDisplayName</key>
+					<string>Web Server Certificate</string>
+					<key>PayloadIdentifier</key>
+					<string>dev.commandment.ssl</string>
+					<key>PayloadType</key>
+					<string>com.apple.security.pkcs1</string>
+					<key>PayloadVersion</key>
+					<integer>1</integer>
+				</dict>
+				<dict>
+					<key>PayloadDescription</key>
+					<string>Required to identify your device to the MDM</string>
+					<key>PayloadDisplayName</key>
+					<string>device-identity</string>
+					<key>PayloadIdentifier</key>
+					<string>dev.commandment.identity</string>
+					<key>PayloadType</key>
+					<string>com.apple.security.pkcs12</string>
+					<key>PayloadVersion</key>
+					<integer>1</integer>
+				</dict>
+				<dict>
+					<key>PayloadDescription</key>
+					<string>Enrolls your device with the MDM server</string>
+					<key>PayloadDisplayName</key>
+					<string>Device Configuration and Management</string>
+					<key>PayloadIdentifier</key>
+					<string>dev.commandment.mdm</string>
+					<key>PayloadType</key>
+					<string>com.apple.mdm</string>
+					<key>PayloadVersion</key>
+					<integer>1</integer>
+				</dict>
+			</array>
+			<key>PayloadDescription</key>
+			<string>Enrolls your device for Mobile Device Management</string>
+			<key>PayloadDisplayName</key>
+			<string>Commandment Enrollment Profile</string>
+			<key>PayloadIdentifier</key>
+			<string>dev.commandment.enroll</string>
+			<key>PayloadOrganization</key>
+			<string>Commandment Inc</string>
+			<key>PayloadRemovalDisallowed</key>
+			<false/>
+			<key>PayloadUUID</key>
+			<string>ac9e8c32-5c15-40b9-b187-70a81c49aa4e</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>Status</key>
+	<string>Acknowledged</string>
+	<key>UDID</key>
+	<string>1c111c111c111c111c111c111c111c111c111c11</string>
+</dict>
+</plist>

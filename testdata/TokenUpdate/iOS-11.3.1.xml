@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>AwaitingConfiguration</key>
+        <false/>
+        <key>MessageType</key>
+        <string>TokenUpdate</string>
+        <key>PushMagic</key>
+        <string>AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA</string>
+        <key>Token</key>
+        <data>
+            Base64=
+        </data>
+        <key>Topic</key>
+        <string>com.apple.mgmt.XServer.1c111c11-1c11-1c11-1c11-1c111c111c11</string>
+        <key>UDID</key>
+        <string>1c111c111c111c111c111c111c111c111c111c11</string>
+        <key>UnlockToken</key>
+        <data>
+            base64==
+        </data>
+    </dict>
+</plist>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CertificateList</key>
+	<array>
+		<dict>
+			<key>CommonName</key>
+			<string>COMMON-NAME</string>
+			<key>Data</key>
+			<data>Base64=
+			</data>
+			<key>IsIdentity</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CommonName</key>
+			<string>device-identity</string>
+			<key>Data</key>
+			<data>Base64=
+			</data>
+			<key>IsIdentity</key>
+			<true/>
+		</dict>
+	</array>
+	<key>CommandUUID</key>
+	<string>506315e2-386a-44eb-9f46-e402afce7e80</string>
+	<key>Status</key>
+	<string>Acknowledged</string>
+	<key>UDID</key>
+	<string>1c111c111c111c111c111c111c111c111c111c11</string>
+</dict>
+</plist>
