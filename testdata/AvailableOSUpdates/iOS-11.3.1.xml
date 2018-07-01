@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AvailableOSUpdates</key>
+	<array>
+		<dict>
+			<key>AllowsInstallLater</key>
+			<false/>
+			<key>Build</key>
+			<string>15F79</string>
+			<key>DownloadSize</key>
+			<integer>225236247</integer>
+			<key>HumanReadableName</key>
+			<string>iOS 11.4</string>
+			<key>InstallSize</key>
+			<integer>537395200</integer>
+			<key>IsCritical</key>
+			<false/>
+			<key>ProductKey</key>
+			<string>iOSUpdate15F79</string>
+			<key>ProductName</key>
+			<string>iOS</string>
+			<key>RestartRequired</key>
+			<true/>
+			<key>Version</key>
+			<string>11.4</string>
+		</dict>
+	</array>
+	<key>CommandUUID</key>
+	<string>8fb53ef6-5fcd-46c2-bf05-ee502406f240</string>
+	<key>Status</key>
+	<string>Acknowledged</string>
+	<key>UDID</key>
+	<string>1c111c111c111c111c111c111c111c111c111c11</string>
+</dict>
+</plist>

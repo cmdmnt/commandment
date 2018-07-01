@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CommandUUID</key>
+	<string>bf88d054-bd86-480d-b406-a1bc74a403c0</string>
+	<key>SecurityInfo</key>
+	<dict>
+		<key>FDE_Enabled</key>
+		<false/>
+		<key>FirewallSettings</key>
+		<dict>
+			<key>Applications</key>
+			<array>
+				<dict>
+					<key>Allowed</key>
+					<true/>
+					<key>Name</key>
+					<string>pia_openvpn</string>
+				</dict>
+				<dict>
+					<key>Allowed</key>
+					<true/>
+					<key>Name</key>
+					<string>pia_openvpn_client</string>
+				</dict>
+			</array>
+			<key>BlockAllIncoming</key>
+			<false/>
+			<key>FirewallEnabled</key>
+			<false/>
+			<key>StealthMode</key>
+			<false/>
+		</dict>
+		<key>FirmwarePasswordStatus</key>
+		<dict/>
+		<key>SystemIntegrityProtectionEnabled</key>
+		<false/>
+	</dict>
+	<key>Status</key>
+	<string>Acknowledged</string>
+	<key>UDID</key>
+	<string>00000000-1111-2222-3333-444455556666</string>
+</dict>
+</plist>

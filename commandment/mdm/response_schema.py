@@ -1,6 +1,9 @@
-from marshmallow import Schema, fields, post_load
+from typing import Optional
+from marshmallow import Schema, fields, post_load, ValidationError
 from marshmallow_enum import EnumField
 from enum import IntFlag
+
+import commandment.inventory.models
 from .. import models
 from commandment.inventory import models as inventory_models
 
@@ -17,7 +20,7 @@ class ErrorChainItem(Schema):
 class CommandResponse(Schema):
     """CommandResponse is the base class for all MDM Response Schemas."""
     Status = fields.String()
-    UDID = fields.UUID()
+    UDID = fields.String()
     CommandUUID = fields.UUID()
     ErrorChain = fields.Nested(ErrorChainItem, many=True)
 
@@ -174,7 +177,13 @@ class SecurityInfoResponse(CommandResponse):
     ManagementStatus = fields.Nested(ManagementStatus)
 
 
-class InstalledApplication(Schema):
+class InstalledApplicationItem(Schema):
+    AdHocCodeSigned = fields.Boolean(attribute='adhoc_codesigned')
+    AppStoreVendable = fields.Boolean(attribute='appstore_vendable')
+    BetaApp = fields.Boolean(attribute='beta_app')
+    DeviceBasedVPP = fields.Boolean(attribute='device_based_vpp')
+    HasUpdateAvailable = fields.Boolean(attribute='has_update_available')
+    Installing = fields.Boolean(attribute='installing')
     Identifier = fields.String(attribute='bundle_identifier')
     Version = fields.String(attribute='version')
     ShortVersion = fields.String(attribute='short_version')
@@ -184,13 +193,13 @@ class InstalledApplication(Schema):
     IsValidated = fields.Boolean(attribute='is_validated')
     ExternalVersionIdentifier = fields.String(attribute='external_version_identifier')  # iOS 11
 
-    @post_load
-    def make_installed_application(self, data: dict) -> inventory_models.InstalledApplication:
+    @post_load(pass_many=False)
+    def make_installed_application(self, data: Optional[dict]) -> Optional[inventory_models.InstalledApplication]:
         return inventory_models.InstalledApplication(**data)
 
 
 class InstalledApplicationListResponse(CommandResponse):
-    InstalledApplicationList = fields.Nested(InstalledApplication, many=True)
+    InstalledApplicationList = fields.Nested(InstalledApplicationItem, many=True)
 
 
 class CertificateListItem(Schema):
@@ -209,20 +218,24 @@ class CertificateListResponse(CommandResponse):
 
 class AvailableOSUpdate(Schema):
     AllowsInstallLater = fields.Boolean(attribute='allows_install_later')
+    Build = fields.String(attribute='build')
+    DownloadSize = fields.Number(attribute='download_size')
     AppIdentifiersToClose = fields.List(fields.String, attribute='app_identifiers_to_close', many=True)
     HumanReadableName = fields.String(attribute='human_readable_name')
     HumanReadableNameLocale = fields.String(attribute='human_readable_name_locale')
+    InstallSize = fields.Number(attribute='install_size')
     IsConfigDataUpdate = fields.Boolean(attribute='is_config_data_update')
     IsCritical = fields.Boolean(attribute='is_critical')
     IsFirmwareUpdate = fields.Boolean(attribute='is_firmware_update')
     MetadataURL = fields.String(attribute='metadata_url')
     ProductKey = fields.String(attribute='product_key')
+    ProductName = fields.String(attribute='product_name')
     RestartRequired = fields.Boolean(attribute='restart_required')
     Version = fields.String(attribute='version')
 
     @post_load
-    def make_available_os_update(self, data: dict) -> models.AvailableOSUpdate:
-        return models.AvailableOSUpdate(**data)
+    def make_available_os_update(self, data: dict) -> commandment.inventory.models.AvailableOSUpdate:
+        return commandment.inventory.models.AvailableOSUpdate(**data)
 
 
 class AvailableOSUpdateListResponse(CommandResponse):

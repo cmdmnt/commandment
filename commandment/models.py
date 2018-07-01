@@ -19,7 +19,6 @@ import datetime
 from enum import Enum, IntEnum
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.hybrid import hybrid_property
-from .mutablelist import MutableList
 from .dbtypes import GUID, JSONEncodedDict
 from .mdm import CommandStatus, Platform, commands
 import base64
@@ -748,26 +747,3 @@ class Tag(db.Model):
     # )
 
 
-class AvailableOSUpdate(db.Model):
-    """This table holds the results of `AvailableOSUpdates` queries."""
-    __tablename__ = 'available_os_updates'
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
-    """(int): Device foreign key ID."""
-    device = db.relationship('Device', backref='available_os_updates')
-    """(db.relationship): Device relationship"""
-
-    allows_install_later = db.Column(db.Boolean)
-    app_identifiers_to_close = db.Column(MutableList.as_mutable(JSONEncodedDict))
-    human_readable_name = db.Column(db.String)
-    human_readable_name_locale = db.Column(db.String)
-    is_config_data_update = db.Column(db.Boolean)
-    """(bool): This update is a config data update eg. for XProtect or Gatekeeper. These arent normally shown"""
-    is_critical = db.Column(db.Boolean)
-    is_firmware_update = db.Column(db.Boolean)
-    metadata_url = db.Column(db.String)
-    product_key = db.Column(db.String)
-    restart_required = db.Column(db.Boolean)
-    version = db.Column(db.String)

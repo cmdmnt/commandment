@@ -5,7 +5,8 @@
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
     CertificateSigningRequestSchema, OrganizationSchema, TagSchema, AvailableOSUpdateSchema
 from commandment.models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
-    SSLCertificate, Organization, Tag, AvailableOSUpdate, Command
+    SSLCertificate, Organization, Tag, Command
+from commandment.inventory.models import AvailableOSUpdate
 from commandment.mdm import commands as mdmcommands, CommandType
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship

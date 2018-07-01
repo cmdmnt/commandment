@@ -13,7 +13,7 @@ from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApp
 from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse, AvailableOSUpdateListResponse, \
     ProfileListResponse, SecurityInfoResponse
 from ..models import db, Device, Command as DBCommand
-from commandment.inventory.models import InstalledCertificate, InstalledProfile
+from commandment.inventory.models import InstalledCertificate, InstalledProfile, InstalledApplication
 
 Queries = DeviceInformation.Queries
 
@@ -166,12 +166,16 @@ def ack_installed_app_list(request: InstalledApplicationList, device: Device, re
     )
 
     schema = InstalledApplicationListResponse()
-    result = schema.load(response)
+    result, errors = schema.load(response)
+    current_app.logger.debug(errors)
 
-    for app in result.data['InstalledApplicationList']:
-        app.device = device
-        app.device_udid = device.udid
-        db.session.add(app)
+    for ia in result.data['InstalledApplicationList']:
+        if isinstance(ia, db.Model):
+            ia.device = device
+            ia.device_udid = device.udid
+            db.session.add(ia)
+        else:
+            current_app.logger.debug('Not a model: %s', ia)
 
     db.session.commit()
 

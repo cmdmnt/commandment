@@ -1,5 +1,7 @@
+from sqlalchemy.ext.mutable import MutableList
+
 from commandment.models import db
-from commandment.dbtypes import GUID
+from commandment.dbtypes import GUID, JSONEncodedDict
 
 
 class InstalledApplication(db.Model):
@@ -44,6 +46,12 @@ class InstalledApplication(db.Model):
     external_version_identifier = db.Column(db.String, index=True)
     """external_version_identifier (str): The application’s external version ID. 
        It can be used for comparison in the iTunes Search API to decide if the application needs to be updated."""
+    adhoc_codesigned = db.Column(db.Boolean)
+    appstore_vendable = db.Column(db.Boolean)
+    beta_app = db.Column(db.Boolean)
+    device_based_vpp = db.Column(db.Boolean)
+    has_update_available = db.Column(db.Boolean)
+    installing = db.Column(db.Boolean)
 
 
 class InstalledCertificate(db.Model):
@@ -138,3 +146,37 @@ class InstalledPayload(db.Model):
     organization = db.Column(db.String)
     payload_type = db.Column(db.String)
     uuid = db.Column(GUID())
+
+
+class AvailableOSUpdate(db.Model):
+    """This table holds the results of `AvailableOSUpdates` commands."""
+    __tablename__ = 'available_os_updates'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
+    """(int): Device foreign key ID."""
+    device = db.relationship('Device', backref='available_os_updates')
+    """(db.relationship): Device relationship"""
+
+    # Common to all platforms
+    allows_install_later = db.Column(db.Boolean)
+    human_readable_name = db.Column(db.String)
+    is_critical = db.Column(db.Boolean)
+    product_key = db.Column(db.String)
+    restart_required = db.Column(db.Boolean)
+    version = db.Column(db.String)
+
+    # macOS Only
+    app_identifiers_to_close = db.Column(MutableList.as_mutable(JSONEncodedDict))
+    human_readable_name_locale = db.Column(db.String)
+    is_config_data_update = db.Column(db.Boolean)
+    """(bool): This update is a config data update eg. for XProtect or Gatekeeper. These arent normally shown"""
+    is_firmware_update = db.Column(db.Boolean)
+    metadata_url = db.Column(db.String)
+
+    # iOS Only
+    product_name = db.Column(db.String)
+    build = db.Column(db.String)
+    download_size = db.Column(db.BigInteger)
+    install_size = db.Column(db.BigInteger)
