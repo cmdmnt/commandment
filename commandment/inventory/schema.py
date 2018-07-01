@@ -21,6 +21,12 @@ class InstalledProfileSchema(Schema):
     payload_uuid = fields.UUID()
     # signer_certificates = fields.Nested()
 
+    device = Relationship(
+        related_view='api_app.device_detail',
+        related_view_kwargs={'device_id': '<device_id>'},
+        type_='devices',
+    )
+
 
 class InstalledCertificateSchema(Schema):
     class Meta:
@@ -37,7 +43,7 @@ class InstalledCertificateSchema(Schema):
 
     device = Relationship(
         related_view='api_app.device_detail',
-        related_view_kwargs={'device_id': '<id>'},
+        related_view_kwargs={'device_id': '<device_id>'},
         type_='devices',
     )
 

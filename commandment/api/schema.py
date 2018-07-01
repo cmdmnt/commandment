@@ -71,35 +71,43 @@ class DeviceSchema(Schema):
     # )
 
     commands = Relationship(
-        related_view='api_app.command_detail',
-        related_view_kwargs={'command_id': '<id>'},
+        related_view='api_app.commands_list',
+        related_view_kwargs={'device_id': '<id>'},
         many=True,
         schema='CommandSchema',
         type_='commands'
     )
 
     installed_certificates = Relationship(
-        related_view='api_app.installed_certificate_detail',
-        related_view_kwargs={'installed_certificate_id': '<id>'},
+        related_view='api_app.installed_certificates_list',
+        related_view_kwargs={'device_id': '<id>'},
         many=True,
         schema='InstalledCertificateSchema',
         type_='installed_certificates'
     )
 
     installed_applications = Relationship(
-        related_view='api_app.installed_application_detail',
-        related_view_kwargs={'installed_application_id': '<id>'},
+        related_view='api_app.installed_applications_list',
+        related_view_kwargs={'device_id': '<id>'},
         many=True,
         schema='InstalledApplicationSchema',
         type_='installed_applications'
     )
 
     tags = Relationship(
-        related_view='api_app.tag_detail',
-        related_view_kwargs={'tag_id': '<id>'},
+        related_view='api_app.tags_list',
+        related_view_kwargs={'device_id': '<id>'},
         many=True,
         schema='TagSchema',
         type_='tags'
+    )
+
+    available_os_updates = Relationship(
+        related_view='api_app.available_os_updates_list',
+        related_view_kwargs={'device_id': '<id>'},
+        many=True,
+        schema='AvailableOSUpdateSchema',
+        type_='available_os_updates'
     )
 
 
@@ -273,3 +281,9 @@ class AvailableOSUpdateSchema(Schema):
     product_key = fields.String()
     restart_required = fields.Boolean()
     version = fields.String()
+
+    device = Relationship(
+        related_view='api_app.device_detail',
+        related_view_kwargs={'device_id': '<device_id>'},
+        type_='devices',
+    )
