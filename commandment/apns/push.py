@@ -100,7 +100,7 @@ def push_to_device(device: Device) -> apns2.Response:
     client = get_apns()
     payload = MDMPayload(device.push_magic)
     notification = apns2.Notification(payload, priority=apns2.PRIORITY_LOW)
-    response = client.push(notification, device.hex_token, device.topic)
+    response: apns2.response.Response = client.push(notification, device.hex_token, device.topic)
 
     # 410 means that the token is no longer valid for this device, so don't attempt to push any more
     if response.status_code == 410:

@@ -1,5 +1,5 @@
 from typing import Set
-from enum import IntFlag, auto, Enum
+from enum import IntFlag, auto, Enum, IntEnum
 
 
 class CommandType(Enum):
@@ -155,3 +155,13 @@ class SettingsItem(Enum):
     MDMOptions = 'MDMOptions'
     PasscodeLockGracePeriod = 'PasscodeLockGracePeriod'
     MaximumResidentUsers = 'MaximumResidentUsers'
+
+
+class WallpaperLocation(IntEnum):
+    """A list of possible values for the Wallpaper `where` setting.
+
+    Determines where the given wallpaper will be used.
+    """
+    LockScreen = 1
+    HomeScreen = 2
+    Both = 3

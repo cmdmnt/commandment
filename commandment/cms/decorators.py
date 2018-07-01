@@ -104,13 +104,14 @@ def verify_cms_signers(f):
     return decorator
 
 
-def verify_cms_signers_header(f):
+def verify_mdm_signature(f):
     """Verify the signature supplied by the client in the request using the ``Mdm-Signature`` header.
 
     If the authenticity of the message has been verified,
     then the signer is attached to the **g** object as **g.signer**.
 
-    In unit tests, this decorator is completely disabled by the presence of testing = True
+    In unit tests, this decorator is completely disabled by the presence of app.testing = True.
+    You can also disable enforcement in dev by setting the flask setting DEBUG to true.
 
     :reqheader Mdm-Signature: BASE64-encoded CMS Detached Signature of the message. (if `SignMessage` was true)
     """
@@ -130,7 +131,8 @@ def verify_cms_signers_header(f):
             g.signed_data = signed_data
         except InvalidSignature as e:
             current_app.logger.warn("Invalid Signature in Mdm-Signature header")
-            # return abort(403)
+            if not current_app.config.get('DEBUG', False):
+                return abort(403)
 
         return f(*args, **kwargs)
 

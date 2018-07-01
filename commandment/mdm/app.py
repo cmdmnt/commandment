@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from commandment.mdm import CommandStatus
 from commandment.mdm.commands import Command
 from commandment.decorators import parse_plist_input_data
-from commandment.cms.decorators import verify_cms_signers_header
+from commandment.cms.decorators import verify_mdm_signature
 from commandment.mdm.util import queue_full_inventory
 from commandment.models import DeviceUser, DeviceIdentityCertificate
 from commandment.mdm.routers import CommandRouter, PlistRouter
@@ -66,7 +66,7 @@ def authenticate(plist_data):
 
 
 @plr.route('MessageType', 'TokenUpdate')
-@verify_cms_signers_header
+@verify_mdm_signature
 def token_update(plist_data):
     current_app.logger.debug('TokenUpdate (UDID %s)', plist_data.get('UDID', None))
     try:
@@ -176,7 +176,7 @@ def check_out(plist_data):
 
 
 @mdm_app.route("/mdm", methods=['PUT'])
-@verify_cms_signers_header
+@verify_mdm_signature
 @parse_plist_input_data
 def mdm():
     """MDM connection endpoint.
