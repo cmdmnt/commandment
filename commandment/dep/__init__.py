@@ -38,6 +38,8 @@ class SetupAssistantStep(Enum):
     HomeButtonSensitivity = 'HomeButtonSensitivity'
     """Skips on-boarding informational screens for user education (“Cover Sheet, Multitasking & Control Center”, 
         for example) in iOS."""
+    iMessageAndFaceTime = 'iMessageAndFaceTime'
+    """Skips the iMessage and FaceTime screen in iOS."""
     OnBoarding = 'OnBoarding'
     """Skips the screen for watch migration in iOS."""
     WatchMigration = 'WatchMigration'
@@ -71,6 +73,7 @@ class DEPProfileRemovalStatus(Enum):
     SUCCESS = "SUCCESS"
     NOT_ACCESSIBLE = "NOT_ACCESSIBLE"
     FAILED = "FAILED"
+
 
 SerialNumber = str
 DEPProfileRemovals = Dict[SerialNumber, DEPProfileRemovalStatus]

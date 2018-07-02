@@ -1,3 +1,4 @@
+from cryptography import x509
 from commandment.dep import SkipSetupSteps
 from commandment.models import db, Certificate, CertificateType
 from commandment.dbtypes import GUID
@@ -7,6 +8,25 @@ class DEPServerTokenCertificate(Certificate):
     """DEP Server Token Certificate"""
     __mapper_args__ = {
         'polymorphic_identity': CertificateType.STOKEN.value
+    }
+
+    @classmethod
+    def from_crypto(cls, certificate: x509.Certificate):
+        m = Certificate.from_crypto_type(certificate, CertificateType.STOKEN)
+        return m
+
+
+class DEPAnchorCertificate(Certificate):
+    """DEP Anchor Certificate"""
+    __mapper_args__ = {
+        'polymorphic_identity': CertificateType.ANCHOR.value
+    }
+
+
+class DEPSupervisionCertificate(Certificate):
+    """DEP Supervision Certificate"""
+    __mapper_args__ = {
+        'polymorphic_identity': CertificateType.SUPERVISION.value
     }
 
 
@@ -25,20 +45,6 @@ class DEPConfiguration(db.Model):
     access_secret = db.String()
 
     url = db.String()
-    
-
-class DEPAnchorCertificate(Certificate):
-    """DEP Anchor Certificate"""
-    __mapper_args__ = {
-        'polymorphic_identity': CertificateType.ANCHOR.value
-    }
-
-
-class DEPSupervisionCertificate(Certificate):
-    """DEP Supervision Certificate"""
-    __mapper_args__ = {
-        'polymorphic_identity': CertificateType.SUPERVISION.value
-    }
 
 
 dep_profile_anchor_certificates = db.Table(
