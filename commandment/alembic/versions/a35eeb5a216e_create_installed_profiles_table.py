@@ -19,7 +19,7 @@ depends_on = None
 def upgrade():
     op.create_table('installed_profiles',
                     sa.Column('id', sa.Integer(), nullable=False),
-                    sa.Column('device_udid', commandment.dbtypes.GUID(), nullable=False),
+                    sa.Column('device_udid', sa.String(40), nullable=False),
                     sa.Column('device_id', sa.Integer(), nullable=True),
                     sa.Column('has_removal_password', sa.Boolean(), nullable=True),
                     sa.Column('is_encrypted', sa.Boolean(), nullable=True),

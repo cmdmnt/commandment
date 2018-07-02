@@ -259,7 +259,7 @@ class Device(db.Model):
     # Common attributes
     id = db.Column(db.Integer, primary_key=True)
     """id (int):"""
-    udid = db.Column(db.String, index=True, nullable=True)
+    udid = db.Column(db.String(40), index=True, nullable=True)
     """udid (str): Unique Device Identifier"""
     last_seen = db.Column(db.DateTime, nullable=True)
     """last_seen (datetime.datetime): When the device last contacted the MDM."""
@@ -620,7 +620,7 @@ class DeviceUser(db.Model):
     """(int): Device foreign key ID."""
     device = db.relationship('Device', backref='device_users')
     """(db.relationship): Device relationship"""
-    device_udid = db.Column(GUID, nullable=False)
+    device_udid = db.Column(db.String(40), nullable=False)
     """(GUID): Device UDID"""
     user_id = db.Column(GUID, nullable=False)
     """user_id (GUID): Local user's GUID, or network user's GUID from Directory Record."""

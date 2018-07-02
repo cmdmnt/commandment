@@ -19,7 +19,7 @@ depends_on = None
 def upgrade():
     op.create_table('installed_applications',
                     sa.Column('id', sa.Integer(), nullable=False),
-                    sa.Column('device_udid', commandment.dbtypes.GUID(), nullable=False),
+                    sa.Column('device_udid', sa.String(40), nullable=False),
                     sa.Column('device_id', sa.Integer(), nullable=True),
                     sa.Column('bundle_identifier', sa.String(), nullable=True),
                     sa.Column('version', sa.String(), nullable=True),

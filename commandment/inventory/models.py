@@ -21,7 +21,7 @@ class InstalledApplication(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     """id (int): Identifier"""
-    device_udid = db.Column(GUID, index=True, nullable=False)
+    device_udid = db.Column(db.String(40), index=True, nullable=False)
     """device_udid (GUID): Unique device identifier"""
     device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
     """device_id (int): Parent relationship ID of the device"""
@@ -70,7 +70,7 @@ class InstalledCertificate(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     """(int): Installed Certificate ID"""
-    device_udid = db.Column(GUID, index=True, nullable=False)
+    device_udid = db.Column(db.String(40), index=True, nullable=False)
     """(GUID): Unique Device Identifier"""
     device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
     """(int): Device foreign key ID."""
@@ -101,7 +101,7 @@ class InstalledProfile(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     """(int): Installed Profile ID"""
-    device_udid = db.Column(GUID, index=True, nullable=False)
+    device_udid = db.Column(db.String(40), index=True, nullable=False)
     """(GUID): Unique Device Identifier"""
     device_id = db.Column(db.ForeignKey('devices.id'), nullable=True)
     """(int): Device foreign key ID."""

@@ -123,9 +123,7 @@ def ack_certificate_list(request: CertificateList, device: Device, response: dic
     for cert in certificates:
         ic = InstalledCertificate()
         ic.device = device
-        # ic.device_udid = device.udid
-        # iOS doesnt use a parseable format
-        ic.device_udid = uuid.uuid4()
+        ic.device_udid = device.udid
 
         ic.x509_cn = cert.get('CommonName', None)
         ic.is_identity = cert.get('IsIdentity', None)
@@ -168,8 +166,9 @@ def ack_installed_app_list(request: InstalledApplicationList, device: Device, re
     schema = InstalledApplicationListResponse()
     result, errors = schema.load(response)
     current_app.logger.debug(errors)
+    current_app.logger.info(result)
 
-    for ia in result.data['InstalledApplicationList']:
+    for ia in result['InstalledApplicationList']:
         if isinstance(ia, db.Model):
             ia.device = device
             ia.device_udid = device.udid
