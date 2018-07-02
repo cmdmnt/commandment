@@ -43,8 +43,8 @@ class InstalledApplication(db.Model):
     """dynamic_size (int): The dynamic data size (for iOS containers)."""
     is_validated = db.Column(db.Boolean)
     """is_validated (bool):"""
-    external_version_identifier = db.Column(db.String, index=True)
-    """external_version_identifier (str): The application’s external version ID. 
+    external_version_identifier = db.Column(db.BigInteger, index=True)
+    """external_version_identifier (int): The application’s external version ID. 
        It can be used for comparison in the iTunes Search API to decide if the application needs to be updated."""
     adhoc_codesigned = db.Column(db.Boolean)
     appstore_vendable = db.Column(db.Boolean)

@@ -191,7 +191,7 @@ class InstalledApplicationItem(Schema):
     BundleSize = fields.Integer(attribute='bundle_size')
     DynamicSize = fields.Integer(attribute='dynamic_size')
     IsValidated = fields.Boolean(attribute='is_validated')
-    ExternalVersionIdentifier = fields.String(attribute='external_version_identifier')  # iOS 11
+    ExternalVersionIdentifier = fields.Integer(attribute='external_version_identifier')  # iOS 11
 
     @post_load(pass_many=False)
     def make_installed_application(self, data: Optional[dict]) -> Optional[inventory_models.InstalledApplication]:

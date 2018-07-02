@@ -28,7 +28,7 @@ def upgrade():
                     sa.Column('bundle_size', sa.BigInteger(), nullable=True),
                     sa.Column('dynamic_size', sa.BigInteger(), nullable=True),
                     sa.Column('is_validated', sa.Boolean(), nullable=True),
-                    sa.Column('external_version_identifier', sa.String(), nullable=True),
+                    sa.Column('external_version_identifier', sa.BigInteger(), nullable=True),
                     sa.ForeignKeyConstraint(['device_id'], ['devices.id'], ),
                     sa.PrimaryKeyConstraint('id')
                     )
