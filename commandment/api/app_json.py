@@ -7,6 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import plistlib
 import string
 from commandment.plistutil.nonewriter import dumps as dumps_none
+from base64 import urlsafe_b64encode
 from commandment.models import db, Certificate, RSAPrivateKey, Organization, Device, Command
 from commandment.profiles.models import Profile
 from commandment.mdm import commands
@@ -137,6 +138,30 @@ def device_inventory(device_id: int):
     au_pl = Command.from_model(au)
     au_pl.device = d
     db.session.add(au_pl)
+
+    db.session.commit()
+
+    return 'OK'
+
+
+@flat_api.route('/v1/devices/<int:device_id>/clear_passcode')
+def clear_passcode(device_id: int):
+    """Enqueues a ClearPasscode command for the device id specified.
+
+    :reqheader Accept: application/vnd.api+json
+    :reqheader Content-Type: ?
+    :resheader Content-Type: application/vnd.api+json
+    :statuscode 201: command created
+    :statuscode 400: not applicable to this device
+    :statuscode 404: device with this identifier was not found
+    :statuscode 500: system error
+    """
+    d = db.session.query(Device).filter(Device.id == device_id).one()
+
+    cp = commands.ClearPasscode(UnlockToken=urlsafe_b64encode(d.unlock_token).decode('utf-8'))
+    cp_pl = Command.from_model(cp)
+    cp_pl.device = d
+    db.session.add(cp_pl)
 
     db.session.commit()
 

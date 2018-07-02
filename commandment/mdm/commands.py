@@ -346,6 +346,25 @@ class DeviceLock(Command):
         }
 
 
+class ClearPasscode(Command):
+    request_type = 'ClearPasscode'
+    require_access = {AccessRights.DeviceLockPasscodeRemoval}
+    require_platforms = {Platform.iOS: '*'}
+
+    def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
+        super(ClearPasscode, self).__init__(uuid)
+        self._attrs = kwargs
+
+    def to_dict(self) -> dict:
+        return {
+            'CommandUUID': str(self._uuid),
+            'Command': {
+                'RequestType': type(self).request_type,
+                'UnlockToken': urlsafe_b64decode(self._attrs['UnlockToken'])
+            }
+        }
+
+
 class ProfileList(Command):
     request_type = 'ProfileList'
     require_access = {AccessRights.ProfileInspection}
@@ -493,10 +512,6 @@ class ShutdownDevice(Command):
     require_platforms = {Platform.iOS: '>=10.3'}
 
 
-class ClearPasscode(Command):
-    request_type = 'ClearPasscode'
-    require_access = {AccessRights.DeviceLockPasscodeRemoval}
-    require_platforms = {Platform.iOS: '*'}
 
 
 class EraseDevice(Command):
