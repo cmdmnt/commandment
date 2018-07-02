@@ -47,7 +47,7 @@ def push(device_id: int):
         return abort(jsonify(error=True, message="The push certificate has expired"))
 
     current_app.logger.info("[APNS2 Response] Status: %d, Reason: %s, APNS ID: %s, Timestamp",
-                            response.status_code, response.reason, response.apns_id.encode('utf8'))
+                            response.status_code, response.reason, response.apns_id.decode('utf-8'))
     device.last_push_at = datetime.utcnow()
     if response.status_code == 200:
         device.last_apns_id = response.apns_id

@@ -81,7 +81,7 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
         profile.device = device
 
         # device.udid may have dashes (macOS) or not (iOS)
-        profile.device_udid = uuid.uuid4()
+        profile.device_udid = device.udid
 
         for payload in profile.payload_content:
             payload.device = device
