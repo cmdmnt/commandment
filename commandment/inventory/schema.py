@@ -71,3 +71,29 @@ class InstalledApplicationSchema(Schema):
         type_='devices',
     )
 
+
+class AvailableOSUpdateSchema(Schema):
+    class Meta:
+        type_ = 'available_os_updates'
+        self_view = 'api_app.available_os_update_detail'
+        self_view_kwargs = {'available_os_update_id': '<id>'}
+        self_view_many = 'api_app.available_os_updates_list'
+
+    id = fields.Int(dump_only=True)
+    allows_install_later = fields.Boolean()
+    #  app_identifiers_to_close = fields.List(fields.String())
+    human_readable_name = fields.Str()
+    human_readable_name_locale = fields.Str()
+    is_config_data_update = fields.Boolean()
+    is_critical = fields.Boolean()
+    is_firmware_update = fields.Boolean()
+    metadata_url = fields.URL()
+    product_key = fields.String()
+    restart_required = fields.Boolean()
+    version = fields.String()
+
+    device = Relationship(
+        related_view='api_app.device_detail',
+        related_view_kwargs={'device_id': '<device_id>'},
+        type_='devices',
+    )

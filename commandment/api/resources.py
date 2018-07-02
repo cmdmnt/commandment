@@ -5,10 +5,10 @@ from flask_rest_jsonapi.exceptions import ObjectNotFound
 from sqlalchemy.orm.exc import NoResultFound
 
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
-    CertificateSigningRequestSchema, OrganizationSchema, TagSchema, AvailableOSUpdateSchema
+    CertificateSigningRequestSchema, OrganizationSchema, TagSchema
 from commandment.models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
     SSLCertificate, Organization, Tag, Command
-from commandment.inventory.models import AvailableOSUpdate
+
 from commandment.mdm import commands as mdmcommands, CommandType
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
@@ -162,33 +162,5 @@ class TagRelationship(ResourceRelationship):
     }
 
 
-class AvailableOSUpdateList(ResourceList):
-    def query(self, view_kwargs):
-        query_ = self.session.query(AvailableOSUpdate)
-        if view_kwargs.get('device_id') is not None:
-            try:
-                self.session.query(Device).filter_by(id=view_kwargs['device_id']).one()
-            except NoResultFound:
-                raise ObjectNotFound({'parameter': 'device_id'}, "Device: {} not found".format(view_kwargs['device_id']))
-            else:
-                query_ = query_.join(Device).filter(Device.id == view_kwargs['device_id'])
-        return query_
-
-    schema = AvailableOSUpdateSchema
-    view_kwargs = True
-    data_layer = {
-        'session': db.session,
-        'model': AvailableOSUpdate,
-        'methods': {'query': query}
-    }
-
-
-class AvailableOSUpdateDetail(ResourceDetail):
-    schema = AvailableOSUpdateSchema
-    data_layer = {
-        'session': db.session,
-        'model': AvailableOSUpdate,
-        'url_field': 'available_os_update_id'
-    }
 
 

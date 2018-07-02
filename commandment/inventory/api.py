@@ -4,7 +4,8 @@ import io
 
 from commandment.inventory.models import db, InstalledCertificate
 from commandment.inventory.resources import InstalledApplicationsList, InstalledApplicationDetail, \
-    InstalledCertificatesList, InstalledCertificateDetail, InstalledProfilesList, InstalledProfileDetail
+    InstalledCertificatesList, InstalledCertificateDetail, InstalledProfilesList, InstalledProfileDetail, \
+    AvailableOSUpdateList, AvailableOSUpdateDetail
 from commandment.api.app_jsonapi import api
 
 api_app = Blueprint('inventory_api_app', __name__)
@@ -25,6 +26,14 @@ api.route(InstalledCertificateDetail, 'installed_certificate_detail',
 api.route(InstalledProfilesList, 'installed_profiles_list', '/v1/installed_profiles',
           '/v1/devices/<int:device_id>/installed_profiles')
 api.route(InstalledProfileDetail, 'installed_profile_detail', '/v1/installed_profiles/<int:installed_profile_id>')
+
+
+
+# Available OS Updates
+api.route(AvailableOSUpdateList, 'available_os_updates_list',
+          '/v1/available_os_updates', '/v1/devices/<int:device_id>/available_os_updates')
+api.route(AvailableOSUpdateDetail, 'available_os_update_detail',
+          '/v1/available_os_updates/<int:available_os_update_id>')
 
 
 @api_app.route('/v1/installed_certificates/<int:installed_certificate_id>/download')

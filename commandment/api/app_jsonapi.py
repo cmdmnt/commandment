@@ -7,8 +7,8 @@ from .resources import CertificatesList, CertificateDetail, CertificateSigningRe
     CertificateSigningRequestDetail, PushCertificateList, SSLCertificatesList, \
     CACertificateList, PrivateKeyDetail, DeviceList, DeviceDetail, \
     DeviceRelationship, \
-    TagsList, TagDetail, TagRelationship, AvailableOSUpdateList, \
-    AvailableOSUpdateDetail
+    TagsList, TagDetail, TagRelationship
+
 
 # PayloadsList, PayloadDetail,
 
@@ -44,9 +44,3 @@ api.route(TagsList, 'tags_list', '/v1/tags', '/v1/devices/<int:device_id>/tags')
 api.route(TagDetail, 'tag_detail', '/v1/tags/<int:tag_id>')
 api.route(TagRelationship, 'tag_devices', '/v1/tags/<int:tag_id>/relationships/devices')
 
-
-# Available OS Updates
-api.route(AvailableOSUpdateList, 'available_os_updates_list',
-          '/v1/available_os_updates', '/v1/devices/<int:device_id>/available_os_updates')
-api.route(AvailableOSUpdateDetail, 'available_os_update_detail',
-          '/v1/available_os_updates/<int:available_os_update_id>')

@@ -110,10 +110,10 @@ def device_inventory(device_id: int):
     db.session.add(db_command)
 
     # InstalledApplicationList - Pretty taxing so don't run often
-    # ial = commands.InstalledApplicationList()
-    # db_command_ial = Command.from_model(ial)
-    # db_command_ial.device = d
-    # db.session.add(db_command_ial)
+    ial = commands.InstalledApplicationList()
+    db_command_ial = Command.from_model(ial)
+    db_command_ial.device = d
+    db.session.add(db_command_ial)
 
     # CertificateList
     cl = commands.CertificateList()
