@@ -1,5 +1,6 @@
 import sqlalchemy.orm.exc
 import datetime
+import dateutil.parser
 
 from flask import Blueprint, jsonify, g, current_app, abort, request
 from flask_rest_jsonapi import Api
@@ -110,7 +111,15 @@ def stoken_upload():
 
     smime_data = f.read()
     payload = smime.decrypt(smime_data, pk_crypto)
-    stoken = json.loads(payload)
+
+    # dirty, dirty hacks for now. python email does not strip boundaries
+    payload = payload.replace('-----BEGIN MESSAGE-----', '').replace('-----END MESSAGE-----', '')
+
+    try:
+        stoken = json.loads(payload)
+    except json.decoder.JSONDecodeError:
+        current_app.logger.debug(payload)
+        return abort(400, "Failed to decode token, could not parse JSON data inside S/MIME data")
 
     try:
         dep_account = db.session.query(DEPAccount).one()
@@ -122,7 +131,7 @@ def stoken_upload():
     dep_account.consumer_secret = stoken['consumer_secret']
     dep_account.access_token = stoken['access_token']
     dep_account.access_secret = stoken['access_secret']
-    dep_account.access_token_expiry = stoken['access_token_expiry']
+    dep_account.access_token_expiry = dateutil.parser.parse(stoken['access_token_expiry'])
     dep_account.token_updated_at = datetime.datetime.utcnow()
 
     db.session.commit()

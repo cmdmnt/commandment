@@ -91,11 +91,20 @@ class MDMServiceURL(Schema):
     # limit
 
 
-class DEPAccountDetailsSchema(Schema):
+class DEPAccountSchema(Schema):
     """DEP Account Details"""
+    consumer_key = fields.String()
+    consumer_secret = fields.String(load_only=True)
+    access_token = fields.String()
+    access_secret = fields.String(load_only=True)
+    access_token_expiry = fields.DateTime(dump_only=True)
+    token_updated_at = fields.DateTime(dump_only=True)
+    auth_session_token = fields.String(load_only=True)
+
     server_name = fields.String()
     server_uuid = fields.UUID()
-    admin_id = fields.Email()
+    admin_id = fields.String()
+    facilitator_id = fields.String()
     org_name = fields.String()
     org_email = fields.Email()
     org_phone = fields.String()
@@ -105,3 +114,8 @@ class DEPAccountDetailsSchema(Schema):
     org_version = fields.String()
     org_id = fields.String()
     org_id_hash = fields.String()
+
+    cursor = fields.String()
+    more_to_follow = fields.Boolean()
+    fetched_until = fields.DateTime()
+
