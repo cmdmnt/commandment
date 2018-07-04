@@ -22,7 +22,7 @@ from flask import Flask
 startup_thread = None
 startup_delay = 5.0
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('startup thread')
 
 
 def generate_ca(app: Flask):

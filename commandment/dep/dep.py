@@ -210,7 +210,7 @@ class DEP:
               Union[DEPSyncCursor, DEPFetchCursor]: A cursor that is iterable
         """
         if cursor is not None:
-            return DEPSyncCursor(self, cursor)
+            return DEPSyncCursor(self, cursor=cursor)
         else:
             return DEPFetchCursor(self)
 
@@ -353,11 +353,12 @@ class DEPSyncCursor(DEPBaseCursor, Iterator):
     """DEPSyncCursor wraps the DEP device sync cursor as an iterable object."""
     def __init__(self, owner: DEP, cursor: str, results: Optional[dict] = None) -> None:
         super(DEPSyncCursor, self).__init__(owner, results)
+        self.results = {'cursor': cursor, 'more_to_follow': True}
 
     def __next__(self):
         if not self.more_to_follow:
             raise StopIteration()
 
-        self.results = self.owner.fetch_devices(cursor=self.cursor)
+        self.results = self.owner.sync_devices(cursor=self.cursor)
 
         return self.results

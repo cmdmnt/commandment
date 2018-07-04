@@ -27,6 +27,7 @@ from .apps.api import api_app as applications_api
 from .auth.app import auth_app
 
 from .threads import startup_thread
+from .dep import threads as dep_threads
 
 
 def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
@@ -79,6 +80,7 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
 
     # Threads
     startup_thread.start(app)
+    dep_threads.start(app)
 
     # SPA Entry Point (when not behind nginx or apache)
     @app.route('/')
