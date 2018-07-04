@@ -5,7 +5,7 @@ from .models import CertificateAuthority
 from commandment.models import db, Certificate, CertificateType, Device
 
 
-def get_ca():
+def get_ca() -> CertificateAuthority:
     if 'ca' not in g:
         try:
             ca = db.session.query(CertificateAuthority).filter_by(common_name='COMMANDMENT-CA').one()

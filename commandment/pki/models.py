@@ -153,8 +153,8 @@ class CertificateAuthority(db.Model):
             request.public_key()
         ).sign(private_key, hashes.SHA256(), default_backend())
 
-        cert_model = DeviceIdentityCertificate().from_crypto(cert)
-        db.session.add(cert_model)
-        db.session.commit()
+        # cert_model = DeviceIdentityCertificate().from_crypto(cert)
+        # db.session.add(cert_model)
+        # db.session.commit()
 
         return cert

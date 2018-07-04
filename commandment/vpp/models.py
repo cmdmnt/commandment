@@ -38,6 +38,10 @@ class VPPAccount(db.Model):
     users_since_modified_token = db.Column(db.String)
     users_batch_token = db.Column(db.String)
 
+    # ASM/ABM Location Information
+    location_id = db.Column(db.Integer)
+    location_name = db.Column(db.String)
+
 
 class VPPUser(db.Model):
     __tablename__ = 'vpp_users'

@@ -13,19 +13,8 @@ def create_pkcs12(
     """Create a PKCS#12 container from the given RSA key and Certificate."""
 
     p12 = OpenSSL.crypto.PKCS12()
-
-    # key_bytes = private_key.private_bytes(
-    #     encoding=serialization.Encoding.PEM,
-    #     format=serialization.PrivateFormat.PKCS8,
-    #     encryption_algorithm=serialization.NoEncryption(),
-    # )
     pkey = OpenSSL.crypto.PKey.from_cryptography_key(private_key)
     p12.set_privatekey(pkey)
-
-    # certificate_bytes = certificate.public_bytes(
-    #     encoding=serialization.Encoding.DER
-    # )
-
     cert = OpenSSL.crypto.X509.from_cryptography(certificate)
     p12.set_certificate(cert)
 

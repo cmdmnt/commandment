@@ -1,14 +1,25 @@
+import sqlalchemy.orm.exc
+
 from cryptography.hazmat.backends import default_backend
-from flask import Blueprint, jsonify, g, current_app
+from flask import Blueprint, jsonify, g, current_app, abort
 from flask_rest_jsonapi import Api
-from cryptography import x509
 from cryptography.hazmat.primitives.serialization import Encoding
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography import x509
+from cryptography.x509 import NameOID
 from base64 import urlsafe_b64encode
+
+from commandment.models import db, RSAPrivateKey, CertificateSigningRequest
+from commandment.dep.models import DEPServerTokenCertificate
 from commandment.enroll.util import generate_enroll_profile
 from commandment.cms.decorators import verify_cms_signers
 from commandment.plistutil.nonewriter import dumps as dumps_none
 from commandment.profiles.plist_schema import ProfileSchema
 from commandment.profiles import PROFILE_CONTENT_TYPE
+from commandment.pki.ca import get_ca
+
 from .resources import DEPProfileList, DEPProfileDetail, DEPProfileRelationship
 import plistlib
 
@@ -23,6 +34,47 @@ api.route(DEPProfileRelationship, 'dep_profile_devices', '/v1/dep/profiles/<int:
 @dep_app.route('/v1/dep/account', methods=["GET"])
 def account():
     pass
+
+
+@dep_app.route('/dep/certificate/download', methods=["GET"])
+def certificate_download():
+    """Create a new key/certificate to upload to the DEP/ASM/ABM portal."""
+
+    try:
+        certificate_model = db.session.query(DEPServerTokenCertificate).filter_by(x509_cn='COMMANDMENT-DEP').one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        ca = get_ca()
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=2048,
+            backend=default_backend(),
+        )
+        private_key_model = RSAPrivateKey.from_crypto(private_key)
+        db.session.add(private_key_model)
+
+        name = x509.Name([
+            x509.NameAttribute(NameOID.COMMON_NAME, 'COMMANDMENT-DEP'),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, 'commandment')
+        ])
+
+        builder = x509.CertificateSigningRequestBuilder()
+        builder = builder.subject_name(name)
+        builder = builder.add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
+
+        request = builder.sign(
+            private_key,
+            hashes.SHA256(),
+            default_backend()
+        )
+        request_model = CertificateSigningRequest.from_crypto(request)
+        db.session.add(request_model)
+
+        certificate = ca.sign(request)
+        certificate_model = DEPServerTokenCertificate.from_crypto(certificate)
+        db.session.add(certificate_model)
+
+    return certificate_model.pem_data, 200, {'Content-Type': 'application/x-x509-ca-cert',
+                                             'Content-Disposition': 'attachment; filename="commandment-dep.cer"'}
 
 
 @dep_app.route('/dep/enroll', methods=["POST"])
