@@ -90,3 +90,9 @@ class DEPOrgVersion(Enum):
     v1 = 'v1'  # Apple Deployment Programmes
     v2 = 'v2'  # Apple School Manager
 
+
+class DEPOperationType(Enum):
+    """This enum describes the types of operations returned in a DEP Sync Devices result."""
+    Added = 'added'
+    Modified = 'modified'
+    Deleted = 'deleted'

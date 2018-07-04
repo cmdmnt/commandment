@@ -21,7 +21,7 @@ from flask import Flask
 from commandment.models import db, Device
 from commandment.dep.models import DEPAccount
 from commandment.dep.dep import DEP
-from commandment.dep import DEPOrgType, DEPOrgVersion
+from commandment.dep import DEPOrgType, DEPOrgVersion, DEPOperationType
 import sqlalchemy.orm.exc
 
 dep_thread = None
@@ -96,6 +96,47 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
 
     for device_page in dep.devices(dep_account.cursor):
         print(device_page)
+        for device in device_page['devices']:
+            if 'op_type' in device:  # its a sync, not a fetch
+                optype = DEPOperationType(device['op_type'])
+
+                if optype == DEPOperationType.Added:
+                    app.logger.debug('DEP Added: %s', device['serial_number'])
+                elif optype == DEPOperationType.Modified:
+                    app.logger.debug('DEP Modified: %s', device['serial_number'])
+                elif optype == DEPOperationType.Deleted:
+                    app.logger.debug('DEP Deleted: %s', device['serial_number'])
+                else:
+                    app.logger.error('DEP op_type not recognised (%s), skipping', device['op_type'])
+                    continue
+            else:
+                pass
+
+            try:
+                d: Device = db.session.query(Device).filter(Device.serial_number == device['serial_number']).one()
+                d.model = device['model']
+                d.os = device['os']
+                d.device_family = device['device_family']
+                d.color = device['color']
+                d.profile_uuid = device['profile_uuid']
+                # d.profile_assign_time = device['profile_assign_time']
+                d.profile_status = device['profile_status']
+                d.device_assigned_by = device['device_assigned_by']
+                # d.device_assigned_date = device['device_assigned_date']
+                d.is_dep = True
+
+            except sqlalchemy.orm.exc.NoResultFound:
+                del device['description']  # dont have this column right now
+                if 'op_type' in device:
+                    del device['op_type']
+                    del device['op_date']
+                    del device['profile_assign_time']
+                    del device['device_assigned_date']
+
+                d = Device(**device)
+                d.is_dep = True
+                db.session.add(d)
+
         dep_account.cursor = device_page.get('cursor', None)
         dep_account.more_to_follow = device_page.get('more_to_follow', None)
         dep_account.fetched_until = dateutil.parser.parse(device_page['fetched_until'])
