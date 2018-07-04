@@ -50,8 +50,7 @@ def decrypt(smime: bytes, key: rsa.RSAPrivateKey, serial: Optional[int] = None):
     )
 
     # Now we have the plain key, we can decrypt the encrypted data
-    encrypted_contentinfo = content['content']['encrypted_content_info']
-    print('encrypted content type: {}'.format(encrypted_contentinfo['content_type'].native))
+    encrypted_contentinfo = content['encrypted_content_info']
 
     algorithm: EncryptionAlgorithm = encrypted_contentinfo['content_encryption_algorithm']  #: EncryptionAlgorithm
     encrypted_content_bytes = encrypted_contentinfo['encrypted_content'].native
@@ -60,17 +59,15 @@ def decrypt(smime: bytes, key: rsa.RSAPrivateKey, serial: Optional[int] = None):
 
     if algorithm.encryption_cipher == 'aes':
         symkey = AES(plain_key)
-        print('cipher AES')
     elif algorithm.encryption_cipher == 'tripledes':
         symkey = TripleDES(plain_key)
-        print('cipher 3DES')
     else:
         print('Dont understand encryption cipher: ', algorithm.encryption_cipher)
-
-    print('key length: ', algorithm.key_length)
-    print('enc mode: ', algorithm.encryption_mode)
 
     cipher = Cipher(symkey, modes.CBC(algorithm.encryption_iv), backend=default_backend())
     decryptor = cipher.decryptor()
 
-    return decryptor.update(encrypted_content_bytes) + decryptor.finalize()
+    decrypted_data = decryptor.update(encrypted_content_bytes) + decryptor.finalize()
+    decrypted_msg: Message = email.message_from_bytes(decrypted_data)
+
+    return decrypted_msg.get_payload()

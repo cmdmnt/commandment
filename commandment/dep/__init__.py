@@ -77,3 +77,16 @@ class DEPProfileRemovalStatus(Enum):
 
 SerialNumber = str
 DEPProfileRemovals = Dict[SerialNumber, DEPProfileRemovalStatus]
+
+
+class DEPOrgType(Enum):
+    """This enum specifies allowable values for the ``org_type`` field of the dep /account endpoint."""
+    Education = 'edu'
+    Organization = 'org'
+
+
+class DEPOrgVersion(Enum):
+    """This enum specifies allowable values for the ``org_version`` field of the dep /account endpoint."""
+    v1 = 'v1'  # Apple Deployment Programmes
+    v2 = 'v2'  # Apple School Manager
+

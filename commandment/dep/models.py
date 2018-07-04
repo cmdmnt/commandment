@@ -1,5 +1,5 @@
 from cryptography import x509
-from commandment.dep import SkipSetupSteps
+from commandment.dep import SkipSetupSteps, DEPOrgType, DEPOrgVersion
 from commandment.models import db, Certificate, CertificateType
 from commandment.dbtypes import GUID
 
@@ -30,21 +30,52 @@ class DEPSupervisionCertificate(Certificate):
     }
 
 
-class DEPConfiguration(db.Model):
-    __tablename__ = 'dep_configurations'
+class DEPAccount(db.Model):
+    """DEP Account
+
+    This table stores information about a single DEP account (aka one 'MDM Server' in the portal),
+     and its current token.
+    """
+    __tablename__ = 'dep_accounts'
 
     id = db.Column(db.Integer, primary_key=True)
+
     # certificate for PKI of server token
     certificate_id = db.Column(db.ForeignKey('certificates.id'))
     certificate = db.relationship('DEPServerTokenCertificate', backref='dep_configurations')
 
     # OAuth creds
-    consumer_key = db.String()
-    consumer_secret = db.String()
-    access_token = db.String()
-    access_secret = db.String()
+    consumer_key = db.Column(db.String())
+    consumer_secret = db.Column(db.String())
+    access_token = db.Column(db.String())
+    access_secret = db.Column(db.String())
+    access_token_expiry = db.Column(db.DateTime())
 
-    url = db.String()
+    token_updated_at = db.Column(db.DateTime())
+
+    # Current session token
+    auth_session_token = db.Column(db.String())
+
+    # Information synchronised from the /account endpoint
+    server_name = db.Column(db.String())
+    server_uuid = db.Column(GUID)
+    admin_id = db.Column(db.String())
+    facilitator_id = db.Column(db.String())
+    org_name = db.Column(db.String())
+    org_email = db.Column(db.String())
+    org_phone = db.Column(db.String())
+    org_address = db.Column(db.String())
+    org_type = db.Column(db.Enum(DEPOrgType))
+    org_version = db.Column(db.Enum(DEPOrgVersion))
+    org_id = db.Column(db.String())
+    org_id_hash = db.Column(db.String())
+
+    url = db.Column(db.String())
+
+    # Hold the state of the in-progress fetch/sync in case the DEP thread dies
+    cursor = db.Column(db.String())
+    more_to_follow = db.Column(db.Boolean())
+    fetched_until = db.Column(db.DateTime())
 
 
 dep_profile_anchor_certificates = db.Table(

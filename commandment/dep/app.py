@@ -1,7 +1,7 @@
 import sqlalchemy.orm.exc
+import datetime
 
-from cryptography.hazmat.backends import default_backend
-from flask import Blueprint, jsonify, g, current_app, abort
+from flask import Blueprint, jsonify, g, current_app, abort, request
 from flask_rest_jsonapi import Api
 from cryptography.hazmat.primitives.serialization import Encoding
 from cryptography.hazmat.backends import default_backend
@@ -12,16 +12,18 @@ from cryptography.x509 import NameOID
 from base64 import urlsafe_b64encode
 
 from commandment.models import db, RSAPrivateKey, CertificateSigningRequest
-from commandment.dep.models import DEPServerTokenCertificate
+from commandment.dep.models import DEPServerTokenCertificate, DEPAccount
 from commandment.enroll.util import generate_enroll_profile
 from commandment.cms.decorators import verify_cms_signers
 from commandment.plistutil.nonewriter import dumps as dumps_none
 from commandment.profiles.plist_schema import ProfileSchema
 from commandment.profiles import PROFILE_CONTENT_TYPE
 from commandment.pki.ca import get_ca
+from commandment.dep import smime
 
 from .resources import DEPProfileList, DEPProfileDetail, DEPProfileRelationship
 import plistlib
+import json
 
 dep_app = Blueprint('dep_app', __name__)
 api = Api(blueprint=dep_app)
@@ -85,8 +87,45 @@ def certificate_download():
 @dep_app.route('/dep/stoken/upload', methods=["POST"])
 def stoken_upload():
     """Upload the smime.p7m supplied from the DEP, ASM or ABM portals and decrypt it with a matching private key from
-    our database, storing the result in the ``dep_configurations`` table."""
-    pass
+    our database, storing the result in the ``dep_configurations`` table.
+
+    :reqheader Accept: application/vnd.api+json
+    :reqheader Content-Type: multipart/form-data
+    :statuscode 200: token decrypted ok
+    :statuscode 400: token was unable to be decrypted.
+    :statuscode 500: system error
+    """
+    if 'file' not in request.files:
+        abort(400, 'no file uploaded in request data')
+
+    f = request.files['file']
+
+    try:
+        certificate_model = db.session.query(DEPServerTokenCertificate).filter_by(x509_cn='COMMANDMENT-DEP').one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        return abort(400, "No DEP certificate generated, impossible to decrypt the DEP token")
+
+    pk: RSAPrivateKey = certificate_model.rsa_private_key
+    pk_crypto = pk.to_crypto()
+
+    smime_data = f.read()
+    payload = smime.decrypt(smime_data, pk_crypto)
+    stoken = json.loads(payload)
+
+    try:
+        dep_account = db.session.query(DEPAccount).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        dep_account = DEPAccount()
+
+    dep_account.certificate = certificate_model
+    dep_account.consumer_key = stoken['consumer_key']
+    dep_account.consumer_secret = stoken['consumer_secret']
+    dep_account.access_token = stoken['access_token']
+    dep_account.access_secret = stoken['access_secret']
+    dep_account.access_token_expiry = stoken['access_token_expiry']
+    dep_account.token_updated_at = datetime.datetime.utcnow()
+
+    db.session.commit()
 
 
 @dep_app.route('/dep/enroll', methods=["POST"])
