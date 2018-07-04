@@ -80,6 +80,8 @@ class Certificate(db.Model):
     """not_before (datetime): Certificate validity - not before"""
     not_after = db.Column(db.DateTime(timezone=False), nullable=False)
     """not_after (datetime): Certificate validity - not after"""
+    serial = db.Column(db.BigInteger)
+    """serial (int): Serial Number"""
     # SHA-256 hash of DER-encoded certificate
     fingerprint = db.Column(db.String(64), nullable=False, index=True, unique=True)  # Unique
     """fingerprint (str): SHA-256 hash of certificate"""
@@ -102,6 +104,7 @@ class Certificate(db.Model):
         m.not_before = certificate.not_valid_before
         m.fingerprint = certificate.fingerprint(hashes.SHA256())
         m.discriminator = certtype.value
+        m.serial = certificate.serial_number
 
         subject: x509.Name = certificate.subject
         cns = subject.get_attributes_for_oid(NameOID.COMMON_NAME)

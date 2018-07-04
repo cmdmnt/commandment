@@ -38,7 +38,10 @@ def account():
 
 @dep_app.route('/dep/certificate/download', methods=["GET"])
 def certificate_download():
-    """Create a new key/certificate to upload to the DEP/ASM/ABM portal."""
+    """Create a new key/certificate to upload to the DEP/ASM/ABM portal.
+
+    The private key generated for this certificate will be the key recipient of the DEP S/MIME payload.
+    """
 
     try:
         certificate_model = db.session.query(DEPServerTokenCertificate).filter_by(x509_cn='COMMANDMENT-DEP').one()
@@ -73,8 +76,17 @@ def certificate_download():
         certificate_model = DEPServerTokenCertificate.from_crypto(certificate)
         db.session.add(certificate_model)
 
+        db.session.commit()
+
     return certificate_model.pem_data, 200, {'Content-Type': 'application/x-x509-ca-cert',
                                              'Content-Disposition': 'attachment; filename="commandment-dep.cer"'}
+
+
+@dep_app.route('/dep/stoken/upload', methods=["POST"])
+def stoken_upload():
+    """Upload the smime.p7m supplied from the DEP, ASM or ABM portals and decrypt it with a matching private key from
+    our database, storing the result in the ``dep_configurations`` table."""
+    pass
 
 
 @dep_app.route('/dep/enroll', methods=["POST"])
