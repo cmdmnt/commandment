@@ -23,6 +23,8 @@ sys.path.append(os.path.abspath('../venv/lib/python3.6/site-packages/'))
 #sys.path.append(os.path.abspath('../'))
 import guzzle_sphinx_theme
 
+os.environ["COMMANDMENT_SETTINGS"] = "../settings.cfg"  # Necessary to prevent autohttp.flask from raising exception
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.

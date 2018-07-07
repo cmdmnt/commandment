@@ -13,7 +13,7 @@ Contents:
 
    user/index
    developer/index
-
+   api/index
    internal/index
 
 

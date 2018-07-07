@@ -1,7 +1,10 @@
-Dependencies
+Installation
 ============
 
-These are the dependencies for developing with commandment. You won't need all of these to actually run it.
+Dependencies
+------------
+
+These are the dependencies for developing with commandment. You won't need all of these to host it.
 
 Quick Start (Using Homebrew)
 ----------------------------

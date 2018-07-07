@@ -20,8 +20,17 @@ If you are working on live changes and want to see the results immediately, you 
 
 This starts a `webpack-dev-server <https://github.com/webpack/webpack-dev-server>`_, listening on ``localhost:4000`` by default.
 
+When flask is run with the setting ``DEBUG=True``, the javascript code is loaded from this webpack dev server on localhost.
 
 Documentation
 -------------
 
 The documentation is built using `Sphinx <http://www.sphinx-doc.org/>`_.
+
+Sphinx, it's extensions, and the documentation theme are included in the **pipenv** developer dependencies.
+
+If you have installed the dependencies using **pipenv** you may run::
+
+	$ pipenv run make html
+
+from the :file:`doc/` directory in order to build the documentation.
