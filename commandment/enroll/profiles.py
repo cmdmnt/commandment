@@ -1,8 +1,10 @@
 import os.path
 from typing import Optional
 from uuid import uuid4
-from flask import abort, current_app
+from flask import abort, current_app, url_for
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+
+from commandment.profiles.certificates import KeyUsage
 from commandment.profiles.models import SCEPPayload, PEMCertificatePayload, PKCS12CertificatePayload
 from commandment.models import db, Organization, SCEPConfig
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -16,36 +18,51 @@ def scep_payload_from_configuration() -> SCEPPayload:
     Returns:
         SCEPPayload: The created payload based upon current configuration.
     """
-    try:
-        org = db.session.query(Organization).one()
-    except NoResultFound:
-        abort(500, 'No organization is configured, cannot generate enrollment profile.')
-    except MultipleResultsFound:
-        abort(500, 'Multiple organizations, backup your database and start again')
+    # try:
+    #     org = db.session.query(Organization).one()
+    # except NoResultFound:
+    #     abort(500, 'No organization is configured, cannot generate enrollment profile.')
+    # except MultipleResultsFound:
+    #     abort(500, 'Multiple organizations, backup your database and start again')
 
     try:
         scep_config = db.session.query(SCEPConfig).one()
-    except NoResultFound:
-        abort(500, 'No SCEP Configuration found, cannot generate enrollment profile.')
-    except MultipleResultsFound:
-        abort(500, 'Multiple SCEP configs, this should never happen.')
 
-    scep_payload = SCEPPayload(
-        uuid=uuid4(),
-        identifier=org.payload_prefix + '.mdm-scep',
-        url=scep_config.url,
-        name='',
-        subject=[['CN', '%HardwareUUID%']],
-        challenge=scep_config.challenge,
-        key_size=scep_config.key_size,
-        key_type='RSA',
-        key_usage=scep_config.key_usage,
-        display_name='Commandment SCEP Enroll Payload',
-        description='Requests a certificate to identify your device to commandment',
-        retries=scep_config.retries,
-        retry_delay=scep_config.retry_delay,
-        version=1
-    )
+        scep_payload = SCEPPayload(
+            uuid=uuid4(),
+            identifier='com.github.cmdmnt.commandment.scep',
+            url=scep_config.url,
+            name='',
+            subject=[['CN', '%HardwareUUID%']],
+            challenge=scep_config.challenge,
+            key_size=scep_config.key_size,
+            key_type='RSA',
+            key_usage=scep_config.key_usage,
+            display_name='Commandment SCEP Enroll Payload',
+            description='Requests a certificate to identify your device to commandment',
+            retries=scep_config.retries,
+            retry_delay=scep_config.retry_delay,
+            version=1
+        )
+    except NoResultFound:
+        scep_payload = SCEPPayload(
+            uuid=uuid4(),
+            identifier='com.github.cmdmnt.commandment.scep',
+            url=url_for('scep_app.scep'),
+            name='',
+            subject=[['CN', '%HardwareUUID%']],
+            challenge=current_app.config.get('SCEPY_CHALLENGE', None),
+            key_size=2048,
+            key_type='RSA',
+            key_usage=KeyUsage.All,
+            display_name='Commandment SCEP Enroll Payload',
+            description='Requests a certificate to identify your device to commandment',
+            retries=3,
+            retry_delay=10,
+            version=1
+        )
+    except MultipleResultsFound:
+        return abort(500, 'Multiple SCEP configs, this should never happen.')
 
     return scep_payload
 
