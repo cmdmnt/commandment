@@ -89,7 +89,11 @@ def dep_sync_organization(app: Flask, dep: DEP):
 
 
 def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
-    """Perform fetch or sync of devices."""
+    """Perform fetch or sync of devices.
+
+    TODO: If default DEP Profile is nominated, it is queued for assignment here. But may want to check `profile_status`
+        to see whether only devices with the `removed` status are considered unassigned.
+    """
     app.logger.info('Fetching using previous cursor: %s', dep_account.cursor)
 
     # TODO: if fetched_until is quite recent, there's no reason to fetch again

@@ -6,8 +6,9 @@ from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
+from commandment.apns.mdmcert import submit_mdmcert_request
 
-ENCRYPTION_CERT = os.path.join(os.path.dirname(__file__), '..', 'commandment.crt')
+ENCRYPTION_CERT = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'mdmcert-encryption.cer')
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +45,7 @@ def encryption_cert() -> x509.Certificate:
     return cert
 
 
-class TestMDMCert:
-    pass
-    # def test_submit_mdmcert_request(self, csr: x509.CertificateSigningRequest, encryption_cert: x509.Certificate):
-    #     res = submit_mdmcert_request("admin@localhost", csr, encryption_cert)
-    #     assert res['result'] == 'success'
+# class TestMDMCert:
+#     def test_submit_mdmcert_request(self, csr: x509.CertificateSigningRequest, encryption_cert: x509.Certificate):
+#         res = submit_mdmcert_request("admin@localhost", csr, encryption_cert)
+#         assert res['result'] == 'success'

@@ -28,6 +28,14 @@ def submit_mdmcert_request(email: str, csr: x509.CertificateSigningRequest,
                            encrypt_with: x509.Certificate, api_key: str = MDMCERT_API_KEY) -> Dict:
     """Submit a CSR signing request to mdmcert.download.
 
+    Example Response:
+
+        {'reason': 'Invalid email address. Have you registered yet at https://mdmcert.download/?', 'result': 'failure'}
+
+        on success:
+
+        {'result': 'success'}
+
     Args:
           email (str): Your registered mdmcert.download e-mail address.
           api_key (str): Your registered mdmcert.download API key.
