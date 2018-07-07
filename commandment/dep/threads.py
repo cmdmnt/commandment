@@ -119,10 +119,10 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
                 d.device_family = device['device_family']
                 d.color = device['color']
                 d.profile_uuid = device['profile_uuid']
-                # d.profile_assign_time = device['profile_assign_time']
+                d.profile_assign_time = dateutil.parser.parse(device['profile_assign_time'])
                 d.profile_status = device['profile_status']
                 d.device_assigned_by = device['device_assigned_by']
-                # d.device_assigned_date = device['device_assigned_date']
+                d.device_assigned_date = dateutil.parser.parse(device['device_assigned_date'])
                 d.is_dep = True
 
             except sqlalchemy.orm.exc.NoResultFound:

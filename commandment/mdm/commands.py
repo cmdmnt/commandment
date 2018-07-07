@@ -585,66 +585,63 @@ class Settings(Command):
     require_platforms = {Platform.macOS: '>=10.9', Platform.iOS: '>=5.0'}
     require_access = {AccessRights.ChangeSettings}
 
-    def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
+    def __init__(self,
+                 uuid: Optional[UUID]=None,
+                 device_name: Optional[str]=None,
+                 hostname: Optional[str]=None,
+                 voice_roaming: Optional[bool]=None,
+                 personal_hotspot: Optional[bool]=None,
+                 wallpaper=None,
+                 data_roaming: Optional[bool]=None,
+                 bluetooth: Optional[bool]=None,
+                 **kwargs) -> None:
         super(Settings, self).__init__(uuid)
-        self._settings: Dict[str, Any] = {}
+        if 'settings' in kwargs:
+            self._attrs['settings'] = kwargs['settings']
+        else:
+            self._attrs['settings']: List[Dict[str, Any]] = []
 
-    @property
-    def device_name(self) -> Optional[str]:
-        return self._settings.get('DeviceName', None)
+        if device_name is not None:
+            self._attrs['settings'].append({
+                'Item': 'DeviceName',
+                'DeviceName': device_name,
+            })
 
-    @device_name.setter
-    def device_name(self, value: str) -> None:
-        self._settings['DeviceName'] = value
+        if hostname is not None:
+            self._attrs['settings'].append({
+                'Item': 'HostName',
+                'HostName': hostname,
+            })
 
-    @property
-    def hostname(self) -> Optional[str]:
-        return self._settings.get('HostName', None)
+        if voice_roaming is not None:
+            self._attrs['settings'].append({
+                'Item': 'VoiceRoaming',
+                'Enabled': voice_roaming,
+            })
 
-    @hostname.setter
-    def hostname(self, value: str) -> None:
-        self._settings['HostName'] = value
+        if personal_hotspot is not None:
+            self._attrs['settings'].append({
+                'Item': 'PersonalHotspot',
+                'Enabled': personal_hotspot,
+            })
 
-    @property
-    def voice_roaming(self) -> Optional[bool]:
-        return self._settings.get('VoiceRoaming', None)
+        if data_roaming is not None:
+            self._attrs['settings'].append({
+                'Item': 'DataRoaming',
+                'Enabled': data_roaming,
+            })
 
-    @voice_roaming.setter
-    def voice_roaming(self, value: bool) -> None:
-        self._settings['VoiceRoaming'] = value
-
-    @property
-    def personal_hotspot(self) -> Optional[bool]:
-        return self._settings.get('PersonalHotspot', None)
-
-    @personal_hotspot.setter
-    def personal_hotspot(self, value: bool):
-        self._settings['PersonalHotspot'] = value
-
-    @property
-    def wallpaper(self) -> Optional[Tuple[bytes, int]]:
-        return self._settings.get('Wallpaper', None)
-
-    @wallpaper.setter
-    def wallpaper(self, value: Tuple[bytes, int]):
-        self._settings['Wallpaper'] = {
-            'Image': value[0],
-            'Where': value[1]
-        }
-
-    @property
-    def data_roaming(self) -> Optional[bool]:
-        return self._settings.get('DataRoaming', None)
-
-    @data_roaming.setter
-    def data_roaming(self, value: bool) -> None:
-        self._settings['DataRoaming'] = value
+        if bluetooth is not None:
+            self._attrs['settings'].append({
+                'Item': 'Bluetooth',
+                'Enabled': bluetooth,
+            })
 
     def to_dict(self) -> dict:
         return {
             'CommandUUID': str(self._uuid),
             'Command': {
                 'RequestType': type(self).request_type,
-                'Settings': self._settings,
+                'Settings': self._attrs['settings'],
             }
         }
