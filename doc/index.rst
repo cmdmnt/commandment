@@ -11,7 +11,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   user/index
+   about-mdm
+   installing/macos
+   user/configuration
    developer/index
    api/index
    internal/index

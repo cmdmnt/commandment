@@ -1,7 +1,7 @@
 Configuration
 =============
 
-An example configuration `is provided <https://github.com/mosen/commandment/blob/master/settings.cfg.example>`_ with
+An example configuration `is provided <https://github.com/cmdmnt/commandment/blob/master/settings.cfg.example>`_ with
 the source code.
 
 It is recommended to copy this file to your own ``settings.cfg``, and make modifications to that file.
