@@ -45,10 +45,10 @@ export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, 
                             </Card.Description>
                         </Card.Content>
                     </Card>
-                    <Card as={Link} to='/settings/scep'>
+                    <Card as={Link} to='/settings/deviceauth'>
                         <Card.Content>
                             <Card.Header>
-                                <Icon name='protect' /> SCEP
+                                <Icon name='protect' /> Device Authentication
                             </Card.Header>
                             <Card.Description>
                                 Configure how communication is secured between your devices and this MDM

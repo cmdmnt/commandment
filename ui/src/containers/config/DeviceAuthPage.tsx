@@ -8,6 +8,7 @@ import {bindActionCreators} from "redux";
 import {SCEPState} from "../../reducers/configuration/scep";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
+import {DeviceAuthForm} from "../../forms/config/DeviceAuthForm";
 
 
 interface ReduxStateProps {
@@ -23,7 +24,7 @@ interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentPr
 
 }
 
-export class UnconnectedSCEPPage extends React.Component<OwnProps, undefined> {
+export class UnconnectedDeviceAuthPage extends React.Component<OwnProps, undefined> {
 
     componentWillMount?() {
         this.props.read();
@@ -54,26 +55,18 @@ export class UnconnectedSCEPPage extends React.Component<OwnProps, undefined> {
 
         return (
             <Container className='SCEPPage'>
-                <Header as='h1'>SCEP Configuration</Header>
-                        <p>
-                            The SCEP Configuration controls the parameters of certificates issued to devices via your
-                            SCEP service.
-                        </p>
-                        <SCEPPayloadForm
-                            submitted={scep.submitted}
-                            loading={scep.loading}
-                            initialValues={scep.data}
-                            onSubmit={this.handleSubmit}
-                            onClickTest={this.handleTest}
-                        />
-
+                <Header as='h1'>Device Authentication</Header>
+                <p>
+                    Use this section to configure how your device will securely contact the MDM server.
+                </p>
+                <DeviceAuthForm />
             </Container>
         )
     }
 
 }
 
-export const SCEPPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
+export const DeviceAuthPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
     (state: RootState): ReduxStateProps => ({
         scep: state.configuration.scep
     }),
@@ -81,4 +74,4 @@ export const SCEPPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
         post: actions.post,
         read: actions.read
     }, dispatch)
-)(UnconnectedSCEPPage);
+)(UnconnectedDeviceAuthPage);

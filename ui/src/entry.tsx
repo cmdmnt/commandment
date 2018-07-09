@@ -9,7 +9,7 @@ import {RootState} from "./reducers";
 import {configureStore} from "./store/configureStore";
 
 import {AppLayout} from "./containers/AppLayout";
-import {SCEPPage} from "./containers/config/SCEPPage";
+import {DeviceAuthPage} from "./containers/config/DeviceAuthPage";
 
 import {CertificatesPage} from "./containers/CertificatesPage";
 import {OrganizationPage} from "./containers/config/OrganizationPage";
@@ -45,7 +45,7 @@ render(
                 <Route path="/profiles/:id" component={ProfilePage} />
 
                 <Route exact path="/settings" component={SettingsPage} />
-                <Route path="/settings/scep" component={SCEPPage} />
+                <Route path="/settings/deviceauth" component={DeviceAuthPage} />
                 <Route path="/settings/organization" component={OrganizationPage} />
                 <Route path="/settings/vpp" component={VPPPage} />
             </AppLayout>
