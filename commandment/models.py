@@ -45,6 +45,13 @@ class CertificateType(Enum):
     SUPERVISION = 'dep.supervision'
 
 
+class DeviceIdentitySources(Enum):
+    """A list of sources for Device Identity."""
+    InternalPKCS12 = 'internal_pkcs12'
+    InternalSCEP = 'internal_scep'
+    ExternalSCEP = 'external_scep'
+
+
 class Certificate(db.Model):
     """Polymorphic base for certificate types.
     
@@ -703,8 +710,8 @@ class SCEPConfig(db.Model):
     __tablename__ = 'scep_config'
 
     id = db.Column(db.Integer, primary_key=True)
-    # enabled = db.Column(db.Boolean, default=False)
-    """enabled (boolean): If enabled, use SCEP, otherwise use internal CA to generate identities for clients."""
+    source_type = db.Column(db.Enum(DeviceIdentitySources), default=DeviceIdentitySources.InternalSCEP)
+    """source_type (DeviceIdentitySources): Specify the source used for device certificates."""
     url = db.Column(db.String, nullable=False)
 
     challenge_enabled = db.Column(db.Boolean, default=False)

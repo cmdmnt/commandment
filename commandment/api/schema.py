@@ -203,6 +203,7 @@ class OrganizationFlatSchema(FlatSchema):
 
     
 class SCEPConfigFlatSchema(FlatSchema):
+    source_type = fields.String()
     url = fields.Url(relative=False, schemes=['http', 'https'], required=True)
     challenge_enabled = fields.Boolean()
     ca_fingerprint = fields.String()
