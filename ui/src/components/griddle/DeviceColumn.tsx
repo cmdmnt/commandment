@@ -18,8 +18,7 @@ export class DeviceColumn extends React.Component<DeviceColumnProps, undefined> 
         return (
             <div>
                 <Link to={`/devices/${rowData.id}`}>
-                <ModelIcon value={rowData.attributes.model_name} title={rowData.attributes.product_name} />
-                <span>{ rowData.attributes.device_name }</span>
+                    <span>{ rowData.attributes.device_name }</span>
                 </Link>
             </div>
         )

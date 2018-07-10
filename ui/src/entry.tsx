@@ -24,6 +24,7 @@ import "../sass/app.scss";
 import {ApplicationPage} from "./containers/ApplicationPage";
 import {ApplicationsPage} from "./containers/ApplicationsPage";
 import {DashboardPage} from "./containers/DashboardPage";
+import {APNSPage} from "./containers/config/APNSPage";
 
 const initialState: RootState = {};
 
@@ -45,6 +46,7 @@ render(
                 <Route path="/profiles/:id" component={ProfilePage} />
 
                 <Route exact path="/settings" component={SettingsPage} />
+                <Route path="/settings/apns" component={APNSPage} />
                 <Route path="/settings/deviceauth" component={DeviceAuthPage} />
                 <Route path="/settings/organization" component={OrganizationPage} />
                 <Route path="/settings/vpp" component={VPPPage} />

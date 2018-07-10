@@ -7,5 +7,5 @@ interface IGriddleValue {
 }
 
 export const SinceNowUTC = (value: IGriddleValue): JSX.Element => {
-    return <span>{distanceInWordsToNow(value.value)}</span>;
+    return <span>{distanceInWordsToNow(value.value, {addSuffix: true})}</span>;
 };

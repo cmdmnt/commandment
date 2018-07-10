@@ -8,6 +8,7 @@ import Icon from "semantic-ui-react/src/elements/Icon";
 
 import {Link} from 'react-router-dom';
 import {RouteComponentProps} from "react-router";
+import Header from "semantic-ui-react/src/elements/Header/Header";
 
 interface RouteProps {
 
@@ -34,6 +35,7 @@ export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, 
 
         return (
             <Container>
+                <Header>General</Header>
                 <Card.Group>
                     <Card as={Link} to='/settings/organization'>
                         <Card.Content>
@@ -55,6 +57,16 @@ export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, 
                             </Card.Description>
                         </Card.Content>
                     </Card>
+                    <Card as={Link} to='/settings/apns'>
+                        <Card.Content>
+                            <Card.Header>
+                                <Icon name='cloud upload' /> Push Certificate
+                            </Card.Header>
+                            <Card.Description>
+                                Configure a Push Certificate
+                            </Card.Description>
+                        </Card.Content>
+                    </Card>
                     <Card as={Link} to='/settings/authentication'>
                         <Card.Content>
                             <Card.Header>
@@ -65,6 +77,10 @@ export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, 
                             </Card.Description>
                         </Card.Content>
                     </Card>
+
+                </Card.Group>
+                <Header>Enrollment</Header>
+                <Card.Group>
                     <Card as={Link} to='/settings/vpp'>
                         <Card.Content>
                             <Card.Header>

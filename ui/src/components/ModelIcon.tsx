@@ -10,16 +10,17 @@ interface ModelIconProps {
 export const ModelIcon = (props: ModelIconProps): JSX.Element => {
     const icons: { [propName: string]: SemanticICONS; } = {
        "iMac": "desktop",
-       "iPhone": "mobile",
+       "iPhone": "mobile alternate",
+       "iPad": "tablet alternate",
        "MacBook Air": "laptop",
        "MacBook Pro": "laptop",
-       "Mac Pro": "trash",
+       "Mac Pro": "computer",
     };
 
-    let className: SemanticICONS = "question";
+    let className: SemanticICONS = "apple";
     if (icons.hasOwnProperty(props.value)) {
         className = icons[props.value];
     }
 
-    return <Icon name={className} bordered circular title={props.title || props.value} />;
+    return <Icon name={className} size="large" title={props.title || props.value} />;
 };

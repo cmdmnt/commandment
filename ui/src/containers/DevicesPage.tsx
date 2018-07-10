@@ -20,6 +20,9 @@ import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
 import {DevicesState} from "../reducers/devices";
 import {RootState} from "../reducers/index";
+import {ModelIcon} from "../components/ModelIcon";
+import {OSVerColumn} from "../components/griddle/OSVerColumn";
+import {DeviceTypeFilter, DeviceTypeFilterValues} from "../components/griddle/DeviceTypeFilter";
 
 const rowDataSelector = (state: Map<string, any>, { griddleKey }: { griddleKey?: string }) => {
     return state
@@ -75,6 +78,10 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
         this.props.fetchDevicesIfRequired();
     }
 
+    handleDeviceTypeFilterChange = (selected: DeviceTypeFilterValues) => {
+        // console.log(selected);
+    };
+
     render(): JSX.Element {
         const {
             griddleState,
@@ -86,7 +93,7 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
                 <Grid>
                     <Grid.Column>
                         <Header as="h1">Devices</Header>
-
+                        {/*<DeviceTypeFilter onClick={this.handleDeviceTypeFilterChange} selected={'all'} />*/}
                         <Griddle
                             data={devices.items}
                             pageProperties={{
@@ -106,9 +113,14 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
                             }}
                         >
                             <RowDefinition onClick={() => console.log("fmeh")}>
-                                <ColumnDefinition title="Device" id="id,attributes.model_name,attributes.device_name"
+                                <ColumnDefinition title="Type" id="attributes.model_name"
+                                                  customComponent={ModelIcon} width={60} style={{'text-align': 'center'}} />
+                                <ColumnDefinition title="Name" id="id,attributes.model_name,attributes.device_name"
                                                   customComponent={enhancedWithRowData(DeviceColumn)}/>
-
+                                <ColumnDefinition title="Serial" id="attributes.serial_number"
+                                                   width={140} />
+                                <ColumnDefinition title="OS" id="attributes.model_name,attributes.os_version"
+                                                  customComponent={enhancedWithRowData(OSVerColumn)}/>
                                 <ColumnDefinition title="Last Seen" id="attributes.last_seen"
                                                   customComponent={SinceNowUTC}/>
                             </RowDefinition>
