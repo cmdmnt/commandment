@@ -1,11 +1,10 @@
 from datetime import datetime
-import requests
-import json
 from flask import Blueprint, request, abort, send_file, current_app, jsonify
 from sqlalchemy.orm.exc import NoResultFound
 
 from base64 import b64encode
-from commandment.models import db, Device, Certificate, RSAPrivateKey, CertificateSigningRequest, CACertificate
+from commandment.models import db, Device, Certificate, RSAPrivateKey, CertificateSigningRequest, CACertificate, \
+    EncryptionCertificate
 from commandment.pki import serialization, ssl
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
@@ -181,44 +180,40 @@ def upload_push_certificate_private():
 #     return None
 
 
-@api_push_app.route('/v1/push/certificate/generate_csr', methods=['GET'])
-def generate_push_certificate_csr():
-    """Generate a signed push certificate for upload to the Apple Push Certificate Portal.
+@api_push_app.route('/v1/mdmcert/request/<string:email>', methods=['GET'])
+def mdmcert_request_csr(email: str):
+    """Ask the mdmcert.download service to generate a new Certificate Signing Request for the given e-mail address.
 
-    :resheader Content-Type: application/x-pem-file
-    :resheader Content-Type: application/x-x509-user-cert
-    :resheader Content-Type: application/x-x509-ca-cert
+    If an encryption certificate does not exist on the system, one will be generated to process the resulting encrypted
+    and signed CSR.
     """
-    private_key, csr = ssl.generate_signing_request('commandment')
-    private_key_model = RSAPrivateKey.from_crypto(private_key)
-    db.session.add(private_key_model)
-    csr_model = CertificateSigningRequest.from_crypto(csr)
-    db.session.add(csr_model)
+    try:
+        apns_csr_model = db.session.query(CertificateSigningRequest).\
+            filter(CertificateSigningRequest.x509_cn == "commandment-apns").one()
+    except NoResultFound:
+        private_key, csr = ssl.generate_signing_request('commandment-apns')
+        private_key_model = RSAPrivateKey.from_crypto(private_key)
+        db.session.add(private_key_model)
+        apns_csr_model = CertificateSigningRequest.from_crypto(csr)
+        db.session.add(apns_csr_model)
+        db.session.commit()
 
-    encrypt_with = db.session.query(CACertificate).filter_by(x509_cn='COMMANDMENT-CA').one()
+    try:
+        encrypt_cert_model = db.session.query(EncryptionCertificate).\
+            filter(EncryptionCertificate.x509_cn == 'MDMCERT-DECRYPT').one()
+    except NoResultFound:
+        encrypt_key, encrypt_with_cert = ssl.generate_self_signed_certificate('MDMCERT-DECRYPT')
+        encrypt_key_model = RSAPrivateKey.from_crypto(encrypt_key)
+        db.session.add(encrypt_key_model)
+        encrypt_cert_model = EncryptionCertificate.from_crypto(encrypt_with_cert)
+        db.session.add(encrypt_cert_model)
+        db.session.commit()
 
-    base64_csr = b64encode(csr_model.pem_data)
-    base64_recipient = b64encode(encrypt_with.pem_data)
+    mdmcert_result = submit_mdmcert_request(
+        email=email,
+        csr_pem=apns_csr_model.pem_data,
+        encrypt_with_pem=encrypt_cert_model.pem_data,
+    )
 
-    mdmcert_dict = {
-        'csr': base64_csr.decode('utf8'),
-        'email': 'cmdmnt@users.noreply.github.com',
-        'key': MDMCERT_API_KEY,
-        'encrypt': base64_recipient.decode('utf8'),
-    }
+    return jsonify(mdmcert_result)
 
-    # return jsonify(mdmcert_dict)
-    # res = requests.post(MDMCERT_REQ_URL, json=mdmcert_dict, headers={'User-Agent': 'coMmanDMent/0.1'})
-    # return res.json()
-
-    # req = urllib.request.Request(
-    #     MDMCERT_REQ_URL,
-    #     json.dumps(mdmcert_dict).encode('utf8'),
-    #     {'Content-Type': 'application/json',
-    #      'User-Agent': 'coMmanDMent/0.1'})
-    #
-    # f = urllib.request.urlopen(req)
-    # resp = f.read()
-    # f.close()
-    #
-    # return json.loads(resp)

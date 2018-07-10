@@ -24,8 +24,8 @@ MDMCERT_API_KEY = 'b742461ff981756ca3f924f02db5a12e1f6639a9109db047ead1814aafc05
 CERT_REQ_TYPE = 'mdmcert.pushcert'
 
 
-def submit_mdmcert_request(email: str, csr: x509.CertificateSigningRequest,
-                           encrypt_with: x509.Certificate, api_key: str = MDMCERT_API_KEY) -> Dict:
+def submit_mdmcert_request(email: str, csr_pem: str,
+                           encrypt_with_pem: x509.Certificate, api_key: str = MDMCERT_API_KEY) -> Dict:
     """Submit a CSR signing request to mdmcert.download.
 
     Example Response:
@@ -39,14 +39,14 @@ def submit_mdmcert_request(email: str, csr: x509.CertificateSigningRequest,
     Args:
           email (str): Your registered mdmcert.download e-mail address.
           api_key (str): Your registered mdmcert.download API key.
-          csr (cryptography.x509.CertificateSigningRequest): The MDM CSR to sign.
-          encrypt_with (cryptography.x509.Certificate): The certificate which will be used to encrypt the response.
+          csr_pem (str): The MDM CSR to sign.
+          encrypt_with_pem (str): The certificate which will be used to encrypt the response.
 
     Returns:
           dict: Response from the mdmcert.download service.
     """
-    base64_csr = b64encode(csr.public_bytes(serialization.Encoding.PEM))
-    base64_recipient = b64encode(encrypt_with.public_bytes(serialization.Encoding.PEM))
+    base64_csr = b64encode(csr_pem)
+    base64_recipient = b64encode(encrypt_with_pem)
 
     mdmcert_dict = {
         'csr': base64_csr.decode('utf8'),

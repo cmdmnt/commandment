@@ -118,6 +118,7 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
 
             try:
                 d: Device = db.session.query(Device).filter(Device.serial_number == device['serial_number']).one()
+                d.description = device['description']
                 d.model = device['model']
                 d.os = device['os']
                 d.device_family = device['device_family']

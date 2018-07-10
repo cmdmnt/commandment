@@ -244,6 +244,18 @@ class DeviceIdentityCertificate(Certificate):
         return m
 
 
+class EncryptionCertificate(Certificate):
+    """Polymorphic single table inheritance specifically for Encryption Certificates"""
+    __mapper_args__ = {
+        'polymorphic_identity': CertificateType.ENCRYPT.value
+    }
+
+    @classmethod
+    def from_crypto(cls, certificate: x509.Certificate):
+        m = cls.from_crypto_type(certificate, CertificateType.ENCRYPT)
+        return m
+
+
 class CellularTechnology(IntEnum):
     Nothing = 0
     GSM = 1
@@ -447,6 +459,8 @@ class Device(db.Model):
     is_dep = db.Column(db.Boolean)
     """is_dep (bool): This device has been synced from DEP. False indicates a manual or AC2 enrolment"""
 
+    description = db.Column(db.String)
+    """description (str): The DEP description which is often identical to the SKU description on the invoice."""
     color = db.Column(db.String)
     """color: (str): The device color indicated by DEP"""
     asset_tag = db.Column(db.String)

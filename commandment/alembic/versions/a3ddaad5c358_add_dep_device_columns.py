@@ -35,6 +35,7 @@ def downgrade():
 
 
 def schema_upgrades():
+    op.add_column('devices', sa.Column('description', sa.String(), nullable=True))
     op.add_column('devices', sa.Column('asset_tag', sa.String(), nullable=True))
     op.add_column('devices', sa.Column('color', sa.String(), nullable=True))
     op.add_column('devices', sa.Column('device_assigned_by', sa.String(), nullable=True))
@@ -62,6 +63,7 @@ def schema_downgrades():
     op.drop_column('devices', 'device_assigned_by')
     op.drop_column('devices', 'color')
     op.drop_column('devices', 'asset_tag')
+    op.drop_column('devices', 'description')
 
 
 # def data_upgrades():
