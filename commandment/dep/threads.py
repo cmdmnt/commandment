@@ -18,6 +18,8 @@ import threading
 import datetime
 import dateutil.parser
 from flask import Flask
+
+from commandment.dep.errors import DEPServiceError
 from commandment.models import db, Device
 from commandment.dep.models import DEPAccount
 from commandment.dep.dep import DEP
@@ -97,7 +99,6 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
     app.logger.info('Fetching using previous cursor: %s', dep_account.cursor)
 
     # TODO: if fetched_until is quite recent, there's no reason to fetch again
-
     for device_page in dep.devices(dep_account.cursor):
         print(device_page)
         for device in device_page['devices']:
@@ -123,9 +124,11 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
                 d.os = device['os']
                 d.device_family = device['device_family']
                 d.color = device['color']
-                d.profile_uuid = device['profile_uuid']
-                d.profile_assign_time = dateutil.parser.parse(device['profile_assign_time'])
                 d.profile_status = device['profile_status']
+                if device['profile_status'] != 'empty':
+                    d.profile_uuid = device.get('profile_uuid', None)  # Only exists in DEP Sync not Fetch?
+                    d.profile_assign_time = dateutil.parser.parse(device['profile_assign_time'])
+
                 d.device_assigned_by = device['device_assigned_by']
                 d.device_assigned_date = dateutil.parser.parse(device['device_assigned_date'])
                 d.is_dep = True
@@ -170,7 +173,16 @@ def dep_thread_callback(app: Flask):
             )
 
             dep_sync_organization(app, dep)
-            dep_fetch_devices(app, dep, dep_account)
+
+            try:
+                dep_fetch_devices(app, dep, dep_account)
+            except DEPServiceError as dse:
+                print(dse)
+                if dse.text == 'EXPIRED_CURSOR':
+                    app.logger.info("Sync cursor had expired, clearing for next run...")
+                    dep_account.cursor = None
+                    db.session.add(dep_account)
+                    db.session.commit()
 
         except sqlalchemy.orm.exc.NoResultFound:
             app.logger.info('Not attempting a DEP sync, no account configured.')

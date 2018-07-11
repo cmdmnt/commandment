@@ -209,7 +209,7 @@ class DEP:
         Returns:
               Union[DEPSyncCursor, DEPFetchCursor]: A cursor that is iterable
         """
-        if cursor is not None:
+        if cursor is not None:  # Could actually be an expired cursor here
             return DEPSyncCursor(self, cursor=cursor)
         else:
             return DEPFetchCursor(self)

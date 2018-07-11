@@ -10,6 +10,7 @@ from base64 import b64encode
 import urllib.request, urllib.error, urllib.parse
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKeyWithSerialization
 
 MDMCERT_REQ_URL = 'https://mdmcert.download/api/v1/signrequest'
 
@@ -76,30 +77,5 @@ class FixedLocationResponse(Response):
 # admin_mdmcert_app = Blueprint('admin_mdmcert_app', __name__)
 
 
-#
-# from binascii import unhexlify
-#
-# @admin_mdmcert_app.route('/upload_encr', methods=['POST'])
-# def upload_encr():
-#     mdm_ca = get_ca()
-#
-#     upl_encrypt = unhexlify(request.files['upload_encr_file'].stream.read())
-#
-#     s = SMIME.SMIME()
-#
-#     bio = BIO.MemoryBuffer(upl_encrypt)
-#
-#     s.load_key_bio(
-#         BIO.MemoryBuffer(mdm_ca.get_private_key().to_pem()),
-#         BIO.MemoryBuffer(mdm_ca.get_cacert().to_pem()))
-#
-#     p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(bio._ptr()))
-#
-#     out = s.decrypt(p7)
-#
-#     response = make_response(out)
-#     response.headers['Content-Type'] = 'application/octet-stream'
-#     response.headers['Content-Disposition'] = 'attachment; filename=mdm_signed_request.%s.plist.b64' % datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-#     return response
-#
-
+def decrypt_mdmcert(response: bytes, decrypt_with: RSAPrivateKeyWithSerialization) -> bytes:
+    pass
