@@ -217,3 +217,21 @@ def mdmcert_request_csr(email: str):
 
     return jsonify(mdmcert_result)
 
+
+@api_push_app.route('/v1/mdmcert/signed_request', methods=['POST'])
+def mdmcert_signed_request():
+    """Upload the encrypted, signed request from mdmcert.download that was received via e-mail.
+
+    The filename looks something like :file:`mdm_signed_request.YYMMDD_HHMMSS_NNN.plist.b64.p7`
+
+    :reqheader Accept: application/json
+    :reqheader Content-Type: multipart/form-data
+    :statuscode 204: no error
+    :statuscode 400: invalid or no certificate supplied
+    """
+    if 'file' not in request.files:
+        return abort(400, 'no file uploaded in request data')
+
+    f = request.files['file']
+
+    return 'Success', 204, None
