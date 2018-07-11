@@ -8,7 +8,8 @@ import plistlib
 import string
 from commandment.plistutil.nonewriter import dumps as dumps_none
 from base64 import urlsafe_b64encode
-from commandment.models import db, Certificate, RSAPrivateKey, Organization, Device, Command
+from commandment.models import db, Organization, Device, Command
+from commandment.pki.models import Certificate, RSAPrivateKey
 from commandment.profiles.models import Profile
 from commandment.mdm import commands
 from .schema import OrganizationFlatSchema

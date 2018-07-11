@@ -3,7 +3,7 @@ import os.path
 import logging
 from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import rsa
-from commandment.models import RSAPrivateKey, CACertificate
+from commandment.pki.models import RSAPrivateKey, CACertificate
 
 logger = logging.getLogger(__name__)
 

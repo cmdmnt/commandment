@@ -3,8 +3,9 @@ import codecs
 import sadisplay
 from flask import Flask
 
-from commandment.models import db, Certificate, Device, Command, InstalledApplication, InstalledCertificate, \
+from commandment.models import db, Device, Command, InstalledApplication, InstalledCertificate, \
     InstalledProfile
+from commandment.pki.models import Certificate
 
 dummyapp = Flask(__name__)
 db.init_app(dummyapp)

@@ -9,7 +9,8 @@ from commandment.mdm.commands import Command
 from commandment.decorators import parse_plist_input_data
 from commandment.cms.decorators import verify_mdm_signature
 from commandment.mdm.util import queue_full_inventory
-from commandment.models import DeviceUser, DeviceIdentityCertificate
+from commandment.models import DeviceUser
+from commandment.pki.models import DeviceIdentityCertificate
 from commandment.mdm.routers import CommandRouter, PlistRouter
 from commandment.utils import plistify
 import plistlib

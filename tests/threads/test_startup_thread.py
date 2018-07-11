@@ -1,6 +1,6 @@
 import pytest
 from commandment.threads import startup_thread
-from commandment.models import CACertificate
+from commandment.pki.models import CACertificate
 
 
 class TestStartupThread:

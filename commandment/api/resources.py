@@ -6,8 +6,9 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from .schema import DeviceSchema, CertificateSchema, PrivateKeySchema, \
     CertificateSigningRequestSchema, OrganizationSchema, TagSchema
-from commandment.models import db, Device, Certificate, CertificateSigningRequest, CACertificate, PushCertificate, \
-    SSLCertificate, Organization, Tag, Command
+from commandment.models import db, Device, Organization, Tag, Command
+from commandment.pki.models import Certificate, CertificateSigningRequest, SSLCertificate, PushCertificate, \
+    CACertificate
 
 from commandment.mdm import commands as mdmcommands, CommandType
 

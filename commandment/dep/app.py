@@ -12,7 +12,8 @@ from cryptography import x509
 from cryptography.x509 import NameOID
 from base64 import urlsafe_b64encode
 
-from commandment.models import db, RSAPrivateKey, CertificateSigningRequest
+from commandment.models import db
+from commandment.pki.models import RSAPrivateKey, CertificateSigningRequest
 from commandment.dep.models import DEPServerTokenCertificate, DEPAccount
 from commandment.enroll.util import generate_enroll_profile
 from commandment.cms.decorators import verify_cms_signers

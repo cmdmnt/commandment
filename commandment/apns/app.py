@@ -4,7 +4,8 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from binascii import unhexlify
 from base64 import b64encode
-from commandment.models import db, Device, Certificate, RSAPrivateKey, CertificateSigningRequest, CACertificate, \
+from commandment.models import db, Device
+from commandment.pki.models import Certificate, RSAPrivateKey, CertificateSigningRequest, CACertificate, \
     EncryptionCertificate
 from commandment.pki import serialization, ssl as cmdssl
 from cryptography.x509.oid import NameOID

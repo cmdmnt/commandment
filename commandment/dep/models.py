@@ -1,6 +1,7 @@
 from cryptography import x509
 from commandment.dep import SkipSetupSteps, DEPOrgType, DEPOrgVersion
-from commandment.models import db, Certificate, CertificateType
+from commandment.models import db
+from commandment.pki.models import CertificateType, Certificate
 from commandment.dbtypes import GUID
 
 

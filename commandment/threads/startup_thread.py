@@ -9,7 +9,8 @@ import datetime
 import os
 from flask_alembic import Alembic
 from oscrypto.keys import parse_pkcs12
-from commandment.models import db, CACertificate, CertificateSigningRequest, RSAPrivateKey
+from commandment.models import db
+from commandment.pki.models import RSAPrivateKey, CertificateSigningRequest, CACertificate
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization, hashes

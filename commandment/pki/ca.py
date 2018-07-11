@@ -2,7 +2,8 @@ from flask import g, current_app
 import sqlalchemy.orm.exc
 
 from .models import CertificateAuthority
-from commandment.models import db, Certificate, CertificateType, Device
+from commandment.models import db, Device
+from commandment.pki.models import CertificateType, Certificate
 
 
 def get_ca() -> CertificateAuthority:
