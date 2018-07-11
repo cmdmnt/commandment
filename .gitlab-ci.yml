@@ -1,0 +1,72 @@
+image: python:3.6.5-stretch
+
+variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
+
+#cache:
+#  key: ${CI_COMMIT_REF_SLUG}
+#  paths:
+#    - node_modules/
+#
+
+build_python:
+  stage: build
+#  tags:
+#    - python
+  before_script:
+    - python -V
+#    - pip install virtualenv
+#    - virtualenv venv
+#    - source venv/bin/activate
+  script:
+#    - apt-get update -qy
+#    - apt-get install -y python-dev python-pip
+    - pip install pipenv
+    - pipenv install --system --dev
+  cache:
+    key: backend
+    paths:
+      - .cache/
+      - venv/
+      - /root/.local/share/virtualenvs/
+
+build_js:
+  stage: build
+#  tags:
+#    - js
+  script:
+    - apt-get update -qy
+    - apt-get install -y apt-transport-https
+    - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+    - echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+    - curl -sL https://deb.nodesource.com/setup_8.x | bash -
+    - apt-get update -qy
+    - apt-get install -y yarn
+    - cd ui && yarn install
+    - NODE_ENV=production ./node_modules/.bin/webpack
+  artifacts:
+    paths:
+      - commandment/static/
+  cache:
+    key: frontend
+    paths:
+      - node_modules/
+
+test_python:
+  stage: test
+#  tags:
+#    - python
+  before_script:
+    - pip install pipenv
+    - pipenv install --system --dev
+  script:
+    - pytest -v -m "not depsim and not dep and not vppsim and not vpp" tests
+  cache:
+    key: backend
+    paths:
+      - .cache/
+      - venv/
+      - /root/.local/share/virtualenvs/
+
+
+    

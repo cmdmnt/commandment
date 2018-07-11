@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../../_remote/Griddle/Griddle.iml" filepath="$PROJECT_DIR$/../../_remote/Griddle/Griddle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_github/SCEPy/SCEPy.iml" filepath="$PROJECT_DIR$/../_github/SCEPy/SCEPy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_github/apkg/apkg.iml" filepath="$PROJECT_DIR$/../_github/apkg/apkg.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_github/bixar/bixar.iml" filepath="$PROJECT_DIR$/../_github/bixar/bixar.iml" />
       <module fileurl="file://$PROJECT_DIR$/../bixar/bixar.iml" filepath="$PROJECT_DIR$/../bixar/bixar.iml" />
       <module fileurl="file://$PROJECT_DIR$/commandment.iml" filepath="$PROJECT_DIR$/commandment.iml" />
       <module fileurl="file://$PROJECT_DIR$/../griddle-plugin-mselection/griddle-plugin-mselection.iml" filepath="$PROJECT_DIR$/../griddle-plugin-mselection/griddle-plugin-mselection.iml" />
