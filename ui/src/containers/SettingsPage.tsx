@@ -84,7 +84,7 @@ export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, 
                     <Card as={Link} to='/settings/vpp'>
                         <Card.Content>
                             <Card.Header>
-                                <Icon name='credit card alternative' /> VPP
+                                <Icon name='credit card alternative' /> VPP Accounts
                             </Card.Header>
                             <Card.Description>
                                 Configure access to the Volume Purchasing Programme
@@ -94,7 +94,7 @@ export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, 
                     <Card as={Link} to='/settings/dep'>
                         <Card.Content>
                             <Card.Header>
-                                <Icon name='tablet' /> DEP
+                                <Icon name='tablet' /> DEP Accounts
                             </Card.Header>
                             <Card.Description>
                                 Configure the Device Enrollment Programme

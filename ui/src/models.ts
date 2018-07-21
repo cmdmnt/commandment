@@ -217,3 +217,16 @@ export interface VPPAccount {
     org_name: string;
     exp_date: string;
 }
+
+export interface DEPAccount {
+    server_name: string;
+    admin_id: string;
+    facilitator_id: string;
+    org_name: string;
+    org_email: string;
+    org_phone: string;
+    org_address: string;
+    org_type: string;
+    org_version: string;
+    org_id: string;
+}

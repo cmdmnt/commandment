@@ -19,6 +19,10 @@ import datetime
 import dateutil.parser
 from flask import Flask
 
+# Necessary because SQLAlchemy isn't threadsafe by default
+from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import sessionmaker
+
 from commandment.dep.errors import DEPServiceError
 from commandment.models import db, Device
 from commandment.dep.models import DEPAccount
@@ -95,8 +99,16 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
 
     TODO: If default DEP Profile is nominated, it is queued for assignment here. But may want to check `profile_status`
         to see whether only devices with the `removed` status are considered unassigned.
+
+    See:
+        https://docs.sqlalchemy.org/en/latest/orm/contextual.html
     """
-    app.logger.info('Fetching using previous cursor: %s', dep_account.cursor)
+    if dep_account.cursor is not None:
+        app.logger.info('Syncing using previous cursor: %s', dep_account.cursor)
+    else:
+        app.logger.info('No DEP cursor found, performing a full fetch')
+
+    thread_session = db.create_scoped_session()
 
     # TODO: if fetched_until is quite recent, there's no reason to fetch again
     for device_page in dep.devices(dep_account.cursor):
@@ -118,7 +130,7 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
                 pass
 
             try:
-                d: Device = db.session.query(Device).filter(Device.serial_number == device['serial_number']).one()
+                d: Device = thread_session.query(Device).filter(Device.serial_number == device['serial_number']).one()
                 d.description = device['description']
                 d.model = device['model']
                 d.os = device['os']
@@ -134,7 +146,6 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
                 d.is_dep = True
 
             except sqlalchemy.orm.exc.NoResultFound:
-                del device['description']  # dont have this column right now
                 if 'op_type' in device:
                     del device['op_type']
                     del device['op_date']
@@ -143,12 +154,13 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
 
                 d = Device(**device)
                 d.is_dep = True
-                db.session.add(d)
+                thread_session.add(d)
 
+        app.logger.debug('Last DEP Cursor was: %s', device_page['cursor'])
         dep_account.cursor = device_page.get('cursor', None)
         dep_account.more_to_follow = device_page.get('more_to_follow', None)
         dep_account.fetched_until = dateutil.parser.parse(device_page['fetched_until'])
-        db.session.commit()
+        thread_session.commit()
 
 
 def dep_thread_callback(app: Flask):

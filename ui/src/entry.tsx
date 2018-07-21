@@ -14,6 +14,7 @@ import {DeviceAuthPage} from "./containers/config/DeviceAuthPage";
 import {CertificatesPage} from "./containers/CertificatesPage";
 import {OrganizationPage} from "./containers/config/OrganizationPage";
 import {VPPPage} from "./containers/config/VPPPage";
+import {DEPAccountsPage} from "./containers/settings/DEPAccountsPage";
 import {DevicePage} from "./containers/DevicePage";
 import {DevicesPage} from "./containers/DevicesPage";
 import {ProfilePage} from "./containers/ProfilePage";
@@ -50,6 +51,7 @@ render(
                 <Route path="/settings/deviceauth" component={DeviceAuthPage} />
                 <Route path="/settings/organization" component={OrganizationPage} />
                 <Route path="/settings/vpp" component={VPPPage} />
+                <Route path="/settings/dep" component={DEPAccountsPage} />
             </AppLayout>
         </ConnectedRouter>
     </Provider>,
