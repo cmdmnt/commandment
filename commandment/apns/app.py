@@ -94,6 +94,7 @@ def mdmcert_request(email: str):
         db.session.add(encrypt_cert_model)
         db.session.commit()
 
+    current_app.logger.info("Submitting request to mdmcert.download for %s", email)
     mdmcert_result = submit_mdmcert_request(
         email=email,
         csr_pem=apns_csr_model.pem_data,

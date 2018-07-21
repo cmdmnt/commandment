@@ -31,14 +31,6 @@ class CellularTechnology(IntEnum):
     Both = 3
 
 
-class DeviceIdentitySources(Enum):
-    """A list of sources for Device Identity."""
-    InternalPKCS12 = 'internal_pkcs12'
-    InternalSCEP = 'internal_scep'
-    ExternalSCEP = 'external_scep'
-
-
-
 device_tags = db.Table(
     'device_tags',
     db.metadata,
@@ -487,6 +479,13 @@ class Organization(db.Model):
     """x509_st (string): The x.509 State for generating certificates."""
     x509_c = db.Column(db.String(2))
     """x509_c (string): The 2 letter x.509 country code for generating certificates. """
+
+
+class DeviceIdentitySources(Enum):
+    """A list of sources for Device Identity."""
+    InternalPKCS12 = 'internal_pkcs12'
+    InternalSCEP = 'internal_scep'
+    ExternalSCEP = 'external_scep'
 
 
 class SCEPConfig(db.Model):

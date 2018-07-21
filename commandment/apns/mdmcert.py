@@ -4,10 +4,10 @@ Licensed under the MIT license. See the included LICENSE.txt file for details.
 """
 
 from typing import Dict
-from flask import Blueprint, Response
+from flask import Response
 import json
 from base64 import b64encode
-import urllib.request, urllib.error, urllib.parse
+import requests
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKeyWithSerialization
@@ -26,7 +26,7 @@ CERT_REQ_TYPE = 'mdmcert.pushcert'
 
 
 def submit_mdmcert_request(email: str, csr_pem: str,
-                           encrypt_with_pem: x509.Certificate, api_key: str = MDMCERT_API_KEY) -> Dict:
+                           encrypt_with_pem: str, api_key: str = MDMCERT_API_KEY) -> Dict:
     """Submit a CSR signing request to mdmcert.download.
 
     Example Response:
@@ -56,6 +56,8 @@ def submit_mdmcert_request(email: str, csr_pem: str,
         'encrypt': base64_recipient.decode('utf8'),
     }
 
+    # print(mdmcert_dict)
+
     req = urllib.request.Request(
         MDMCERT_REQ_URL,
         json.dumps(mdmcert_dict).encode('utf8'),
@@ -73,8 +75,6 @@ class FixedLocationResponse(Response):
     # override Werkzeug default behaviour of "fixing up" once-non-compliant
     # relative location headers. now permitted in rfc7231 sect. 7.1.2
     autocorrect_location_header = False
-
-# admin_mdmcert_app = Blueprint('admin_mdmcert_app', __name__)
 
 
 def decrypt_mdmcert(response: bytes, decrypt_with: RSAPrivateKeyWithSerialization) -> bytes:
