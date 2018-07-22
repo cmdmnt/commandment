@@ -1,7 +1,7 @@
 import createHistory from "history/createBrowserHistory";
 import * as React from "react";
 import {render} from "react-dom";
-import {hot} from "react-hot-loader";
+// import {hot} from "react-hot-loader";
 import {Provider} from "react-redux";
 import {Route} from "react-router";
 import {ConnectedRouter, routerMiddleware} from "react-router-redux";
@@ -11,21 +11,25 @@ import {configureStore} from "./store/configureStore";
 import {AppLayout} from "./containers/AppLayout";
 import {DeviceAuthPage} from "./containers/config/DeviceAuthPage";
 
+// Settings
+import {SettingsPage} from "./containers/SettingsPage";
 import {CertificatesPage} from "./containers/CertificatesPage";
 import {OrganizationPage} from "./containers/config/OrganizationPage";
-import {VPPPage} from "./containers/config/VPPPage";
+import {VPPAccountsPage} from "./containers/settings/VPPAccountsPage";
 import {DEPAccountsPage} from "./containers/settings/DEPAccountsPage";
+import {APNSPage} from "./containers/settings/APNSPage";
+
 import {DevicePage} from "./containers/DevicePage";
 import {DevicesPage} from "./containers/DevicesPage";
 import {ProfilePage} from "./containers/ProfilePage";
 import {ProfilesPage} from "./containers/ProfilesPage";
-import {SettingsPage} from "./containers/SettingsPage";
+
 
 import "../sass/app.scss";
 import {ApplicationPage} from "./containers/ApplicationPage";
 import {ApplicationsPage} from "./containers/ApplicationsPage";
 import {DashboardPage} from "./containers/DashboardPage";
-import {APNSPage} from "./containers/config/APNSPage";
+
 
 const initialState: RootState = {};
 
@@ -50,7 +54,7 @@ render(
                 <Route path="/settings/apns" component={APNSPage} />
                 <Route path="/settings/deviceauth" component={DeviceAuthPage} />
                 <Route path="/settings/organization" component={OrganizationPage} />
-                <Route path="/settings/vpp" component={VPPPage} />
+                <Route path="/settings/vpp" component={VPPAccountsPage} />
                 <Route path="/settings/dep" component={DEPAccountsPage} />
             </AppLayout>
         </ConnectedRouter>

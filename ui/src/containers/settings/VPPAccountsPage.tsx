@@ -7,8 +7,7 @@ import * as Dropzone from "react-dropzone";
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
 import {read as fetchTokenInfo, TokenActionRequest,
-    upload, UploadActionRequest} from "../../actions/vpp";
-import {VPPAccountDetail} from "../../components/vpp/VPPAccountDetail";
+    index, IndexActionRequest} from "../../actions/vpp";
 import {VPPState} from "../../reducers/configuration/vpp";
 import {RootState} from "../../reducers/index";
 
@@ -22,22 +21,22 @@ interface ReduxStateProps {
 
 interface ReduxDispatchProps {
     fetchTokenInfo: TokenActionRequest;
-    upload: UploadActionRequest;
+    index: IndexActionRequest;
 }
 
 interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteProps> {
 
 }
 
-export class UnconnectedVPPPage extends React.Component<OwnProps, void> {
+export class UnconnectedVPPAccountsPage extends React.Component<OwnProps, any> {
 
     componentWillMount?() {
-        this.props.fetchTokenInfo();
+        this.props.index();
     }
 
-    handleDrop = (files: File[]) => {
-        this.props.upload(files[0]);
-    }
+    // handleDrop = (files: File[]) => {
+    //     this.props.upload(files[0]);
+    // };
 
     render() {
         const {
@@ -45,8 +44,8 @@ export class UnconnectedVPPPage extends React.Component<OwnProps, void> {
         } = this.props;
 
         return (
-            <Container className="VPPPage">
-                <Header as="h1">Volume Purchase Programme Configuration</Header>
+            <Container className="VPPAccountsPage">
+                <Header as="h1">VPP Accounts</Header>
                 {/*<Dropzone*/}
                     {/*onDrop={this.handleDrop}*/}
                     {/*className="dropzone"*/}
@@ -55,18 +54,17 @@ export class UnconnectedVPPPage extends React.Component<OwnProps, void> {
                     {/*style={{}}>*/}
                     {/*<Header as="h3">Drop .vpptoken or Click to upload</Header>*/}
                 {/*</Dropzone>*/}
-                {data && <VPPAccountDetail {...data} />}
             </Container>
         );
     }
 }
 
-export const VPPPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
+export const VPPAccountsPage = connect(
     (state: RootState): ReduxStateProps => ({
         vpp: state.configuration.vpp,
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({
         fetchTokenInfo,
-        upload,
+        index,
     }, dispatch),
-)(UnconnectedVPPPage);
+)(UnconnectedVPPAccountsPage);

@@ -1,10 +1,16 @@
 import {Dispatch} from "react-redux";
-import {RSAA, RSAAction} from "redux-api-middleware";
+import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
-import {JSONAPIDetailResponse, RSAAReadActionRequest, RSAAReadActionResponse} from "../json-api";
-import {VPPAccount} from "../models";
+import {
+    encodeJSONAPIIndexParameters,
+    JSONAPIDetailResponse, RSAAIndexActionRequest,
+    RSAAIndexActionResponse,
+    RSAAReadActionRequest,
+    RSAAReadActionResponse
+} from "../json-api";
+import {Tag, VPPAccount} from "../models";
 import {RootState} from "../reducers";
-import {JSON_HEADERS} from "./constants";
+import {JSON_HEADERS, JSONAPI_HEADERS} from "./constants";
 
 export const TOKEN_REQUEST = "vpp/TOKEN_REQUEST";
 export type TOKEN_REQUEST = typeof TOKEN_REQUEST;
@@ -68,3 +74,29 @@ export const upload = (file: File): ThunkAction<void, RootState, void> => (
         },
     });
 };
+
+
+export type INDEX_REQUEST = 'vpp/INDEX_REQUEST';
+export const INDEX_REQUEST: INDEX_REQUEST = 'vpp/INDEX_REQUEST';
+export type INDEX_SUCCESS = 'vpp/INDEX_SUCCESS';
+export const INDEX_SUCCESS: INDEX_SUCCESS = 'vpp/INDEX_SUCCESS';
+export type INDEX_FAILURE = 'vpp/INDEX_FAILURE';
+export const INDEX_FAILURE: INDEX_FAILURE = 'vpp/INDEX_FAILURE';
+
+export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>;
+export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, VPPAccount>;
+
+export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) => {
+    return (<RSAAction<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
+        [RSAA]: {
+            endpoint: '/api/v1/vpp_accounts?' + queryParameters.join('&'),
+            method: (<HTTPVerb>'GET'),
+            types: [
+                INDEX_REQUEST,
+                INDEX_SUCCESS,
+                INDEX_FAILURE
+            ],
+            headers: JSONAPI_HEADERS
+        }
+    });
+});

@@ -29,6 +29,8 @@ def submit_mdmcert_request(email: str, csr_pem: str,
                            encrypt_with_pem: str, api_key: str = MDMCERT_API_KEY) -> Dict:
     """Submit a CSR signing request to mdmcert.download.
 
+    Note: Need to ``export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES`` on High Sierra +
+
     Example Response:
 
         {'reason': 'Invalid email address. Have you registered yet at https://mdmcert.download/?', 'result': 'failure'}
@@ -56,19 +58,15 @@ def submit_mdmcert_request(email: str, csr_pem: str,
         'encrypt': base64_recipient.decode('utf8'),
     }
 
-    # print(mdmcert_dict)
-
-    req = urllib.request.Request(
+    res = requests.post(
         MDMCERT_REQ_URL,
-        json.dumps(mdmcert_dict).encode('utf8'),
-        {'Content-Type': 'application/json',
-         'User-Agent': 'coMmanDMent/0.1'})
+        data=json.dumps(mdmcert_dict).encode('utf8'),
+        headers={
+            'Content-Type': 'application/json',
+            'User-Agent': 'coMmanDMent/0.1',
+        })
 
-    f = urllib.request.urlopen(req)
-    resp = f.read()
-    f.close()
-
-    return json.loads(resp)
+    return res.json()
 
 
 class FixedLocationResponse(Response):

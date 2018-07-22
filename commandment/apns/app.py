@@ -65,7 +65,8 @@ def mdmcert_request(email: str):
     """Ask the mdmcert.download service to generate a new Certificate Signing Request for the given e-mail address.
 
     If an encryption certificate does not exist on the system, one will be generated to process the resulting encrypted
-    and signed CSR.
+    and signed CSR. The common name of the certificate will be the e-mail address that is registered with the
+    mdmcert.download service, and the type will be an EncryptionCertificate.
 
     :reqheader Accept: application/json
     :resheader Content-Type: application/json
@@ -84,9 +85,9 @@ def mdmcert_request(email: str):
 
     try:
         encrypt_cert_model = db.session.query(EncryptionCertificate).\
-            filter(EncryptionCertificate.x509_cn == 'MDMCERT-DECRYPT').one()
+            filter(EncryptionCertificate.x509_cn == email).one()
     except NoResultFound:
-        encrypt_key, encrypt_with_cert = cmdssl.generate_self_signed_certificate('MDMCERT-DECRYPT')
+        encrypt_key, encrypt_with_cert = cmdssl.generate_self_signed_certificate(email)
         encrypt_key_model = RSAPrivateKey.from_crypto(encrypt_key)
         db.session.add(encrypt_key_model)
         encrypt_cert_model = EncryptionCertificate.from_crypto(encrypt_with_cert)
