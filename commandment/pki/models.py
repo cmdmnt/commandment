@@ -94,7 +94,6 @@ class CertificateAuthority(db.Model):
 
         private_key_model = RSAPrivateKey.from_crypto(private_key)
         db.session.add(private_key_model)
-        db.session.commit()
 
         name = x509.Name([
             x509.NameAttribute(NameOID.COMMON_NAME, common_name),
@@ -112,6 +111,7 @@ class CertificateAuthority(db.Model):
         )
 
         csr_model = CertificateSigningRequest().from_crypto(request)
+        csr_model.rsa_private_key = private_key_model
         db.session.add(csr_model)
         db.session.commit()
 
