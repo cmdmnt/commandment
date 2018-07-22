@@ -45,6 +45,7 @@ class CertificateAuthority(db.Model):
             backend=default_backend(),
         )
         ca.rsa_private_key = RSAPrivateKey.from_crypto(private_key)
+        db.session.add(ca.rsa_private_key)
 
         certificate = x509.CertificateBuilder().subject_name(
             name
@@ -63,6 +64,7 @@ class CertificateAuthority(db.Model):
         ).sign(private_key, hashes.SHA256(), default_backend())
 
         ca_certificate_model = CACertificate.from_crypto(certificate)
+        ca_certificate_model.rsa_private_key = ca.rsa_private_key
         ca.certificate = ca_certificate_model
 
         db.session.add(ca)
