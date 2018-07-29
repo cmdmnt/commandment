@@ -47,11 +47,9 @@ def schema_upgrades():
     op.add_column('devices', sa.Column('profile_push_time', sa.DateTime(), nullable=True))
     op.add_column('devices', sa.Column('profile_status', sa.String(), nullable=True))
     op.add_column('devices', sa.Column('profile_uuid', sa.String(), nullable=True))
-    op.create_foreign_key(None, 'devices', 'dep_profiles', ['dep_profile_id'], ['id'])
 
 
 def schema_downgrades():
-    op.drop_constraint(None, 'devices', type_='foreignkey')
     op.drop_column('devices', 'profile_uuid')
     op.drop_column('devices', 'profile_status')
     op.drop_column('devices', 'profile_push_time')

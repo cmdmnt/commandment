@@ -49,12 +49,14 @@ def schema_upgrades():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_dep_profiles_uuid'), 'dep_profiles', ['uuid'], unique=False)
+    # op.create_foreign_key(None, 'devices', 'dep_profiles', ['dep_profile_id'], ['id'])
 
 
 def schema_downgrades():
     """schema downgrade migrations go here."""
     op.drop_index(op.f('ix_dep_profiles_uuid'), table_name='dep_profiles')
     op.drop_table('dep_profiles')
+    #     op.drop_constraint(None, 'devices', type_='foreignkey')
 
 
 def data_upgrades():

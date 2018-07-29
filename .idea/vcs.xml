@@ -5,5 +5,6 @@
     <mapping directory="$PROJECT_DIR$/../_github/apkg" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../_github/bixar" vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/venv/src/bixar" vcs="Git" />
   </component>
 </project>
