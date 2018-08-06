@@ -28,7 +28,9 @@ def upgrade():
                     sa.Column('x509_st', sa.String(length=128), nullable=True),
                     sa.Column('not_before', sa.DateTime(), nullable=False),
                     sa.Column('not_after', sa.DateTime(), nullable=False),
-                    sa.Column('serial', sa.BigInteger(), nullable=True),
+                    # NOTE: serial was changed from BigInteger because cryptography could generate a serial number at
+                    # random that could produce an integer overflow.
+                    sa.Column('serial', sa.String(), nullable=True),
                     sa.Column('fingerprint', sa.String(length=64), nullable=False),
                     sa.Column('push_topic', sa.String(), nullable=True),
                     sa.Column('discriminator', sa.String(length=20), nullable=True),
