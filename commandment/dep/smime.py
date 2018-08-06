@@ -23,6 +23,13 @@ def decrypt(smime: bytes, key: rsa.RSAPrivateKey, serial: Optional[int] = None):
 
     b64payload = msg.get_payload()
     payload = b64decode(b64payload)
+    decrypted_data = decrypt_smime_content(payload, key)
+    decrypted_msg: Message = email.message_from_bytes(decrypted_data)
+
+    return decrypted_msg.get_payload()
+
+
+def decrypt_smime_content(payload: bytes, key: rsa.RSAPrivateKey) -> bytes:
     content_info = ContentInfo.load(payload)
 
     assert content_info['content_type'].native == 'enveloped_data'
@@ -68,6 +75,4 @@ def decrypt(smime: bytes, key: rsa.RSAPrivateKey, serial: Optional[int] = None):
     decryptor = cipher.decryptor()
 
     decrypted_data = decryptor.update(encrypted_content_bytes) + decryptor.finalize()
-    decrypted_msg: Message = email.message_from_bytes(decrypted_data)
-
-    return decrypted_msg.get_payload()
+    return decrypted_data

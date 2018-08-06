@@ -3,7 +3,7 @@ from flask import Blueprint, request, abort, send_file, current_app, jsonify
 from sqlalchemy.orm.exc import NoResultFound
 
 
-from base64 import b64encode
+from base64 import b64encode, b64decode
 from commandment.models import db, Device
 from commandment.pki.models import Certificate, RSAPrivateKey, CertificateSigningRequest, CACertificate, \
     EncryptionCertificate
@@ -132,7 +132,7 @@ def mdmcert_decrypt():
     pk = encrypt_cert.rsa_private_key.to_crypto()
     result = decrypt_mdmcert(encrypted_payload, pk)
 
-    return 'B64CONTENT', 200, {
+    return result, 200, {
         'Content-Type': 'application/octet-stream',
         'Content-Disposition': 'attachment; filename=mdm_signed_request.%s.plist.b64' % datetime.now().strftime('%Y%m%d_%H%M%S'),
     }

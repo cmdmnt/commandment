@@ -12,6 +12,7 @@ from binascii import unhexlify
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization, padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKeyWithSerialization
+from commandment.dep.smime import decrypt, decrypt_smime_content
 
 MDMCERT_REQ_URL = 'https://mdmcert.download/api/v1/signrequest'
 
@@ -98,8 +99,9 @@ def decrypt_mdmcert(response: bytes, decrypt_with: RSAPrivateKeyWithSerializatio
     """
     decoded_payload = unhexlify(response)
 
-    result = decrypt_with.decrypt(
-        decoded_payload,
-        padding.PKCS7(block_size=8)
-    )
+    result = decrypt_smime_content(decoded_payload, decrypt_with)
+    # result = decrypt_with.decrypt(
+    #     decoded_payload,
+    #     padding.PKCS7(block_size=8)
+    # )
     return result
