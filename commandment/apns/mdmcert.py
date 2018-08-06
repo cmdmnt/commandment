@@ -8,8 +8,9 @@ from flask import Response
 import json
 from base64 import b64encode
 import requests
+from binascii import unhexlify
 from cryptography import x509
-from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import serialization, padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKeyWithSerialization
 
 MDMCERT_REQ_URL = 'https://mdmcert.download/api/v1/signrequest'
@@ -82,4 +83,23 @@ class FixedLocationResponse(Response):
 
 
 def decrypt_mdmcert(response: bytes, decrypt_with: RSAPrivateKeyWithSerialization) -> bytes:
-    pass
+    """Decrypt a .plist.b64.p7 supplied by mdmcert.download.
+
+    In order to decrypt this we need to:
+    - decode the payload using unhexlify()
+    - find the private key that corresponded to the request.
+
+    Args:
+        response (bytes): The still encryped and hex encoded payload
+        decrypt_with (RSAPrivateKeyWithSerialization): The private key that should be used to decrypt the payload.
+
+    Returns:
+        bytes - the decrypted response
+    """
+    decoded_payload = unhexlify(response)
+
+    result = decrypt_with.decrypt(
+        decoded_payload,
+        padding.PKCS7(block_size=8)
+    )
+    return result

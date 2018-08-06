@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Blueprint, request, abort, send_file, current_app, jsonify
 from sqlalchemy.orm.exc import NoResultFound
 
-from binascii import unhexlify
+
 from base64 import b64encode
 from commandment.models import db, Device
 from commandment.pki.models import Certificate, RSAPrivateKey, CertificateSigningRequest, CACertificate, \
@@ -121,18 +121,16 @@ def mdmcert_decrypt():
     if 'file' not in request.files:
         return abort(415, 'no file uploaded in request data')
 
-    decoded_request = unhexlify(request.files['file'].stream.read())
+    encrypted_payload = request.files['file'].stream.read()
 
     try:
-        encrypt_cert: EncryptionCertificate = db.session.query(EncryptionCertificate).\
-            filter(EncryptionCertificate.x509_cn == "MDMCERT-DECRYPT").one()
+        # TODO: Identify the specific certificate used to generate the request
+        encrypt_cert: EncryptionCertificate = db.session.query(EncryptionCertificate).first()
     except NoResultFound:
         return abort(500, 'unable to decrypt, there was no decryption cert')
 
-    # TODO: Unfinished
-    pk = encrypt_cert.rsa_private_key
-
-    decrypt_mdmcert(decoded_request, pk)
+    pk = encrypt_cert.rsa_private_key.to_crypto()
+    result = decrypt_mdmcert(encrypted_payload, pk)
 
     return 'B64CONTENT', 200, {
         'Content-Type': 'application/octet-stream',

@@ -1,28 +1,30 @@
 import * as React from 'react';
 import {RouteComponentProps} from "react-router";
-import Container from "semantic-ui-react/src/elements/Container/Container";
-import Header from "semantic-ui-react/src/elements/Header/Header";
-import Segment from "semantic-ui-react/src/elements/Segment/Segment";
 import {bindActionCreators} from "redux";
 import {connect, Dispatch} from "react-redux";
 import {RootState} from "../../reducers";
 
-import Image from "semantic-ui-react/src/elements/Image/Image";
+import Dropzone, {DropFilesEventHandler} from "react-dropzone";
+import Container from "semantic-ui-react/src/elements/Container/Container";
+import Header from "semantic-ui-react/src/elements/Header/Header";
+import Segment from "semantic-ui-react/src/elements/Segment/Segment";
 import Icon from "semantic-ui-react/src/elements/Icon/Icon";
 import Button from "semantic-ui-react/src/elements/Button/Button";
 import Input from "semantic-ui-react/src/elements/Input/Input";
 
-import {csr} from "../../actions/settings/mdmcert";
+import {csr, CsrActionRequest, uploadCrypted, UploadCryptedActionRequest} from "../../actions/settings/mdmcert";
 import {SyntheticEvent} from "react";
 import {RSAAApiErrorMessage} from "../../components/RSAAApiErrorMessage";
+import {APNSState} from "../../reducers/settings/apns";
 
 
 interface ReduxStateProps {
-
+    apns: APNSState;
 }
 
 interface ReduxDispatchProps {
-
+    csr: CsrActionRequest;
+    uploadCrypted: UploadCryptedActionRequest;
 }
 
 interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<{}> {
@@ -34,7 +36,7 @@ interface APNSPageState {
 }
 
 
-export class UnconnectedAPNSPage extends React.Component {
+export class UnconnectedAPNSPage extends React.Component<OwnProps> {
 
     public state: APNSPageState = { email: "" };
 
@@ -46,6 +48,13 @@ export class UnconnectedAPNSPage extends React.Component {
 
     handleEmailChange = (e: SyntheticEvent<HTMLInputElement>) => {
         this.setState({ email: e.currentTarget.value });
+    };
+
+    onDropEncryptedCSR: DropFilesEventHandler = (accepted, rejected) => {
+        console.dir(accepted);
+        for (let file of accepted) {
+            this.props.uploadCrypted(file);
+        }
     };
 
     render() {
@@ -78,9 +87,11 @@ export class UnconnectedAPNSPage extends React.Component {
                 <Segment vertical>
                     <Header>3. Save the attachment (.p7) and upload here</Header>
 
-                    <Button icon labelPosition="left">
-                        <Icon name='upload' /> Upload
-                    </Button> the encrypted Signing Request
+                    <Dropzone onDrop={this.onDropEncryptedCSR} />
+                    {/*<input type="file" name="file" />*/}
+                    {/*<Button icon labelPosition="left">*/}
+                        {/*<Icon name='upload' /> Upload*/}
+                    {/*</Button> the encrypted Signing Request*/}
                 </Segment>
                 <Segment vertical>
                     <Header>4. Download</Header>
@@ -97,9 +108,9 @@ export class UnconnectedAPNSPage extends React.Component {
                 <Segment vertical>
                     <Header>6. Download from Push Portal</Header>
 
-                    <Button icon labelPosition="left">
-                        <Icon name='upload' /> Upload
-                    </Button> the final certificate.
+                    {/*<Button icon labelPosition="left" as="input" htmlType="upload">*/}
+                        {/*<Icon name='upload' /> Upload*/}
+                    {/*</Button> the final certificate.*/}
                 </Segment>
 
             </Container>
@@ -114,5 +125,6 @@ export const APNSPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({
         csr,
+        uploadCrypted,
     }, dispatch)
 )(UnconnectedAPNSPage);
