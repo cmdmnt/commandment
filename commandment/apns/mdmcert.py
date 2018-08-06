@@ -58,7 +58,13 @@ def submit_mdmcert_request(email: str, csr_pem: str,
         'encrypt': base64_recipient.decode('utf8'),
     }
 
-    res = requests.post(
+    session = requests.Session()
+
+    # This was necessary because i had Charles proxy on macOS which caused the subprocess to abort trap 6. The reason
+    # is interlinked with request's ability to read system proxy settings.
+    session.trust_env = False  # Don't read proxy settings from OS.
+
+    res = session.post(
         MDMCERT_REQ_URL,
         data=json.dumps(mdmcert_dict).encode('utf8'),
         headers={
