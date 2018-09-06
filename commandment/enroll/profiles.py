@@ -48,8 +48,8 @@ def scep_payload_from_configuration() -> SCEPPayload:
         scep_payload = SCEPPayload(
             uuid=uuid4(),
             identifier='com.github.cmdmnt.commandment.scep',
-            url=url_for('scep_app.scep'),
-            name='',
+            url=url_for('scep_app.scep', _external=True),
+            name='COMMANDMENT-SCEP',
             subject=[['CN', '%HardwareUUID%']],
             challenge=current_app.config.get('SCEPY_CHALLENGE', None),
             key_size=2048,
