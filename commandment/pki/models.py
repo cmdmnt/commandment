@@ -243,7 +243,7 @@ class Certificate(db.Model):
         m.not_before = certificate.not_valid_before
         m.fingerprint = certificate.fingerprint(hashes.SHA256())
         m.discriminator = certtype.value
-        m.serial = certificate.serial_number
+        m.serial = str(certificate.serial_number)
 
         subject: x509.Name = certificate.subject
         cns = subject.get_attributes_for_oid(NameOID.COMMON_NAME)
