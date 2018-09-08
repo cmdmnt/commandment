@@ -109,7 +109,7 @@ def token_update(plist_data):
     device.push_magic = plist_data['PushMagic']
     device.topic = plist_data['Topic']
     device.token = plist_data['Token']
-    device.unlock_token = plist_data['UnlockToken']
+    device.unlock_token = plist_data.get('UnlockToken', None)
     device.last_seen = datetime.now()
     db.session.commit()
 
