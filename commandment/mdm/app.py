@@ -14,6 +14,8 @@ from commandment.pki.models import DeviceIdentityCertificate
 from commandment.mdm.routers import CommandRouter, PlistRouter
 from commandment.utils import plistify
 import plistlib
+import ssl
+from commandment.apns.push import push_to_device
 from datetime import datetime
 from commandment.signals import device_enrolled
 
@@ -104,45 +106,29 @@ def token_update(plist_data):
         queue_full_inventory(device)
 
     device.tokenupdate_at = datetime.utcnow()
-    device.push_magic = plist_data.get('PushMagic', None)
-    device.topic = plist_data.get('Topic', None)
-    device.token = plist_data.get('Token', None)
-    device.unlock_token = plist_data.get('UnlockToken', None)
+    device.push_magic = plist_data['PushMagic']
+    device.topic = plist_data['Topic']
+    device.token = plist_data['Token']
+    device.unlock_token = plist_data['UnlockToken']
     device.last_seen = datetime.now()
     db.session.commit()
 
-    # TODO: DRY
-    command = DBCommand.next_command(device)
+    try:
+        response = push_to_device(device)
+    except ssl.SSLError:
+        return abort(jsonify(error=True, message="The push certificate has expired"))
 
-    if not command:
-        current_app.logger.info('no further MDM commands for device=%d', device.id)
-        return ''
+    current_app.logger.info("[APNS2 Response] Status: %d, Reason: %s, APNS ID: %s, Timestamp",
+                            response.status_code, response.reason, response.apns_id.decode('utf-8'))
+    device.last_push_at = datetime.utcnow()
+    if response.status_code == 200:
+        device.last_apns_id = response.apns_id
 
-    # mark this command as being in process right away to (try) to avoid
-    # any race conditions with mutliple MDM commands from the same device
-    # at a time
-
-    #command.set_processing()
-    #db.session.commit()
-
-    # Re-hydrate the command class based on the persisted model containing the request type and the parameters
-    # that were given to generate the command
-    cmd = Command.new_request_type(command.request_type, command.parameters, command.uuid)
-
-
-    # get command dictionary representation (e.g. the full command to send)
-    output_dict = cmd.to_dict()
-
-    current_app.logger.info('sending %s MDM command class=%s to device=%d', cmd.request_type,
-                            command.request_type, device.id)
-
-    current_app.logger.debug(output_dict)
-
-    command.status = CommandStatus.Sent
-    command.sent_at = datetime.utcnow()
     db.session.commit()
 
-    return plistify(output_dict)
+    # TODO: macOS can chain commands from TokenUpdate but iOS will not process any response data from TokenUpdate.
+    # Therefore, it is necessary to issue a Push here instead of simply responding with the next command.
+    return 'OK'
 
 
 @plr.route('MessageType', 'UserAuthenticate')

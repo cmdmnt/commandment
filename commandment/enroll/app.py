@@ -123,17 +123,18 @@ def ota_enroll():
     profile = {
         'PayloadType': 'Profile Service',
         'PayloadIdentifier': org.payload_prefix + '.ota.enroll',
-        'PayloadUUID': str(uuid4()),
+        'PayloadUUID': 'FACC45E7-CB0E-4F8B-AA3E-E22DC161E25E', #str(uuid4()),
         'PayloadVersion': 1,
         'PayloadDisplayName': 'Commandment Profile Service',
         'PayloadDescription': 'Enrolls your device with Commandment',
-        'PayloadContent': [{
+        'PayloadOrganization': org.name,
+        'PayloadContent': {
             'URL': 'https://{}:{}/enroll/ota_authenticate'.format(
                 current_app.config['PUBLIC_HOSTNAME'], current_app.config['PORT']
             ),
             'DeviceAttributes': list(AllDeviceAttributes),
             'Challenge': 'TODO',
-        }],
+        },
     }
     plist_data = dumps_none(profile)
 
@@ -177,7 +178,6 @@ def ota_authenticate():
         - `Over-the-Air Profile Delivery and Configuration <https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/iPhoneOTAConfiguration/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009505-CH1-SW1>`_.
     """
     signed_data = g.signed_data
-    signers = g.signers
     # TODO: This should Validate to iPhone Device CA but we can't because:
     # http://www.openradar.me/31423312
     device_attributes = plistlib.loads(signed_data)

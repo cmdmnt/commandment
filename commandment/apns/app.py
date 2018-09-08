@@ -1,15 +1,12 @@
 from datetime import datetime
-from flask import Blueprint, request, abort, send_file, current_app, jsonify
+from flask import Blueprint, request, abort, current_app, jsonify
 from sqlalchemy.orm.exc import NoResultFound
 
 
-from base64 import b64encode, b64decode
 from commandment.models import db, Device
-from commandment.pki.models import Certificate, RSAPrivateKey, CertificateSigningRequest, CACertificate, \
+from commandment.pki.models import RSAPrivateKey, CertificateSigningRequest, CACertificate, \
     EncryptionCertificate
-from commandment.pki import serialization, ssl as cmdssl
-from cryptography.x509.oid import NameOID
-from cryptography.hazmat.primitives import hashes
+from commandment.pki import ssl as cmdssl
 from .push import push_to_device
 from .schema import PushResponseFlatSchema
 from .mdmcert import submit_mdmcert_request, decrypt_mdmcert
