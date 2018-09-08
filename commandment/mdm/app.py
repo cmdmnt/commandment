@@ -32,6 +32,7 @@ def authenticate(plist_data):
     This will be the first message sent to the MDM upon enrollment, but you cannot consider the device to be enrolled
     at this stage.
     """
+    current_app.logger.debug('Authenticate (UDID %s)', plist_data.get('UDID', None))
     # TODO: check to make sure device == UDID == cert, etc.
     try:
         device = db.session.query(Device).filter(Device.udid == plist_data['UDID']).one()
@@ -49,6 +50,11 @@ def authenticate(plist_data):
         device.product_name = plist_data.get('ProductName')
         device.serial_number = plist_data.get('SerialNumber')
         device.topic = plist_data.get('Topic')
+
+        # iOS only
+        device.imei = plist_data.get('IMEI', None)
+        device.meid = plist_data.get('MEID', None)
+
         device.last_seen = datetime.now()
 
     # Authenticate message is not enough to be enrolled

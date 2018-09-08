@@ -209,7 +209,6 @@ def ota_authenticate():
         profile.payloads.append(scep_payload)
     else:
         profile = generate_enroll_profile()
-    # profile = generate_enroll_profile()
 
     schema = profile_schema.ProfileSchema()
     result = schema.dump(profile)

@@ -39,9 +39,9 @@ def schema_upgrades():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('common_name', sa.String(), nullable=True),
 
-    # NOTE: serial was changed from BigInteger because cryptography could generate a serial number at
-    # random that could produce an integer overflow.
-    sa.Column('serial', sa.String(), nullable=True),
+    # NOTE: certificate serials are still string but this remains as BigInteger because the counter is incremented
+    # manually.
+    sa.Column('serial', sa.BigInteger(), nullable=True),
     sa.Column('validity_period', sa.Integer(), nullable=True),
     sa.Column('certificate_id', sa.Integer(), nullable=True),
     sa.Column('rsa_private_key_id', sa.Integer(), nullable=True),
