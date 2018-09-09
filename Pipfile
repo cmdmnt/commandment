@@ -3,6 +3,9 @@ url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[requires]
+python_version = "3.7"
+
 [packages]
 acme = "*"
 aiohttp = "*"
@@ -50,6 +53,7 @@ semver = "*"
 signxml = "*"
 ukpostcodeparser = "*"
 sqlalchemy = "*"
+cryptography = "*"
 
 [dev-packages]
 alembic-viz = "*"
