@@ -8,19 +8,29 @@ import {
     RSAAReadActionRequest,
     RSAAReadActionResponse
 } from "../json-api";
-import {Tag, VPPAccount} from "../models";
+import {VPPAccount} from "../models";
 import {RootState} from "../reducers";
 import {JSON_HEADERS, JSONAPI_HEADERS} from "./constants";
 
-export const TOKEN_REQUEST = "vpp/TOKEN_REQUEST";
-export type TOKEN_REQUEST = typeof TOKEN_REQUEST;
-export const TOKEN_SUCCESS = "vpp/TOKEN_SUCCESS";
-export type TOKEN_SUCCESS = typeof TOKEN_SUCCESS;
-export const TOKEN_FAILURE = "vpp/TOKEN_FAILURE";
-export type TOKEN_FAILURE = typeof TOKEN_FAILURE;
+export enum VPPActionTypes {
+    TOKEN_REQUEST = "vpp/TOKEN_REQUEST",
+    TOKEN_SUCCESS = "vpp/TOKEN_SUCCESS",
+    TOKEN_FAILURE = "vpp/TOKEN_FAILURE",
+    UPLOAD_REQUEST = "vpp/UPLOAD_REQUEST",
+    UPLOAD_SUCCESS = "vpp/UPLOAD_SUCCESS",
+    UPLOAD_FAILURE = "vpp/UPLOAD_FAILURE",
+    UPLOAD_TOKEN = "vpp/UPLOAD_TOKEN",
+    INDEX_REQUEST = "vpp/INDEX_REQUEST",
+    INDEX_SUCCESS = "vpp/INDEX_SUCCESS",
+    INDEX_FAILURE = "vpp/INDEX_FAILURE",
+}
 
-export type TokenActionRequest = RSAAReadActionRequest<TOKEN_REQUEST, TOKEN_SUCCESS, TOKEN_FAILURE>;
-export type TokenActionResponse = RSAAReadActionResponse<TOKEN_REQUEST, TOKEN_SUCCESS, TOKEN_FAILURE, VPPAccount>;
+export interface IVPPAction {
+    type: VPPActionTypes;
+}
+
+export type TokenActionRequest = RSAAReadActionRequest<VPPActionTypes.TOKEN_REQUEST, VPPActionTypes.TOKEN_SUCCESS, VPPActionTypes.TOKEN_FAILURE>;
+export type TokenActionResponse = RSAAReadActionResponse<VPPActionTypes.TOKEN_REQUEST, VPPActionTypes.TOKEN_SUCCESS, VPPActionTypes.TOKEN_FAILURE, VPPAccount>;
 
 export const read: TokenActionRequest = (id: string) => {
     return ({
@@ -29,24 +39,16 @@ export const read: TokenActionRequest = (id: string) => {
             headers: JSON_HEADERS,
             method: "GET",
             types: [
-                TOKEN_REQUEST, TOKEN_SUCCESS, TOKEN_FAILURE,
+                VPPActionTypes.TOKEN_REQUEST,
+                VPPActionTypes.TOKEN_SUCCESS,
+                VPPActionTypes.TOKEN_FAILURE,
             ],
         },
-    } as RSAAction<TOKEN_REQUEST, TOKEN_SUCCESS, TOKEN_FAILURE>);
+    } as RSAAction<VPPActionTypes.TOKEN_REQUEST, VPPActionTypes.TOKEN_SUCCESS, VPPActionTypes.TOKEN_FAILURE>);
 };
 
-export const UPLOAD_TOKEN = "vpp/UPLOAD_TOKEN";
-export type UPLOAD_TOKEN = typeof UPLOAD_TOKEN;
-
-export const UPLOAD_REQUEST = "vpp/UPLOAD_REQUEST";
-export type UPLOAD_REQUEST = typeof UPLOAD_REQUEST;
-export const UPLOAD_SUCCESS = "vpp/UPLOAD_SUCCESS";
-export type UPLOAD_SUCCESS = typeof UPLOAD_SUCCESS;
-export const UPLOAD_FAILURE = "vpp/UPLOAD_FAILURE";
-export type UPLOAD_FAILURE = typeof UPLOAD_FAILURE;
-
-type UploadActionRequest = (file: File) => ThunkAction<void, RootState, void>;
-export type UploadActionResponse = RSAAReadActionResponse<UPLOAD_REQUEST, UPLOAD_SUCCESS, UPLOAD_FAILURE,
+export type UploadActionRequest = (file: File) => ThunkAction<void, RootState, void>;
+export type UploadActionResponse = RSAAReadActionResponse<VPPActionTypes.UPLOAD_REQUEST, VPPActionTypes.UPLOAD_SUCCESS, VPPActionTypes.UPLOAD_FAILURE,
     JSONAPIDetailResponse<VPPAccount, undefined>>;
 
 export const upload = (file: File): ThunkAction<void, RootState, void> => (
@@ -58,7 +60,7 @@ export const upload = (file: File): ThunkAction<void, RootState, void> => (
     data.append("file", file);
     dispatch({
         payload: data,
-        type: UPLOAD_TOKEN,
+        type: VPPActionTypes.UPLOAD_TOKEN,
     });
 
     dispatch({
@@ -67,36 +69,29 @@ export const upload = (file: File): ThunkAction<void, RootState, void> => (
             endpoint: `/api/v1/vpp/upload/token`,
             method: "POST",
             types: [
-                UPLOAD_REQUEST,
-                UPLOAD_SUCCESS,
-                UPLOAD_FAILURE,
+                VPPActionTypes.UPLOAD_REQUEST,
+                VPPActionTypes.UPLOAD_SUCCESS,
+                VPPActionTypes.UPLOAD_FAILURE,
             ],
         },
     });
 };
 
-
-export type INDEX_REQUEST = 'vpp/INDEX_REQUEST';
-export const INDEX_REQUEST: INDEX_REQUEST = 'vpp/INDEX_REQUEST';
-export type INDEX_SUCCESS = 'vpp/INDEX_SUCCESS';
-export const INDEX_SUCCESS: INDEX_SUCCESS = 'vpp/INDEX_SUCCESS';
-export type INDEX_FAILURE = 'vpp/INDEX_FAILURE';
-export const INDEX_FAILURE: INDEX_FAILURE = 'vpp/INDEX_FAILURE';
-
-export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>;
-export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, VPPAccount>;
+export type IndexActionRequest = RSAAIndexActionRequest<VPPActionTypes.INDEX_REQUEST, VPPActionTypes.INDEX_SUCCESS, VPPActionTypes.INDEX_FAILURE>;
+export type IndexActionResponse = RSAAIndexActionResponse<VPPActionTypes.INDEX_REQUEST, VPPActionTypes.INDEX_SUCCESS, VPPActionTypes.INDEX_FAILURE, VPPAccount>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) => {
-    return (<RSAAction<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>>{
+    return (<RSAAction<VPPActionTypes.INDEX_REQUEST, VPPActionTypes.INDEX_SUCCESS, VPPActionTypes.INDEX_FAILURE>>{
         [RSAA]: {
             endpoint: '/api/v1/vpp_accounts?' + queryParameters.join('&'),
             method: (<HTTPVerb>'GET'),
             types: [
-                INDEX_REQUEST,
-                INDEX_SUCCESS,
-                INDEX_FAILURE
+                VPPActionTypes.INDEX_REQUEST,
+                VPPActionTypes.INDEX_SUCCESS,
+                VPPActionTypes.INDEX_FAILURE
             ],
             headers: JSONAPI_HEADERS
         }
     });
 });
+

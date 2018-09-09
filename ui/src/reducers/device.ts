@@ -13,6 +13,7 @@ import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Device, Tag} from "../models";
 import {available_os_updates, AvailableOSUpdatesState} from "./device/available_os_updates";
 import {isArray} from "../guards";
+import {DevicesActionTypes} from "../actions/devices";
 
 
 export interface DeviceState {
@@ -49,20 +50,20 @@ type DevicesAction = ReadActionResponse | InstalledApplicationsActionResponse | 
 
 export function device(state: DeviceState = initialState, action: DevicesAction): DeviceState {
     switch (action.type) {
-        case actions.READ_REQUEST:
+        case DevicesActionTypes.READ_REQUEST:
             return {
                 ...state,
                 loading: true
             };
 
-        case actions.READ_FAILURE:
+        case DevicesActionTypes.READ_FAILURE:
             return {
                 ...state,
                 error: true,
                 errorDetail: action.payload
             };
 
-        case actions.READ_SUCCESS:
+        case DevicesActionTypes.READ_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,

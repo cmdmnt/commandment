@@ -1,10 +1,9 @@
-import * as actions from '../actions/devices';
 import {
+    DevicesActionTypes,
     IndexActionResponse
 } from "../actions/devices";
 import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Device} from "../models";
-
 
 export interface DeviceIdMap {
     [deviceId: string]: JSONAPIObject<Device>;
@@ -39,20 +38,20 @@ type DevicesAction = IndexActionResponse;
 
 export function devices(state: DevicesState = initialState, action: DevicesAction): DevicesState {
     switch (action.type) {
-        case actions.INDEX_REQUEST:
+        case DevicesActionTypes.INDEX_REQUEST:
             return {
                 ...state,
                 loading: true
             };
 
-        case actions.INDEX_FAILURE:
+        case DevicesActionTypes.INDEX_FAILURE:
             return {
                 ...state,
                 error: true,
                 errorDetail: action.payload
             };
 
-        case actions.INDEX_SUCCESS:
+        case DevicesActionTypes.INDEX_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
@@ -78,7 +77,6 @@ export function devices(state: DevicesState = initialState, action: DevicesActio
                     recordCount: action.payload.meta.count
                 };
             }
-
 
         // case actions.DELETE_REQUEST:
         //     return {

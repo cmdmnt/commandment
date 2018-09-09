@@ -2,15 +2,17 @@ import * as React from "react";
 import {connect, Dispatch, MapStateToProps} from "react-redux";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
-
-import * as Dropzone from "react-dropzone";
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-// import {read as fetchTokenInfo, TokenActionRequest,
-//     upload, UploadActionRequest} from "../../actions/vpp";
-import {VPPAccountDetail} from "../../components/vpp/VPPAccountDetail";
 import {DEPState} from "../../reducers/configuration/dep";
 import {RootState} from "../../reducers/index";
+import {DEPAccountsTable} from "../../components/griddle-tables/DEPAccountsTable";
+import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown";
+import {Link} from "react-router-dom";
+import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
+import {
+    IndexActionRequest, index
+} from "../../actions/settings/dep";
 
 interface RouteProps {
 
@@ -21,8 +23,7 @@ interface ReduxStateProps {
 }
 
 interface ReduxDispatchProps {
-    // fetchTokenInfo: TokenActionRequest;
-    // upload: UploadActionRequest;
+    index: IndexActionRequest;
 }
 
 interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteProps> {
@@ -32,7 +33,7 @@ interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentPr
 export class UnconnectedDEPAccountsPage extends React.Component<OwnProps, void> {
 
     componentWillMount?() {
-        // this.props.fetchTokenInfo();
+        this.props.index();
     }
 
 
@@ -42,17 +43,18 @@ export class UnconnectedDEPAccountsPage extends React.Component<OwnProps, void> 
         } = this.props;
 
         return (
-            <Container className="VPPPage">
+            <Container className="DEPAccountsPage">
                 <Header as="h1">DEP Accounts</Header>
-                {/*<Dropzone*/}
-                    {/*onDrop={this.handleDrop}*/}
-                    {/*className="dropzone"*/}
-                    {/*activeClassName="dropzone-active"*/}
-                    {/*rejectClassName="dropzone-reject"*/}
-                    {/*style={{}}>*/}
-                    {/*<Header as="h3">Drop .vpptoken or Click to upload</Header>*/}
-                {/*</Dropzone>*/}
-                {data && <VPPAccountDetail {...data} />}
+                <Grid>
+                    <Grid.Column>
+                        <Dropdown text="Add" icon="plus" labeled button className="icon">
+                            <Dropdown.Menu>
+                                <Dropdown.Item as={Link} to="/settings/dep/accounts/add">New DEP Account</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </Grid.Column>
+                </Grid>
+                <DEPAccountsTable data={[]} />
             </Container>
         );
     }
@@ -63,7 +65,6 @@ export const DEPAccountsPage = connect<ReduxStateProps, ReduxDispatchProps, OwnP
         dep: state.configuration.dep,
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({
-        // fetchTokenInfo,
-        // upload,
+        index
     }, dispatch),
 )(UnconnectedDEPAccountsPage);

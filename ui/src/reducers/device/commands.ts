@@ -1,4 +1,4 @@
-import {COMMANDS_SUCCESS, CommandsActionResponse} from "../../actions/devices";
+import {CommandsActionResponse, DevicesActionTypes} from "../../actions/devices";
 import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {Command} from "../../models";
 import {OtherAction} from "../../actions/constants";
@@ -17,7 +17,7 @@ type DeviceCommandsAction = CommandsActionResponse | OtherAction;
 
 export function commands(state: DeviceCommandsState = initialState, action: DeviceCommandsAction): DeviceCommandsState {
     switch (action.type) {
-        case COMMANDS_SUCCESS:
+        case DevicesActionTypes.COMMANDS_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return state;
             } else {

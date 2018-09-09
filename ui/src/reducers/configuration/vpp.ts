@@ -1,7 +1,5 @@
-import * as actions from "../../actions/vpp";
+import {IVPPAction, TokenActionResponse, VPPActionTypes} from "../../actions/vpp";
 import {VPPAccount} from "../../models";
-import {TokenActionResponse} from "../../actions/vpp";
-import {isJSONAPIErrorResponsePayload} from "../../json-api";
 
 export interface VPPState {
     data?: VPPAccount;
@@ -21,18 +19,18 @@ type VPPAction = TokenActionResponse;
 
 export function vpp(state: VPPState = initialState, action: VPPAction): VPPState {
     switch (action.type) {
-        case actions.TOKEN_REQUEST:
+        case VPPActionTypes.TOKEN_REQUEST:
             return {
                 ...state,
                 loading: true
             };
-        case actions.TOKEN_SUCCESS:
+        case VPPActionTypes.TOKEN_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 data: action.payload
             };
-        case actions.TOKEN_FAILURE:
+        case VPPActionTypes.TOKEN_FAILURE:
             return {
                 ...state,
                 error: true

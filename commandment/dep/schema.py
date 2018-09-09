@@ -93,6 +93,8 @@ class MDMServiceURL(Schema):
 
 class DEPAccountSchema(Schema):
     """DEP Account Details"""
+
+    # stoken
     consumer_key = fields.String()
     consumer_secret = fields.String(load_only=True)
     access_token = fields.String()
@@ -101,6 +103,7 @@ class DEPAccountSchema(Schema):
     token_updated_at = fields.DateTime(dump_only=True)
     auth_session_token = fields.String(load_only=True)
 
+    # org
     server_name = fields.String()
     server_uuid = fields.UUID()
     admin_id = fields.String()
@@ -109,11 +112,12 @@ class DEPAccountSchema(Schema):
     org_email = fields.Email()
     org_phone = fields.String()
     org_address = fields.String()
-    urls = fields.Nested(MDMServiceURL, many=True)
+    # urls = fields.Nested(MDMServiceURL, many=True)
     org_type = fields.String()
     org_version = fields.String()
     org_id = fields.String()
     org_id_hash = fields.String()
+    url = fields.String()
 
     cursor = fields.String()
     more_to_follow = fields.Boolean()

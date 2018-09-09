@@ -23,21 +23,19 @@ from commandment.profiles import PROFILE_CONTENT_TYPE
 from commandment.pki.ca import get_ca
 from commandment.dep import smime
 
-from .resources import DEPProfileList, DEPProfileDetail, DEPProfileRelationship
+from .resources import DEPProfileList, DEPProfileDetail, DEPProfileRelationship, DEPAccountList, DEPAccountDetail
 import plistlib
 import json
 
 dep_app = Blueprint('dep_app', __name__)
 api = Api(blueprint=dep_app)
 
-api.route(DEPProfileList, 'dep_profile_list', '/v1/dep/profiles/')
-api.route(DEPProfileDetail, 'dep_profile_detail', '/v1/dep/profiles/<int:dep_profile_id>')
-api.route(DEPProfileRelationship, 'dep_profile_devices', '/v1/dep/profiles/<int:dep_profile_id>/relationships/devices')
-
-
-@dep_app.route('/v1/dep/account', methods=["GET"])
-def account():
-    pass
+api.route(DEPProfileList, 'dep_profile_list', '/api/v1/dep/profiles/')
+api.route(DEPProfileDetail, 'dep_profile_detail', '/api/v1/dep/profiles/<int:dep_profile_id>')
+api.route(DEPProfileRelationship, 'dep_profile_devices',
+          '/api/v1/dep/profiles/<int:dep_profile_id>/relationships/devices')
+api.route(DEPAccountList, 'dep_account_list', '/api/v1/dep/accounts/')
+api.route(DEPAccountDetail, 'dep_account_detail', '/api/v1/dep/accounts/<int:dep_account_id>')
 
 
 @dep_app.route('/dep/certificate/download', methods=["GET"])
