@@ -1,24 +1,75 @@
-# --------------
-# Flask settings
-# --------------
+from os import path
+dirname = path.dirname(__file__)
 
-DEBUG = False
+# The public facing hostname of the MDM
+# This will also be used as the self signed certificate dnsname
+PUBLIC_HOSTNAME = 'commandment.dev'
+
+# Development mode listen port
 PORT = 5443
 
 # Configure your Database URI.
 # All SQLAlchemy options are available here:
 # http://flask-sqlalchemy.pocoo.org/2.1/config/
-
 SQLALCHEMY_DATABASE_URI = 'sqlite:////commandment/commandment.db'
+# SQLALCHEMY_DATABASE_ECHO = True
+# SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-# --------------------
-# commandment settings
-# --------------------
+# ---------------
+# Certificates
+# ---------------
 
-PUSH_CERTIFICATE = '/push.p12'
-PUSH_CERTIFICATE_KEY = '/push.key'
-PUSH_CERTIFICATE_PASSWORD = 'sekret'
+# [APNS]
+# You may supply the certificate as a pair of PEM encoded files, or as a .p12 container.
+# If you supply .p12 it will be encoded as a PEM keypair
+# -----
 
+# If commandment is running in development mode, specify the path to the certificate and private key.
+# These can also be generated at start up.
+# Normally SSL should be handled by Apache/Nginx/etc.
+
+# [SSL]
+# Specify the Enterprise CA here if Apple Devices won't natively trust your CA eg. If you are using a
+# self-signed CA or Enterprise CA Certificate.
+# -----
 CA_CERTIFICATE = '/etc/nginx/ssl/ca.crt'
+
+# Specify the development web server SSL certificate.
+# This only applies if you are running via the CLI or flask run
+# -----
 SSL_CERTIFICATE = '/etc/nginx/ssl/ssl.crt'
 SSL_RSA_KEY = '/etc/nginx/ssl/ssl.key'
+
+# If not using external storage, the path to the root directory for upload storage.
+# This should not be used in production.
+# -----
+STORAGE_ROOT = path.join(dirname, 'storage')
+
+# -------------------------
+# SCEP via SCEPy (optional)
+# -------------------------
+
+# Directory where certs, revocation lists, serials etc will be kept
+# -----
+SCEPY_CA_ROOT = "/path/to/ca"
+
+# X.509 Name Attributes used to generate the CA Certificate.
+# -----
+SCEPY_CA_X509_CN = 'SCEPY-CA'
+SCEPY_CA_X509_O = 'SCEPy'
+SCEPY_CA_X509_C = 'AU'
+
+# SubjectAltName extension is always on and will use this DNSName
+SAN_DNSNAME = 'scepy.dev'
+
+# (Optional) SCEP static challenge. This will have to be part of your SCEP profile
+# -----
+SCEPY_CHALLENGE = 'sekret'
+
+# Raw data will be dumped to this directory for inspection with tools such as OpenSSL (openssl asn1parse)
+# -----
+SCEPY_DUMP_DIR = '/tmp/scepy_dump'
+
+# If the GetCACert would return a single cert, force it to use a CMS degenerate case?
+# -----
+SCEPY_FORCE_DEGENERATE_FOR_SINGLE_CERT = False

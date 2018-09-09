@@ -7,9 +7,9 @@ SSL_HOSTNAME=${SSL_HOSTNAME:-"commandment.test"}
 PYTHONPATH=/commandment
 export PYTHONPATH
 
-echo "Initialising database..."
-touch /commandment/commandment.db
-/usr/local/bin/alembic --config /commandment/alembic.ini -x data=true upgrade head
+#echo "Initialising database..."
+#touch /commandment/commandment.db
+#/usr/local/bin/alembic --config /commandment/alembic.ini -x data=true upgrade head
 
 if [[ ! -f /etc/nginx/ssl/ssl.crt || ! -f /etc/nginx/ssl.key ]]; then
     echo "Did not find any SSL certificate to use. SSL is required for MDM."
@@ -22,9 +22,9 @@ if [[ ! -f /etc/nginx/ssl/ssl.crt || ! -f /etc/nginx/ssl.key ]]; then
         req_extensions = v3_req
         prompt = no
         [req_distinguished_name]
-        C = AU
-        ST = New South Wales
-        L = Sydney
+        C = US
+        ST = California
+        L = Cupertino
         O = Commandment
         OU = MDM
         CN = ${SSL_HOSTNAME}

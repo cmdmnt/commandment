@@ -21,7 +21,7 @@ from commandment.pki.ca import get_ca
 from flask import Flask
 
 startup_thread = None
-startup_delay = 5.0
+startup_delay = 1.0
 
 logger = logging.getLogger('startup thread')
 
@@ -36,6 +36,10 @@ def generate_ca(app: Flask):
 def split_pkcs12(app: Flask):
     """Split up .p12 containers if necessary."""
     with app.app_context():
+        if 'PUSH_CERTIFICATE' not in app.config:
+            app.logger.warn('No push certificate specified, you will not be able to manage devices until this is configured')
+            return
+
         push_certificate_path = app.config['PUSH_CERTIFICATE']
         if not os.path.exists(push_certificate_path):
             raise RuntimeError('You specified a push certificate at: {}, but it does not exist.'.format(push_certificate_path))
