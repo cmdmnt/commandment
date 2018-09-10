@@ -13,6 +13,8 @@ import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 import {
     IndexActionRequest, index
 } from "../../actions/settings/dep";
+import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
+import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
 
 interface RouteProps {
 
@@ -47,14 +49,17 @@ export class UnconnectedDEPAccountsPage extends React.Component<OwnProps, void> 
                 <Header as="h1">DEP Accounts</Header>
                 <Grid>
                     <Grid.Column>
-                        <Dropdown text="Add" icon="plus" labeled button className="icon">
-                            <Dropdown.Menu>
-                                <Dropdown.Item as={Link} to="/settings/dep/accounts/add">New DEP Account</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
+                        <Button icon labelPosition='left' as={Link} to="/settings/dep/accounts/add">
+                            <Icon name='plus' />
+                            New
+                        </Button>
                     </Grid.Column>
                 </Grid>
-                <DEPAccountsTable data={[]} />
+                <Grid>
+                    <Grid.Column>
+                        <DEPAccountsTable data={[]} />
+                    </Grid.Column>
+                </Grid>
             </Container>
         );
     }
