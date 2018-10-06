@@ -3,6 +3,7 @@ import Griddle, {ColumnDefinition, GriddlePageProperties, RowDefinition} from "g
 import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui";
 import {SelectionPlugin} from "../../griddle-plugins/selection";
 import {SimpleLayout} from "../griddle/SimpleLayout";
+import {SinceNowUTC} from "../griddle/SinceNowUTC";
 
 export interface IDEPAccountsTableProps {
     data: any;
@@ -22,8 +23,9 @@ export const DEPAccountsTable: React.StatelessComponent<IDEPAccountsTableProps> 
         components={{ Layout: SimpleLayout }}
     >
         <RowDefinition>
-            <ColumnDefinition title="ID" id="attributes.id" />
+            <ColumnDefinition title="Organization" id="attributes.org_name" />
             <ColumnDefinition title="Server Name" id="attributes.server_name" />
+            <ColumnDefinition title="Token Expires" id="attributes.access_token_expiry" customComponent={SinceNowUTC} />
         </RowDefinition>
     </Griddle>
 );

@@ -57,7 +57,7 @@ export class UnconnectedDEPAccountsPage extends React.Component<OwnProps, void> 
                 </Grid>
                 <Grid>
                     <Grid.Column>
-                        <DEPAccountsTable data={[]} />
+                        <DEPAccountsTable data={data} />
                     </Grid.Column>
                 </Grid>
             </Container>

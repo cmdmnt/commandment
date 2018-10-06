@@ -26,3 +26,5 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) =>
         }
     });
 });
+
+export type DEPActions = IndexActionResponse;
