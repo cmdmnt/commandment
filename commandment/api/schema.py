@@ -70,6 +70,9 @@ class DeviceSchema(Schema):
     #     related_view_kwargs={'certificate_id': '<id>'},
     # )
 
+    # DEP
+    description = fields.Str()
+
     commands = Relationship(
         related_view='api_app.commands_list',
         related_view_kwargs={'device_id': '<id>'},

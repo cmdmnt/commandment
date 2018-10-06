@@ -18,7 +18,7 @@ export class DeviceColumn extends React.Component<DeviceColumnProps, undefined> 
         return (
             <div>
                 <Link to={`/devices/${rowData.id}`}>
-                    <span>{ rowData.attributes.device_name }</span>
+                    <span>{ rowData.attributes.device_name ? rowData.attributes.device_name : `DEP ${rowData.attributes.description}`  }</span>
                 </Link>
             </div>
         )

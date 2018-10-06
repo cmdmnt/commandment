@@ -54,6 +54,7 @@ signxml = "*"
 ukpostcodeparser = "*"
 sqlalchemy = "*"
 cryptography = "*"
+python-dateutil = "*"
 
 [dev-packages]
 alembic-viz = "*"

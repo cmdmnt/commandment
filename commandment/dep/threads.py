@@ -29,6 +29,7 @@ from commandment.dep.models import DEPAccount
 from commandment.dep.dep import DEP
 from commandment.dep import DEPOrgType, DEPOrgVersion, DEPOperationType
 import sqlalchemy.orm.exc
+import sqlalchemy.exc
 
 dep_thread = None
 dep_start = 5
@@ -146,6 +147,13 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
                 d.is_dep = True
 
             except sqlalchemy.orm.exc.NoResultFound:
+                app.logger.debug('No existing device record for serial: %s', device['serial_number'])
+
+                if device['profile_status'] != 'empty':
+                    device['profile_assign_time'] = dateutil.parser.parse(device['profile_assign_time'])
+
+                device['device_assigned_date'] = dateutil.parser.parse(device['device_assigned_date'])
+
                 if 'op_type' in device:
                     del device['op_type']
                     del device['op_date']
@@ -156,10 +164,13 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
                 d.is_dep = True
                 thread_session.add(d)
 
+            except sqlalchemy.exc.StatementError as e:
+                app.logger.error('Got a statement error trying to insert a DEP device: {}'.format(e))
+
         app.logger.debug('Last DEP Cursor was: %s', device_page['cursor'])
         dep_account.cursor = device_page.get('cursor', None)
         dep_account.more_to_follow = device_page.get('more_to_follow', None)
-        dep_account.fetched_until = dateutil.parser.parse(device_page['fetched_until'])
+        # dep_account.fetched_until = dateutil.parser.parse(device_page['fetched_until'])
         thread_session.commit()
 
 
