@@ -14,6 +14,7 @@ Contents:
    about-mdm
    installing/macos
    user/configuration
+   user/dep
    developer/index
    api/index
    internal/index

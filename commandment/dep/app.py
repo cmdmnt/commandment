@@ -72,10 +72,12 @@ def certificate_download():
             default_backend()
         )
         request_model = CertificateSigningRequest.from_crypto(request)
+        request_model.rsa_private_key = private_key_model
         db.session.add(request_model)
 
         certificate = ca.sign(request)
         certificate_model = DEPServerTokenCertificate.from_crypto(certificate)
+        certificate_model.rsa_private_key = private_key_model
         db.session.add(certificate_model)
 
         db.session.commit()
@@ -106,6 +108,8 @@ def stoken_upload():
         return abort(400, "No DEP certificate generated, impossible to decrypt the DEP token")
 
     pk: RSAPrivateKey = certificate_model.rsa_private_key
+    if pk is None:
+        return abort(500, 'Missing RSA Private Key for uploaded DEP token.')
     pk_crypto = pk.to_crypto()
 
     smime_data = f.read()
@@ -134,6 +138,9 @@ def stoken_upload():
     dep_account.token_updated_at = datetime.datetime.utcnow()
 
     db.session.commit()
+    current_app.logger.debug('Saved DEP stoken')
+
+    return jsonify(stoken)
 
 
 @dep_app.route('/dep/enroll', methods=["POST"])

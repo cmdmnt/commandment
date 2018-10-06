@@ -48,8 +48,8 @@ Otherwise, if you need to provide a **PKCS#12** ``.p12`` file, you will also nee
 
 
 
-Complete Reference
-------------------
+Nuts and Bolts
+--------------
 
 - For flask web application settings, refer to `Flask - Built In Configuration Values <http://flask.pocoo.org/docs/0.12/config/#builtin-configuration-values>`_.
 - For database settings, refer to `Flask-SQLAlchemy Configuration <http://flask-sqlalchemy.pocoo.org/2.2/config/>`_.

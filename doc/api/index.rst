@@ -11,7 +11,8 @@ All of the API is generated via the `flask-rest-jsonapi <http://flask-rest-jsona
 .. toctree::
     :maxdepth: 2
 
-    certificates.rst
+    certificates
     commands
-    devices.rst
-    organization.rst
+    dep
+    devices
+    organization
