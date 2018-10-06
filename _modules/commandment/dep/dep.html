@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>commandment.dep.dep &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   
@@ -160,8 +161,8 @@
 <div class="viewcode-block" id="DEP.from_token"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.from_token">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_token</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># (str) -&gt; DEP</span>
         <span class="sd">&quot;&quot;&quot;Instantiate the DEP client instance from a string holding the service token json content.&quot;&quot;&quot;</span>
-        <span class="n">stoken</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">token</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">stoken</span><span class="p">)</span>
+        <span class="n">stoken</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">stoken</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_response_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;This method always exists as a response hook in order to keep some of the state returned by the</span>
@@ -219,8 +220,8 @@
             <span class="n">res</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DEPServiceError</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">request</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-</div>
-        <span class="k">return</span> <span class="n">res</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
 
 <div class="viewcode-block" id="DEP.fetch_token"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.fetch_token">[docs]</a>    <span class="k">def</span> <span class="nf">fetch_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Request a new session token using our DEP credentials.</span>
@@ -234,8 +235,8 @@
         <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DEPServiceError</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">request</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_session_token</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;auth_session_token&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session_token</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;auth_session_token&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_token</span></div>
 
 <div class="viewcode-block" id="DEP.account"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.account">[docs]</a>    <span class="k">def</span> <span class="nf">account</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get Account Details</span>
@@ -257,8 +258,8 @@
 <span class="sd">               Union[None, dict]: The account information, or None if it failed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Fetching DEP account information&quot;</span><span class="p">)</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">+</span> <span class="s2">&quot;/account&quot;</span><span class="p">))</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">+</span> <span class="s2">&quot;/account&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DEP.fetch_devices"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.fetch_devices">[docs]</a>    <span class="k">def</span> <span class="nf">fetch_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Fetch a list of DEP devices</span>
@@ -270,8 +271,8 @@
 <span class="sd">              dict: Response as per the sync devices documentation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">+</span> <span class="s2">&quot;/server/devices&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">,</span> <span class="s1">&#39;cursor&#39;</span><span class="p">:</span> <span class="n">cursor</span><span class="p">})</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DEP.sync_devices"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.sync_devices">[docs]</a>    <span class="k">def</span> <span class="nf">sync_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Fetch devices changed since the cursor was issued.</span>
@@ -283,8 +284,8 @@
 <span class="sd">              dict: Response as per the sync devices documentation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">+</span> <span class="s2">&quot;/devices/sync&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">,</span> <span class="s1">&#39;cursor&#39;</span><span class="p">:</span> <span class="n">cursor</span><span class="p">})</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DEP.devices"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.devices">[docs]</a>    <span class="k">def</span> <span class="nf">devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get an iterable object which calls fetch or sync to retrieve all device records.</span>
@@ -296,10 +297,10 @@
 <span class="sd">        Returns:</span>
 <span class="sd">              Union[DEPSyncCursor, DEPFetchCursor]: A cursor that is iterable</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">cursor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">DEPSyncCursor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span></div>
-            <span class="k">return</span> <span class="n">DEPFetchCursor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cursor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Could actually be an expired cursor here</span>
+            <span class="k">return</span> <span class="n">DEPSyncCursor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DEPFetchCursor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DEP.device_detail"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.device_detail">[docs]</a>    <span class="k">def</span> <span class="nf">device_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">serial_numbers</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]):</span>
         <span class="sd">&quot;&quot;&quot;Fetch detail about a list of devices</span>
@@ -311,8 +312,8 @@
 <span class="sd">              dict: Device information</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">+</span> <span class="s2">&quot;/devices&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;devices&#39;</span><span class="p">:</span> <span class="n">serial_numbers</span><span class="p">})</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DEP.define_profile"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.define_profile">[docs]</a>    <span class="k">def</span> <span class="nf">define_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Define a DEP profile</span>
@@ -322,8 +323,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">+</span> <span class="s2">&quot;/profile&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">profile</span><span class="p">)</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DEP.assign_profile"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.assign_profile">[docs]</a>    <span class="k">def</span> <span class="nf">assign_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">serial_numbers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Assign an existing profile to device(s)</span>
@@ -337,8 +338,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">+</span> <span class="s2">&quot;/profile/devices&quot;</span><span class="p">,</span>
                                <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;profile_uuid&#39;</span><span class="p">:</span> <span class="n">profile_uuid</span><span class="p">,</span> <span class="s1">&#39;devices&#39;</span><span class="p">:</span> <span class="n">serial_numbers</span><span class="p">})</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DEP.remove_profile"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.remove_profile">[docs]</a>    <span class="k">def</span> <span class="nf">remove_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">serial_numbers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DEPProfileRemovals</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Unassign all profiles from device(s)</span>
@@ -351,8 +352,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">+</span> <span class="s2">&quot;/profile/devices&quot;</span><span class="p">,</span>
                                <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;devices&#39;</span><span class="p">:</span> <span class="n">serial_numbers</span><span class="p">})</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DEP.profile"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.profile">[docs]</a>    <span class="k">def</span> <span class="nf">profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get an existing profile by its UUID.</span>
@@ -365,15 +366,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;profile_uuid&#39;</span><span class="p">:</span> <span class="n">uuid</span><span class="p">}</span> <span class="k">if</span> <span class="n">uuid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">+</span> <span class="s2">&quot;/profile&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DEP.activation_lock"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.activation_lock">[docs]</a>    <span class="k">def</span> <span class="nf">activation_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                         <span class="n">serial_number</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                         <span class="n">escrow_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="n">lost_message</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Lock a device with Activation Lock.&quot;&quot;&quot;</span></div>
-        <span class="k">pass</span>
+        <span class="sd">&quot;&quot;&quot;Lock a device with Activation Lock.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DEP.activation_lock_bypass"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.activation_lock_bypass">[docs]</a>    <span class="k">def</span> <span class="nf">activation_lock_bypass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                                <span class="n">serial_number</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -383,15 +384,15 @@
                                <span class="n">escrow_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                                <span class="n">imei</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                                <span class="n">meid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove Activation Lock from a device.&quot;&quot;&quot;</span></div>
-        <span class="k">pass</span>
+        <span class="sd">&quot;&quot;&quot;Remove Activation Lock from a device.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DEP.disown"><a class="viewcode-back" href="../../../internal/dep/dep.html#commandment.dep.dep.DEP.disown">[docs]</a>    <span class="k">def</span> <span class="nf">disown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">serial_numbers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;Disown devices.</span>
 
 <span class="sd">        This action is PERMANENT (except in the case of iPads added via Apple Configurator 2).</span>
-<span class="sd">        &quot;&quot;&quot;</span></div></div>
-        <span class="k">pass</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
 
 
 <span class="k">class</span> <span class="nc">DEPBaseCursor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -440,12 +441,13 @@
     <span class="sd">&quot;&quot;&quot;DEPSyncCursor wraps the DEP device sync cursor as an iterable object.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">DEP</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">DEPSyncCursor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cursor&#39;</span><span class="p">:</span> <span class="n">cursor</span><span class="p">,</span> <span class="s1">&#39;more_to_follow&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">more_to_follow</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">fetch_devices</span><span class="p">(</span><span class="n">cursor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">sync_devices</span><span class="p">(</span><span class="n">cursor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span>
 </pre></div>

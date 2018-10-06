@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>Non-Standardised API &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="JSON-API v1" href="json-api.html" />
@@ -146,6 +147,10 @@
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td><a class="reference external" href="#post--api-v1-devices-test-(int-device_id)">POST /api/v1/devices/test/(int:device_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#get--api-v1-devices-(int-device_id)-clear_passcode">GET /api/v1/devices/(int:device_id)/clear_passcode</a></td>
 <td>&#160;</td>
 </tr>
 </tbody>
@@ -339,6 +344,40 @@ uploaded profiles.</div></blockquote>
 <dt id="post--api-v1-devices-test-(int-device_id)">
 <code class="descname">POST </code><code class="descname">/api/v1/devices/test/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#post--api-v1-devices-test-(int-device_id)" title="Permalink to this definition">¶</a></dt>
 <dd><p>Testing endpoint for quick and dirty command checking</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--api-v1-devices-(int-device_id)-clear_passcode">
+<code class="descname">GET </code><code class="descname">/api/v1/devices/</code><span class="sig-paren">(</span><em class="property">int: </em><em>device_id</em><span class="sig-paren">)</span><code class="descname">/clear_passcode</code><a class="headerlink" href="#get--api-v1-devices-(int-device_id)-clear_passcode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enqueues a ClearPasscode command for the device id specified.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-5.3.2">Accept</a> – application/vnd.api+json</li>
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – <p>?</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/vnd.api+json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a> – command created</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> – not applicable to this device</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">404 Not Found</a> – device with this identifier was not found</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a> – system error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

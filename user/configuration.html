@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,14 +18,15 @@
     <title>Configuration &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Developer Documentation" href="../developer/index.html" />
-    <link rel="prev" title="Installation" href="install.html" />
+    <link rel="next" title="DEP (Device Enrollment Program)" href="dep.html" />
+    <link rel="prev" title="Installation" href="../installing/macos.html" />
   
    
 
@@ -43,13 +44,12 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../developer/index.html" title="Developer Documentation"
+          <a href="dep.html" title="DEP (Device Enrollment Program)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="install.html" title="Installation"
+          <a href="../installing/macos.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">commandment 1.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">commandment 1.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="container-wrapper">
@@ -68,7 +68,7 @@
 <li><a class="reference internal" href="#database-connection">Database Connection</a></li>
 <li><a class="reference internal" href="#self-signed-ssl-certificate">Self-Signed SSL Certificate</a></li>
 <li><a class="reference internal" href="#mdm-push-certificate">MDM Push Certificate</a></li>
-<li><a class="reference internal" href="#complete-reference">Complete Reference</a></li>
+<li><a class="reference internal" href="#nuts-and-bolts">Nuts and Bolts</a></li>
 </ul>
 </li>
 </ul>
@@ -77,11 +77,11 @@
   </div>
 </div>
   <h4>Previous topic</h4>
-  <p class="topless"><a href="install.html"
+  <p class="topless"><a href="../installing/macos.html"
                         title="previous chapter">Installation</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../developer/index.html"
-                        title="next chapter">Developer Documentation</a></p>
+  <p class="topless"><a href="dep.html"
+                        title="next chapter">DEP (Device Enrollment Program)</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -111,8 +111,6 @@
             <ol class="breadcrumb">
               <li><a href="../index.html">Docs</a></li>
               
-                <li><a href="index.html">User Documentation</a></li>
-              
               <li>Configuration</li>
             </ol>
           </div>
@@ -121,7 +119,7 @@
             
   <div class="section" id="configuration">
 <h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
-<p>An example configuration <a class="reference external" href="https://github.com/mosen/commandment/blob/master/settings.cfg.example">is provided</a> with
+<p>An example configuration <a class="reference external" href="https://github.com/cmdmnt/commandment/blob/master/settings.cfg.example">is provided</a> with
 the source code.</p>
 <p>It is recommended to copy this file to your own <code class="docutils literal notranslate"><span class="pre">settings.cfg</span></code>, and make modifications to that file.</p>
 <p>When commandment runs, it will expect an environment variable <code class="docutils literal notranslate"><span class="pre">COMMANDMENT_SETTINGS</span></code>, that contains the full path
@@ -159,8 +157,8 @@ file:</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="complete-reference">
-<h2>Complete Reference<a class="headerlink" href="#complete-reference" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="nuts-and-bolts">
+<h2>Nuts and Bolts<a class="headerlink" href="#nuts-and-bolts" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>For flask web application settings, refer to <a class="reference external" href="http://flask.pocoo.org/docs/0.12/config/#builtin-configuration-values">Flask - Built In Configuration Values</a>.</li>
 <li>For database settings, refer to <a class="reference external" href="http://flask-sqlalchemy.pocoo.org/2.2/config/">Flask-SQLAlchemy Configuration</a>.</li>
@@ -174,11 +172,11 @@ file:</p>
   <div class="footer-relations">
     
       <div class="pull-left">
-        <a class="btn btn-default" href="install.html" title="previous chapter (use the left arrow)">Installation</a>
+        <a class="btn btn-default" href="../installing/macos.html" title="previous chapter (use the left arrow)">Installation</a>
       </div>
     
       <div class="pull-right">
-        <a class="btn btn-default" href="../developer/index.html" title="next chapter (use the right arrow)">Developer Documentation</a>
+        <a class="btn btn-default" href="dep.html" title="next chapter (use the right arrow)">DEP (Device Enrollment Program)</a>
       </div>
     </div>
     <div class="clearer"></div>
@@ -199,13 +197,12 @@ file:</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../developer/index.html" title="Developer Documentation"
+          <a href="dep.html" title="DEP (Device Enrollment Program)"
              >next</a> |</li>
         <li class="right" >
-          <a href="install.html" title="Installation"
+          <a href="../installing/macos.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">commandment 1.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >User Documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">commandment 1.0 documentation</a> &#187;</li> 
       </ul>
     </div>
 <script type="text/javascript">

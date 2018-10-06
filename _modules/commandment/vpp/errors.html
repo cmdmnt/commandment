@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>commandment.vpp.errors &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   
@@ -124,13 +125,13 @@
     <span class="n">RegisteredUserNotFound</span> <span class="o">=</span> <span class="mi">9636</span>
     <span class="n">STokenPermissionDenied</span> <span class="o">=</span> <span class="mi">9637</span>
     <span class="n">FacilitatorHasNoManagedID</span> <span class="o">=</span> <span class="mi">9638</span>
-    <span class="n">FacilitatorMemberIDNotFound</span> <span class="o">=</span> <span class="mi">9639</span></div>
-    <span class="n">FacilitatorDetailsNotAvailable</span> <span class="o">=</span> <span class="mi">9640</span>
+    <span class="n">FacilitatorMemberIDNotFound</span> <span class="o">=</span> <span class="mi">9639</span>
+    <span class="n">FacilitatorDetailsNotAvailable</span> <span class="o">=</span> <span class="mi">9640</span></div>
     
 
 <div class="viewcode-block" id="VPPError"><a class="viewcode-back" href="../../../internal/vpp/errors.html#commandment.vpp.errors.VPPError">[docs]</a><span class="k">class</span> <span class="nc">VPPError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generic error used when the service returns an error of any kind&quot;&quot;&quot;</span></div>
-    <span class="k">pass</span>
+    <span class="sd">&quot;&quot;&quot;Generic error used when the service returns an error of any kind&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="VPPAPIError"><a class="viewcode-back" href="../../../internal/vpp/errors.html#commandment.vpp.errors.VPPAPIError">[docs]</a><span class="k">class</span> <span class="nc">VPPAPIError</span><span class="p">(</span><span class="n">VPPError</span><span class="p">):</span>
@@ -141,8 +142,8 @@
 <span class="sd">          message (str): The error message</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errno</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">errno</span> <span class="o">=</span> <span class="n">errno</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errno</span> <span class="o">=</span> <span class="n">errno</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span></div>
 </pre></div>
 
           </div>

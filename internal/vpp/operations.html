@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>VPP License Operations &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="VPP Client" href="vpp.html" />
@@ -109,27 +110,43 @@
 <h1>VPP License Operations<a class="headerlink" href="#vpp-license-operations" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="commandment.vpp.vpp.VPPLicenseOperation">
-<em class="property">class </em><code class="descclassname">commandment.vpp.vpp.</code><code class="descname">VPPLicenseOperation</code><span class="sig-paren">(</span><em>adam_id: int</em>, <em>pricing_param: str = 'STDQ'</em>, <em>license_association_type: Union[commandment.vpp.enum.LicenseAssociationType</em>, <em>NoneType] = None</em>, <em>license_disassociation_type: Union[commandment.vpp.enum.LicenseDisassociationType</em>, <em>NoneType] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPPLicenseOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPPLicenseOperation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">commandment.vpp.vpp.</code><code class="descname">VPPLicenseOperation</code><span class="sig-paren">(</span><em>adam_id: int</em>, <em>pricing_param: str = 'STDQ'</em>, <em>license_association_type: Optional[commandment.vpp.enum.LicenseAssociationType] = None</em>, <em>license_disassociation_type: Optional[commandment.vpp.enum.LicenseDisassociationType] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPPLicenseOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPPLicenseOperation" title="Permalink to this definition">¶</a></dt>
 <dd><p>VPPLicenseOperation represents a number of license operations on a single Adam ID (iTunes Store Product).</p>
 <dl class="attribute">
 <dt id="commandment.vpp.vpp.VPPLicenseOperation._association_type">
 <code class="descname">_association_type</code><a class="headerlink" href="#commandment.vpp.vpp.VPPLicenseOperation._association_type" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>LicenseAssociationType</em> – This specifies the type of association this license operation
+<dd><p>This specifies the type of association this license operation
 represents. The API only accepts one of these in a single request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference internal" href="enum.html#commandment.vpp.enum.LicenseAssociationType" title="commandment.vpp.enum.LicenseAssociationType">LicenseAssociationType</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="commandment.vpp.vpp.VPPLicenseOperation._disassociation_type">
 <code class="descname">_disassociation_type</code><a class="headerlink" href="#commandment.vpp.vpp.VPPLicenseOperation._disassociation_type" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>LicenseDisassociationType</em> – This specifies the type of disassociation this license
+<dd><p>This specifies the type of disassociation this license
 operation represents. The API only accepts one of these in a single request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference internal" href="enum.html#commandment.vpp.enum.LicenseDisassociationType" title="commandment.vpp.enum.LicenseDisassociationType">LicenseDisassociationType</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="commandment.vpp.vpp.VPPUserLicenseOperation">
-<em class="property">class </em><code class="descclassname">commandment.vpp.vpp.</code><code class="descname">VPPUserLicenseOperation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPPUserLicenseOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPPUserLicenseOperation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">commandment.vpp.vpp.</code><code class="descname">VPPUserLicenseOperation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPPUserLicenseOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPPUserLicenseOperation" title="Permalink to this definition">¶</a></dt>
 <dd><p>This object represents a batch operation on a license which will be associated to or disassociated from an
 MDM user. AKA VPP User License Assignment.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -148,7 +165,7 @@ MDM user. AKA VPP User License Assignment.</p>
 
 <dl class="class">
 <dt id="commandment.vpp.vpp.VPPDeviceLicenseOperation">
-<em class="property">class </em><code class="descclassname">commandment.vpp.vpp.</code><code class="descname">VPPDeviceLicenseOperation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPPDeviceLicenseOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPPDeviceLicenseOperation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">commandment.vpp.vpp.</code><code class="descname">VPPDeviceLicenseOperation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPPDeviceLicenseOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPPDeviceLicenseOperation" title="Permalink to this definition">¶</a></dt>
 <dd><p>This object represents a batch operation on a license which will be associated to or disassociated from a
 Device Serial Number. AKA VPP Device License Assignment.</p>
 <table class="docutils field-list" frame="void" rules="none">

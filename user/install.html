@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -67,6 +67,9 @@
 <li><a class="reference internal" href="#">Installation</a><ul>
 <li><a class="reference internal" href="#macos">macOS</a><ul>
 <li><a class="reference internal" href="#manual-installation">Manual Installation</a></li>
+<li><a class="reference internal" href="#ssl">SSL</a></li>
+<li><a class="reference internal" href="#push-notification-certificate">Push Notification Certificate</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
 </ul>
 </li>
 </ul>
@@ -139,12 +142,46 @@ $ brew install nginx
 </pre></div>
 </div>
 </li>
-<li><p class="first">Unpack commandment to <code class="file docutils literal notranslate"><span class="pre">/usr/local/commandment</span></code>.</p>
+<li><p class="first"><em>TODO: upload release tarball. For now you will need to git clone</em> Unpack commandment to <code class="file docutils literal notranslate"><span class="pre">/usr/local/commandment</span></code>.</p>
 </li>
-<li><p class="first">Use this example <a class="reference external" href="/_static/config/nginx-commandment.conf">NGiNX configuration</a>.</p>
+<li><p class="first">Use this example NGiNX configuration (<a class="reference download internal" href="../_downloads/nginx-commandment.conf" download=""><code class="xref download docutils literal notranslate"><span class="pre">download</span></code></a>).
+Copy the downloaded file to <code class="file docutils literal notranslate"><span class="pre">/usr/local/etc/nginx/servers/commandment.conf</span></code>.</p>
 </li>
-<li><p class="first">Use this example <a class="reference external" href="/_static/config/uwsgi-commandment.ini">uWSGI configuration</a>.</p>
+<li><p class="first">Use this example uWSGI configuration (<a class="reference download internal" href="../_downloads/uwsgi-commandment.ini" download=""><code class="xref download docutils literal notranslate"><span class="pre">download</span></code></a>).
+Copy the downloaded file to <code class="file docutils literal notranslate"><span class="pre">/usr/local/etc/uwsgi/apps-enabled/uwsgi-commandment.ini</span></code>.</p>
 </li>
+</ul>
+</div>
+<div class="section" id="ssl">
+<h3>SSL<a class="headerlink" href="#ssl" title="Permalink to this headline">¶</a></h3>
+<p>MDM more or less requires an SSL certificate. The example NGiNX configuration file above expects a private key, located
+at <code class="file docutils literal notranslate"><span class="pre">/usr/local/commandment/server.key</span></code> and a certificate, located at <code class="file docutils literal notranslate"><span class="pre">/usr/local/commandment/server.crt</span></code>.</p>
+<p>For a production instance, you will require an SSL certificate issued by a 3rd party for the chosen domain. However,
+as this is a macOS installation guide, You may also use a self-signed certificate.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Creating SSL certificates is outside of the scope of this document.</p>
+</div>
+</div>
+<div class="section" id="push-notification-certificate">
+<h3>Push Notification Certificate<a class="headerlink" href="#push-notification-certificate" title="Permalink to this headline">¶</a></h3>
+<p>You need a push certificate to tell devices when to check-in.</p>
+<p>You have three options:</p>
+<ul class="simple">
+<li>Sign up for an Apple Enterprise Developer Account (ca. $400 USD). Enable the MDM option and sign your own Push Certificate
+request.</li>
+<li>Register on <a class="reference external" href="https://mdmcert.download/">mdmcert.download</a>.</li>
+<li>Export the Push Certificate from Profile Manager (really not supported).</li>
+</ul>
+<p>This guide follows the <strong>mdmcert.download</strong> workflow.</p>
+<ul class="simple">
+<li>First, register on <a class="reference external" href="https://mdmcert.download/">mdmcert.download</a>. The e-mail address you use will be the one that
+receives all notifications and certificate signing requests.</li>
+<li><em>TODO</em> visit <code class="docutils literal notranslate"><span class="pre">/apns/mdmcert</span></code> using the web ui to request a new CSR.</li>
+<li><em>TODO</em> upload the CSR received in your e-mail to this same page.</li>
+<li><em>TODO</em> download the decrypted CSR for upload to the APNS portal.</li>
+<li>Go to the Apple Push Certificate Portal and upload the CSR.</li>
+<li>Download the resulting push certificate.</li>
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -152,6 +189,12 @@ $ brew install nginx
 to the MDM service. You should also decide whether to use <a class="reference external" href="https://github.com/mosen/SCEPy">SCEPy</a> for testing or
 another SCEP service such as Microsoft NDES.</p>
 </div>
+</div>
+<div class="section" id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h3>
+<p>An example configuration file, called <code class="file docutils literal notranslate"><span class="pre">settings.cfg.example</span></code> is supplied with commandment.</p>
+<p>You should copy this file to a file named <code class="file docutils literal notranslate"><span class="pre">settings.cfg</span></code> and make updates as needed.</p>
+<p>Each setting is documented within the file.</p>
 </div>
 </div>
 </div>

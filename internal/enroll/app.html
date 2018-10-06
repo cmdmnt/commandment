@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>Enrollment Blueprint &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="MDM" href="../mdm/index.html" />
@@ -129,19 +130,15 @@
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
-<td><a class="reference external" href="#get--enroll-profile">GET /enroll/profile</a></td>
+<td><a class="reference external" href="#post--enroll-profile">POST /enroll/profile</a></td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
-<td><a class="reference external" href="#post--enroll-profile">POST /enroll/profile</a></td>
+<td><a class="reference external" href="#get--enroll-profile">GET /enroll/profile</a></td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td><a class="reference external" href="#get--enroll-ota">GET /enroll/ota</a></td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td><a class="reference external" href="#get--enroll-">GET /enroll/</a></td>
 <td>&#160;</td>
 </tr>
 </tbody>
@@ -214,15 +211,15 @@ our SCEP CA.</dd>
 </dl>
 </dd></dl>
 
-<dl class="get">
-<dt id="get--enroll-profile">
-<code class="descname">GET </code><code class="descname">/enroll/profile</code><a class="headerlink" href="#get--enroll-profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate an enrollment profile.</p>
-</dd></dl>
-
 <dl class="post">
 <dt id="post--enroll-profile">
 <code class="descname">POST </code><code class="descname">/enroll/profile</code><a class="headerlink" href="#post--enroll-profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an enrollment profile.</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--enroll-profile">
+<code class="descname">GET </code><code class="descname">/enroll/profile</code><a class="headerlink" href="#get--enroll-profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate an enrollment profile.</p>
 </dd></dl>
 
@@ -232,12 +229,6 @@ our SCEP CA.</dd>
 <dd><p>Over-The-Air Profile Delivery Phase 1.5.</p>
 <p>This endpoint represents the delivery of the <cite>Profile Service</cite> profile that should be delivered AFTER the user has
 successfully authenticated.</p>
-</dd></dl>
-
-<dl class="get">
-<dt id="get--enroll-">
-<code class="descname">GET </code><code class="descname">/enroll/</code><a class="headerlink" href="#get--enroll-" title="Permalink to this definition">¶</a></dt>
-<dd><p>Show the enrollment page</p>
 </dd></dl>
 
 </div>

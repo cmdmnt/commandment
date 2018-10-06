@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -37,9 +37,6 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../http-routingtable.html" title="HTTP Routing Table"
-             >routing table</a> |</li>
-        <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
@@ -66,7 +63,8 @@
     <div class="sidebar-localtoc">
       <ul>
 <li><a class="reference internal" href="#">Dependencies</a><ul>
-<li><a class="reference internal" href="#installing-backend-dependencies">Installing backend dependencies</a><ul>
+<li><a class="reference internal" href="#quick-start-using-homebrew">Quick Start (Using Homebrew)</a></li>
+<li><a class="reference internal" href="#the-long-version">The long version</a><ul>
 <li><a class="reference internal" href="#python-3-6">Python 3.6+</a></li>
 <li><a class="reference internal" href="#nodejs-7">NodeJS 7+</a></li>
 </ul>
@@ -132,8 +130,18 @@
   <div class="section" id="dependencies">
 <h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h1>
 <p>These are the dependencies for developing with commandment. You won’t need all of these to actually run it.</p>
-<div class="section" id="installing-backend-dependencies">
-<h2>Installing backend dependencies<a class="headerlink" href="#installing-backend-dependencies" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="quick-start-using-homebrew">
+<h2>Quick Start (Using Homebrew)<a class="headerlink" href="#quick-start-using-homebrew" title="Permalink to this headline">¶</a></h2>
+<p>First clone the repository, then install dependencies:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ brew install python3 nodejs yarn
+$ pip install pipenv
+$ pipenv install
+$ cd ui &amp;&amp; yarn install
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-long-version">
+<h2>The long version<a class="headerlink" href="#the-long-version" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="python-3-6">
 <h3>Python 3.6+<a class="headerlink" href="#python-3-6" title="Permalink to this headline">¶</a></h3>
 <p>Commandment is written using Python 3.6, and uses type annotations as provided by the
@@ -151,7 +159,11 @@ is not covered here.</p>
 <div class="section" id="nodejs-7">
 <h3>NodeJS 7+<a class="headerlink" href="#nodejs-7" title="Permalink to this headline">¶</a></h3>
 <p>All of the front end tooling requires NodeJS. You can download and install an official package from <a class="reference external" href="https://nodejs.org/en/">here</a>.
-I use <a class="reference external" href="https://github.com/creationix/nvm">nvm</a> to run multiple NodeJS versions at a time, for testing purposes.</p>
+I use <a class="reference external" href="https://github.com/creationix/nvm">nvm</a> to run multiple NodeJS versions at a time, for testing purposes.
+You may also run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ brew install nodejs
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="setting-up-the-environment">
@@ -162,7 +174,7 @@ home folder.</p>
 <h3>Pipenv<a class="headerlink" href="#pipenv" title="Permalink to this headline">¶</a></h3>
 <p>To download the Python dependencies, you first need <a class="reference external" href="https://docs.pipenv.org/">pipenv</a>. You can install pipenv by
 running:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip3 install pipenv
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install pipenv
 </pre></div>
 </div>
 <p>See the <strong>pipenv</strong> documentation for information about how to install it on other Linux distributions.</p>
@@ -173,10 +185,10 @@ running:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pipenv install
 </pre></div>
 </div>
-<p>This should download and install all python requirements.</p>
+<p>This should download and install all python requirements into a new virtualenv.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This supersedes the :<a class="reference external" href="file:requirements.txt">file:requirements.txt</a> method.</p>
+<p class="last">This supersedes the <code class="file docutils literal notranslate"><span class="pre">requirements.txt</span></code> method.</p>
 </div>
 </div>
 </div>
@@ -221,9 +233,6 @@ can install by running:</p>
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="right" >
-          <a href="../../http-routingtable.html" title="HTTP Routing Table"
-             >routing table</a> |</li>
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>

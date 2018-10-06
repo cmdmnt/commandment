@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,13 +18,14 @@
     <title>Welcome to commandment’s documentation! &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="User Documentation" href="user/index.html" />
+    <link rel="next" title="About MDM" href="about-mdm.html" />
   
    
 
@@ -42,7 +43,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="user/index.html" title="User Documentation"
+          <a href="about-mdm.html" title="About MDM"
              accesskey="N">next</a> |</li>
         <li class="nav-item nav-item-0"><a href="#">commandment 1.0 documentation</a> &#187;</li> 
       </ul>
@@ -67,8 +68,8 @@
   </div>
 </div>
   <h4>Next topic</h4>
-  <p class="topless"><a href="user/index.html"
-                        title="next chapter">User Documentation</a></p>
+  <p class="topless"><a href="about-mdm.html"
+                        title="next chapter">About MDM</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -109,15 +110,39 @@
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="user/index.html">User Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user/preface.html">Preface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user/install.html">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about-mdm.html">About MDM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about-mdm.html#apns-mdm-certificate">APNS MDM Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about-mdm.html#tls-web-certificate">TLS/Web Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about-mdm.html#device-identity-certificate">Device Identity Certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installing/macos.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installing/macos.html#macos">macOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user/configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user/configuration.html#database-connection">Database Connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/configuration.html#self-signed-ssl-certificate">Self-Signed SSL Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/configuration.html#mdm-push-certificate">MDM Push Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/configuration.html#nuts-and-bolts">Nuts and Bolts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user/dep.html">DEP (Device Enrollment Program)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user/dep.html#configuring-via-the-ui">Configuring via the UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/dep.html#configuring-via-api">Configuring via API</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developer/index.html">Developer Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developer/install.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="developer/guide/index.html">Developer Guide</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer/rest/index.html">REST API Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/certificates.html">Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/commands.html">Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dep.html">Device Enrollment Programmes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/devices.html">Devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/organization.html">Organization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="internal/index.html">Internals Reference</a><ul>
@@ -150,7 +175,7 @@
   <div class="footer-relations">
     
       <div class="pull-right">
-        <a class="btn btn-default" href="user/index.html" title="next chapter (use the right arrow)">User Documentation</a>
+        <a class="btn btn-default" href="about-mdm.html" title="next chapter (use the right arrow)">About MDM</a>
       </div>
     </div>
     <div class="clearer"></div>
@@ -171,7 +196,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="user/index.html" title="User Documentation"
+          <a href="about-mdm.html" title="About MDM"
              >next</a> |</li>
         <li class="nav-item nav-item-0"><a href="#">commandment 1.0 documentation</a> &#187;</li> 
       </ul>

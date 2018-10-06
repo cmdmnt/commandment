@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>commandment.vpp.enum &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   
@@ -91,8 +92,8 @@
     
     <span class="n">StandardQuality</span> <span class="o">=</span> <span class="s1">&#39;STDQ&#39;</span>
     <span class="sd">&quot;&quot;&quot;str: Standard Quality&quot;&quot;&quot;</span>
-    <span class="n">HighQuality</span> <span class="o">=</span> <span class="s1">&#39;PLUS&#39;</span></div>
-    <span class="sd">&quot;&quot;&quot;str: High Quality - Does not apply to Software&quot;&quot;&quot;</span>
+    <span class="n">HighQuality</span> <span class="o">=</span> <span class="s1">&#39;PLUS&#39;</span>
+    <span class="sd">&quot;&quot;&quot;str: High Quality - Does not apply to Software&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="VPPUserStatus"><a class="viewcode-back" href="../../../internal/vpp/enum.html#commandment.vpp.enum.VPPUserStatus">[docs]</a><span class="k">class</span> <span class="nc">VPPUserStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -104,8 +105,8 @@
     <span class="sd">&quot;&quot;&quot;str: Associated&quot;&quot;&quot;</span>
     <span class="n">Retired</span> <span class="o">=</span> <span class="s1">&#39;Retired&#39;</span>
     <span class="sd">&quot;&quot;&quot;str: Retired (can still be changed back)&quot;&quot;&quot;</span>
-    <span class="n">Deleted</span> <span class="o">=</span> <span class="s1">&#39;Deleted&#39;</span></div>
-    <span class="sd">&quot;&quot;&quot;str: Deleted&quot;&quot;&quot;</span>
+    <span class="n">Deleted</span> <span class="o">=</span> <span class="s1">&#39;Deleted&#39;</span>
+    <span class="sd">&quot;&quot;&quot;str: Deleted&quot;&quot;&quot;</span></div>
 
 
 <span class="n">AdamID</span> <span class="o">=</span> <span class="nb">str</span>
@@ -118,8 +119,8 @@
 
     <span class="n">ClientUserID</span> <span class="o">=</span> <span class="s1">&#39;ClientUserID&#39;</span>
     <span class="sd">&quot;&quot;&quot;str: Associate user to license by Client ID&quot;&quot;&quot;</span>
-    <span class="n">SerialNumber</span> <span class="o">=</span> <span class="s1">&#39;SerialNumber&#39;</span></div>
-    <span class="sd">&quot;&quot;&quot;str: Associate device to license by Serial Number&quot;&quot;&quot;</span>
+    <span class="n">SerialNumber</span> <span class="o">=</span> <span class="s1">&#39;SerialNumber&#39;</span>
+    <span class="sd">&quot;&quot;&quot;str: Associate device to license by Serial Number&quot;&quot;&quot;</span></div>
 
 <span class="n">LicenseAssociation</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">LicenseAssociationType</span><span class="p">,</span> <span class="n">AdamID</span><span class="p">]</span>
 <span class="sd">&quot;&quot;&quot;LicenseAssociation: A tuple representing a combination of a product by adam id and a type of association operation&quot;&quot;&quot;</span>
@@ -131,8 +132,8 @@
     <span class="sd">&quot;&quot;&quot;str: Disassociate license from user by Client ID&quot;&quot;&quot;</span>
     <span class="n">SerialNumber</span> <span class="o">=</span> <span class="s1">&#39;SerialNumber&#39;</span>
     <span class="sd">&quot;&quot;&quot;str: Disassociate license from device by Serial Number&quot;&quot;&quot;</span>
-    <span class="n">LicenseID</span> <span class="o">=</span> <span class="s1">&#39;LicenseID&#39;</span></div>
-    <span class="sd">&quot;&quot;&quot;str: Disassociate license by ID regardless of User/Device&quot;&quot;&quot;</span>
+    <span class="n">LicenseID</span> <span class="o">=</span> <span class="s1">&#39;LicenseID&#39;</span>
+    <span class="sd">&quot;&quot;&quot;str: Disassociate license by ID regardless of User/Device&quot;&quot;&quot;</span></div>
 
 <span class="n">LicenseDisassociation</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">LicenseDisassociationType</span><span class="p">,</span> <span class="n">AdamID</span><span class="p">]</span>
 <span class="sd">&quot;&quot;&quot;LicenseDisassociation: A tuple representing a combination of a product by adam id and a type of </span>
@@ -145,8 +146,8 @@
     <span class="sd">&quot;&quot;&quot;int: An piece of software&quot;&quot;&quot;</span>
     <span class="n">Application</span> <span class="o">=</span> <span class="mi">8</span>
     <span class="sd">&quot;&quot;&quot;int: Don&#39;t ask me&quot;&quot;&quot;</span>
-    <span class="n">Publication</span> <span class="o">=</span> <span class="mi">10</span></div>
-    <span class="sd">&quot;&quot;&quot;int: An ebook&quot;&quot;&quot;</span>
+    <span class="n">Publication</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="sd">&quot;&quot;&quot;int: An ebook&quot;&quot;&quot;</span></div>
 </pre></div>
 
           </div>

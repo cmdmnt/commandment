@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>commandment.dep &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   
@@ -122,6 +123,8 @@
     <span class="n">HomeButtonSensitivity</span> <span class="o">=</span> <span class="s1">&#39;HomeButtonSensitivity&#39;</span>
     <span class="sd">&quot;&quot;&quot;Skips on-boarding informational screens for user education (“Cover Sheet, Multitasking &amp; Control Center”, </span>
 <span class="sd">        for example) in iOS.&quot;&quot;&quot;</span>
+    <span class="n">iMessageAndFaceTime</span> <span class="o">=</span> <span class="s1">&#39;iMessageAndFaceTime&#39;</span>
+    <span class="sd">&quot;&quot;&quot;Skips the iMessage and FaceTime screen in iOS.&quot;&quot;&quot;</span>
     <span class="n">OnBoarding</span> <span class="o">=</span> <span class="s1">&#39;OnBoarding&#39;</span>
     <span class="sd">&quot;&quot;&quot;Skips the screen for watch migration in iOS.&quot;&quot;&quot;</span>
     <span class="n">WatchMigration</span> <span class="o">=</span> <span class="s1">&#39;WatchMigration&#39;</span>
@@ -144,8 +147,8 @@
     <span class="n">TVHomeScreenSync</span> <span class="o">=</span> <span class="s1">&#39;TVHomeScreenSync&#39;</span>
     <span class="sd">&quot;&quot;&quot;Skips the TV provider sign in screen in tvOS.&quot;&quot;&quot;</span>
     <span class="n">TVProviderSignIn</span> <span class="o">=</span> <span class="s1">&#39;TVProviderSignIn&#39;</span>
-    <span class="sd">&quot;&quot;&quot;Skips the “Where is this Apple TV?” screen in tvOS.&quot;&quot;&quot;</span></div>
-    <span class="n">TVRoom</span> <span class="o">=</span> <span class="s1">&#39;TVRoom&#39;</span>
+    <span class="sd">&quot;&quot;&quot;Skips the “Where is this Apple TV?” screen in tvOS.&quot;&quot;&quot;</span>
+    <span class="n">TVRoom</span> <span class="o">=</span> <span class="s1">&#39;TVRoom&#39;</span></div>
 
 
 <span class="n">SkipSetupSteps</span> <span class="o">=</span> <span class="n">Set</span><span class="p">[</span><span class="n">SetupAssistantStep</span><span class="p">]</span>
@@ -153,11 +156,31 @@
 
 <div class="viewcode-block" id="DEPProfileRemovalStatus"><a class="viewcode-back" href="../../internal/dep/types.html#commandment.dep.DEPProfileRemovalStatus">[docs]</a><span class="k">class</span> <span class="nc">DEPProfileRemovalStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">SUCCESS</span> <span class="o">=</span> <span class="s2">&quot;SUCCESS&quot;</span>
-    <span class="n">NOT_ACCESSIBLE</span> <span class="o">=</span> <span class="s2">&quot;NOT_ACCESSIBLE&quot;</span></div>
-    <span class="n">FAILED</span> <span class="o">=</span> <span class="s2">&quot;FAILED&quot;</span>
+    <span class="n">NOT_ACCESSIBLE</span> <span class="o">=</span> <span class="s2">&quot;NOT_ACCESSIBLE&quot;</span>
+    <span class="n">FAILED</span> <span class="o">=</span> <span class="s2">&quot;FAILED&quot;</span></div>
+
 
 <span class="n">SerialNumber</span> <span class="o">=</span> <span class="nb">str</span>
 <span class="n">DEPProfileRemovals</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="n">SerialNumber</span><span class="p">,</span> <span class="n">DEPProfileRemovalStatus</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="DEPOrgType"><a class="viewcode-back" href="../../internal/dep/types.html#commandment.dep.DEPOrgType">[docs]</a><span class="k">class</span> <span class="nc">DEPOrgType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This enum specifies allowable values for the ``org_type`` field of the dep /account endpoint.&quot;&quot;&quot;</span>
+    <span class="n">Education</span> <span class="o">=</span> <span class="s1">&#39;edu&#39;</span>
+    <span class="n">Organization</span> <span class="o">=</span> <span class="s1">&#39;org&#39;</span></div>
+
+
+<div class="viewcode-block" id="DEPOrgVersion"><a class="viewcode-back" href="../../internal/dep/types.html#commandment.dep.DEPOrgVersion">[docs]</a><span class="k">class</span> <span class="nc">DEPOrgVersion</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This enum specifies allowable values for the ``org_version`` field of the dep /account endpoint.&quot;&quot;&quot;</span>
+    <span class="n">v1</span> <span class="o">=</span> <span class="s1">&#39;v1&#39;</span>  <span class="c1"># Apple Deployment Programmes</span>
+    <span class="n">v2</span> <span class="o">=</span> <span class="s1">&#39;v2&#39;</span>  <span class="c1"># Apple School Manager</span></div>
+
+
+<div class="viewcode-block" id="DEPOperationType"><a class="viewcode-back" href="../../internal/dep/types.html#commandment.dep.DEPOperationType">[docs]</a><span class="k">class</span> <span class="nc">DEPOperationType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This enum describes the types of operations returned in a DEP Sync Devices result.&quot;&quot;&quot;</span>
+    <span class="n">Added</span> <span class="o">=</span> <span class="s1">&#39;added&#39;</span>
+    <span class="n">Modified</span> <span class="o">=</span> <span class="s1">&#39;modified&#39;</span>
+    <span class="n">Deleted</span> <span class="o">=</span> <span class="s1">&#39;deleted&#39;</span></div>
 </pre></div>
 
           </div>

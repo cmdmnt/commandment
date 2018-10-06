@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>commandment.vpp.vpp &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   
@@ -269,8 +270,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_disassociate</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">disassociation_type</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">removals_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disassociation_type</span><span class="p">:</span> <span class="n">LicenseDisassociationType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">LicenseDisassociation</span><span class="p">]:</span></div>
-        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">disassociation_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disassociate</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">removals_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disassociation_type</span><span class="p">:</span> <span class="n">LicenseDisassociationType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">LicenseDisassociation</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">disassociation_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disassociate</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="VPPUserLicenseOperation"><a class="viewcode-back" href="../../../internal/vpp/operations.html#commandment.vpp.vpp.VPPUserLicenseOperation">[docs]</a><span class="k">class</span> <span class="nc">VPPUserLicenseOperation</span><span class="p">(</span><span class="n">VPPLicenseOperation</span><span class="p">):</span>
@@ -284,8 +285,8 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">VPPUserLicenseOperation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_association_type</span> <span class="o">=</span> <span class="n">LicenseAssociationType</span><span class="o">.</span><span class="n">ClientUserID</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_disassociation_type</span> <span class="o">=</span> <span class="n">LicenseDisassociationType</span><span class="o">.</span><span class="n">ClientUserID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_association_type</span> <span class="o">=</span> <span class="n">LicenseAssociationType</span><span class="o">.</span><span class="n">ClientUserID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disassociation_type</span> <span class="o">=</span> <span class="n">LicenseDisassociationType</span><span class="o">.</span><span class="n">ClientUserID</span></div>
 
 
 <div class="viewcode-block" id="VPPDeviceLicenseOperation"><a class="viewcode-back" href="../../../internal/vpp/operations.html#commandment.vpp.vpp.VPPDeviceLicenseOperation">[docs]</a><span class="k">class</span> <span class="nc">VPPDeviceLicenseOperation</span><span class="p">(</span><span class="n">VPPLicenseOperation</span><span class="p">):</span>
@@ -299,8 +300,8 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">VPPDeviceLicenseOperation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_association_type</span> <span class="o">=</span> <span class="n">LicenseAssociationType</span><span class="o">.</span><span class="n">SerialNumber</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_disassociation_type</span> <span class="o">=</span> <span class="n">LicenseDisassociationType</span><span class="o">.</span><span class="n">SerialNumber</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_association_type</span> <span class="o">=</span> <span class="n">LicenseAssociationType</span><span class="o">.</span><span class="n">SerialNumber</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disassociation_type</span> <span class="o">=</span> <span class="n">LicenseDisassociationType</span><span class="o">.</span><span class="n">SerialNumber</span></div>
 
 
 <div class="viewcode-block" id="VPP"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP">[docs]</a><span class="k">class</span> <span class="nc">VPP</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -384,8 +385,8 @@
             <span class="s1">&#39;clientUserIdStr&#39;</span><span class="p">:</span> <span class="n">client_user_id</span><span class="p">,</span>
             <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">email</span><span class="p">,</span>
             <span class="s1">&#39;sToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stoken</span><span class="p">,</span>
-        <span class="p">}))</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="p">}))</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="VPP.get_user"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.get_user">[docs]</a>    <span class="nd">@raise_error_replies</span>
     <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">its_id_hash</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -411,8 +412,8 @@
             <span class="k">if</span> <span class="n">its_id_hash</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;itsIdHash&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">its_id_hash</span>
 
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;getUserSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;getUserSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="VPP.users"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.users">[docs]</a>    <span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_retired</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
               <span class="n">batch_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">since_modified_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VPPUserCursor</span><span class="p">:</span>
@@ -441,8 +442,8 @@
         <span class="n">cursor</span> <span class="o">=</span> <span class="n">VPPUserCursor</span><span class="p">(</span><span class="n">includes_retired</span><span class="o">=</span><span class="p">(</span><span class="n">include_retired</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span>
         <span class="n">cursor</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="n">results</span>
         <span class="n">cursor</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="bp">self</span>
-</div>
-        <span class="k">return</span> <span class="n">cursor</span>
+
+        <span class="k">return</span> <span class="n">cursor</span></div>
 
 <div class="viewcode-block" id="VPP.retire_user"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.retire_user">[docs]</a>    <span class="nd">@raise_error_replies</span>
     <span class="k">def</span> <span class="nf">retire_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -465,8 +466,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;clientUserIdStr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">client_user_id</span>
 
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;retireUserSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;retireUserSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="VPP.edit_user"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.edit_user">[docs]</a>    <span class="nd">@raise_error_replies</span>
     <span class="k">def</span> <span class="nf">edit_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -498,8 +499,8 @@
         <span class="k">if</span> <span class="n">managed_apple_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">request_body</span><span class="p">[</span><span class="s1">&#39;managedAppleIDStr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">managed_apple_id</span>
 
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;editUserSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;editUserSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="VPP.assets"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.assets">[docs]</a>    <span class="nd">@raise_error_replies</span>
     <span class="k">def</span> <span class="nf">assets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_license_counts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">facilitator_member_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
@@ -518,8 +519,8 @@
             <span class="s1">&#39;includeLicenseCounts&#39;</span><span class="p">:</span> <span class="n">include_license_counts</span><span class="p">,</span>
         <span class="p">}</span>
 
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;getVPPAssetsSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span></div>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;getVPPAssetsSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="VPP.manage"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.manage">[docs]</a>    <span class="k">def</span> <span class="nf">manage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adam_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;STDQ&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VPPLicenseOperation</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Manage VPP licenses for the given Adam ID.</span>
@@ -534,8 +535,8 @@
 <span class="sd">            and then submitted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">op</span> <span class="o">=</span> <span class="n">VPPLicenseOperation</span><span class="p">(</span><span class="n">adam_id</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">)</span>
-        <span class="n">op</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="bp">self</span></div>
-        <span class="k">return</span> <span class="n">op</span>
+        <span class="n">op</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="n">op</span></div>
 
 <div class="viewcode-block" id="VPP.manage_user_licenses"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.manage_user_licenses">[docs]</a>    <span class="k">def</span> <span class="nf">manage_user_licenses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adam_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;STDQ&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VPPUserLicenseOperation</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Manage VPP User License Assignment.</span>
@@ -550,8 +551,8 @@
 <span class="sd">                associations by user client id</span>
 <span class="sd">            &quot;&quot;&quot;</span>
         <span class="n">op</span> <span class="o">=</span> <span class="n">VPPUserLicenseOperation</span><span class="p">(</span><span class="n">adam_id</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">)</span>
-        <span class="n">op</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="bp">self</span></div>
-        <span class="k">return</span> <span class="n">op</span>
+        <span class="n">op</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="n">op</span></div>
 
 <div class="viewcode-block" id="VPP.manage_device_licenses"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.manage_device_licenses">[docs]</a>    <span class="k">def</span> <span class="nf">manage_device_licenses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adam_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;STDQ&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VPPDeviceLicenseOperation</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Manage VPP Device License Assignment.</span>
@@ -566,8 +567,8 @@
 <span class="sd">                license associations by device serial number</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">op</span> <span class="o">=</span> <span class="n">VPPDeviceLicenseOperation</span><span class="p">(</span><span class="n">adam_id</span><span class="p">,</span> <span class="n">pricing_param</span><span class="p">)</span>
-        <span class="n">op</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="bp">self</span></div>
-        <span class="k">return</span> <span class="n">op</span>
+        <span class="n">op</span><span class="o">.</span><span class="n">_vpp</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="n">op</span></div>
 
 <div class="viewcode-block" id="VPP.licenses"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.licenses">[docs]</a>    <span class="k">def</span> <span class="nf">licenses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">adam_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -610,8 +611,8 @@
         <span class="n">reply</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="n">cursor</span> <span class="o">=</span> <span class="n">VPPLicenseCursor</span><span class="p">(</span><span class="n">vpp</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">cursor</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="n">reply</span>
-</div>
-        <span class="k">return</span> <span class="n">cursor</span>
+
+        <span class="k">return</span> <span class="n">cursor</span></div>
 
 <div class="viewcode-block" id="VPP.save"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">:</span> <span class="n">VPPLicenseOperation</span><span class="p">,</span> <span class="n">notify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Execute a license management operation, represented by a VPPLicenseOperation or subclass.</span>
@@ -638,8 +639,8 @@
 
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;manageVPPLicensesByAdamIdSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span>
         <span class="n">reply</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-</div>
-        <span class="k">return</span> <span class="n">reply</span>
+
+        <span class="k">return</span> <span class="n">reply</span></div>
 
 <div class="viewcode-block" id="VPP.bulk_update_licenses"><a class="viewcode-back" href="../../../internal/vpp/vpp.html#commandment.vpp.vpp.VPP.bulk_update_licenses">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_update_licenses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                              <span class="n">adam_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -681,8 +682,8 @@
 
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_service_config</span><span class="p">[</span><span class="s1">&#39;manageVPPLicensesByAdamIdSrvUrl&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">))</span>
         <span class="n">reply</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-</div></div>
-        <span class="k">return</span> <span class="n">reply</span>
+
+        <span class="k">return</span> <span class="n">reply</span></div></div>
 </pre></div>
 
           </div>

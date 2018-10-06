@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>VPP Client &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Worker Threads" href="../workers/index.html" />
@@ -110,20 +111,36 @@
 <p>The main VPP API wrapper class</p>
 <dl class="class">
 <dt id="commandment.vpp.vpp.VPP">
-<em class="property">class </em><code class="descclassname">commandment.vpp.vpp.</code><code class="descname">VPP</code><span class="sig-paren">(</span><em>stoken: str</em>, <em>vpp_service_config_url: str = 'https://vpp.itunes.apple.com/WebObjects/MZFinance.woa/wa/VPPServiceConfigSrv'</em>, <em>service_config: dict = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">commandment.vpp.vpp.</code><code class="descname">VPP</code><span class="sig-paren">(</span><em>stoken: str</em>, <em>vpp_service_config_url: str = 'https://vpp.itunes.apple.com/WebObjects/MZFinance.woa/wa/VPPServiceConfigSrv'</em>, <em>service_config: dict = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP" title="Permalink to this definition">¶</a></dt>
 <dd><p>VPP Object. The main VPP API wrapper class.</p>
 <dl class="attribute">
 <dt id="commandment.vpp.vpp.VPP.AssociationProperties">
 <code class="descname">AssociationProperties</code><a class="headerlink" href="#commandment.vpp.vpp.VPP.AssociationProperties" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict</em> – Mapping of the LicenseAssociationType enum to the expected JSON keys in
+<dd><p>Mapping of the LicenseAssociationType enum to the expected JSON keys in
 the request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="commandment.vpp.vpp.VPP.DisassociationProperties">
 <code class="descname">DisassociationProperties</code><a class="headerlink" href="#commandment.vpp.vpp.VPP.DisassociationProperties" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict</em> – Mapping of the LicenseDisassociationType enum to the expected JSON keys
+<dd><p>Mapping of the LicenseDisassociationType enum to the expected JSON keys
 in the request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -152,7 +169,7 @@ in the request.</p>
 
 <dl class="method">
 <dt id="commandment.vpp.vpp.VPP.bulk_update_licenses">
-<code class="descname">bulk_update_licenses</code><span class="sig-paren">(</span><em>adam_id: int, association_type: Union[commandment.vpp.enum.LicenseAssociationType, NoneType] = None, associate: Union[typing.List[str], NoneType] = None, disassociation_type: Union[commandment.vpp.enum.LicenseDisassociationType, NoneType] = None, disassociate: Union[typing.List[str], NoneType] = None, pricing_param: str = 'STDQ', notify: bool = False</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.bulk_update_licenses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.bulk_update_licenses" title="Permalink to this definition">¶</a></dt>
+<code class="descname">bulk_update_licenses</code><span class="sig-paren">(</span><em>adam_id: int</em>, <em>association_type: Optional[commandment.vpp.enum.LicenseAssociationType] = None</em>, <em>associate: Optional[List[str]] = None</em>, <em>disassociation_type: Optional[commandment.vpp.enum.LicenseDisassociationType] = None</em>, <em>disassociate: Optional[List[str]] = None</em>, <em>pricing_param: str = 'STDQ'</em>, <em>notify: bool = False</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.bulk_update_licenses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.bulk_update_licenses" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform a batch operation of license associations and disassociations.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -239,7 +256,7 @@ the user_id to identify the user.</li>
 
 <dl class="method">
 <dt id="commandment.vpp.vpp.VPP.licenses">
-<code class="descname">licenses</code><span class="sig-paren">(</span><em>adam_id: int = None</em>, <em>pricing_param: Union[commandment.vpp.enum.VPPPricingParam</em>, <em>NoneType] = None</em>, <em>assigned_only: bool = False</em>, <em>facilitator_member_id: str = None</em>, <em>batch_token: str = None</em>, <em>since_modified_token: str = None</em><span class="sig-paren">)</span> &#x2192; commandment.vpp.vpp.VPPLicenseCursor<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.licenses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.licenses" title="Permalink to this definition">¶</a></dt>
+<code class="descname">licenses</code><span class="sig-paren">(</span><em>adam_id: int = None</em>, <em>pricing_param: Optional[commandment.vpp.enum.VPPPricingParam] = None</em>, <em>assigned_only: bool = False</em>, <em>facilitator_member_id: str = None</em>, <em>batch_token: str = None</em>, <em>since_modified_token: str = None</em><span class="sig-paren">)</span> &#x2192; commandment.vpp.vpp.VPPLicenseCursor<a class="reference internal" href="../../_modules/commandment/vpp/vpp.html#VPP.licenses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.vpp.vpp.VPP.licenses" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a list of licenses matching the supplied criteria.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

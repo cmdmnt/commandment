@@ -1,267 +1,180 @@
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Internal Documentation &mdash; commandment 1.0 documentation</title>
+    <title>API Reference &#8212; commandment 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Certificates" href="certificates.html" />
+    <link rel="prev" title="Running" href="../developer/guide/running.html" />
   
-
-  
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="commandment 1.0 documentation" href="../index.html"/>
-        <link rel="next" title="Flask Endpoints" href="flask/index.html"/>
-        <link rel="prev" title="Organization" href="../rest/organization.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
    
-  <div class="wy-grid-for-nav">
 
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="certificates.html" title="Certificates"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../developer/guide/running.html" title="Running"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">commandment 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
 
-          
-            <a href="../index.html" class="icon icon-home"> commandment
-          
-
-          
-          </a>
-
-          
-            
-            
-              <div class="version">
-                1.0
-              </div>
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../rest/index.html">REST API Documentation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Internal Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="flask/index.html">Flask Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/index.html">ORM (SQLAlchemy) Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="profiles/index.html">Configuration Profile Payloads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="push.html">push</a></li>
-<li class="toctree-l2"><a class="reference internal" href="runner.html">runner</a></li>
-</ul>
-</li>
-</ul>
-
-            
-          
-        </div>
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
       </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">commandment</a>
-        
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-      <li>Internal Documentation</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="../_sources/api/index.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
-
-  
-  <hr/>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../developer/guide/running.html"
+                        title="previous chapter">Running</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="certificates.html"
+                        title="next chapter">Certificates</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
-  <div class="section" id="internal-documentation">
-<h1>Internal Documentation<a class="headerlink" href="#internal-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="flask/index.html">Flask Endpoints</a></li>
-<li class="toctree-l1"><a class="reference internal" href="models/index.html">ORM (SQLAlchemy) Models</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="models/app.html">App</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/certificate.html">Certificate</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/certificate_request.html">CertificateRequest</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/command.html">Command</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/dep_config.html">DEPConfig</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/dep_profile.html">DEPProfile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/device.html">Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/internal_ca.html">InternalCA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/organization.html">Organization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/profile.html">Profile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models/rsa_private_key.html">PrivateKey</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="profiles/index.html">Configuration Profile Payloads</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="profiles/base.html">Base Classes</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="push.html">push</a></li>
-<li class="toctree-l1"><a class="reference internal" href="runner.html">runner</a></li>
-</ul>
-</div>
-</div>
-
-
-           </div>
-           <div class="articleComments">
-            
-           </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="flask/index.html" class="btn btn-neutral float-right" title="Flask Endpoints" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../rest/organization.html" class="btn btn-neutral" title="Organization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2017, Jesse Peterson, Mosen.
-
-    </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../index.html">Docs</a></li>
+              
+              <li>API Reference</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<p>Almost all responses and requests are expected to follow the <a class="reference external" href="http://jsonapi.org">JSON-API</a> standard,
+except in cases where binary or encoded data needs to be uploaded or downloaded,
+<em>OR</em> the endpoint is a one-off RPC style action eg. “Erase Device”.</p>
+<p>All of the API is generated via the <a class="reference external" href="http://flask-rest-jsonapi.readthedocs.io/en/latest/">flask-rest-jsonapi</a> library.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">Certificates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="certificates.html#json-api-endpoints">JSON-API Endpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificates.html#other-endpoints">Other Endpoints</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="commands.html">Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#detail">Detail</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dep.html">Device Enrollment Programmes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dep.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="devices.html">Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="organization.html">Organization</a></li>
+</ul>
+</div>
+</div>
 
-</footer>
 
-        </div>
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="../developer/guide/running.html" title="previous chapter (use the left arrow)">Running</a>
       </div>
-
-    </section>
-
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="certificates.html" title="next chapter (use the right arrow)">Certificates</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="certificates.html" title="Certificates"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../developer/guide/running.html" title="Running"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">commandment 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, Jesse Peterson, Mosen. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+  </body>
 </html>

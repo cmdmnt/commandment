@@ -13,6 +13,7 @@ This guide explains how to get commandment set up for development.
     dependencies
     building
     architecture
+    running
 
 
 

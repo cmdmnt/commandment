@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>HTTP Routing Table &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
 
@@ -90,6 +91,7 @@
 
    <div class="modindex-jumpbox">
    <a href="#cap-/api"><strong>/api</strong></a> | 
+   <a href="#cap-/dep"><strong>/dep</strong></a> | 
    <a href="#cap-/enroll"><strong>/enroll</strong></a> | 
    <a href="#cap-/mdm"><strong>/mdm</strong></a>
    </div>
@@ -166,6 +168,31 @@
      <tr>
        <td></td>
        <td>
+       <a href="api/dep.html#get--api-v1-dep-accounts-"><code class="xref">GET /api/v1/dep/accounts/</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#get--api-v1-dep-accounts-(int-dep_account_id)"><code class="xref">GET /api/v1/dep/accounts/(int:dep_account_id)</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#get--api-v1-dep-profiles-"><code class="xref">GET /api/v1/dep/profiles/</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#get--api-v1-dep-profiles-(int-dep_profile_id)"><code class="xref">GET /api/v1/dep/profiles/(int:dep_profile_id)</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#get--api-v1-dep-profiles-(int-dep_profile_id)-relationships-devices"><code class="xref">GET /api/v1/dep/profiles/(int:dep_profile_id)/relationships/devices</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
        <a href="internal/api/json-api.html#get--api-v1-device_groups-(int-device_group_id)-devices"><code class="xref">GET /api/v1/device_groups/(int:device_group_id)/devices</code></a></td><td>
        <em></em></td></tr>
      <tr>
@@ -182,6 +209,11 @@
        <td></td>
        <td>
        <a href="internal/api/json-api.html#get--api-v1-devices-(int-device_id)-available_os_updates"><code class="xref">GET /api/v1/devices/(int:device_id)/available_os_updates</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="internal/api/api.html#get--api-v1-devices-(int-device_id)-clear_passcode"><code class="xref">GET /api/v1/devices/(int:device_id)/clear_passcode</code></a></td><td>
        <em></em></td></tr>
      <tr>
        <td></td>
@@ -346,6 +378,21 @@
      <tr>
        <td></td>
        <td>
+       <a href="api/dep.html#post--api-v1-dep-accounts-"><code class="xref">POST /api/v1/dep/accounts/</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#post--api-v1-dep-profiles-"><code class="xref">POST /api/v1/dep/profiles/</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#post--api-v1-dep-profiles-(int-dep_profile_id)-relationships-devices"><code class="xref">POST /api/v1/dep/profiles/(int:dep_profile_id)/relationships/devices</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
        <a href="internal/api/json-api.html#post--api-v1-device_groups-(int-device_group_id)-devices"><code class="xref">POST /api/v1/device_groups/(int:device_group_id)/devices</code></a></td><td>
        <em></em></td></tr>
      <tr>
@@ -466,6 +513,21 @@
      <tr>
        <td></td>
        <td>
+       <a href="api/dep.html#delete--api-v1-dep-accounts-(int-dep_account_id)"><code class="xref">DELETE /api/v1/dep/accounts/(int:dep_account_id)</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#delete--api-v1-dep-profiles-(int-dep_profile_id)"><code class="xref">DELETE /api/v1/dep/profiles/(int:dep_profile_id)</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#delete--api-v1-dep-profiles-(int-dep_profile_id)-relationships-devices"><code class="xref">DELETE /api/v1/dep/profiles/(int:dep_profile_id)/relationships/devices</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
        <a href="internal/api/json-api.html#delete--api-v1-devices-(int-device_id)"><code class="xref">DELETE /api/v1/devices/(int:device_id)</code></a></td><td>
        <em></em></td></tr>
      <tr>
@@ -546,6 +608,21 @@
      <tr>
        <td></td>
        <td>
+       <a href="api/dep.html#patch--api-v1-dep-accounts-(int-dep_account_id)"><code class="xref">PATCH /api/v1/dep/accounts/(int:dep_account_id)</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#patch--api-v1-dep-profiles-(int-dep_profile_id)"><code class="xref">PATCH /api/v1/dep/profiles/(int:dep_profile_id)</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#patch--api-v1-dep-profiles-(int-dep_profile_id)-relationships-devices"><code class="xref">PATCH /api/v1/dep/profiles/(int:dep_profile_id)/relationships/devices</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
        <a href="internal/api/json-api.html#patch--api-v1-devices-(int-device_id)"><code class="xref">PATCH /api/v1/devices/(int:device_id)</code></a></td><td>
        <em></em></td></tr>
      <tr>
@@ -589,13 +666,31 @@
        <a href="internal/api/json-api.html#patch--api-v1-tags-(int-tag_id)-relationships-devices"><code class="xref">PATCH /api/v1/tags/(int:tag_id)/relationships/devices</code></a></td><td>
        <em></em></td></tr>
      <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-/enroll"><td></td><td>
-       <strong>/enroll</strong></td><td></td></tr>
+     <tr class="cap" id="cap-/dep"><td></td><td>
+       <strong>/dep</strong></td><td></td></tr>
      <tr>
        <td></td>
        <td>
-       <a href="internal/enroll/app.html#get--enroll-"><code class="xref">GET /enroll/</code></a></td><td>
+       <a href="api/dep.html#get--dep-anchor_certs"><code class="xref">GET /dep/anchor_certs</code></a></td><td>
        <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#get--dep-certificate-download"><code class="xref">GET /dep/certificate/download</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#post--dep-enroll"><code class="xref">POST /dep/enroll</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td></td>
+       <td>
+       <a href="api/dep.html#post--dep-stoken-upload"><code class="xref">POST /dep/stoken/upload</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
+     <tr class="cap" id="cap-/enroll"><td></td><td>
+       <strong>/enroll</strong></td><td></td></tr>
      <tr>
        <td></td>
        <td>

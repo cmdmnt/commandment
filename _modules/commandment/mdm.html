@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>commandment.mdm &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   
@@ -83,7 +84,7 @@
             
   <h1>Source code for commandment.mdm</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Set</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">IntFlag</span><span class="p">,</span> <span class="n">auto</span><span class="p">,</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">IntFlag</span><span class="p">,</span> <span class="n">auto</span><span class="p">,</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">IntEnum</span>
 
 
 <div class="viewcode-block" id="CommandType"><a class="viewcode-back" href="../../internal/mdm/types.html#commandment.models.CommandType">[docs]</a><span class="k">class</span> <span class="nc">CommandType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -150,16 +151,16 @@
     <span class="n">OSUpdateStatus</span> <span class="o">=</span> <span class="s1">&#39;OSUpdateStatus&#39;</span>
 
     <span class="n">ActiveNSExtensions</span> <span class="o">=</span> <span class="s1">&#39;ActiveNSExtensions&#39;</span>
-    <span class="n">NSExtensionMappings</span> <span class="o">=</span> <span class="s1">&#39;NSExtensionMappings&#39;</span></div>
-    <span class="n">RotateFileVaultKey</span> <span class="o">=</span> <span class="s1">&#39;RotateFileVaultKey&#39;</span>
+    <span class="n">NSExtensionMappings</span> <span class="o">=</span> <span class="s1">&#39;NSExtensionMappings&#39;</span>
+    <span class="n">RotateFileVaultKey</span> <span class="o">=</span> <span class="s1">&#39;RotateFileVaultKey&#39;</span></div>
 
 
 <div class="viewcode-block" id="Platform"><a class="viewcode-back" href="../../internal/mdm/types.html#commandment.models.Platform">[docs]</a><span class="k">class</span> <span class="nc">Platform</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;The platform of the managed device.&quot;&quot;&quot;</span>
     <span class="n">Unknown</span> <span class="o">=</span> <span class="s1">&#39;Unknown&#39;</span>  <span class="c1"># Not enough information</span>
     <span class="n">macOS</span> <span class="o">=</span> <span class="s1">&#39;macOS&#39;</span>
-    <span class="n">iOS</span> <span class="o">=</span> <span class="s1">&#39;iOS&#39;</span></div>
-    <span class="n">tvOS</span> <span class="o">=</span> <span class="s1">&#39;tvOS&#39;</span>
+    <span class="n">iOS</span> <span class="o">=</span> <span class="s1">&#39;iOS&#39;</span>
+    <span class="n">tvOS</span> <span class="o">=</span> <span class="s1">&#39;tvOS&#39;</span></div>
 
 
 <div class="viewcode-block" id="AccessRights"><a class="viewcode-back" href="../../internal/mdm/types.html#commandment.models.AccessRights">[docs]</a><span class="k">class</span> <span class="nc">AccessRights</span><span class="p">(</span><span class="n">IntFlag</span><span class="p">):</span>
@@ -185,8 +186,8 @@
     <span class="n">ManageApps</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
 
     <span class="n">All</span> <span class="o">=</span> <span class="n">ProfileInspection</span> <span class="o">|</span> <span class="n">ProfileInstallRemove</span> <span class="o">|</span> <span class="n">DeviceLockPasscodeRemoval</span> <span class="o">|</span> <span class="n">DeviceErase</span> <span class="o">|</span> <span class="n">QueryDeviceInformation</span> \
-          <span class="o">|</span> <span class="n">QueryNetworkInformation</span> <span class="o">|</span> <span class="n">ProvProfileInspection</span> <span class="o">|</span> <span class="n">ProvProfileInstallRemove</span> <span class="o">|</span> <span class="n">InstalledApplications</span> \</div>
-          <span class="o">|</span> <span class="n">RestrictionQueries</span> <span class="o">|</span> <span class="n">SecurityQueries</span> <span class="o">|</span> <span class="n">ChangeSettings</span> <span class="o">|</span> <span class="n">ManageApps</span>
+          <span class="o">|</span> <span class="n">QueryNetworkInformation</span> <span class="o">|</span> <span class="n">ProvProfileInspection</span> <span class="o">|</span> <span class="n">ProvProfileInstallRemove</span> <span class="o">|</span> <span class="n">InstalledApplications</span> \
+          <span class="o">|</span> <span class="n">RestrictionQueries</span> <span class="o">|</span> <span class="n">SecurityQueries</span> <span class="o">|</span> <span class="n">ChangeSettings</span> <span class="o">|</span> <span class="n">ManageApps</span></div>
 
 
 <span class="n">AccessRightsSet</span> <span class="o">=</span> <span class="n">Set</span><span class="p">[</span><span class="n">AccessRights</span><span class="p">]</span>
@@ -219,8 +220,8 @@
 
     <span class="c1"># Commandment Lifecycle Statuses</span>
     <span class="n">Queued</span> <span class="o">=</span> <span class="s1">&#39;Queued&#39;</span>
-    <span class="n">Sent</span> <span class="o">=</span> <span class="s1">&#39;Sent&#39;</span></div>
-    <span class="n">Expired</span> <span class="o">=</span> <span class="s1">&#39;Expired&#39;</span>
+    <span class="n">Sent</span> <span class="o">=</span> <span class="s1">&#39;Sent&#39;</span>
+    <span class="n">Expired</span> <span class="o">=</span> <span class="s1">&#39;Expired&#39;</span></div>
 
 
 <div class="viewcode-block" id="SettingsItem"><a class="viewcode-back" href="../../internal/mdm/types.html#commandment.models.SettingsItem">[docs]</a><span class="k">class</span> <span class="nc">SettingsItem</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -237,8 +238,18 @@
     <span class="n">DeviceName</span> <span class="o">=</span> <span class="s1">&#39;DeviceName&#39;</span>
     <span class="n">HostName</span> <span class="o">=</span> <span class="s1">&#39;HostName&#39;</span>
     <span class="n">MDMOptions</span> <span class="o">=</span> <span class="s1">&#39;MDMOptions&#39;</span>
-    <span class="n">PasscodeLockGracePeriod</span> <span class="o">=</span> <span class="s1">&#39;PasscodeLockGracePeriod&#39;</span></div>
-    <span class="n">MaximumResidentUsers</span> <span class="o">=</span> <span class="s1">&#39;MaximumResidentUsers&#39;</span>
+    <span class="n">PasscodeLockGracePeriod</span> <span class="o">=</span> <span class="s1">&#39;PasscodeLockGracePeriod&#39;</span>
+    <span class="n">MaximumResidentUsers</span> <span class="o">=</span> <span class="s1">&#39;MaximumResidentUsers&#39;</span></div>
+
+
+<div class="viewcode-block" id="WallpaperLocation"><a class="viewcode-back" href="../../internal/mdm/types.html#commandment.models.WallpaperLocation">[docs]</a><span class="k">class</span> <span class="nc">WallpaperLocation</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A list of possible values for the Wallpaper `where` setting.</span>
+
+<span class="sd">    Determines where the given wallpaper will be used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LockScreen</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">HomeScreen</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">Both</span> <span class="o">=</span> <span class="mi">3</span></div>
 </pre></div>
 
           </div>

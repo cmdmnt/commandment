@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -18,10 +18,11 @@
     <title>DEP Client &#8212; commandment 1.0 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="DEP Types" href="types.html" />
@@ -110,10 +111,10 @@
 <p>The main DEP API wrapper class</p>
 <dl class="class">
 <dt id="commandment.dep.dep.DEP">
-<em class="property">class </em><code class="descclassname">commandment.dep.dep.</code><code class="descname">DEP</code><span class="sig-paren">(</span><em>consumer_key: str = None</em>, <em>consumer_secret: str = None</em>, <em>access_token: str = None</em>, <em>access_secret: str = None</em>, <em>access_token_expiry: Union[str</em>, <em>NoneType] = None</em>, <em>url: str = 'https://mdmenrollment.apple.com'</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">commandment.dep.dep.</code><code class="descname">DEP</code><span class="sig-paren">(</span><em>consumer_key: str = None</em>, <em>consumer_secret: str = None</em>, <em>access_token: str = None</em>, <em>access_secret: str = None</em>, <em>access_token_expiry: Optional[str] = None</em>, <em>url: str = 'https://mdmenrollment.apple.com'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="commandment.dep.dep.DEP.account">
-<code class="descname">account</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Union[NoneType, dict]<a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.account" title="Permalink to this definition">¶</a></dt>
+<code class="descname">account</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Union[None, dict]<a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.account" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get Account Details</p>
 <p>The details are returned in the following dict format:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -142,13 +143,13 @@
 
 <dl class="method">
 <dt id="commandment.dep.dep.DEP.activation_lock">
-<code class="descname">activation_lock</code><span class="sig-paren">(</span><em>serial_number: str</em>, <em>escrow_key: Union[str</em>, <em>NoneType] = None</em>, <em>lost_message: Union[str</em>, <em>NoneType] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.activation_lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.activation_lock" title="Permalink to this definition">¶</a></dt>
+<code class="descname">activation_lock</code><span class="sig-paren">(</span><em>serial_number: str</em>, <em>escrow_key: Optional[str] = None</em>, <em>lost_message: Optional[str] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.activation_lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.activation_lock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lock a device with Activation Lock.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="commandment.dep.dep.DEP.activation_lock_bypass">
-<code class="descname">activation_lock_bypass</code><span class="sig-paren">(</span><em>serial_number: str</em>, <em>product_type: str</em>, <em>org_name: str</em>, <em>guid: str</em>, <em>escrow_key: str</em>, <em>imei: Union[str</em>, <em>NoneType] = None</em>, <em>meid: Union[str</em>, <em>NoneType] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.activation_lock_bypass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.activation_lock_bypass" title="Permalink to this definition">¶</a></dt>
+<code class="descname">activation_lock_bypass</code><span class="sig-paren">(</span><em>serial_number: str</em>, <em>product_type: str</em>, <em>org_name: str</em>, <em>guid: str</em>, <em>escrow_key: str</em>, <em>imei: Optional[str] = None</em>, <em>meid: Optional[str] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.activation_lock_bypass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.activation_lock_bypass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove Activation Lock from a device.</p>
 </dd></dl>
 
@@ -210,7 +211,7 @@
 
 <dl class="method">
 <dt id="commandment.dep.dep.DEP.devices">
-<code class="descname">devices</code><span class="sig-paren">(</span><em>cursor: Union[str</em>, <em>NoneType] = None</em><span class="sig-paren">)</span> &#x2192; collections.abc.Iterator<a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.devices" title="Permalink to this definition">¶</a></dt>
+<code class="descname">devices</code><span class="sig-paren">(</span><em>cursor: Optional[str] = None</em><span class="sig-paren">)</span> &#x2192; collections.abc.Iterator<a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get an iterable object which calls fetch or sync to retrieve all device records.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -236,7 +237,7 @@ receive a cursor that performs a fetch for each iteration, until the fetch curso
 
 <dl class="method">
 <dt id="commandment.dep.dep.DEP.fetch_devices">
-<code class="descname">fetch_devices</code><span class="sig-paren">(</span><em>cursor: Union[str</em>, <em>NoneType] = None</em>, <em>limit: int = 100</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.fetch_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.fetch_devices" title="Permalink to this definition">¶</a></dt>
+<code class="descname">fetch_devices</code><span class="sig-paren">(</span><em>cursor: Optional[str] = None</em>, <em>limit: int = 100</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.fetch_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.fetch_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch a list of DEP devices</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -260,7 +261,7 @@ receive a cursor that performs a fetch for each iteration, until the fetch curso
 
 <dl class="method">
 <dt id="commandment.dep.dep.DEP.fetch_token">
-<code class="descname">fetch_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Union[str, NoneType]<a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.fetch_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.fetch_token" title="Permalink to this definition">¶</a></dt>
+<code class="descname">fetch_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional[str]<a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.fetch_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.fetch_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request a new session token using our DEP credentials.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -318,7 +319,7 @@ receive a cursor that performs a fetch for each iteration, until the fetch curso
 
 <dl class="method">
 <dt id="commandment.dep.dep.DEP.send">
-<code class="descname">send</code><span class="sig-paren">(</span><em>req: requests.models.Request</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; Union[requests.models.Response, NoneType]<a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.send" title="Permalink to this definition">¶</a></dt>
+<code class="descname">send</code><span class="sig-paren">(</span><em>req: requests.models.Request</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; Optional[requests.models.Response]<a class="reference internal" href="../../_modules/commandment/dep/dep.html#DEP.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commandment.dep.dep.DEP.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a request to the DEP service.</p>
 <p>If the service responds that the token has expired, fetch a new session token and re-issue the request.</p>
 <table class="docutils field-list" frame="void" rules="none">
