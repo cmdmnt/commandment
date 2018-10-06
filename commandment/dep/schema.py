@@ -1,4 +1,5 @@
-from marshmallow import Schema, fields
+from marshmallow_jsonapi.flask import Relationship, Schema
+from marshmallow_jsonapi import fields
 from . import SetupAssistantStep
 
 
@@ -93,6 +94,14 @@ class MDMServiceURL(Schema):
 
 class DEPAccountSchema(Schema):
     """DEP Account Details"""
+    class Meta:
+        type_ = 'dep_accounts'
+        self_view = 'dep_app.dep_account_detail'
+        self_view_kwargs = {'dep_account_id': '<id>'}
+        self_view_many = 'dep_app.dep_accounts_list'
+        strict = True
+
+    id = fields.Int(dump_only=True)
 
     # stoken
     consumer_key = fields.String()
