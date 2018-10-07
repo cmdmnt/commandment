@@ -110,7 +110,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                 this.props.test("" + this.props.device.device.id);
                 break;
         }
-    }
+    };
 
     protected handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value: string }) => {
         const tag: Tag = {
@@ -119,11 +119,11 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
         };
 
         this.props.postRelated<Tag>("" + this.props.device.device.id, "tags", tag);
-    }
+    };
 
     protected handleSearchTag = (value: string) => {
         this.props.fetchTags(10, 1, [], [{name: "name", op: "ilike", val: `%${value}%`}]);
-    }
+    };
 
     protected handleChangeTag = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
         const { value } = data;
@@ -134,7 +134,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
 
         this.props.patchRelationship(
             "" + this.props.match.params.id, "tags", relationships);
-    }
+    };
 
     public componentDidMount(): void {
         this.props.fetchDeviceIfRequired("" + this.props.match.params.id, ["tags"]);

@@ -41,8 +41,14 @@ class SetupAssistantStep(Enum):
     iMessageAndFaceTime = 'iMessageAndFaceTime'
     """Skips the iMessage and FaceTime screen in iOS."""
     OnBoarding = 'OnBoarding'
+    """Skips the screen for Screen Time in iOS."""
+    ScreenTime = 'ScreenTime'
+    """Skips the mandatory software update screen in iOS."""
+    SoftwareUpdate = 'SoftwareUpdate'
     """Skips the screen for watch migration in iOS."""
     WatchMigration = 'WatchMigration'
+    """Skips the Choose Your Look screen in macOS."""
+    Appearance = 'Appearance'
     """Disables FileVault Setup Assistant screen in macOS."""
     FileVault = 'FileVault'
     """Skips iCloud Analytics screen in macOS."""
