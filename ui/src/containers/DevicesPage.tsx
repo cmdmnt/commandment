@@ -114,7 +114,7 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
                         >
                             <RowDefinition onClick={() => console.log("fmeh")}>
                                 <ColumnDefinition title="Type" id="attributes.model_name"
-                                                  customComponent={ModelIcon} width={60} style={{'text-align': 'center'}} />
+                                                  customComponent={ModelIcon} width={60} style={{'textAlign': 'center'}} />
                                 <ColumnDefinition title="Name" id="id,attributes.model_name,attributes.device_name"
                                                   customComponent={enhancedWithRowData(DeviceColumn)}/>
                                 <ColumnDefinition title="Serial" id="attributes.serial_number"

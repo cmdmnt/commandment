@@ -10,8 +10,8 @@ interface ModelIconProps {
 export const ModelIcon = (props: ModelIconProps): JSX.Element => {
     const icons: { [propName: string]: SemanticICONS; } = {
        "iMac": "desktop",
-       "iPhone": "mobile alternate",
-       "iPad": "tablet alternate",
+       "iPhone": "mobile",
+       "iPad": "tablet",
        "MacBook Air": "laptop",
        "MacBook Pro": "laptop",
        "Mac Pro": "computer",
