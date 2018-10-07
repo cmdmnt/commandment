@@ -95,7 +95,7 @@ def dep_sync_organization(app: Flask, dep: DEP):
             app.logger.info('Not attempting to fetch DEP account information. No DEP account is configured.')
 
 
-def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
+def dep_fetch_devices(app: Flask, dep: DEP, dep_account_id: int):
     """Perform fetch or sync of devices.
 
     TODO: If default DEP Profile is nominated, it is queued for assignment here. But may want to check `profile_status`
@@ -104,12 +104,14 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
     See:
         https://docs.sqlalchemy.org/en/latest/orm/contextual.html
     """
+    thread_session = db.create_scoped_session()
+
+    dep_account: DEPAccount = thread_session.query(DEPAccount).one()
+
     if dep_account.cursor is not None:
         app.logger.info('Syncing using previous cursor: %s', dep_account.cursor)
     else:
         app.logger.info('No DEP cursor found, performing a full fetch')
-
-    thread_session = db.create_scoped_session()
 
     # TODO: if fetched_until is quite recent, there's no reason to fetch again
     for device_page in dep.devices(dep_account.cursor):
@@ -170,7 +172,7 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account: DEPAccount):
         app.logger.debug('Last DEP Cursor was: %s', device_page['cursor'])
         dep_account.cursor = device_page.get('cursor', None)
         dep_account.more_to_follow = device_page.get('more_to_follow', None)
-        # dep_account.fetched_until = dateutil.parser.parse(device_page['fetched_until'])
+        dep_account.fetched_until = dateutil.parser.parse(device_page['fetched_until'])
         thread_session.commit()
 
 
@@ -198,7 +200,7 @@ def dep_thread_callback(app: Flask):
             dep_sync_organization(app, dep)
 
             try:
-                dep_fetch_devices(app, dep, dep_account)
+                dep_fetch_devices(app, dep, dep_account.id)
             except DEPServiceError as dse:
                 print(dse)
                 if dse.text == 'EXPIRED_CURSOR':
