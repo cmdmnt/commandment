@@ -1,5 +1,5 @@
 from cryptography import x509
-from commandment.dep import SkipSetupSteps, DEPOrgType, DEPOrgVersion
+from commandment.dep import SetupAssistantStep, SkipSetupSteps, DEPOrgType, DEPOrgVersion
 from commandment.models import db
 from commandment.pki.models import CertificateType, Certificate
 from commandment.dbtypes import GUID
@@ -66,8 +66,8 @@ class DEPAccount(db.Model):
     org_email = db.Column(db.String())
     org_phone = db.Column(db.String())
     org_address = db.Column(db.String())
-    org_type = db.Column(db.Enum(DEPOrgType))
-    org_version = db.Column(db.Enum(DEPOrgVersion))
+    org_type = db.Column(db.Enum(*DEPOrgType.__members__.items()))
+    org_version = db.Column(db.Enum(*DEPOrgVersion.__members__.items()))
     org_id = db.Column(db.String())
     org_id_hash = db.Column(db.String())
 
@@ -110,7 +110,7 @@ class DEPProfile(db.Model):
     auto_advance_setup = db.Column(db.Boolean)
     support_email_address = db.Column(db.String)
     org_magic = db.Column(db.String)
-    skip_setup_items = db.Column(db.Enum(SkipSetupSteps))
+    skip_setup_items = db.Column(db.Enum(*SetupAssistantStep.__members__.items()))
     department = db.Column(db.String)
 
     anchor_certs = db.relationship(
