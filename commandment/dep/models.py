@@ -1,8 +1,9 @@
 from cryptography import x509
 from commandment.dep import SkipSetupSteps, DEPOrgType, DEPOrgVersion
 from commandment.models import db
+from commandment.mutablelist import MutableList
 from commandment.pki.models import CertificateType, Certificate
-from commandment.dbtypes import GUID
+from commandment.dbtypes import GUID, JSONEncodedDict
 
 
 class DEPServerTokenCertificate(Certificate):
@@ -110,7 +111,7 @@ class DEPProfile(db.Model):
     auto_advance_setup = db.Column(db.Boolean)
     support_email_address = db.Column(db.String)
     org_magic = db.Column(db.String)
-    skip_setup_items = db.Column(db.Enum(SkipSetupSteps))
+    skip_setup_items = db.Column(MutableList.as_mutable(JSONEncodedDict))
     department = db.Column(db.String)
 
     anchor_certs = db.relationship(
