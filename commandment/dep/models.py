@@ -99,20 +99,23 @@ class DEPProfile(db.Model):
     __tablename__ = 'dep_profiles'
     id = db.Column(db.Integer, primary_key=True)
     uuid = db.Column(GUID, index=True)
+
     profile_name = db.Column(db.String, nullable=False)
     url = db.Column(db.String, nullable=False)
-    allow_pairing = db.Column(db.Boolean)
-    is_supervised = db.Column(db.Boolean)
-    is_multi_user = db.Column(db.Boolean)
-    is_mandatory = db.Column(db.Boolean)
-    await_device_configured = db.Column(db.Boolean)
-    is_mdm_removable = db.Column(db.Boolean)
+    allow_pairing = db.Column(db.Boolean, default=True)
+    is_supervised = db.Column(db.Boolean, default=False)
+    is_multi_user = db.Column(db.Boolean, default=False)
+    is_mandatory = db.Column(db.Boolean, default=False)
+    await_device_configured = db.Column(db.Boolean, default=False)
+    is_mdm_removable = db.Column(db.Boolean, default=True)
     support_phone_number = db.Column(db.String)
-    auto_advance_setup = db.Column(db.Boolean)
+    auto_advance_setup = db.Column(db.Boolean, default=False)
     support_email_address = db.Column(db.String)
     org_magic = db.Column(db.String)
     skip_setup_items = db.Column(MutableList.as_mutable(JSONEncodedDict))
     department = db.Column(db.String)
+    # language = db.Column(db.String)
+    # region = db.Column(db.String)
 
     anchor_certs = db.relationship(
         'DEPAnchorCertificate',
