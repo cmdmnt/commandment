@@ -1,19 +1,17 @@
-// import * as actions from "../../actions/vpp";
-import {DEPAccount} from "../../models";
-// import {TokenActionResponse} from "../../actions/vpp";
-import {DEPActions, DEPActionTypes} from "../../actions/settings/dep";
+import {DEPProfile} from "./types";
+import {DEPActions, DEPActionTypes} from "./actions";
 
 import {isJSONAPIErrorResponsePayload, JSONAPIObject} from "../../json-api";
 
-export interface DEPState {
-    data?: Array<JSONAPIObject<DEPAccount>>;
+export interface IDEPProfilesState {
+    data?: Array<JSONAPIObject<DEPProfile>>;
     loading: boolean;
     submitted: boolean;
     error: boolean;
     errorDetail?: any;
 }
 
-const initialState: DEPState = {
+const initialState: IDEPProfilesState = {
     loading: false,
     error: false,
     submitted: false
@@ -21,14 +19,14 @@ const initialState: DEPState = {
 
 // type VPPAction = TokenActionResponse;
 
-export function dep(state: DEPState = initialState, action: DEPActions): DEPState {
+export function profiles(state: IDEPProfilesState = initialState, action: DEPActions): IDEPProfilesState {
     switch (action.type) {
-        case DEPActionTypes.INDEX_REQUEST:
+        case DEPActionTypes.PROF_INDEX_REQUEST:
             return {
                 ...state,
                 loading: true
             };
-        case DEPActionTypes.INDEX_SUCCESS:
+        case DEPActionTypes.PROF_INDEX_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
@@ -43,7 +41,7 @@ export function dep(state: DEPState = initialState, action: DEPActions): DEPStat
                     data: action.payload.data
                 };
             }
-        case DEPActionTypes.INDEX_FAILURE:
+        case DEPActionTypes.PROF_INDEX_FAILURE:
             return {
                 ...state,
                 loading: false,

@@ -1,5 +1,5 @@
-import {DEPState} from "../../reducers/configuration/dep";
-import {index, IndexActionRequest} from "../../actions/settings/dep";
+import {IDEPAccountsState} from "../../store/dep/accounts_reducer";
+import {accounts, AccountIndexActionRequest} from "../../store/dep/actions";
 import {RouteComponentProps} from "react-router";
 import * as React from "react";
 import Container from "semantic-ui-react/src/elements/Container/Container";
@@ -20,11 +20,11 @@ interface RouteProps {
 }
 
 interface ReduxStateProps {
-    dep: DEPState;
+    accounts: IDEPAccountsState;
 }
 
 interface ReduxDispatchProps {
-    index: IndexActionRequest;
+    getAccounts: AccountIndexActionRequest;
 }
 
 interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteProps> {
@@ -53,7 +53,7 @@ export class UnconnectedDEPAccountSetupPage extends React.Component<OwnProps, ID
 
     render() {
         const {
-            dep: {data, loading},
+            accounts: {data, loading},
         } = this.props;
 
         return (
@@ -132,10 +132,10 @@ export class UnconnectedDEPAccountSetupPage extends React.Component<OwnProps, ID
 
 export const DEPAccountSetupPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
     (state: RootState): ReduxStateProps => ({
-        dep: state.configuration.dep,
+        accounts: state.dep.accounts,
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({
-        index
+        getAccounts: accounts
     }, dispatch),
 )(UnconnectedDEPAccountSetupPage);
 

@@ -4,15 +4,15 @@ import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {DEPState} from "../../reducers/configuration/dep";
+import {IDEPAccountsState} from "../../store/dep/accounts_reducer";
 import {RootState} from "../../reducers/index";
 import {DEPAccountsTable} from "../../components/griddle-tables/DEPAccountsTable";
 import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown";
 import {Link} from "react-router-dom";
 import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 import {
-    IndexActionRequest, index
-} from "../../actions/settings/dep";
+    AccountIndexActionRequest, accounts
+} from "../../store/dep/actions";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
 import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
 
@@ -21,11 +21,11 @@ interface RouteProps {
 }
 
 interface ReduxStateProps {
-    dep: DEPState;
+    accounts: IDEPAccountsState;
 }
 
 interface ReduxDispatchProps {
-    index: IndexActionRequest;
+    getAccounts: AccountIndexActionRequest;
 }
 
 interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteProps> {
@@ -35,13 +35,13 @@ interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentPr
 export class UnconnectedDEPAccountsPage extends React.Component<OwnProps, void> {
 
     componentWillMount?() {
-        this.props.index();
+        this.props.getAccounts();
     }
 
 
     render() {
         const {
-            dep: {data, loading},
+            accounts: {data, loading},
         } = this.props;
 
         return (
@@ -67,9 +67,9 @@ export class UnconnectedDEPAccountsPage extends React.Component<OwnProps, void> 
 
 export const DEPAccountsPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
     (state: RootState): ReduxStateProps => ({
-        dep: state.configuration.dep,
+        accounts: state.dep.accounts,
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({
-        index
+        getAccounts: accounts
     }, dispatch),
 )(UnconnectedDEPAccountsPage);

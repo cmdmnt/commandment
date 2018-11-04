@@ -1,16 +1,15 @@
 import * as React from "react";
 import {connect, Dispatch} from "react-redux";
-import {DEPAccount} from "../models";
 import {RouteComponentProps} from "react-router";
-import {read, ReadActionRequest} from "../actions/settings/dep";
+import {account, AccountReadActionRequest} from "../store/dep/actions";
 import {RootState} from "../reducers";
-import * as actions from "../actions/profiles";
 import {bindActionCreators} from "redux";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
 import List from "semantic-ui-react/dist/commonjs/elements/List/List";
-import {DEPAccountState} from "../reducers/dep/account";
+import {DEPAccountState} from "../store/dep/account_reducer";
+import {Link} from "react-router-dom";
 
 interface IOwnProps {
 
@@ -21,7 +20,7 @@ interface IReduxStateProps {
 }
 
 interface IReduxDispatchProps {
-    read: ReadActionRequest;
+    getAccount: AccountReadActionRequest;
 }
 
 interface IRouteParameters {
@@ -39,7 +38,7 @@ interface IDEPAccountPageState {
 class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, IDEPAccountPageState> {
 
     componentWillMount() {
-        this.props.read(this.props.match.params.id);
+        this.props.getAccount(this.props.match.params.id);
     }
 
     render() {
@@ -85,6 +84,8 @@ class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, ID
                       <List.Item icon="mobile" description={dep_account.attributes.org_phone}/>
                     </List>
                   </Segment>
+
+                  <Link to={`/dep/accounts/${dep_account.id}/profiles/add`}>New DEP Profile</Link>
                 </div>
                 }
             </Container>
@@ -94,10 +95,10 @@ class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, ID
 
 export const DEPAccountPage = connect<IReduxStateProps, IReduxDispatchProps, IOwnProps>(
     (state: RootState, ownProps: IOwnProps): IReduxStateProps => {
-        return {dep_account: state.dep_account};
+        return {dep_account: state.dep.account};
     },
     (dispatch: Dispatch<RootState>, ownProps?: any): IReduxDispatchProps => bindActionCreators({
-        read
+        getAccount: account
     }, dispatch),
 )(UnconnectedDEPAccountPage);
 

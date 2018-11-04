@@ -14,7 +14,7 @@ import {device_groups, DeviceGroupsState} from "./device_groups";
 import {tags, TagsState} from "./tags";
 import {profile, ProfileState} from "./profile";
 import {applications, ApplicationsState} from "./applications";
-import {dep_account, DEPAccountState} from "./dep/account";
+import {dep, IDEPState} from "../store/dep/reducer";
 
 export interface RootState {
     router?: RouterState;
@@ -31,7 +31,7 @@ export interface RootState {
     tags?: TagsState;
     profile?: ProfileState;
     applications?: ApplicationsState;
-    dep_account?: DEPAccountState;
+    dep?: IDEPState;
 }
 
 
@@ -50,7 +50,7 @@ export const rootReducer = combineReducers<RootState>({
     device_groups,
     tags,
     profile,
-    dep_account
+    dep
 });
 
 export default rootReducer;
