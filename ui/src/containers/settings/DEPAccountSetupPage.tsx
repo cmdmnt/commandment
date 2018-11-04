@@ -31,12 +31,12 @@ interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentPr
 
 }
 
-interface IDEPAccountPageState {
+interface IDEPAccountSetupPageState {
     step: number;
 }
 
 
-export class UnconnectedDEPAccountPage extends React.Component<OwnProps, IDEPAccountPageState> {
+export class UnconnectedDEPAccountSetupPage extends React.Component<OwnProps, IDEPAccountSetupPageState> {
 
     // static initialState: IDEPAccountPageState = {
     //     step: 0
@@ -130,12 +130,12 @@ export class UnconnectedDEPAccountPage extends React.Component<OwnProps, IDEPAcc
     }
 }
 
-export const DEPAccountPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
+export const DEPAccountSetupPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
     (state: RootState): ReduxStateProps => ({
         dep: state.configuration.dep,
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({
         index
     }, dispatch),
-)(UnconnectedDEPAccountPage);
+)(UnconnectedDEPAccountSetupPage);
 

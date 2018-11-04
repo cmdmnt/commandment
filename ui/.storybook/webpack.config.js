@@ -2,15 +2,24 @@ const path = require('path');
 
 const {CheckerPlugin} = require('awesome-typescript-loader');
 
-module.exports = (baseConfig, env, config) => {
-  config.module.rules.push({
-    test: /\.(ts|tsx)$/,
+module.exports = (baseConfig, env, defaultConfig) => {
+  defaultConfig.module.rules.push({
+    test: /\.tsx?$/,
     include: path.resolve(__dirname, '../src'),
     loader: require.resolve('awesome-typescript-loader')
   });
-  // config.plugins.push(new CheckerPlugin());
-  config.resolve.extensions.push('.ts', '.tsx');
+  defaultConfig.plugins.push(new CheckerPlugin());
+  defaultConfig.resolve.extensions.push('.ts', '.tsx');
 
-  return config;
+  // defaultConfig.module.rules.push({
+  //   test: /\.jsx?$/,
+  //   include: [
+  //     path.resolve(__dirname, "node_modules/semantic-ui-react"),
+  //     path.resolve(__dirname, "node_modules/byte-size")
+  //   ],
+  //   loader: "babel-loader"
+  // });
+
+  return defaultConfig;
 };
 

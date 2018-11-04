@@ -142,7 +142,7 @@ export interface RSAAReadActionResponseSuccess<TSuccess, TResponse> {
 }
 
 export type RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |
-    RSAAResponseFailure<TFailure> | RSAAReadActionResponseSuccess<TSuccess, TResponse>;
+    RSAAResponseFailure<TFailure> | RSAAReadActionResponseSuccess<TSuccess, TResponse> | JSONAPIErrorResponse;
 
 
 export interface RSAAPostActionRequest<TRequest, TSuccess, TFailure, TValues> {

@@ -1,14 +1,31 @@
 import * as React from "react";
-import Griddle, {ColumnDefinition, GriddlePageProperties, RowDefinition} from "griddle-react";
+import Griddle, {ColumnDefinition, components, GriddlePageProperties, RowDefinition} from "griddle-react";
 import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui";
 import {SelectionPlugin} from "../../griddle-plugins/selection";
 import {SimpleLayout} from "../griddle/SimpleLayout";
 import {SinceNowUTC} from "../griddle/SinceNowUTC";
+import {Map} from "immutable";
+import {connect} from "react-redux";
+import {DEPAccountColumn} from "../griddle/DEPAccountColumn";
 
 export interface IDEPAccountsTableProps {
     data: any;
     pageProperties?: GriddlePageProperties;
 }
+
+const rowDataSelector = (state: Map<string, any>, { griddleKey }: { griddleKey?: string }) => {
+    return state
+        .get("data")
+        .find((rowMap: any) => rowMap.get("griddleKey") === griddleKey)
+        .toJSON();
+};
+
+const enhancedWithRowData = connect((state, props: components.RowProps) => {
+    return {
+        // rowData will be available into MyCustomComponent
+        rowData: rowDataSelector(state, props),
+    };
+});
 
 export const DEPAccountsTable: React.StatelessComponent<IDEPAccountsTableProps> = (props) => (
     <Griddle
@@ -23,8 +40,8 @@ export const DEPAccountsTable: React.StatelessComponent<IDEPAccountsTableProps> 
         components={{ Layout: SimpleLayout }}
     >
         <RowDefinition>
+            <ColumnDefinition title="Server Name" id="id,attributes.server_name" customComponent={enhancedWithRowData(DEPAccountColumn)} />
             <ColumnDefinition title="Organization" id="attributes.org_name" />
-            <ColumnDefinition title="Server Name" id="attributes.server_name" />
             <ColumnDefinition title="Token Expires" id="attributes.access_token_expiry" customComponent={SinceNowUTC} />
         </RowDefinition>
     </Griddle>

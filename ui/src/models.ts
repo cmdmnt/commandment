@@ -218,15 +218,33 @@ export interface VPPAccount {
     exp_date: string;
 }
 
+export enum DEPAccountOrgVersion {
+    Version2 = "DEPOrgVersion.v2"
+}
+
+export enum DEPAccountOrgType {
+    Education = "DEPOrgType.Education"
+}
+
 export interface DEPAccount {
-    server_name: string;
-    admin_id: string;
-    facilitator_id: string;
-    org_name: string;
-    org_email: string;
-    org_phone: string;
-    org_address: string;
-    org_type: string;
-    org_version: string;
-    org_id: string;
+    readonly access_token: string;
+    readonly access_token_expiry: string;
+    readonly admin_id: string;
+    readonly consumer_key: string;
+    readonly cursor?: string;
+    readonly facilitator_id: string;
+    readonly fetched_until?: string;
+    readonly more_to_follow: boolean;
+    readonly org_address: string;
+    readonly org_email: string;
+    readonly org_id: string;
+    readonly org_id_hash: string;
+    readonly org_name: string;
+    readonly org_phone: string;
+    readonly org_type: DEPAccountOrgType;
+    readonly org_version: DEPAccountOrgVersion;
+    readonly server_name: string;
+    readonly server_uuid: string;
+    readonly token_updated_at: string;
+    readonly url?: string;
 }

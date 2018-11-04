@@ -29,8 +29,8 @@ import "../sass/app.scss";
 import {ApplicationPage} from "./containers/ApplicationPage";
 import {ApplicationsPage} from "./containers/ApplicationsPage";
 import {DashboardPage} from "./containers/DashboardPage";
-import {DEPAccountPage} from "./containers/settings/DEPAccountPage";
-
+import {DEPAccountSetupPage} from "./containers/settings/DEPAccountSetupPage";
+import {DEPAccountPage} from "./containers/DEPAccountPage";
 
 const initialState: RootState = {};
 
@@ -56,8 +56,9 @@ render(
                 <Route path="/settings/deviceauth" component={DeviceAuthPage} />
                 <Route path="/settings/organization" component={OrganizationPage} />
                 <Route path="/settings/vpp" component={VPPAccountsPage} />
-                <Route exact path="/settings/dep" component={DEPAccountsPage} />
-                <Route path="/settings/dep/accounts/add" component={DEPAccountPage} />
+                <Route exact path="/settings/dep/accounts" component={DEPAccountsPage} />
+                <Route path="/settings/dep/accounts/add" component={DEPAccountSetupPage} />
+                <Route path="/dep/accounts/:id" component={DEPAccountPage} />
             </AppLayout>
         </ConnectedRouter>
     </Provider>,

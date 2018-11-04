@@ -91,7 +91,7 @@ export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, 
                             </Card.Description>
                         </Card.Content>
                     </Card>
-                    <Card as={Link} to='/settings/dep'>
+                    <Card as={Link} to='/settings/dep/accounts'>
                         <Card.Content>
                             <Card.Header>
                                 <Icon name='tablet' /> DEP Accounts
