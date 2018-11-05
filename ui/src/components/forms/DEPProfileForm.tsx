@@ -12,11 +12,12 @@ import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
 import Accordion from "semantic-ui-react/dist/commonjs/modules/Accordion/Accordion";
 import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown";
 import {DEPProfile, SkipSetupSteps} from "../../store/dep/types";
-import {} from "formik-semantic-ui";
+import * as Yup from "yup";
 import {FormikCheckbox} from "../formik/FormikCheckbox";
+import Label from "semantic-ui-react/dist/commonjs/elements/Label/Label";
 
 export interface IDEPProfileFormValues extends DEPProfile {
-
+    show: { [SkipSetupSteps: string]: boolean };
 }
 
 export interface IDEPProfileFormProps {
@@ -37,6 +38,38 @@ const initialValues: IDEPProfileFormValues = {
     profile_name: "",
     allow_pairing: true,
     is_supervised: true,
+    show: {
+        [SkipSetupSteps.AppleID]: true,
+        [SkipSetupSteps.Biometric]: true,
+        [SkipSetupSteps.Diagnostics]: true,
+        [SkipSetupSteps.DisplayTone]: true,
+        [SkipSetupSteps.Location]: true,
+        [SkipSetupSteps.Passcode]: true,
+        [SkipSetupSteps.Payment]: true,
+        [SkipSetupSteps.Privacy]: true,
+        [SkipSetupSteps.Restore]: true,
+        [SkipSetupSteps.SIMSetup]: true,
+        [SkipSetupSteps.Siri]: true,
+        [SkipSetupSteps.TOS]: true,
+        [SkipSetupSteps.Zoom]: true,
+        [SkipSetupSteps.Android]: true,
+        [SkipSetupSteps.HomeButtonSensitivity]: true,
+        [SkipSetupSteps.iMessageAndFaceTime]: true,
+        [SkipSetupSteps.OnBoarding]: true,
+        [SkipSetupSteps.ScreenTime]: true,
+        [SkipSetupSteps.SoftwareUpdate]: true,
+        [SkipSetupSteps.WatchMigration]: true,
+        [SkipSetupSteps.Appearance]: true,
+        [SkipSetupSteps.FileVault]: true,
+        [SkipSetupSteps.iCloudDiagnostics]: true,
+        [SkipSetupSteps.iCloudStorage]: true,
+        [SkipSetupSteps.Registration]: true,
+        [SkipSetupSteps.ScreenSaver]: true,
+        [SkipSetupSteps.TapToSetup]: true,
+        [SkipSetupSteps.TVHomeScreenSync]: true,
+        [SkipSetupSteps.TVProviderSignIn]: true,
+        [SkipSetupSteps.TVRoom]: true,
+    },
 };
 
 export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPProfileFormState> {
@@ -56,12 +89,15 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
         this.props.onSubmit(this.state.formValues);
     };
 
-    render() {
+    public render() {
         const activeIndex = this.state.activeIndex;
         return (
             <Formik
                 initialValues={initialValues}
                 onSubmit={(values: IDEPProfileFormValues) => this.handleSubmit}
+                validationSchema={Yup.object().shape({
+                    profile_name: Yup.string().required('Required'),
+                })}
             >
                 {({
                       values,
@@ -71,7 +107,6 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
                       handleBlur,
                       handleSubmit,
                       isSubmitting,
-                      /* and other goodies */
                   }) => (
                     <Form onSubmit={handleSubmit}>
                         <Accordion fluid styled>
@@ -85,7 +120,7 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
                                     <input type="text" name="profile_name"
                                            onChange={handleChange} onBlur={handleBlur}
                                            value={values.profile_name}/>
-                                    {errors.profile_name && touched.profile_name && errors.profile_name}
+                                    {errors.profile_name && touched.profile_name && <Label pointing>{errors.profile_name}</Label>}
                                 </Form.Field>
 
                                 <Form.Field>

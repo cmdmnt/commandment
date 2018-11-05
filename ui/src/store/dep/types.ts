@@ -1,10 +1,10 @@
 
 export enum DEPAccountOrgVersion {
-    Version2 = "DEPOrgVersion.v2"
+    Version2 = "DEPOrgVersion.v2",
 }
 
 export enum DEPAccountOrgType {
-    Education = "DEPOrgType.Education"
+    Education = "DEPOrgType.Education",
 }
 
 export enum SkipSetupSteps {
@@ -37,7 +37,7 @@ export enum SkipSetupSteps {
     TapToSetup = "TapToSetup",
     TVHomeScreenSync = "TVHomeScreenSync",
     TVProviderSignIn = "TVProviderSignIn",
-    TVRoom = "TVRoom"
+    TVRoom = "TVRoom",
 }
 
 export interface DEPAccount {
