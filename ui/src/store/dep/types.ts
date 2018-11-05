@@ -69,7 +69,7 @@ export interface DEPProfile {
     dep_account_id?: number;
 
     profile_name: string;
-    url: string;
+    url?: string;
     allow_pairing: boolean;
     is_supervised: boolean;
     is_multi_user: boolean;
