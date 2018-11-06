@@ -9,7 +9,8 @@ class DEPProfileSchema(Schema):
     """marshmallow schema for a DEP profile.
 
     See Also:
-          - `/profile endpoint <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/4-Profile_Management/ProfileManagement.html#//apple_ref/doc/uid/TP40017387-CH7-SW6>`_.
+        - `/profile endpoint <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/4-Profile_Management/ProfileManagement.html#//apple_ref/doc/uid/TP40017387-CH7-SW6>`_.
+        - `Mobile Device Management Protocol Reference <https://developer.apple.com/enterprise/documentation/MDM-Protocol-Reference.pdf>`_ "Define Profile" pg. 120
     """
     class Meta:
         type_ = 'dep_profiles'
@@ -68,7 +69,7 @@ class DEPProfileSchema(Schema):
     )
 
     dep_account = Relationship(
-        self_view='dep_app.dep_profile_dep_accounts',
+        self_view='dep_app.dep_profile_dep_account',
         self_view_kwargs={'id': '<id>'},
         related_view='api_app.dep_account_detail',
         related_view_kwargs={'dep_account_id': '<id>'},

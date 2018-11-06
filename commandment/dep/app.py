@@ -30,10 +30,13 @@ import json
 dep_app = Blueprint('dep_app', __name__)
 api = Api(blueprint=dep_app)
 
-api.route(DEPProfileList, 'dep_profiles_list', '/api/v1/dep/profiles/')
+api.route(DEPProfileList, 'dep_profiles_list', '/api/v1/dep/profiles/',
+          '/api/v1/dep/accounts/<int:dep_account_id>/profiles')
 api.route(DEPProfileDetail, 'dep_profile_detail', '/api/v1/dep/profiles/<int:dep_profile_id>')
 api.route(DEPProfileRelationship, 'dep_profile_devices',
           '/api/v1/dep/profiles/<int:dep_profile_id>/relationships/devices')
+api.route(DEPProfileRelationship, 'dep_profile_dep_account',
+          '/api/v1/dep/profiles/<int:dep_profile_id>/relationships/dep_account')
 api.route(DEPAccountList, 'dep_accounts_list', '/api/v1/dep/accounts/')
 api.route(DEPAccountDetail, 'dep_account_detail', '/api/v1/dep/accounts/<int:dep_account_id>')
 

@@ -247,7 +247,7 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
                                                 label="Show Screen about using Aerial Screensavers in ATV"
                                                 value={SkipSetupSteps.ScreenSaver}/>
                                 <FormikCheckbox toggle name={`show.${SkipSetupSteps.TapToSetup}`}
-                                                label="Show Tap to Set Up option in ATV which uses an iOS device to set up"
+                                                label="Show Tap to Set Up option in ATV"
                                                 value={SkipSetupSteps.TapToSetup}/>
                                 <FormikCheckbox toggle name={`show.${SkipSetupSteps.TVHomeScreenSync}`}
                                                 label="Show home screen layout sync"

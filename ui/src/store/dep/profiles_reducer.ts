@@ -1,5 +1,5 @@
-import {DEPProfile} from "./types";
 import {DEPActions, DEPActionTypes} from "./actions";
+import {DEPProfile} from "./types";
 
 import {isJSONAPIErrorResponsePayload, JSONAPIObject} from "../../json-api";
 
@@ -14,7 +14,7 @@ export interface IDEPProfilesState {
 const initialState: IDEPProfilesState = {
     loading: false,
     error: false,
-    submitted: false
+    submitted: false,
 };
 
 // type VPPAction = TokenActionResponse;
@@ -24,7 +24,7 @@ export function profiles(state: IDEPProfilesState = initialState, action: DEPAct
         case DEPActionTypes.PROF_INDEX_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
         case DEPActionTypes.PROF_INDEX_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
@@ -32,13 +32,13 @@ export function profiles(state: IDEPProfilesState = initialState, action: DEPAct
                     ...state,
                     loading: false,
                     error: true,
-                    errorDetail: action.payload
-                }
+                    errorDetail: action.payload,
+                };
             } else {
                 return {
                     ...state,
                     loading: false,
-                    data: action.payload.data
+                    data: action.payload.data,
                 };
             }
         case DEPActionTypes.PROF_INDEX_FAILURE:
@@ -46,7 +46,7 @@ export function profiles(state: IDEPProfilesState = initialState, action: DEPAct
                 ...state,
                 loading: false,
                 error: true,
-                errorDetail: action.payload
+                errorDetail: action.payload,
             };
 
         default:

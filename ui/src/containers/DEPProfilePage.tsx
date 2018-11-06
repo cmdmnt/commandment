@@ -64,6 +64,8 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, vo
             }
         }
 
+        profile.url = "http://test.something/dep/enroll"; // TODO: THIS IS A PLACEHOLDER
+
         this.props.postDEPProfile(profile);
     };
 }
