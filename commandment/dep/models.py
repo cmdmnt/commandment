@@ -79,8 +79,9 @@ class DEPAccount(db.Model):
     more_to_follow = db.Column(db.Boolean())
     fetched_until = db.Column(db.DateTime())
 
-    default_dep_profile_id = db.Column(db.ForeignKey('dep_profiles.id'))
-    default_dep_profile = db.relationship('DEPProfile', backref='default_for_accounts')
+    default_dep_profile_id = db.Column(db.Integer, db.ForeignKey('dep_profiles.id'))
+    default_dep_profile = db.relationship('DEPProfile', backref='default_for_accounts',
+                                          foreign_keys=[default_dep_profile_id])
 
 
 dep_profile_anchor_certificates = db.Table(
@@ -104,8 +105,8 @@ class DEPProfile(db.Model):
     uuid = db.Column(GUID, index=True)
 
     # A profile is defined under a single DEP account
-    dep_account_id = db.Column(db.ForeignKey('dep_accounts.id'))
-    dep_account = db.relationship('DEPAccount', backref='profiles')
+    dep_account_id = db.Column(db.Integer, db.ForeignKey('dep_accounts.id'))
+    dep_account = db.relationship('DEPAccount', backref='profiles', foreign_keys=[dep_account_id])
 
     profile_name = db.Column(db.String, nullable=False)
     url = db.Column(db.String, nullable=False)

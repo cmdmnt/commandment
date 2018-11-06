@@ -1,20 +1,16 @@
 import {Formik} from "formik";
-import * as React from "react";
 import {ChangeEvent, FormEvent} from "react";
+import * as React from "react";
 import {AccordionTitleProps, CheckboxProps} from "semantic-ui-react";
 import Form, {FormProps} from "semantic-ui-react/dist/commonjs/collections/Form/Form";
-import Checkbox from "semantic-ui-react/dist/commonjs/collections/Form/FormCheckbox";
 import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
-import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
-import Accordion from "semantic-ui-react/dist/commonjs/modules/Accordion/Accordion";
-import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown";
-import {DEPProfile, SkipSetupSteps} from "../../store/dep/types";
-import * as Yup from "yup";
-import {FormikCheckbox} from "../formik/FormikCheckbox";
 import Label from "semantic-ui-react/dist/commonjs/elements/Label/Label";
+import Accordion from "semantic-ui-react/dist/commonjs/modules/Accordion/Accordion";
+import * as Yup from "yup";
+import {DEPProfile, SkipSetupSteps} from "../../store/dep/types";
+import {FormikCheckbox} from "../formik/FormikCheckbox";
 
 export interface IDEPProfileFormValues extends DEPProfile {
     show: { [SkipSetupSteps: string]: boolean };
@@ -22,7 +18,7 @@ export interface IDEPProfileFormValues extends DEPProfile {
 
 export interface IDEPProfileFormProps {
     data?: DEPProfile;
-    onSubmit: (data: DEPProfile) => void;
+    onSubmit: (values: IDEPProfileFormValues) => void;
 }
 
 export interface IDEPProfileFormState {
@@ -37,6 +33,10 @@ export enum DEPProfilePairWithOptions {
 const initialValues: IDEPProfileFormValues = {
     profile_name: "",
     allow_pairing: true,
+    is_multi_user: false,
+    is_mandatory: false,
+    await_device_configured: false,
+    is_mdm_removable: true,
     is_supervised: true,
     show: {
         [SkipSetupSteps.AppleID]: true,
@@ -81,12 +81,8 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
         };
     }
 
-    handleClick = (evt: MouseEvent, data: AccordionTitleProps) => {
+    protected handleClick = (evt: MouseEvent, data: AccordionTitleProps) => {
         this.setState({activeIndex: parseInt(data.index, 0)});
-    };
-
-    handleSubmit = (event: React.FormEvent<HTMLFormElement>, data: FormProps) => {
-        this.props.onSubmit(this.state.formValues);
     };
 
     public render() {
@@ -94,9 +90,9 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
         return (
             <Formik
                 initialValues={initialValues}
-                onSubmit={(values: IDEPProfileFormValues) => this.handleSubmit}
+                onSubmit={this.props.onSubmit}
                 validationSchema={Yup.object().shape({
-                    profile_name: Yup.string().required('Required'),
+                    profile_name: Yup.string().required("Required"),
                 })}
             >
                 {({
@@ -154,7 +150,7 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
                                 <FormikCheckbox toggle name="auto_advance_setup" label="Auto Advance (tvOS)" />
                             </Accordion.Content>
 
-                            <Accordion.Title active={activeIndex == 1} index={1} onClick={this.handleClick}>
+                            <Accordion.Title active={activeIndex === 1} index={1} onClick={this.handleClick}>
                                 <Icon name="dropdown"/>
                                 Setup Assistant Steps (Common)
                             </Accordion.Title>
@@ -194,7 +190,7 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
                                 <FormikCheckbox toggle name={`show.${SkipSetupSteps.Zoom}`} label="Show Zoom"
                                                 value={SkipSetupSteps.Zoom}/>
                             </Accordion.Content>
-                            <Accordion.Title active={activeIndex == 2} index={2} onClick={this.handleClick}>
+                            <Accordion.Title active={activeIndex === 2} index={2} onClick={this.handleClick}>
                                 <Icon name="dropdown" />
                                 Setup Assistant Steps (iOS)
                             </Accordion.Title>
@@ -221,7 +217,7 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
                                                 label="Show Watch Migration"
                                                 value={SkipSetupSteps.WatchMigration} />
                             </Accordion.Content>
-                          <Accordion.Title active={activeIndex == 3} index={3} onClick={this.handleClick}>
+                          <Accordion.Title active={activeIndex === 3} index={3} onClick={this.handleClick}>
                             <Icon name="dropdown" />
                             Setup Assistant Steps (macOS)
                           </Accordion.Title>
@@ -242,7 +238,7 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
                                                 label="Show Registration"
                                                 value={SkipSetupSteps.Registration} />
                             </Accordion.Content>
-                          <Accordion.Title active={activeIndex == 4} index={4} onClick={this.handleClick}>
+                          <Accordion.Title active={activeIndex === 4} index={4} onClick={this.handleClick}>
                             <Icon name="dropdown" />
                             Setup Assistant Steps (tvOS)
                           </Accordion.Title>
@@ -265,7 +261,7 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
                             </Accordion.Content>
                         </Accordion>
                         <Divider hidden/>
-                        <Button type="submit" disabled={isSubmitting}>Submit</Button>
+                        <Button type="submit" disabled={isSubmitting} primary>{values.id ? "Update" : "Create"}</Button>
                     </Form>
                 )}
             </Formik>

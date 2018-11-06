@@ -1,17 +1,16 @@
 import * as React from "react";
 
-import {profile, ProfileReadActionRequest} from "../store/dep/actions";
-import {RouteComponentProps} from "react-router";
 import {connect, Dispatch} from "react-redux";
-import {IDEPProfileState} from "../store/dep/profile_reducer";
-import {RootState} from "../reducers";
+import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {DEPProfileForm} from "../components/forms/DEPProfileForm";
+import {FormProps} from "semantic-ui-react";
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
-import {FormProps} from "semantic-ui-react";
-import {DEPProfile} from "../store/dep/types";
-
+import {DEPProfileForm, IDEPProfileFormValues} from "../components/forms/DEPProfileForm";
+import {RootState} from "../reducers";
+import {postProfile, profile, ProfilePostActionRequest, ProfileReadActionRequest} from "../store/dep/actions";
+import {IDEPProfileState} from "../store/dep/profile_reducer";
+import {DEPProfile, SkipSetupSteps} from "../store/dep/types";
 
 interface IReduxStateProps {
     dep_profile?: IDEPProfileState;
@@ -19,6 +18,7 @@ interface IReduxStateProps {
 
 interface IReduxDispatchProps {
     getDEPProfile: ProfileReadActionRequest;
+    postDEPProfile: ProfilePostActionRequest;
 }
 
 interface IRouteParameters {
@@ -32,20 +32,16 @@ interface IDEPProfilePageProps extends IReduxStateProps, IReduxDispatchProps, Ro
 
 class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, void> {
 
-    handleSubmit = (data: DEPProfile) => {
-        console.dir(data);
-    };
-
-    render() {
+    public render() {
         const {
-            dep_profile
+            dep_profile,
         } = this.props;
 
         let title = "loading";
         if (this.props.match.params.id) {
 
         } else {
-            title = "Create a new DEP Profile"
+            title = "Create a new DEP Profile";
         }
 
         return (
@@ -53,8 +49,23 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, vo
                 <Header as="h1">{title}</Header>
                 <DEPProfileForm onSubmit={this.handleSubmit} />
             </Container>
-        )
+        );
     }
+
+    private handleSubmit = (values: IDEPProfileFormValues) => {
+        const { show, ...profile } = values;
+        profile.skip_setup_items = [];
+
+        if (show) {
+            for (const kskip in SkipSetupSteps) {
+                if (!show[kskip]) {
+                    profile.skip_setup_items.unshift(kskip as SkipSetupSteps);
+                }
+            }
+        }
+
+        this.props.postDEPProfile(profile);
+    };
 }
 
 export const DEPProfilePage = connect(
@@ -62,6 +73,7 @@ export const DEPProfilePage = connect(
         return {dep_profile: state.dep.profile};
     },
     (dispatch: Dispatch<RootState>, ownProps?: any): IReduxDispatchProps => bindActionCreators({
-        getDEPProfile: profile
+        getDEPProfile: profile,
+        postDEPProfile: postProfile,
     }, dispatch),
 )(UnconnectedDEPProfilePage);

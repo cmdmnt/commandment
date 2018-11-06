@@ -9,7 +9,13 @@ class DEPProfileSchema(Schema):
     See Also:
           - `/profile endpoint <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/4-Profile_Management/ProfileManagement.html#//apple_ref/doc/uid/TP40017387-CH7-SW6>`_.
     """
-    
+    class Meta:
+        type_ = 'dep_profiles'
+        self_view = 'api_app.dep_profile_detail'
+        self_view_kwargs = {'dep_profile_id': '<id>'}
+        self_view_many = 'api_app.dep_profiles_list'
+        strict = True
+
     profile_name = fields.String(required=True)
     """str: A human-readable name for the profile."""
     url = fields.Url(required=True)
