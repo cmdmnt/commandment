@@ -1,5 +1,7 @@
+from flask import url_for
 from marshmallow_jsonapi.flask import Relationship, Schema
 from marshmallow_jsonapi import fields
+from marshmallow_enum import EnumField
 from . import SetupAssistantStep
 
 
@@ -16,11 +18,15 @@ class DEPProfileSchema(Schema):
         self_view_many = 'api_app.dep_profiles_list'
         strict = True
 
+    id = fields.Int(dump_only=True)
+    uuid = fields.UUID(dump_only=True)
+
     profile_name = fields.String(required=True)
     """str: A human-readable name for the profile."""
-    url = fields.Url(required=True)
+    url = fields.Url(required=False)  # Should be required
     """str: The URL of the MDM server."""
     allow_pairing = fields.Boolean(default=True)
+    """bool: If true, any device can pair with this device, supervision certs are not required."""
     is_supervised = fields.Boolean(default=False)
     """bool: If true, the device must be supervised"""
     is_multi_user = fields.Boolean(default=False)
@@ -48,11 +54,28 @@ class DEPProfileSchema(Schema):
     """List[str]: Each string contains a DER-encoded certificate converted to Base64 encoding. If provided, 
     the device will continue to pair with a host possessing one of these certificates even when allow_pairing 
     is set to false"""
-    skip_setup_items = fields.Nested(SetupAssistantStep, many=True)
+    skip_setup_items = fields.List(EnumField(SetupAssistantStep))
     """Set[SetupAssistantStep]: A list of setup panes to skip"""
     department = fields.String()
     """str: The user-defined department or location name."""
-    devices = fields.List(fields.String())
+
+    devices = Relationship(
+        related_view='api_app.devices_list',
+        related_view_kwargs={'dep_profile_id': '<id>'},
+        many=True,
+        schema='DeviceSchema',
+        type_='devices'
+    )
+
+    dep_account = Relationship(
+        self_view='dep_app.dep_profile_dep_accounts',
+        self_view_kwargs={'id': '<id>'},
+        related_view='api_app.dep_account_detail',
+        related_view_kwargs={'dep_account_id': '<id>'},
+        many=False,
+        schema='DEPAccountSchema',
+        type_='dep_accounts'
+    )
 
 
 class DEPDeviceSchema(Schema):
