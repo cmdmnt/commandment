@@ -14,9 +14,9 @@ class DEPProfileSchema(Schema):
     """
     class Meta:
         type_ = 'dep_profiles'
-        self_view = 'api_app.dep_profile_detail'
+        self_view = 'dep_app.dep_profile_detail'
         self_view_kwargs = {'dep_profile_id': '<id>'}
-        self_view_many = 'api_app.dep_profiles_list'
+        self_view_many = 'dep_app.dep_profiles_list'
         strict = True
 
     id = fields.Int(dump_only=True)
@@ -63,17 +63,17 @@ class DEPProfileSchema(Schema):
     devices = Relationship(
         related_view='api_app.devices_list',
         related_view_kwargs={'dep_profile_id': '<id>'},
-        many=True,
+        many=True, include_resource_linkage=True,
         schema='DeviceSchema',
         type_='devices'
     )
 
     dep_account = Relationship(
         self_view='dep_app.dep_profile_dep_account',
-        self_view_kwargs={'id': '<id>'},
-        related_view='api_app.dep_account_detail',
-        related_view_kwargs={'dep_account_id': '<id>'},
-        many=False,
+        self_view_kwargs={'dep_profile_id': '<id>'},
+        related_view='dep_app.dep_account_detail',
+        related_view_kwargs={'dep_account_id': '<dep_account_id>'},
+        many=False, include_resource_linkage=True,
         schema='DEPAccountSchema',
         type_='dep_accounts'
     )

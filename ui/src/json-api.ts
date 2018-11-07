@@ -146,7 +146,7 @@ export type RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> = RS
 
 
 export interface RSAAPostActionRequest<TRequest, TSuccess, TFailure, TValues> {
-    (values: TValues): RSAAction<TRequest, TSuccess, TFailure>;
+    (values: TValues, relationships?: { [index: string]: JSONAPIRelationship[]; }): RSAAction<TRequest, TSuccess, TFailure>;
 }
 
 export type RSAAPostActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |

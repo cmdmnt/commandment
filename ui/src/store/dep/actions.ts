@@ -119,25 +119,40 @@ export const profile: ProfileReadActionRequest = (id: string, include?: string[]
 export type ProfilePostActionRequest = RSAAPostActionRequest<DEPActionTypes.PROF_POST_REQUEST, DEPActionTypes.PROF_POST_SUCCESS, DEPActionTypes.PROF_POST_FAILURE, DEPProfile>;
 export type ProfilePostActionResponse = RSAAPostActionResponse<DEPActionTypes.PROF_POST_REQUEST, DEPActionTypes.PROF_POST_SUCCESS, DEPActionTypes.PROF_POST_FAILURE, DEPProfile>;
 
-export const postProfile: ProfilePostActionRequest = (values: DEPProfile) => {
+export const postProfile: ProfilePostActionRequest = (values, relationships) => {
+
+    const bodyData = {
+        data: {
+            attributes: values,
+            type: "dep_profiles",
+        },
+    };
+
+    if (relationships) {
+        const relationshipData = {};
+        for (const k in relationships) {
+            if (relationships.hasOwnProperty(k)) {
+                relationshipData[k] = { data: relationships[k] };
+            }
+        }
+
+        bodyData.data.relationships = relationshipData;
+    }
+
     return {
         [RSAA]: {
+            body: JSON.stringify(bodyData),
             endpoint: `/api/v1/dep/profiles/`,
+            headers: JSONAPI_HEADERS,
             method: "POST",
             types: [
                 DEPActionTypes.PROF_POST_REQUEST,
                 DEPActionTypes.PROF_POST_SUCCESS,
                 DEPActionTypes.PROF_POST_FAILURE,
             ],
-            headers: JSONAPI_HEADERS,
-            body: JSON.stringify({
-                data: {
-                    type: "dep_profiles",
-                    attributes: values,
-                },
-            }),
         },
     };
+
 };
 
 export type DEPActions = AccountIndexActionResponse &

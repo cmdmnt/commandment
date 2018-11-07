@@ -87,6 +87,7 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
 
     public render() {
         const activeIndex = this.state.activeIndex;
+
         return (
             <Formik
                 initialValues={initialValues}
