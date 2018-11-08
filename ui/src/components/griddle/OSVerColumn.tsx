@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {Device} from "../../models";
-import {JSONAPIObject} from "../../json-api";
+import {JSONAPIDataObject} from "../../json-api";
 
 
 interface OSVerColumnProps {
-    rowData: JSONAPIObject<Device>;
+    rowData: JSONAPIDataObject<Device>;
 }
 
 export class OSVerColumn extends React.Component<OSVerColumnProps, undefined> {

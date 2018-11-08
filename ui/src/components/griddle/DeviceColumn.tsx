@@ -2,11 +2,11 @@ import * as React from 'react';
 import {ModelIcon} from "../ModelIcon";
 import {Link} from 'react-router-dom';
 import {Device} from "../../models";
-import {JSONAPIObject} from "../../json-api";
+import {JSONAPIDataObject} from "../../json-api";
 
 
 interface DeviceColumnProps {
-    rowData: JSONAPIObject<Device>;
+    rowData: JSONAPIDataObject<Device>;
 }
 
 export class DeviceColumn extends React.Component<DeviceColumnProps, undefined> {

@@ -1,15 +1,15 @@
 
 import * as actions from '../actions/profiles';
 import {Profile, Tag} from "../models";
-import {isJSONAPIErrorResponsePayload, JSONAPIObject} from "../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 import {PatchRelationshipActionResponse, ReadActionResponse} from "../actions/profiles";
 
 export interface ProfileState {
-    profile?: JSONAPIObject<Profile>;
+    profile?: JSONAPIDataObject<Profile>;
     loading: boolean;
     error: boolean;
     errorDetail?: any
-    tags?: Array<JSONAPIObject<Tag>>;
+    tags?: Array<JSONAPIDataObject<Tag>>;
     tagsLoading: boolean;
 }
 
@@ -47,10 +47,10 @@ export function profile(state: ProfileState = initialState, action: ProfileActio
                     errorDetail: action.payload
                 }
             } else {
-                let tags: Array<JSONAPIObject<Tag>> = [];
+                let tags: Array<JSONAPIDataObject<Tag>> = [];
 
                 if (action.payload.included) {
-                    tags = action.payload.included.filter((included: JSONAPIObject<any>) => (included.type === 'tags'));
+                    tags = action.payload.included.filter((included: JSONAPIDataObject<any>) => (included.type === 'tags'));
                 }
 
                 return {
@@ -73,7 +73,7 @@ export function profile(state: ProfileState = initialState, action: ProfileActio
                     errorDetail: action.payload
                 }
             } else {
-                const profile: JSONAPIObject<Profile> = {
+                const profile: JSONAPIDataObject<Profile> = {
                     ...state.profile,
                     relationships: {
                         ...state.profile.relationships,

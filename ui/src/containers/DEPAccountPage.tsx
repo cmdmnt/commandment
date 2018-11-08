@@ -1,15 +1,15 @@
 import * as React from "react";
 import {connect, Dispatch} from "react-redux";
 import {RouteComponentProps} from "react-router";
-import {account, AccountReadActionRequest} from "../store/dep/actions";
-import {RootState} from "../reducers";
-import {bindActionCreators} from "redux";
-import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
-import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
-import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
-import List from "semantic-ui-react/dist/commonjs/elements/List/List";
-import {DEPAccountState} from "../store/dep/account_reducer";
 import {Link} from "react-router-dom";
+import {bindActionCreators} from "redux";
+import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
+import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
+import List from "semantic-ui-react/dist/commonjs/elements/List/List";
+import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
+import {RootState} from "../reducers";
+import {DEPAccountState} from "../store/dep/account_reducer";
+import {account, AccountReadActionRequest} from "../store/dep/actions";
 
 interface IOwnProps {
 
@@ -38,7 +38,7 @@ interface IDEPAccountPageState {
 class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, IDEPAccountPageState> {
 
     componentWillMount() {
-        this.props.getAccount(this.props.match.params.id);
+        this.props.getAccount(this.props.match.params.id, ["dep_profiles"]);
     }
 
     render() {
@@ -47,11 +47,11 @@ class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, ID
             dep_account: {
                 loading,
                 error,
-                dep_account
-            }
+                dep_account,
+            },
         } = this.props;
 
-        const title = (dep_account && !loading) ? dep_account.attributes.server_name : 'DEP Account (loading)';
+        const title = (dep_account && !loading) ? dep_account.attributes.server_name : "DEP Account (loading)";
 
         return (
             <Container className="DEPAccountPage">
@@ -89,7 +89,7 @@ class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, ID
                 </div>
                 }
             </Container>
-        )
+        );
     }
 }
 
@@ -98,8 +98,6 @@ export const DEPAccountPage = connect<IReduxStateProps, IReduxDispatchProps, IOw
         return {dep_account: state.dep.account};
     },
     (dispatch: Dispatch<RootState>, ownProps?: any): IReduxDispatchProps => bindActionCreators({
-        getAccount: account
+        getAccount: account,
     }, dispatch),
 )(UnconnectedDEPAccountPage);
-
-

@@ -1,10 +1,10 @@
 import {Tag} from "../models";
-import {isJSONAPIErrorResponsePayload, JSONAPIErrorResponse, JSONAPIObject} from "../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIErrorResponse, JSONAPIDataObject} from "../json-api";
 import {IndexActionResponse, INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE} from "../actions/tags";
 
 export interface TagsState {
     loading: boolean;
-    items: Array<JSONAPIObject<Tag>>;
+    items: Array<JSONAPIDataObject<Tag>>;
     error: boolean;
     errorDetail?: JSONAPIErrorResponse;
 }

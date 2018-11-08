@@ -1,6 +1,6 @@
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {
-    encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIListResponse, JSONAPIObject,
+    encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIListResponse, JSONAPIDataObject,
     RSAADeleteActionRequest,
     RSAADeleteActionResponse,
     RSAAIndexActionRequest,

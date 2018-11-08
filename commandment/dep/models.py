@@ -84,6 +84,7 @@ class DEPAccount(db.Model):
                                           foreign_keys=[default_dep_profile_id])
 
 
+
 dep_profile_anchor_certificates = db.Table(
     'dep_profile_anchor_certificates',
     db.metadata,
@@ -106,7 +107,7 @@ class DEPProfile(db.Model):
 
     # A profile is defined under a single DEP account
     dep_account_id = db.Column(db.Integer, db.ForeignKey('dep_accounts.id'))
-    dep_account = db.relationship('DEPAccount', backref='profiles', foreign_keys=[dep_account_id])
+    dep_account = db.relationship('DEPAccount', backref='dep_profiles', foreign_keys=[dep_account_id])
 
     profile_name = db.Column(db.String, nullable=False)
     url = db.Column(db.String, nullable=False)

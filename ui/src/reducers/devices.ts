@@ -2,15 +2,15 @@ import {
     DevicesActionTypes,
     IndexActionResponse
 } from "../actions/devices";
-import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Device} from "../models";
 
 export interface DeviceIdMap {
-    [deviceId: string]: JSONAPIObject<Device>;
+    [deviceId: string]: JSONAPIDataObject<Device>;
 }
 
 export interface DevicesState {
-    items: Array<JSONAPIObject<Device>>;
+    items: Array<JSONAPIDataObject<Device>>;
     byId: DeviceIdMap;
     allIds: Array<string>;
     loading: boolean;
@@ -61,7 +61,7 @@ export function devices(state: DevicesState = initialState, action: DevicesActio
                 }
             } else {
                 let allIds: string[] = [];
-                const byId: DeviceIdMap = action.payload.data.reduce((memo: DeviceIdMap, device: JSONAPIObject<Device>) => {
+                const byId: DeviceIdMap = action.payload.data.reduce((memo: DeviceIdMap, device: JSONAPIDataObject<Device>) => {
                     memo[device.id] = device;
                     allIds.push(''+device.id);
                     return memo;

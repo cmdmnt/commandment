@@ -3,7 +3,7 @@ import {RSAA, HTTPVerb, RSAAction} from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIDetailResponse, JSONAPIListResponse,
-    JSONAPIObject,
+    JSONAPIDataObject,
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse
 } from "../json-api";
@@ -80,7 +80,7 @@ export interface PostActionRequest {
 
 export interface PostActionResponse {
     type: POST_REQUEST | POST_FAILURE | POST_SUCCESS;
-    payload?: JSONAPIListResponse<JSONAPIObject<DeviceGroup>>;
+    payload?: JSONAPIListResponse<JSONAPIDataObject<DeviceGroup>>;
 }
 
 export const post: PostActionRequest = (values: DeviceGroup) => {

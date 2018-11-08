@@ -1,7 +1,7 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
 import { RSAA, RSAAction } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from './constants'
-import {JSONAPIDetailResponse, JSONAPIListResponse, JSONAPIObject} from "../json-api";
+import {JSONAPIDetailResponse, JSONAPIListResponse, JSONAPIDataObject} from "../json-api";
 import {Certificate} from "../models";
 
 export type INDEX_REQUEST = 'certificates/INDEX_REQUEST';
@@ -17,7 +17,7 @@ export interface IndexActionRequest {
 
 export interface IndexActionResponse {
     type: INDEX_REQUEST | INDEX_FAILURE | INDEX_SUCCESS;
-    payload?: JSONAPIListResponse<JSONAPIObject<Certificate>>;
+    payload?: JSONAPIListResponse<JSONAPIDataObject<Certificate>>;
 }
 
 export const index: IndexActionRequest = (

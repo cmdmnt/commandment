@@ -162,3 +162,10 @@ class DEPAccountSchema(Schema):
     more_to_follow = fields.Boolean()
     fetched_until = fields.DateTime()
 
+    dep_profiles = Relationship(
+        related_view='dep_app.dep_profile_detail',
+        related_view_kwargs={'dep_profile_id': '<id>'},
+        many=True, include_resource_linkage=True,
+        schema='DEPProfileSchema',
+        type_='dep_profiles'
+    )

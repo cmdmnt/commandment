@@ -2,12 +2,12 @@ import {isFuture, isPast, distanceInWordsToNow} from "date-fns";
 import * as React from "react";
 import {CERTIFICATE_PURPOSE} from "../../constants";
 
-import {JSONAPIObject} from "../../json-api";
+import {JSONAPIDataObject} from "../../json-api";
 import {Certificate} from "../../models";
 import "./CertificateDetail.scss";
 
 interface CertificateDetailProps {
-    certificate: JSONAPIObject<Certificate>;
+    certificate: JSONAPIDataObject<Certificate>;
     title: string;
     onClickDelete: (certificateId: string) => void;
     onClickDownload: (certificateId: string) => void;

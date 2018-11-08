@@ -1,7 +1,7 @@
 /// <reference path="../../typings/redux-api-middleware.d.ts" />
 import { RSAA, RSAAction } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from '../constants'
-import {JSONAPIListResponse, JSONAPIObject} from "../../json-api";
+import {JSONAPIListResponse, JSONAPIDataObject} from "../../json-api";
 import {Certificate} from "../../models";
 
 
@@ -18,7 +18,7 @@ export interface FetchSSLCertificatesActionRequest {
 
 export interface FetchSSLCertificatesActionResponse {
     type: SSLCERT_REQUEST | SSLCERT_SUCCESS | SSLCERT_FAILURE;
-    payload?: JSONAPIListResponse<JSONAPIObject<Certificate>>;
+    payload?: JSONAPIListResponse<JSONAPIDataObject<Certificate>>;
 }
 
 export const fetchSSLCertificates: FetchSSLCertificatesActionRequest = (): RSAAction<SSLCERT_REQUEST, SSLCERT_SUCCESS, SSLCERT_FAILURE> => {

@@ -2,13 +2,13 @@ import {
     PROFILES_SUCCESS,
     InstalledProfilesActionResponse
 } from "../../actions/device/profiles";
-import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledProfile} from "../../models";
 import {OtherAction} from "../../actions/constants";
 
 
 export interface InstalledProfilesState {
-    items?: Array<JSONAPIObject<InstalledProfile>>;
+    items?: Array<JSONAPIDataObject<InstalledProfile>>;
     recordCount: number;
 }
 

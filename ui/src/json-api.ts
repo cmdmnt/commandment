@@ -1,10 +1,10 @@
 // Redux API Middleware Type Guards
-import {FlaskFilters} from "./actions/constants";
 import {ApiError, InvalidRSAA, RequestError, RSAAction} from "redux-api-middleware";
+import {FlaskFilters} from "./actions/constants";
 
 export const JSONAPI_HEADERS = {
-    'Content-Type': 'application/vnd.api+json',
-    'Accept': 'application/vnd.api+json'
+    "Accept": "application/vnd.api+json",
+    "Content-Type": "application/vnd.api+json",
 };
 
 // http://jsonapi.org/format/#errors
@@ -25,61 +25,80 @@ export interface JSONAPIErrorObject {
 }
 
 export interface JSONAPIErrorResponse {
-    errors: Array<JSONAPIErrorObject>;
+    errors: JSONAPIErrorObject[];
     jsonapi: {
         version: string;
-    }
+    };
 }
 
-export interface JSONAPIRelationship {
+export interface JSONAPIResourceIdentifier {
     type: string;
     id: string;
+    meta?: {
+        [index: string]: any;
+    };
+}
+
+export type JSONAPILink = string | { href?: string, meta?: { [index: string]: any }};
+
+export interface JSONAPILinks {
+    self?: JSONAPILink;
+    related?: JSONAPILink;
+
+    // Pagination
+    first?: JSONAPILink;
+    last?: JSONAPILink;
+    prev?: JSONAPILink;
+    next?: JSONAPILink;
 }
 
 export interface JSONAPIRelationships {
     [relationshipName: string]: {
-        data: Array<JSONAPIRelationship> | JSONAPIRelationship,
-        links?: {
-            related?: string;
-        }
-    }
+        data: JSONAPIResourceIdentifier[] | JSONAPIResourceIdentifier | null,
+        links?: JSONAPILinks;
+    };
 }
 
-export interface JSONAPIObject<TObject> {
+export interface JSONAPIDataObject<TObject> {
     id: string|number;
     type: string;
     attributes: TObject;
     relationships?: JSONAPIRelationships;
-    links?: {
-        self?: string;
-    }
+    links?: JSONAPILinks;
+}
+
+export interface JSONAPIDataResponse<TData, TIncluded> {
+    data?: TData;
+    links?: JSONAPILinks;
+    meta?: {
+        count?: number;
+    };
+    jsonapi: {
+        version: string;
+    };
 }
 
 export interface JSONAPIDetailResponse<TObject, TIncluded> {
-    data?: JSONAPIObject<TObject>;
-    included?: Array<JSONAPIObject<TIncluded>>;
-    links?: {
-        self?: string;
-    },
+    data?: JSONAPIDataObject<TObject>;
+    included?: Array<JSONAPIDataObject<TIncluded>>;
+    links?: JSONAPILinks;
     meta?: {
         count?: number;
-    }
+    };
     jsonapi: {
         version: string;
-    }
+    };
 }
 
 export interface JSONAPIListResponse<TObject> {
-    data?: Array<TObject>;
-    links?: {
-        self?: string;
-    },
+    data?: TObject[];
+    links?: JSONAPILinks;
     meta?: {
         count?: number;
-    }
+    };
     jsonapi: {
         version: string;
-    }
+    };
 }
 
 export function isJSONAPIErrorResponsePayload(
@@ -87,22 +106,15 @@ export function isJSONAPIErrorResponsePayload(
         JSONAPIDetailResponse<any, any> |
         JSONAPIErrorResponse): payload is JSONAPIErrorResponse {
 
-    return (<JSONAPIErrorResponse>payload).errors !== undefined;
+    return (payload as JSONAPIErrorResponse).errors !== undefined;
 }
 
+type WrappedChildIndexActionCreator<R> = (id: string, queryParameters: String[]) => R;
 
-interface WrappedChildIndexActionCreator<R> {
-    (id: string, queryParameters: Array<String>): R;
-}
-
-interface WrappedIndexActionCreator<R> {
-    (queryParameters: Array<String>): R;
-}
+type WrappedIndexActionCreator<R> = (queryParameters: String[]) => R;
 
 // Standardised JSON-API Index ActionCreator
-export interface RSAAIndexActionRequest<TRequest, TSuccess, TFailure> {
-    (size?: number, pageNumber?: number, sort?: Array<string>, filters?: FlaskFilters): RSAAction<TRequest, TSuccess, TFailure>;
-}
+type RSAAIndexActionRequest<TRequest, TSuccess, TFailure> = (size?: number, pageNumber?: number, sort?: string[], filters?: FlaskFilters) => RSAAction<TRequest, TSuccess, TFailure>;
 
 // Standardised JSON-API Index ActionCreator Response (passed to reducer)
 
@@ -125,16 +137,12 @@ export interface RSAAResponseSuccess<TSuccess, TResponse> {
 
 export type RSAAIndexActionResponse<TRequest, TSuccess, TFailure, TObject> = RSAAResponseRequest<TRequest> |
     RSAAResponseFailure<TFailure> |
-    RSAAResponseSuccess<TSuccess, JSONAPIListResponse<JSONAPIObject<TObject>> | JSONAPIErrorResponse>;
+    RSAAResponseSuccess<TSuccess, JSONAPIListResponse<JSONAPIDataObject<TObject>> | JSONAPIErrorResponse>;
 
 // Standardised JSON-API Index ActionCreator that fetches a resource child of some object / by relationship
-export interface RSAAChildIndexActionRequest<TRequest, TSuccess, TFailure> {
-    (parent_id: string, size?: number, pageNumber?: number, sort?: Array<string>, filters?: FlaskFilters): RSAAction<TRequest, TSuccess, TFailure>;
-}
+type RSAAChildIndexActionRequest<TRequest, TSuccess, TFailure> = (parent_id: string, size?: number, pageNumber?: number, sort?: string[], filters?: FlaskFilters) => RSAAction<TRequest, TSuccess, TFailure>;
 
-export interface RSAAReadActionRequest<TRequest, TSuccess, TFailure> {
-    (id: string, include?: Array<string>): RSAAction<TRequest, TSuccess, TFailure>;
-}
+type RSAAReadActionRequest<TRequest, TSuccess, TFailure> = (id: string, include?: string[]) => RSAAction<TRequest, TSuccess, TFailure>;
 
 export interface RSAAReadActionResponseSuccess<TSuccess, TResponse> {
     type: TSuccess;
@@ -144,21 +152,14 @@ export interface RSAAReadActionResponseSuccess<TSuccess, TResponse> {
 export type RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |
     RSAAResponseFailure<TFailure> | RSAAReadActionResponseSuccess<TSuccess, TResponse> | JSONAPIErrorResponse;
 
-
-export interface RSAAPostActionRequest<TRequest, TSuccess, TFailure, TValues> {
-    (values: TValues, relationships?: { [index: string]: JSONAPIRelationship[]; }): RSAAction<TRequest, TSuccess, TFailure>;
-}
+type RSAAPostActionRequest<TRequest, TSuccess, TFailure, TValues> = (values: TValues, relationships?: { [index: string]: JSONAPIRelationship[]; }) => RSAAction<TRequest, TSuccess, TFailure>;
 
 export type RSAAPostActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |
     RSAAResponseFailure<TFailure> | RSAAResponseSuccess<TSuccess, TResponse | JSONAPIErrorResponse>;
 
-export interface RSAAPatchActionRequest<TRequest, TSuccess, TFailure, TValues> {
-    (id: string, values: TValues): RSAAction<TRequest, TSuccess, TFailure>;
-}
+type RSAAPatchActionRequest<TRequest, TSuccess, TFailure, TValues> = (id: string, values: TValues) => RSAAction<TRequest, TSuccess, TFailure>;
 
-export interface RSAADeleteActionRequest<TRequest, TSuccess, TFailure> {
-    (id: string): RSAAction<TRequest, TSuccess, TFailure>;
-}
+type RSAADeleteActionRequest<TRequest, TSuccess, TFailure> = (id: string) => RSAAction<TRequest, TSuccess, TFailure>;
 
 export interface RSAADeleteActionResponseSuccess<TSuccess> {
     type: TSuccess;
@@ -176,25 +177,24 @@ export type RSAADeleteActionResponse<TRequest, TSuccess, TFailure, TResponse> = 
 export const encodeJSONAPIIndexParameters = <R>(wrappedActionCreator: WrappedIndexActionCreator<R>) => (
     size: number = 10,
     pageNumber: number = 1,
-    sort?: Array<string>,
-    filters?: FlaskFilters
+    sort?: string[],
+    filters?: FlaskFilters,
 ) => {
-    let queryParameters = [];
+    const queryParameters = [];
 
     queryParameters.push(`page[size]=${size}`);
     queryParameters.push(`page[number]=${pageNumber}`);
 
     if (sort && sort.length > 0) {
-        queryParameters.push('sort=' + sort.join(','))
+        queryParameters.push("sort=" + sort.join(","));
     }
 
     if (filters && filters.length > 0) {
-        queryParameters.push('filter=' + JSON.stringify(filters));
+        queryParameters.push("filter=" + JSON.stringify(filters));
     }
 
     return wrappedActionCreator(queryParameters);
 };
-
 
 /**
  * This higher order function processes the standard JSON-API index action creator and provides the already encoded
@@ -209,18 +209,19 @@ export const encodeJSONAPIChildIndexParameters = <R>(wrappedActionCreator: Wrapp
     sort?: string[],
     filters?: FlaskFilters,
 ) => {
-    let queryParameters = [];
+    const queryParameters = [];
 
     queryParameters.push(`page[size]=${size}`);
     queryParameters.push(`page[number]=${pageNumber}`);
 
     if (sort && sort.length > 0) {
-        queryParameters.push('sort=' + sort.join(','))
+        queryParameters.push("sort=" + sort.join(","));
     }
 
     if (filters && filters.length > 0) {
-        queryParameters.push('filter=' + JSON.stringify(filters));
+        queryParameters.push("filter=" + JSON.stringify(filters));
     }
 
     return wrappedActionCreator(id, queryParameters);
 };
+

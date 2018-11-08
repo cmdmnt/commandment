@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {DEPAccount} from "../../models";
-import {JSONAPIObject} from "../../json-api";
+import {JSONAPIDataObject} from "../../json-api";
 
 
 interface DEPAccountColumnProps {
-    rowData: JSONAPIObject<DEPAccount>;
+    rowData: JSONAPIDataObject<DEPAccount>;
 }
 
 export class DEPAccountColumn extends React.Component<DEPAccountColumnProps, undefined> {

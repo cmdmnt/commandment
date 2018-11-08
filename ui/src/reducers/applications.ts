@@ -1,9 +1,9 @@
-import {isJSONAPIErrorResponsePayload, JSONAPIObject} from "../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 import {Application} from "../models";
 import * as actions from "../actions/applications";
 import {IResults, ResultsDefaultState} from "./interfaces";
 
-export interface ApplicationsState extends IResults<Array<JSONAPIObject<Application>>> {
+export interface ApplicationsState extends IResults<Array<JSONAPIDataObject<Application>>> {
     allIds: string[];
 }
 

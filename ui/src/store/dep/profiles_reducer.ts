@@ -1,10 +1,10 @@
 import {DEPActions, DEPActionTypes} from "./actions";
 import {DEPProfile} from "./types";
 
-import {isJSONAPIErrorResponsePayload, JSONAPIObject} from "../../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
 
 export interface IDEPProfilesState {
-    data?: Array<JSONAPIObject<DEPProfile>>;
+    data?: Array<JSONAPIDataObject<DEPProfile>>;
     loading: boolean;
     submitted: boolean;
     error: boolean;

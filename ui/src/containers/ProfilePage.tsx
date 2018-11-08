@@ -19,7 +19,7 @@ import {
 } from "../actions/tags";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
-import {JSONAPIObject, JSONAPIRelationship} from "../json-api";
+import {JSONAPIDataObject, JSONAPIRelationship} from "../json-api";
 import {Profile, Tag} from "../models";
 import {ProfileState} from "../reducers/profile";
 import {TagsState} from "../reducers/tags";
@@ -29,7 +29,7 @@ interface RouteProps {
 }
 
 interface ReduxStateProps {
-    profile?: JSONAPIObject<Profile>;
+    profile?: JSONAPIDataObject<Profile>;
     tags: TagsState;
 }
 
@@ -98,7 +98,7 @@ export class UnconnectedProfilePage extends React.Component<OwnProps & ReduxStat
             tags,
         } = this.props;
 
-        const tagChoices = tags.items.map((item: JSONAPIObject<Tag>) => {
+        const tagChoices = tags.items.map((item: JSONAPIDataObject<Tag>) => {
             return {name: item.attributes.name, text: item.attributes.name, value: item.id};
         });
 

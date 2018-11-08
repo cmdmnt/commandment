@@ -2,12 +2,12 @@ import {
     CERTIFICATES_SUCCESS,
     CertificatesActionResponse
 } from "../../actions/device/certificates";
-import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledCertificate} from "../../models";
 import {OtherAction} from "../../actions/constants";
 
 export interface InstalledCertificatesState {
-    items?: Array<JSONAPIObject<InstalledCertificate>>;
+    items?: Array<JSONAPIDataObject<InstalledCertificate>>;
     recordCount: number;
 }
 

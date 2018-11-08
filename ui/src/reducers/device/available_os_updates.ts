@@ -2,13 +2,13 @@ import {
     UPDATES_SUCCESS,
     AvailableOSUpdatesActionResponse
 } from "../../actions/device/updates";
-import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledProfile} from "../../models";
 import {OtherAction} from "../../actions/constants";
 
 
 export interface AvailableOSUpdatesState {
-    items?: Array<JSONAPIObject<InstalledProfile>>;
+    items?: Array<JSONAPIDataObject<InstalledProfile>>;
     recordCount: number;
 }
 

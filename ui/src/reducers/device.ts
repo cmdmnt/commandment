@@ -9,7 +9,7 @@ import {installed_certificates, InstalledCertificatesState} from "./device/insta
 import {installed_applications, InstalledApplicationsState} from "./device/installed_applications";
 import {InstalledApplicationsActionResponse} from "../actions/device/applications";
 import {installed_profiles, InstalledProfilesState} from "./device/installed_profiles";
-import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Device, Tag} from "../models";
 import {available_os_updates, AvailableOSUpdatesState} from "./device/available_os_updates";
 import {isArray} from "../guards";
@@ -17,7 +17,7 @@ import {DevicesActionTypes} from "../actions/devices";
 
 
 export interface DeviceState {
-    device?: JSONAPIObject<Device>;
+    device?: JSONAPIDataObject<Device>;
     loading: boolean;
     error: boolean;
     errorDetail?: any
@@ -30,7 +30,7 @@ export interface DeviceState {
     installed_applications?: InstalledApplicationsState;
     installed_profiles?: InstalledProfilesState;
     available_os_updates?: AvailableOSUpdatesState;
-    tags?: Array<JSONAPIObject<Tag>>;
+    tags?: Array<JSONAPIDataObject<Tag>>;
     tagsLoading: boolean;
 }
 
@@ -71,10 +71,10 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                     errorDetail: action.payload
                 }
             } else {
-                let tags: Array<JSONAPIObject<Tag>> = [];
+                let tags: Array<JSONAPIDataObject<Tag>> = [];
 
                 if (action.payload.included) {
-                    tags = action.payload.included.filter((included: JSONAPIObject<any>) => (included.type === 'tags'));
+                    tags = action.payload.included.filter((included: JSONAPIDataObject<any>) => (included.type === 'tags'));
                 }
 
                 return {
@@ -98,7 +98,7 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                     errorDetail: action.payload
                 }
             } else {
-                const device: JSONAPIObject<Device> = {
+                const device: JSONAPIDataObject<Device> = {
                     ...state.device,
                     relationships: {
                         ...state.device.relationships,

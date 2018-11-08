@@ -1,10 +1,10 @@
 import {DEPAccount} from "./types";
 import {DEPActions, DEPActionTypes} from "./actions";
 
-import {isJSONAPIErrorResponsePayload, JSONAPIObject} from "../../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
 
 export interface IDEPAccountsState {
-    data?: Array<JSONAPIObject<DEPAccount>>;
+    data?: Array<JSONAPIDataObject<DEPAccount>>;
     loading: boolean;
     submitted: boolean;
     error: boolean;

@@ -29,7 +29,7 @@ post as createTag, PostActionRequest as PostTagActionRequest,
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
-import {JSONAPIObject, JSONAPIRelationship} from "../json-api";
+import {JSONAPIDataObject, JSONAPIRelationship} from "../json-api";
 import {Tag} from "../models";
 import {TagsState} from "../reducers/tags";
 import {getPercentCapacityUsed} from "../selectors/device";
@@ -148,7 +148,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
             tags,
         } = this.props;
 
-        const tagChoices: DropdownItemProps[] = tags.items.map((item: JSONAPIObject<Tag>) => {
+        const tagChoices: DropdownItemProps[] = tags.items.map((item: JSONAPIDataObject<Tag>) => {
             return {name: item.attributes.name, text: item.attributes.name, value: item.id};
         });
 

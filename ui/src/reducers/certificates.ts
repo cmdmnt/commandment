@@ -11,13 +11,13 @@ import {PushState, push} from "./certificates/push";
 import {SSLState, ssl} from './certificates/ssl';
 import {CAState, ca} from "./certificates/ca";
 import {installed_certificates, InstalledCertificatesState} from "./device/installed_certificates";
-import {JSONAPIDetailResponse, JSONAPIObject} from "../json-api";
+import {JSONAPIDetailResponse, JSONAPIDataObject} from "../json-api";
 import {Certificate} from "../models";
 
 
 
 export interface CertificatesState {
-    items: Array<JSONAPIObject<Certificate>>;
+    items: Array<JSONAPIDataObject<Certificate>>;
     loading: boolean;
     error: boolean;
     errorDetail?: any

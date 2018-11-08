@@ -1,10 +1,10 @@
 import {Reducer} from "redux";
-import {isJSONAPIErrorResponsePayload, JSONAPIObject} from "../../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
 import {DEPActions, DEPActionTypes} from "./actions";
 import {DEPProfile} from "./types";
 
 export interface IDEPProfileState {
-    readonly dep_profile?: JSONAPIObject<DEPProfile>;
+    readonly dep_profile?: JSONAPIDataObject<DEPProfile>;
     readonly loading: boolean;
     readonly error: boolean;
     readonly errorDetail?: any;
@@ -49,7 +49,7 @@ export const profile: Reducer<IDEPProfileState, DEPActions> = (state = initialSt
             }
         case DEPActionTypes.PROF_POST_FAILURE:
             return { ...state, loading: false, error: true, errorDetail: action.payload };
-            
+
         default:
             return state;
     }

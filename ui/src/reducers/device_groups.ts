@@ -2,11 +2,11 @@ import {
     INDEX_SUCCESS, IndexActionResponse,
     READ_SUCCESS, ReadActionResponse
 } from "../actions/device_groups";
-import {JSONAPIObject, isJSONAPIErrorResponsePayload, JSONAPIDetailResponse} from "../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload, JSONAPIDetailResponse} from "../json-api";
 import {Device, DeviceGroup} from "../models";
 
 export interface DeviceGroupsState {
-    items?: Array<JSONAPIObject<DeviceGroup>>;
+    items?: Array<JSONAPIDataObject<DeviceGroup>>;
     editing?: JSONAPIDetailResponse<DeviceGroup, Device>;
     recordCount: number;
 }

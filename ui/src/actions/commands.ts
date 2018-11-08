@@ -1,7 +1,7 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
 import { RSAA, RSAAction } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from './constants';
-import {JSONAPIListResponse, JSONAPIObject} from "../json-api";
+import {JSONAPIListResponse, JSONAPIDataObject} from "../json-api";
 import {Command} from "../models";
 
 export type INDEX_REQUEST = 'commands/INDEX_REQUEST';
@@ -25,7 +25,7 @@ export interface PostActionRequest {
 
 export interface PostActionResponse {
     type: POST_REQUEST | POST_FAILURE | POST_SUCCESS;
-    payload?: JSONAPIListResponse<JSONAPIObject<Command>>;
+    payload?: JSONAPIListResponse<JSONAPIDataObject<Command>>;
 }
 
 export const post: PostActionRequest = (values: Command, device_id?: number) => {

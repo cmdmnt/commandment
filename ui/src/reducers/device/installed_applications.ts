@@ -2,12 +2,12 @@ import {
     APPLICATIONS_SUCCESS,
     InstalledApplicationsActionResponse
 } from "../../actions/device/applications";
-import {JSONAPIObject, isJSONAPIErrorResponsePayload} from "../../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledApplication} from "../../models";
 import {OtherAction} from "../../actions/constants";
 
 export interface InstalledApplicationsState {
-    items?: Array<JSONAPIObject<InstalledApplication>>;
+    items?: Array<JSONAPIDataObject<InstalledApplication>>;
     recordCount: number;
 }
 

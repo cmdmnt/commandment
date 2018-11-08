@@ -1,10 +1,10 @@
 import {Reducer} from 'redux';
-import {isJSONAPIErrorResponsePayload, JSONAPIObject} from "../../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
 import {DEPAccount} from "./types";
 import {DEPActions, DEPActionTypes} from "./actions";
 
 export interface DEPAccountState {
-    readonly dep_account?: JSONAPIObject<DEPAccount>;
+    readonly dep_account?: JSONAPIDataObject<DEPAccount>;
     readonly loading: boolean;
     readonly error: boolean;
     readonly errorDetail?: any
