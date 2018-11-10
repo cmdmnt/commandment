@@ -26,6 +26,7 @@ class SetupAssistantStep(Enum):
     Privacy = 'Privacy'
     """Disables restoring from backup."""
     Restore = 'Restore'
+    SIMSetup = 'SIMSetup'
     """Disables Siri."""
     Siri = 'Siri'
     """Skips Terms and Conditions."""

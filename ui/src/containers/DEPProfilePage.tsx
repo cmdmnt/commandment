@@ -11,6 +11,8 @@ import {RootState} from "../reducers";
 import {postProfile, profile, ProfilePostActionRequest, ProfileReadActionRequest} from "../store/dep/actions";
 import {IDEPProfileState} from "../store/dep/profile_reducer";
 import {DEPProfile, SkipSetupSteps} from "../store/dep/types";
+import Message from "semantic-ui-react/dist/commonjs/collections/Message/Message";
+import {RSAAApiErrorMessage} from "../components/RSAAApiErrorMessage";
 
 interface IReduxStateProps {
     dep_profile?: IDEPProfileState;
@@ -47,6 +49,7 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, vo
         return (
             <Container className="DEPProfilePage">
                 <Header as="h1">{title}</Header>
+                {dep_profile.error && <RSAAApiErrorMessage error={dep_profile.errorDetail} />}
                 <DEPProfileForm onSubmit={this.handleSubmit} />
             </Container>
         );

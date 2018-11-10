@@ -69,3 +69,26 @@ class JSONEncodedDict(TypeDecorator):
             return None
 
         return json.loads(value)
+
+
+class SetOfEnumValues(TypeDecorator):
+    """Represents a Set of Enumeration values, encoded as a json array of enum names."""
+    impl = Text
+
+    def __init__(self, *arg, **kw):
+        TypeDecorator.__init__(self, *arg, **kw)
+        self.values = arg[0]
+
+    def process_bind_param(self, value, dialect):  # type: (List[Enum], any) -> str
+        if value is None:
+            return None
+
+        return json.dumps([v.value for v in value], separators=(',', ':'), default=json_datetime_serializer)
+
+    def process_result_value(self, value, dialect):
+        if not value:
+            return None
+
+        values = json.loads(value)
+        evalues = [self.values(v) for v in values]
+        return evalues

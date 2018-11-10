@@ -11,7 +11,8 @@ export const RSAAApiErrorMessage: React.StatelessComponent<IRSAAApiErrorMessageP
         error
         header="An error occurred communicating with the server"
         list={[
-            `Status: ${props.error.status} - ${props.error.statusText}`
+            `Status: ${props.error.status} - ${props.error.statusText}`,
+            ...props.error.response.errors.map((err) => `${err.detail}`),
         ]}
     />
 );
