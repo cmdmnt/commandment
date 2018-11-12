@@ -34,14 +34,34 @@ interface IDEPProfilePageProps extends IReduxStateProps, IReduxDispatchProps, Ro
 
 class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, void> {
 
+    public componentWillMount() {
+        const {
+            match: {
+                params: {
+                    id,
+                },
+            },
+        } = this.props;
+
+        if (id && id !== "add") {
+            this.props.getDEPProfile(this.props.match.params.id);
+        }
+    }
+
     public render() {
         const {
             dep_profile,
+            match: {
+                params: {
+                    id,
+                },
+            },
         } = this.props;
 
         let title = "loading";
-        if (this.props.match.params.id) {
-
+        if (id && id !== "add") {
+            title = `Edit ${this.props.dep_profile.dep_profile ?
+                this.props.dep_profile.dep_profile.attributes.profile_name : "Loading..."}`;
         } else {
             title = "Create a new DEP Profile";
         }
@@ -50,7 +70,9 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, vo
             <Container className="DEPProfilePage">
                 <Header as="h1">{title}</Header>
                 {dep_profile.error && <RSAAApiErrorMessage error={dep_profile.errorDetail} />}
-                <DEPProfileForm onSubmit={this.handleSubmit} />
+                <DEPProfileForm onSubmit={this.handleSubmit}
+                                loading={dep_profile.loading}
+                                data={dep_profile.dep_profile && dep_profile.dep_profile.attributes} />
             </Container>
         );
     }
@@ -70,7 +92,7 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, vo
         profile.url = "http://test.something/dep/enroll"; // TODO: THIS IS A PLACEHOLDER
 
         this.props.postDEPProfile(profile, {
-            "dep_account": { type: "dep_accounts", id: this.props.match.params.account_id } });
+            dep_account: { type: "dep_accounts", id: this.props.match.params.account_id } });
     };
 }
 

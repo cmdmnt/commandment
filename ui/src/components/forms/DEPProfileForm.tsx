@@ -18,6 +18,7 @@ export interface IDEPProfileFormValues extends DEPProfile {
 
 export interface IDEPProfileFormProps {
     data?: DEPProfile;
+    loading: boolean;
     onSubmit: (values: IDEPProfileFormValues) => void;
 }
 
@@ -82,7 +83,7 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
     }
 
     protected handleClick = (evt: MouseEvent, data: AccordionTitleProps) => {
-        this.setState({activeIndex: parseInt(data.index, 0)});
+        this.setState({activeIndex: data.index});
     };
 
     public render() {
@@ -90,7 +91,7 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
 
         return (
             <Formik
-                initialValues={initialValues}
+                initialValues={this.props.data || initialValues}
                 onSubmit={this.props.onSubmit}
                 validationSchema={Yup.object().shape({
                     profile_name: Yup.string().required("Required"),
@@ -262,7 +263,7 @@ export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPPr
                             </Accordion.Content>
                         </Accordion>
                         <Divider hidden/>
-                        <Button type="submit" disabled={isSubmitting} primary>{values.id ? "Update" : "Create"}</Button>
+                        <Button type="submit" disabled={isSubmitting} loading={this.props.loading} primary>{values.id ? "Update" : "Create"}</Button>
                     </Form>
                 )}
             </Formik>

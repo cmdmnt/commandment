@@ -60,7 +60,8 @@ render(
                 <Route exact path="/settings/dep/accounts" component={DEPAccountsPage} />
                 <Route path="/settings/dep/accounts/add" component={DEPAccountSetupPage} />
                 <Route exact path="/dep/accounts/:id" component={DEPAccountPage} />
-                <Route exact path="/dep/accounts/:account_id/profiles/add" component={DEPProfilePage} />
+                <Route exact path="/dep/accounts/:account_id/add/profile" component={DEPProfilePage} />
+                <Route exact path="/dep/accounts/:account_id/profiles/:id" component={DEPProfilePage} />
             </AppLayout>
         </ConnectedRouter>
     </Provider>,

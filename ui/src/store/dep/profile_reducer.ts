@@ -11,8 +11,8 @@ export interface IDEPProfileState {
 }
 
 const initialState: IDEPProfileState = {
-    loading: false,
     error: false,
+    loading: false,
 };
 
 export const profile: Reducer<IDEPProfileState, DEPActions> = (state = initialState, action) => {
@@ -24,12 +24,16 @@ export const profile: Reducer<IDEPProfileState, DEPActions> = (state = initialSt
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
-                    loading: false,
                     error: true,
                     errorDetail: action.payload,
+                    loading: false,
                 };
             } else {
-                return {...state, loading: false, dep_account: action.payload.data};
+                return {
+                    ...state,
+                    dep_profile: action.payload.data,
+                    loading: false,
+                };
             }
         case DEPActionTypes.PROF_READ_FAILURE:
             return { ...state, loading: false, error: true, errorDetail: action.payload };
@@ -40,12 +44,16 @@ export const profile: Reducer<IDEPProfileState, DEPActions> = (state = initialSt
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
-                    loading: false,
                     error: true,
                     errorDetail: action.payload,
+                    loading: false,
                 };
             } else {
-                return {...state, loading: false, dep_account: action.payload.data};
+                return {
+                    ...state,
+                    dep_account: action.payload.data,
+                    loading: false,
+                };
             }
         case DEPActionTypes.PROF_POST_FAILURE:
             return { ...state, loading: false, error: true, errorDetail: action.payload };

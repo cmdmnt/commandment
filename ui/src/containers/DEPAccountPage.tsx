@@ -10,6 +10,7 @@ import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
 import {RootState} from "../reducers";
 import {DEPAccountState} from "../store/dep/account_reducer";
 import {account, AccountReadActionRequest} from "../store/dep/actions";
+import {DEPProfilesTable} from "../components/griddle-tables/DEPProfilesTable";
 
 interface IOwnProps {
 
@@ -48,6 +49,7 @@ class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, ID
                 loading,
                 error,
                 dep_account,
+                dep_profiles,
             },
         } = this.props;
 
@@ -85,7 +87,9 @@ class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, ID
                     </List>
                   </Segment>
 
-                  <Link to={`/dep/accounts/${dep_account.id}/profiles/add`}>New DEP Profile</Link>
+                  <Link to={`/dep/accounts/${dep_account.id}/add/profile`}>New DEP Profile</Link>
+                    
+                  <DEPProfilesTable depAccountId={dep_account.id} data={dep_profiles} />
                 </div>
                 }
             </Container>
