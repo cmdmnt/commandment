@@ -1,5 +1,4 @@
-import {Formik} from "formik";
-import {ChangeEvent, FormEvent} from "react";
+import { Field, Form as FormikForm, Formik, FormikErrors, FormikProps, withFormik } from "formik";
 import * as React from "react";
 import {AccordionTitleProps, CheckboxProps} from "semantic-ui-react";
 import Form, {FormProps} from "semantic-ui-react/dist/commonjs/collections/Form/Form";
@@ -18,7 +17,9 @@ export interface IDEPProfileFormValues extends DEPProfile {
 
 export interface IDEPProfileFormProps {
     data?: DEPProfile;
+    id?: string | number;
     loading: boolean;
+    activeIndex: number;
     onSubmit: (values: IDEPProfileFormValues) => void;
 }
 
@@ -32,13 +33,14 @@ export enum DEPProfilePairWithOptions {
 }
 
 const initialValues: IDEPProfileFormValues = {
-    profile_name: "",
     allow_pairing: true,
-    is_multi_user: false,
-    is_mandatory: false,
+    auto_advance_setup: false,
     await_device_configured: false,
+    is_mandatory: false,
     is_mdm_removable: true,
+    is_multi_user: false,
     is_supervised: true,
+    profile_name: "",
     show: {
         [SkipSetupSteps.AppleID]: true,
         [SkipSetupSteps.Biometric]: true,
@@ -71,202 +73,198 @@ const initialValues: IDEPProfileFormValues = {
         [SkipSetupSteps.TVProviderSignIn]: true,
         [SkipSetupSteps.TVRoom]: true,
     },
+    support_email_address: "",
+    support_phone_number: "",
 };
 
-export class DEPProfileForm extends React.Component<IDEPProfileFormProps, IDEPProfileFormState> {
-
-    constructor(props: IDEPProfileFormProps) {
-        super(props);
-        this.state = {
-            activeIndex: 0,
-        };
-    }
-
-    protected handleClick = (evt: MouseEvent, data: AccordionTitleProps) => {
-        this.setState({activeIndex: data.index});
-    };
-
-    public render() {
-        const activeIndex = this.state.activeIndex;
-
-        return (
-            <Formik
-                initialValues={this.props.data || initialValues}
-                onSubmit={this.props.onSubmit}
-                validationSchema={Yup.object().shape({
-                    profile_name: Yup.string().required("Required"),
-                })}
-            >
-                {({
-                      values,
-                      errors,
-                      touched,
-                      handleChange,
-                      handleBlur,
-                      handleSubmit,
-                      isSubmitting,
-                  }) => (
-                    <Form onSubmit={handleSubmit}>
-                        <Accordion fluid styled>
-                            <Accordion.Title active={activeIndex == 0} index={0} onClick={this.handleClick}>
-                                <Icon name="dropdown"/>
-                                General
-                            </Accordion.Title>
-                            <Accordion.Content active={activeIndex === 0}>
-                                <Form.Field required>
-                                    <label>Profile Name</label>
-                                    <input type="text" name="profile_name"
-                                           onChange={handleChange} onBlur={handleBlur}
-                                           value={values.profile_name}/>
-                                    {errors.profile_name && touched.profile_name && <Label pointing>{errors.profile_name}</Label>}
-                                </Form.Field>
-
-                                <Form.Field>
-                                    <label>Support Phone Number</label>
-                                    <input type="tel" name="support_phone_number"
-                                           onChange={handleChange} onBlur={handleBlur}
-                                           value={values.support_phone_number}/>
-                                    {errors.support_phone_number &&
-                                    touched.support_phone_number &&
-                                    errors.support_phone_number}
-                                </Form.Field>
-                                <Form.Field>
-                                    <label>Support E-mail Address</label>
-                                    <input type="email" name="support_email_address"
-                                           onChange={handleChange} onBlur={handleBlur}
-                                           value={values.support_email_address}/>
-                                    {errors.support_email_address &&
-                                    touched.support_email_address &&
-                                    errors.support_email_address}
-                                </Form.Field>
-
-                                <FormikCheckbox toggle name="allow_pairing" label="Allow Pairing"/>
-                                <FormikCheckbox toggle name="is_supervised"
-                                                label="Supervised (will be required in a future version of iOS)"
-                                                defaultChecked/>
-                                <FormikCheckbox toggle name="is_multi_user" label="Shared iPad" />
-                                <FormikCheckbox toggle name="is_mandatory"
-                                                label="Mandatory. User cannot skip Remote Management" />
-                                <FormikCheckbox toggle name="await_device_configured" label="Await Configured" />
-                                <FormikCheckbox toggle name="is_mdm_removable" label="MDM Payload Removable" />
-                                <FormikCheckbox toggle name="auto_advance_setup" label="Auto Advance (tvOS)" />
-                            </Accordion.Content>
-
-                            <Accordion.Title active={activeIndex === 1} index={1} onClick={this.handleClick}>
-                                <Icon name="dropdown"/>
-                                Setup Assistant Steps (Common)
-                            </Accordion.Title>
-                            <Accordion.Content active={activeIndex === 1}>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.AppleID}`}
-                                                label="Show Apple ID Setup"
-                                                value={SkipSetupSteps.AppleID}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Biometric}`} label="Show Touch ID"
-                                                value={SkipSetupSteps.Biometric}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Diagnostics}`}
-                                                label="Show Diagnostics"
-                                                value={SkipSetupSteps.Diagnostics}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.DisplayTone}`}
-                                                label="Show DisplayTone"
-                                                value={SkipSetupSteps.DisplayTone}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Location}`}
-                                                label="Show Location Services"
-                                                value={SkipSetupSteps.Location}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Passcode}`}
-                                                label="Show Passcode Setup"
-                                                value={SkipSetupSteps.Passcode}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Payment}`} label="Show Apple Pay"
-                                                value={SkipSetupSteps.Payment}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Privacy}`} label="Show Privacy"
-                                                value={SkipSetupSteps.Privacy}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Restore}`}
-                                                label="Show Restore from Backup"
-                                                value={SkipSetupSteps.Restore}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.SIMSetup}`}
-                                                label="Show Add Cellular Plan"
-                                                value={SkipSetupSteps.SIMSetup}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Siri}`} label="Show Siri"
-                                                value={SkipSetupSteps.Siri}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.TOS}`}
-                                                label="Show Terms and Conditions"
-                                                value={SkipSetupSteps.TOS}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Zoom}`} label="Show Zoom"
-                                                value={SkipSetupSteps.Zoom}/>
-                            </Accordion.Content>
-                            <Accordion.Title active={activeIndex === 2} index={2} onClick={this.handleClick}>
-                                <Icon name="dropdown" />
-                                Setup Assistant Steps (iOS)
-                            </Accordion.Title>
-                            <Accordion.Content active={activeIndex === 2}>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Android}`}
-                                                label="Show Restore from Android"
-                                                value={SkipSetupSteps.Android} />
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.HomeButtonSensitivity}`}
-                                                label="Show Home Button Sensitivity"
-                                                value={SkipSetupSteps.HomeButtonSensitivity} />
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.iMessageAndFaceTime}`}
-                                                label="Show iMessage and FaceTime"
-                                                value={SkipSetupSteps.iMessageAndFaceTime} />
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.OnBoarding}`}
-                                                label="Show On-Boarding"
-                                                value={SkipSetupSteps.OnBoarding}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.ScreenTime}`}
-                                                label="Show Screen Time"
-                                                value={SkipSetupSteps.ScreenTime}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.SoftwareUpdate}`}
-                                                label="Show Mandatory Software Update Screen"
-                                                value={SkipSetupSteps.SoftwareUpdate}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.WatchMigration}`}
-                                                label="Show Watch Migration"
-                                                value={SkipSetupSteps.WatchMigration} />
-                            </Accordion.Content>
-                          <Accordion.Title active={activeIndex === 3} index={3} onClick={this.handleClick}>
-                            <Icon name="dropdown" />
-                            Setup Assistant Steps (macOS)
-                          </Accordion.Title>
-                            <Accordion.Content active={activeIndex === 3}>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Appearance}`}
-                                                label="Show Choose your Look"
-                                                value={SkipSetupSteps.Appearance} />
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.FileVault}`}
-                                                label="Show FileVault on macOS"
-                                                value={SkipSetupSteps.FileVault} />
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.iCloudDiagnostics}`}
-                                                label="Show iCloud Analytics"
-                                                value={SkipSetupSteps.iCloudDiagnostics} />
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.iCloudStorage}`}
-                                                label="Show iCloud Desktop and Documents"
-                                                value={SkipSetupSteps.iCloudStorage} />
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.Registration}`}
-                                                label="Show Registration"
-                                                value={SkipSetupSteps.Registration} />
-                            </Accordion.Content>
-                          <Accordion.Title active={activeIndex === 4} index={4} onClick={this.handleClick}>
-                            <Icon name="dropdown" />
-                            Setup Assistant Steps (tvOS)
-                          </Accordion.Title>
-                            <Accordion.Content active={activeIndex === 4}>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.ScreenSaver}`}
-                                                label="Show Screen about using Aerial Screensavers in ATV"
-                                                value={SkipSetupSteps.ScreenSaver}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.TapToSetup}`}
-                                                label="Show Tap to Set Up option in ATV"
-                                                value={SkipSetupSteps.TapToSetup}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.TVHomeScreenSync}`}
-                                                label="Show home screen layout sync"
-                                                value={SkipSetupSteps.TVHomeScreenSync}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.TVProviderSignIn}`}
-                                                label="Show TV provider sign in"
-                                                value={SkipSetupSteps.TVProviderSignIn}/>
-                                <FormikCheckbox toggle name={`show.${SkipSetupSteps.TVRoom}`}
-                                                label='Show "Where is this Apple TV?" screen'
-                                                value={SkipSetupSteps.TVRoom}/>
-                            </Accordion.Content>
-                        </Accordion>
-                        <Divider hidden/>
-                        <Button type="submit" disabled={isSubmitting} loading={this.props.loading} primary>{values.id ? "Update" : "Create"}</Button>
-                    </Form>
-                )}
-            </Formik>
-        );
-    }
+export interface IInnerFormProps {
+    activeIndex: number | string;
+    id?: number | string;
+    onClickAccordionTitle: (event: React.MouseEvent<any>, data: AccordionTitleProps) => void;
 }
+
+const InnerForm = (props: IInnerFormProps & FormikProps<IDEPProfileFormValues>) => {
+    const { touched, errors, isSubmitting, activeIndex, handleChange,
+        handleBlur, values, id, handleSubmit, onClickAccordionTitle } = props;
+
+    return (
+        <Form onSubmit={handleSubmit}>
+            <Accordion fluid styled>
+                <Accordion.Title active={activeIndex === 0} index={0} onClick={onClickAccordionTitle}>
+                    <Icon name="dropdown"/>
+                    General
+                </Accordion.Title>
+                <Accordion.Content active={activeIndex === 0}>
+                    <Form.Field required>
+                        <label>Profile Name</label>
+                        <input type="text" name="profile_name"
+                               onChange={handleChange} onBlur={handleBlur}
+                               value={values.profile_name}/>
+
+                        {errors.profile_name &&
+                        touched.profile_name &&
+                        <Label pointing>{errors.profile_name}</Label>}
+                    </Form.Field>
+
+                    <Form.Field>
+                        <label>Support Phone Number</label>
+                        <input type="tel" name="support_phone_number"
+                               onChange={handleChange} onBlur={handleBlur}
+                               value={values.support_phone_number}/>
+                        {errors.support_phone_number &&
+                        touched.support_phone_number &&
+                        errors.support_phone_number}
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Support E-mail Address</label>
+                        <input type="email" name="support_email_address"
+                               onChange={handleChange} onBlur={handleBlur}
+                               value={values.support_email_address}/>
+                        {errors.support_email_address &&
+                        touched.support_email_address &&
+                        errors.support_email_address}
+                    </Form.Field>
+
+                    <FormikCheckbox toggle name="allow_pairing" label="Allow Pairing"/>
+                    <FormikCheckbox toggle name="is_supervised"
+                                    label="Supervised (will be required in a future version of iOS)"
+                                    defaultChecked/>
+                    <FormikCheckbox toggle name="is_multi_user" label="Shared iPad" />
+                    <FormikCheckbox toggle name="is_mandatory"
+                                    label="Mandatory. User cannot skip Remote Management" />
+                    <FormikCheckbox toggle name="await_device_configured" label="Await Configured" />
+                    <FormikCheckbox toggle name="is_mdm_removable" label="MDM Payload Removable" />
+                    <FormikCheckbox toggle name="auto_advance_setup" label="Auto Advance (tvOS)" />
+                </Accordion.Content>
+
+                <Accordion.Title active={activeIndex === 1} index={1} onClick={onClickAccordionTitle}>
+                    <Icon name="dropdown"/>
+                    Setup Assistant Steps (Common)
+                </Accordion.Title>
+                <Accordion.Content active={activeIndex === 1}>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.AppleID}`}
+                                    label="Show Apple ID Setup"
+                                    value={SkipSetupSteps.AppleID}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Biometric}`} label="Show Touch ID"
+                                    value={SkipSetupSteps.Biometric}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Diagnostics}`}
+                                    label="Show Diagnostics"
+                                    value={SkipSetupSteps.Diagnostics}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.DisplayTone}`}
+                                    label="Show DisplayTone"
+                                    value={SkipSetupSteps.DisplayTone}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Location}`}
+                                    label="Show Location Services"
+                                    value={SkipSetupSteps.Location}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Passcode}`}
+                                    label="Show Passcode Setup"
+                                    value={SkipSetupSteps.Passcode}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Payment}`} label="Show Apple Pay"
+                                    value={SkipSetupSteps.Payment}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Privacy}`} label="Show Privacy"
+                                    value={SkipSetupSteps.Privacy}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Restore}`}
+                                    label="Show Restore from Backup"
+                                    value={SkipSetupSteps.Restore}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.SIMSetup}`}
+                                    label="Show Add Cellular Plan"
+                                    value={SkipSetupSteps.SIMSetup}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Siri}`} label="Show Siri"
+                                    value={SkipSetupSteps.Siri}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.TOS}`}
+                                    label="Show Terms and Conditions"
+                                    value={SkipSetupSteps.TOS}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Zoom}`} label="Show Zoom"
+                                    value={SkipSetupSteps.Zoom}/>
+                </Accordion.Content>
+                <Accordion.Title active={activeIndex === 2} index={2} onClick={onClickAccordionTitle}>
+                    <Icon name="dropdown" />
+                    Setup Assistant Steps (iOS)
+                </Accordion.Title>
+                <Accordion.Content active={activeIndex === 2}>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Android}`}
+                                    label="Show Restore from Android"
+                                    value={SkipSetupSteps.Android} />
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.HomeButtonSensitivity}`}
+                                    label="Show Home Button Sensitivity"
+                                    value={SkipSetupSteps.HomeButtonSensitivity} />
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.iMessageAndFaceTime}`}
+                                    label="Show iMessage and FaceTime"
+                                    value={SkipSetupSteps.iMessageAndFaceTime} />
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.OnBoarding}`}
+                                    label="Show On-Boarding"
+                                    value={SkipSetupSteps.OnBoarding}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.ScreenTime}`}
+                                    label="Show Screen Time"
+                                    value={SkipSetupSteps.ScreenTime}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.SoftwareUpdate}`}
+                                    label="Show Mandatory Software Update Screen"
+                                    value={SkipSetupSteps.SoftwareUpdate}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.WatchMigration}`}
+                                    label="Show Watch Migration"
+                                    value={SkipSetupSteps.WatchMigration} />
+                </Accordion.Content>
+                <Accordion.Title active={activeIndex === 3} index={3} onClick={onClickAccordionTitle}>
+                    <Icon name="dropdown" />
+                    Setup Assistant Steps (macOS)
+                </Accordion.Title>
+                <Accordion.Content active={activeIndex === 3}>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Appearance}`}
+                                    label="Show Choose your Look"
+                                    value={SkipSetupSteps.Appearance} />
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.FileVault}`}
+                                    label="Show FileVault on macOS"
+                                    value={SkipSetupSteps.FileVault} />
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.iCloudDiagnostics}`}
+                                    label="Show iCloud Analytics"
+                                    value={SkipSetupSteps.iCloudDiagnostics} />
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.iCloudStorage}`}
+                                    label="Show iCloud Desktop and Documents"
+                                    value={SkipSetupSteps.iCloudStorage} />
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.Registration}`}
+                                    label="Show Registration"
+                                    value={SkipSetupSteps.Registration} />
+                </Accordion.Content>
+                <Accordion.Title active={activeIndex === 4} index={4} onClick={onClickAccordionTitle}>
+                    <Icon name="dropdown" />
+                    Setup Assistant Steps (tvOS)
+                </Accordion.Title>
+                <Accordion.Content active={activeIndex === 4}>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.ScreenSaver}`}
+                                    label="Show Screen about using Aerial Screensavers in ATV"
+                                    value={SkipSetupSteps.ScreenSaver}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.TapToSetup}`}
+                                    label="Show Tap to Set Up option in ATV"
+                                    value={SkipSetupSteps.TapToSetup}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.TVHomeScreenSync}`}
+                                    label="Show home screen layout sync"
+                                    value={SkipSetupSteps.TVHomeScreenSync}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.TVProviderSignIn}`}
+                                    label="Show TV provider sign in"
+                                    value={SkipSetupSteps.TVProviderSignIn}/>
+                    <FormikCheckbox toggle name={`show.${SkipSetupSteps.TVRoom}`}
+                                    label='Show "Where is this Apple TV?" screen'
+                                    value={SkipSetupSteps.TVRoom}/>
+                </Accordion.Content>
+            </Accordion>
+            <Divider hidden/>
+            <Button type="submit" disabled={isSubmitting} primary>
+                {id ? "Update" : "Create"}
+            </Button>
+        </Form>
+    );
+};
+
+export const DEPProfileForm = withFormik<IDEPProfileFormProps, IDEPProfileFormValues>({
+    mapPropsToValues: (props) => {
+        return props.data || initialValues;
+    },
+
+    validationSchema: Yup.object().shape({
+        profile_name: Yup.string().required("Required"),
+    }),
+
+    handleSubmit: (values) => {
+        this.props.onSubmit(values);
+    },
+})(InnerForm);

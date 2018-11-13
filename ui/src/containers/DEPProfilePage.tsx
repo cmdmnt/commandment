@@ -3,16 +3,17 @@ import * as React from "react";
 import {connect, Dispatch} from "react-redux";
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {FormProps} from "semantic-ui-react";
+import {AccordionTitleProps, FormProps} from "semantic-ui-react";
+import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
+import Message from "semantic-ui-react/dist/commonjs/collections/Message/Message";
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 import {DEPProfileForm, IDEPProfileFormValues} from "../components/forms/DEPProfileForm";
+import {RSAAApiErrorMessage} from "../components/RSAAApiErrorMessage";
 import {RootState} from "../reducers";
 import {postProfile, profile, ProfilePostActionRequest, ProfileReadActionRequest} from "../store/dep/actions";
 import {IDEPProfileState} from "../store/dep/profile_reducer";
 import {DEPProfile, SkipSetupSteps} from "../store/dep/types";
-import Message from "semantic-ui-react/dist/commonjs/collections/Message/Message";
-import {RSAAApiErrorMessage} from "../components/RSAAApiErrorMessage";
 
 interface IReduxStateProps {
     dep_profile?: IDEPProfileState;
@@ -32,7 +33,18 @@ interface IDEPProfilePageProps extends IReduxStateProps, IReduxDispatchProps, Ro
 
 }
 
-class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, void> {
+interface IDEPProfilePageState {
+    activeIndex: string | number;
+}
+
+class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, IDEPProfilePageState> {
+
+    constructor(props: IDEPProfilePageProps) {
+        super(props);
+        this.state = {
+            activeIndex: 0,
+        };
+    }
 
     public componentWillMount() {
         const {
@@ -43,7 +55,7 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, vo
             },
         } = this.props;
 
-        if (id && id !== "add") {
+        if (id) {
             this.props.getDEPProfile(this.props.match.params.id);
         }
     }
@@ -59,7 +71,7 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, vo
         } = this.props;
 
         let title = "loading";
-        if (id && id !== "add") {
+        if (id) {
             title = `Edit ${this.props.dep_profile.dep_profile ?
                 this.props.dep_profile.dep_profile.attributes.profile_name : "Loading..."}`;
         } else {
@@ -68,11 +80,23 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, vo
 
         return (
             <Container className="DEPProfilePage">
+                <Breadcrumb>
+                    <Breadcrumb.Section link>Home</Breadcrumb.Section>
+                    <Breadcrumb.Divider />
+                    <Breadcrumb.Section link>DEP Account</Breadcrumb.Section>
+                    <Breadcrumb.Divider />
+                    <Breadcrumb.Section active>DEP Profile</Breadcrumb.Section>
+                </Breadcrumb>
+
                 <Header as="h1">{title}</Header>
                 {dep_profile.error && <RSAAApiErrorMessage error={dep_profile.errorDetail} />}
                 <DEPProfileForm onSubmit={this.handleSubmit}
                                 loading={dep_profile.loading}
-                                data={dep_profile.dep_profile && dep_profile.dep_profile.attributes} />
+                                data={dep_profile.dep_profile && dep_profile.dep_profile.attributes}
+                                id={dep_profile.dep_profile && dep_profile.dep_profile.id}
+                                activeIndex={this.state.activeIndex}
+                                onClickAccordionTitle={this.handleAccordionClick}
+                />
             </Container>
         );
     }
@@ -93,6 +117,10 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, vo
 
         this.props.postDEPProfile(profile, {
             dep_account: { type: "dep_accounts", id: this.props.match.params.account_id } });
+    };
+
+    private handleAccordionClick = (event: React.MouseEvent<any>, data: AccordionTitleProps) => {
+        this.setState({ activeIndex: data.index });
     };
 }
 
