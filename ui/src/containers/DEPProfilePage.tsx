@@ -2,16 +2,22 @@ import * as React from "react";
 
 import {connect, Dispatch} from "react-redux";
 import {RouteComponentProps} from "react-router";
+import {Link} from "react-router-dom";
 import {bindActionCreators} from "redux";
 import {AccordionTitleProps, FormProps} from "semantic-ui-react";
 import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
-import Message from "semantic-ui-react/dist/commonjs/collections/Message/Message";
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 import {DEPProfileForm, IDEPProfileFormValues} from "../components/forms/DEPProfileForm";
 import {RSAAApiErrorMessage} from "../components/RSAAApiErrorMessage";
 import {RootState} from "../reducers";
-import {postProfile, profile, ProfilePostActionRequest, ProfileReadActionRequest} from "../store/dep/actions";
+import {
+    patchProfile,
+    postProfile,
+    profile, ProfilePatchActionRequest,
+    ProfilePostActionRequest,
+    ProfileReadActionRequest,
+} from "../store/dep/actions";
 import {IDEPProfileState} from "../store/dep/profile_reducer";
 import {DEPProfile, SkipSetupSteps} from "../store/dep/types";
 
@@ -22,6 +28,7 @@ interface IReduxStateProps {
 interface IReduxDispatchProps {
     getDEPProfile: ProfileReadActionRequest;
     postDEPProfile: ProfilePostActionRequest;
+    patchDEPProfile: ProfilePatchActionRequest;
 }
 
 interface IRouteParameters {
@@ -66,14 +73,29 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
             match: {
                 params: {
                     id,
+                    account_id,
                 },
             },
         } = this.props;
+
+        const loading = id && this.props.dep_profile.loading;
 
         let title = "loading";
         if (id) {
             title = `Edit ${this.props.dep_profile.dep_profile ?
                 this.props.dep_profile.dep_profile.attributes.profile_name : "Loading..."}`;
+
+            if (dep_profile.dep_profile) {
+                dep_profile.dep_profile.attributes.show = {};
+
+                for (const kskip in SkipSetupSteps) {
+                    if (dep_profile.dep_profile.attributes.skip_setup_items.indexOf(kskip) !== -1) {
+                        dep_profile.dep_profile.attributes.show[kskip] = false;
+                    } else {
+                        dep_profile.dep_profile.attributes.show[kskip] = true;
+                    }
+                }
+            }
         } else {
             title = "Create a new DEP Profile";
         }
@@ -81,9 +103,9 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
         return (
             <Container className="DEPProfilePage">
                 <Breadcrumb>
-                    <Breadcrumb.Section link>Home</Breadcrumb.Section>
+                    <Breadcrumb.Section><Link to={`/`}>Home</Link></Breadcrumb.Section>
                     <Breadcrumb.Divider />
-                    <Breadcrumb.Section link>DEP Account</Breadcrumb.Section>
+                    <Breadcrumb.Section><Link to={`/dep/accounts/${account_id}`}>DEP Account</Link></Breadcrumb.Section>
                     <Breadcrumb.Divider />
                     <Breadcrumb.Section active>DEP Profile</Breadcrumb.Section>
                 </Breadcrumb>
@@ -92,6 +114,7 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
                 {dep_profile.error && <RSAAApiErrorMessage error={dep_profile.errorDetail} />}
                 <DEPProfileForm onSubmit={this.handleSubmit}
                                 loading={dep_profile.loading}
+                                isSubmitting={dep_profile.loading}
                                 data={dep_profile.dep_profile && dep_profile.dep_profile.attributes}
                                 id={dep_profile.dep_profile && dep_profile.dep_profile.id}
                                 activeIndex={this.state.activeIndex}
@@ -115,8 +138,13 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
 
         profile.url = "http://test.something/dep/enroll"; // TODO: THIS IS A PLACEHOLDER
 
-        this.props.postDEPProfile(profile, {
-            dep_account: { type: "dep_accounts", id: this.props.match.params.account_id } });
+        if (this.props.match.params.id) {
+            this.props.patchDEPProfile(this.props.match.params.id, profile);
+        } else {
+            this.props.postDEPProfile(profile, {
+                dep_account: {type: "dep_accounts", id: this.props.match.params.account_id},
+            });
+        }
     };
 
     private handleAccordionClick = (event: React.MouseEvent<any>, data: AccordionTitleProps) => {
@@ -130,6 +158,7 @@ export const DEPProfilePage = connect(
     },
     (dispatch: Dispatch<RootState>, ownProps?: any): IReduxDispatchProps => bindActionCreators({
         getDEPProfile: profile,
+        patchDEPProfile: patchProfile,
         postDEPProfile: postProfile,
     }, dispatch),
 )(UnconnectedDEPProfilePage);

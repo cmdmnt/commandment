@@ -23,9 +23,10 @@ from flask import Flask
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 
+from commandment.dep.apple_schema import AppleDEPProfileSchema
 from commandment.dep.errors import DEPServiceError
 from commandment.models import db, Device
-from commandment.dep.models import DEPAccount
+from commandment.dep.models import DEPAccount, DEPProfile
 from commandment.dep.dep import DEP
 from commandment.dep import DEPOrgType, DEPOrgVersion, DEPOperationType
 import sqlalchemy.orm.exc
@@ -176,6 +177,29 @@ def dep_fetch_devices(app: Flask, dep: DEP, dep_account_id: int):
         thread_session.commit()
 
 
+def dep_define_profiles(app: Flask, dep: DEP):
+    """Create DEP profiles which have not yet been synced with Apple."""
+    thread_session = db.create_scoped_session()
+
+    dep_profiles_pending = thread_session.query(DEPProfile).filter(
+        DEPProfile.uuid.is_(None), DEPProfile.last_upload_at.is_(None)).all()
+    app.logger.debug('There are %d pending DEP profile(s) to upload', len(dep_profiles_pending))
+
+    for dep_profile in dep_profiles_pending:
+        try:
+            schema = AppleDEPProfileSchema()
+            dep_profile_apple = schema.dump(dep_profile)
+            print(dep_profile_apple.data)
+            response = dep.define_profile(dep_profile_apple.data)
+            assert 'profile_uuid' in response
+            dep_profile.uuid = response['profile_uuid']
+            dep_profile.last_uploaded_at = datetime.datetime.now()
+        except Exception as e:
+            app.logger.error('Got an exception trying to define a profile: {}'.format(e))
+
+    thread_session.commit()
+
+
 def dep_thread_callback(app: Flask):
     """Runner thread main procedure
 
@@ -208,6 +232,8 @@ def dep_thread_callback(app: Flask):
                     dep_account.cursor = None
                     db.session.add(dep_account)
                     db.session.commit()
+
+            dep_define_profiles(app, dep)
 
         except sqlalchemy.orm.exc.NoResultFound:
             app.logger.info('Not attempting a DEP sync, no account configured.')

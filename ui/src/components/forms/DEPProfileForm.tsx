@@ -1,4 +1,4 @@
-import { Field, Form as FormikForm, Formik, FormikErrors, FormikProps, withFormik } from "formik";
+import {Field, Form as FormikForm, Formik, FormikBag, FormikErrors, FormikProps, withFormik} from "formik";
 import * as React from "react";
 import {AccordionTitleProps, CheckboxProps} from "semantic-ui-react";
 import Form, {FormProps} from "semantic-ui-react/dist/commonjs/collections/Form/Form";
@@ -36,10 +36,12 @@ const initialValues: IDEPProfileFormValues = {
     allow_pairing: true,
     auto_advance_setup: false,
     await_device_configured: false,
+    department: "",
     is_mandatory: false,
     is_mdm_removable: true,
     is_multi_user: false,
     is_supervised: true,
+    org_magic: "",
     profile_name: "",
     show: {
         [SkipSetupSteps.AppleID]: true,
@@ -123,6 +125,16 @@ const InnerForm = (props: IInnerFormProps & FormikProps<IDEPProfileFormValues>) 
                         {errors.support_email_address &&
                         touched.support_email_address &&
                         errors.support_email_address}
+                    </Form.Field>
+
+                    <Form.Field>
+                        <label>Department</label>
+                        <input type="text" name="department"
+                               onChange={handleChange} onBlur={handleBlur}
+                               value={values.department}/>
+                        {errors.department &&
+                        touched.department &&
+                        errors.department}
                     </Form.Field>
 
                     <FormikCheckbox toggle name="allow_pairing" label="Allow Pairing"/>
@@ -264,7 +276,10 @@ export const DEPProfileForm = withFormik<IDEPProfileFormProps, IDEPProfileFormVa
         profile_name: Yup.string().required("Required"),
     }),
 
-    handleSubmit: (values) => {
-        this.props.onSubmit(values);
+    handleSubmit: (values, formikBag: FormikBag<IDEPProfileFormProps, IDEPProfileFormValues>) => {
+        formikBag.props.onSubmit(values);
+        formikBag.setSubmitting(false);
     },
+    enableReinitialize: true,
+    displayName: 'DEPProfileForm',
 })(InnerForm);

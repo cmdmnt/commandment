@@ -19,7 +19,7 @@ export const profile: Reducer<IDEPProfileState, DEPActions> = (state = initialSt
     switch (action.type) {
 
         case DEPActionTypes.PROF_READ_REQUEST:
-            return { ...state, loading: true };
+            return { ...state, loading: true, error: false, errorDetail: null, dep_profile: null };
         case DEPActionTypes.PROF_READ_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
@@ -56,6 +56,26 @@ export const profile: Reducer<IDEPProfileState, DEPActions> = (state = initialSt
                 };
             }
         case DEPActionTypes.PROF_POST_FAILURE:
+            return { ...state, loading: false, error: true, errorDetail: action.payload };
+
+        case DEPActionTypes.PROF_PATCH_REQUEST:
+            return { ...state, loading: true };
+        case DEPActionTypes.PROF_PATCH_SUCCESS:
+            if (isJSONAPIErrorResponsePayload(action.payload)) {
+                return {
+                    ...state,
+                    error: true,
+                    errorDetail: action.payload,
+                    loading: false,
+                };
+            } else {
+                return {
+                    ...state,
+                    dep_account: action.payload.data,
+                    loading: false,
+                };
+            }
+        case DEPActionTypes.PROF_PATCH_FAILURE:
             return { ...state, loading: false, error: true, errorDetail: action.payload };
 
         default:

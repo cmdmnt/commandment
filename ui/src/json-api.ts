@@ -109,9 +109,9 @@ export function isJSONAPIErrorResponsePayload(
     return (payload as JSONAPIErrorResponse).errors !== undefined;
 }
 
-type WrappedChildIndexActionCreator<R> = (id: string, queryParameters: String[]) => R;
+type WrappedChildIndexActionCreator<R> = (id: string, queryParameters: string[]) => R;
 
-type WrappedIndexActionCreator<R> = (queryParameters: String[]) => R;
+type WrappedIndexActionCreator<R> = (queryParameters: string[]) => R;
 
 // Standardised JSON-API Index ActionCreator
 type RSAAIndexActionRequest<TRequest, TSuccess, TFailure> = (size?: number, pageNumber?: number, sort?: string[], filters?: FlaskFilters) => RSAAction<TRequest, TSuccess, TFailure>;
@@ -140,9 +140,12 @@ export type RSAAIndexActionResponse<TRequest, TSuccess, TFailure, TObject> = RSA
     RSAAResponseSuccess<TSuccess, JSONAPIListResponse<JSONAPIDataObject<TObject>> | JSONAPIErrorResponse>;
 
 // Standardised JSON-API Index ActionCreator that fetches a resource child of some object / by relationship
-type RSAAChildIndexActionRequest<TRequest, TSuccess, TFailure> = (parent_id: string, size?: number, pageNumber?: number, sort?: string[], filters?: FlaskFilters) => RSAAction<TRequest, TSuccess, TFailure>;
+export type RSAAChildIndexActionRequest<TRequest, TSuccess, TFailure> =
+    (parent_id: string, size?: number, pageNumber?: number, sort?: string[], filters?: FlaskFilters)
+        => RSAAction<TRequest, TSuccess, TFailure>;
 
-type RSAAReadActionRequest<TRequest, TSuccess, TFailure> = (id: string, include?: string[]) => RSAAction<TRequest, TSuccess, TFailure>;
+export type RSAAReadActionRequest<TRequest, TSuccess, TFailure> = (id: string, include?: string[])
+    => RSAAction<TRequest, TSuccess, TFailure>;
 
 export interface RSAAReadActionResponseSuccess<TSuccess, TResponse> {
     type: TSuccess;
@@ -152,12 +155,15 @@ export interface RSAAReadActionResponseSuccess<TSuccess, TResponse> {
 export type RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |
     RSAAResponseFailure<TFailure> | RSAAReadActionResponseSuccess<TSuccess, TResponse> | JSONAPIErrorResponse;
 
-type RSAAPostActionRequest<TRequest, TSuccess, TFailure, TValues> = (values: TValues, relationships?: { [index: string]: JSONAPIRelationship[]; }) => RSAAction<TRequest, TSuccess, TFailure>;
+export type RSAAPostActionRequest<TRequest, TSuccess, TFailure, TValues> = (
+    values: TValues, relationships?: { [index: string]: JSONAPIRelationship[]; })
+    => RSAAction<TRequest, TSuccess, TFailure>;
 
 export type RSAAPostActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |
     RSAAResponseFailure<TFailure> | RSAAResponseSuccess<TSuccess, TResponse | JSONAPIErrorResponse>;
 
-type RSAAPatchActionRequest<TRequest, TSuccess, TFailure, TValues> = (id: string, values: TValues) => RSAAction<TRequest, TSuccess, TFailure>;
+export type RSAAPatchActionRequest<TRequest, TSuccess, TFailure, TValues> = (id: string, values: TValues)
+    => RSAAction<TRequest, TSuccess, TFailure>;
 
 type RSAADeleteActionRequest<TRequest, TSuccess, TFailure> = (id: string) => RSAAction<TRequest, TSuccess, TFailure>;
 

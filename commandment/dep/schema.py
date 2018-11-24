@@ -21,6 +21,7 @@ class DEPProfileSchema(Schema):
 
     id = fields.Int(dump_only=True)
     uuid = fields.UUID(dump_only=True)
+    """str: The Apple assigned UUID of this DEP Profile"""
 
     profile_name = fields.String(required=True)
     """str: A human-readable name for the profile."""
@@ -39,13 +40,13 @@ class DEPProfileSchema(Schema):
     is_mdm_removable = fields.Boolean()
     """bool: If false, the MDM payload delivered by the configuration URL cannot be removed by the user via the user 
     interface on the device"""
-    support_phone_number = fields.String()
+    support_phone_number = fields.String(allow_none=True)
     """str: A support phone number for the organization."""
     auto_advance_setup = fields.Boolean()
     """bool: If set to true, the device will tell tvOS Setup Assistant to automatically advance though its screens."""
-    support_email_address = fields.Email()
+    support_email_address = fields.String(allow_none=True)  # No need to perform validation here
     """str: A support email address for the organization."""
-    org_magic = fields.String()
+    org_magic = fields.String(allow_none=True)
     """str: A string that uniquely identifies various services that are managed by a single organization."""
     anchor_certs = fields.List(fields.String())
     """List[str]: Each string should contain a DER-encoded certificate converted to Base64 encoding. If provided, 
@@ -57,8 +58,10 @@ class DEPProfileSchema(Schema):
     is set to false"""
     skip_setup_items = fields.List(EnumField(SetupAssistantStep))
     """Set[SetupAssistantStep]: A list of setup panes to skip"""
-    department = fields.String()
+    department = fields.String(allow_none=True)
     """str: The user-defined department or location name."""
+    last_upload_at = fields.DateTime(dump_only=True)
+    """datetime: The last time this profile was uploaded/synced to apple. null if it was never synced."""
 
     devices = Relationship(
         related_view='api_app.devices_list',
