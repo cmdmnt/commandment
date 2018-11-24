@@ -12,17 +12,17 @@ import {bindActionCreators, Store} from "redux";
 import {IndexActionRequest} from "../actions/devices";
 import * as actions from "../actions/devices";
 import {DeviceColumn} from "../components/griddle/DeviceColumn";
+import {DeviceTypeFilter, DeviceTypeFilterValues} from "../components/griddle/DeviceTypeFilter";
+import {OSVerColumn} from "../components/griddle/OSVerColumn";
 import {SimpleLayout} from "../components/griddle/SimpleLayout";
 import {SinceNowUTC} from "../components/griddle/SinceNowUTC";
+import {ModelIcon} from "../components/ModelIcon";
 import {MultiAttrCellPlugin} from "../griddle-plugins/multiattr-cell/index";
 import {SelectionPlugin} from "../griddle-plugins/selection";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
 import {DevicesState} from "../reducers/devices";
 import {RootState} from "../reducers/index";
-import {ModelIcon} from "../components/ModelIcon";
-import {OSVerColumn} from "../components/griddle/OSVerColumn";
-import {DeviceTypeFilter, DeviceTypeFilterValues} from "../components/griddle/DeviceTypeFilter";
 
 const rowDataSelector = (state: Map<string, any>, { griddleKey }: { griddleKey?: string }) => {
     return state
@@ -114,7 +114,7 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
                         >
                             <RowDefinition onClick={() => console.log("fmeh")}>
                                 <ColumnDefinition title="Type" id="attributes.model_name"
-                                                  customComponent={ModelIcon} width={60} style={{'textAlign': 'center'}} />
+                                                  customComponent={ModelIcon} width={60} style={{textAlign: "center"}} />
                                 <ColumnDefinition title="Name" id="id,attributes.model_name,attributes.device_name"
                                                   customComponent={enhancedWithRowData(DeviceColumn)}/>
                                 <ColumnDefinition title="Serial" id="attributes.serial_number"

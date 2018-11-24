@@ -78,16 +78,16 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
             },
         } = this.props;
 
-        const loading = id && this.props.dep_profile.loading;
-
         let title = "loading";
+        let breadcrumbTitle = "DEP Profile";
+
         if (id) {
             title = `Edit ${this.props.dep_profile.dep_profile ?
                 this.props.dep_profile.dep_profile.attributes.profile_name : "Loading..."}`;
 
             if (dep_profile.dep_profile) {
                 dep_profile.dep_profile.attributes.show = {};
-
+                breadcrumbTitle = dep_profile.dep_profile.attributes.profile_name;
                 for (const kskip in SkipSetupSteps) {
                     if (dep_profile.dep_profile.attributes.skip_setup_items.indexOf(kskip) !== -1) {
                         dep_profile.dep_profile.attributes.show[kskip] = false;
@@ -107,7 +107,7 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
                     <Breadcrumb.Divider />
                     <Breadcrumb.Section><Link to={`/dep/accounts/${account_id}`}>DEP Account</Link></Breadcrumb.Section>
                     <Breadcrumb.Divider />
-                    <Breadcrumb.Section active>DEP Profile</Breadcrumb.Section>
+                    <Breadcrumb.Section active>{ breadcrumbTitle }</Breadcrumb.Section>
                 </Breadcrumb>
 
                 <Header as="h1">{title}</Header>

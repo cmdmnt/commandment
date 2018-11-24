@@ -165,7 +165,8 @@ def profile():
     :LANGUAGE: The user’s currently-selected language: e.g., en.
 
     See Also:
-        - `Mobile Device Management Protocol: Request to a Profile URL <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/4-Profile_Management/ProfileManagement.html#//apple_ref/doc/uid/TP40017387-CH7-SW242>`_.
+        - `Mobile Device Management Protocol: Request to a Profile URL
+            <https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/MobileDeviceManagementProtocolRef/4-Profile_Management/ProfileManagement.html#//apple_ref/doc/uid/TP40017387-CH7-SW242>`_.
     """
     g.plist_data = plistlib.loads(g.signed_data)
     profile = generate_enroll_profile()

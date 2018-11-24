@@ -11,6 +11,7 @@ import {RootState} from "../reducers";
 import {DEPAccountState} from "../store/dep/account_reducer";
 import {account, AccountReadActionRequest} from "../store/dep/actions";
 import {DEPProfilesTable} from "../components/griddle-tables/DEPProfilesTable";
+import {ButtonLink} from "../components/semantic-ui/ButtonLink";
 
 interface IOwnProps {
 
@@ -62,32 +63,37 @@ class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, ID
 
                 {dep_account && !loading &&
                 <div>
-                  <List divided>
-                    <List.Item>
-                      <List.Content>
-                        <List.Header>Server Name (As shown in Apple School Manager or Apple Business
-                          Manager)</List.Header>
-                        <List.Description>{dep_account.attributes.server_name}</List.Description>
-                      </List.Content>
-                    </List.Item>
-                    <List.Item>
-                      <List.Content>
-                        <List.Header>Administrator Apple ID</List.Header>
-                        <List.Description>{dep_account.attributes.admin_id}</List.Description>
-                      </List.Content>
-                    </List.Item>
-                  </List>
-                  <Segment>
-                    <Header as="h3">Organization</Header>
-                    <List>
-                      <List.Item icon="building" description={dep_account.attributes.org_name}/>
-                      <List.Item icon="compass" description={dep_account.attributes.org_address}/>
-                      <List.Item icon="mail" description={dep_account.attributes.org_email}/>
-                      <List.Item icon="mobile" description={dep_account.attributes.org_phone}/>
-                    </List>
-                  </Segment>
+                    <Segment.Group>
+                        <Segment attached>
+                          <Header as="h3">Overview</Header>
+                          <List>
+                            <List.Item>
+                              <List.Content>
+                                <List.Header>Server Name (As shown in Apple School Manager or Apple Business
+                                  Manager)</List.Header>
+                                <List.Description>{dep_account.attributes.server_name}</List.Description>
+                              </List.Content>
+                            </List.Item>
+                            <List.Item>
+                              <List.Content>
+                                <List.Header>Administrator Apple ID</List.Header>
+                                <List.Description>{dep_account.attributes.admin_id}</List.Description>
+                              </List.Content>
+                            </List.Item>
+                          </List>
+                        </Segment>
+                        <Segment attached>
+                            <Header as="h3">Organization</Header>
+                            <List>
+                              <List.Item icon="building" description={dep_account.attributes.org_name}/>
+                              <List.Item icon="compass" description={dep_account.attributes.org_address}/>
+                              <List.Item icon="mail" description={dep_account.attributes.org_email}/>
+                              <List.Item icon="mobile" description={dep_account.attributes.org_phone}/>
+                            </List>
+                        </Segment>
+                    </Segment.Group>
 
-                  <Link to={`/dep/accounts/${dep_account.id}/add/profile`}>New DEP Profile</Link>
+                  <ButtonLink to={`/dep/accounts/${dep_account.id}/add/profile`}>New DEP Profile</ButtonLink>
                     
                   <DEPProfilesTable depAccountId={dep_account.id} data={dep_profiles} />
                 </div>
