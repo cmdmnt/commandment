@@ -168,8 +168,14 @@ def ack_installed_app_list(request: InstalledApplicationList, device: Device, re
     current_app.logger.debug(errors)
     current_app.logger.info(result)
 
+    ignored_app_bundle_ids = current_app.config['IGNORED_APPLICATION_BUNDLE_IDS']
+
     for ia in result['InstalledApplicationList']:
         if isinstance(ia, db.Model):
+            if ia.bundle_identifier in ignored_app_bundle_ids:
+                current_app.logger.debug('Ignoring app with bundle id: %s', ia.bundle_identifier)
+                continue
+
             ia.device = device
             ia.device_udid = device.udid
             db.session.add(ia)
