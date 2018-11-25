@@ -35,16 +35,22 @@ def downgrade():
 
 
 def schema_upgrades():
-    op.add_column('dep_accounts', sa.Column('default_dep_profile_id', sa.Integer(), nullable=True))
-    op.create_foreign_key(None, 'dep_accounts', 'dep_profiles', ['default_dep_profile_id'], ['id'])
-    op.add_column('dep_profiles', sa.Column('dep_account_id', sa.Integer(), nullable=True))
-    op.add_column('dep_profiles', sa.Column('skip_setup_items', commandment.dbtypes.JSONEncodedDict(), nullable=True))
-    op.create_foreign_key(None, 'dep_profiles', 'dep_accounts', ['dep_account_id'], ['id'])
+    with op.batch_alter_table('dep_accounts', schema=None) as batch_op:
+        batch_op.add_column(sa.Column('default_dep_profile_id', sa.Integer(), nullable=True))
+        batch_op.create_foreign_key('fk_dep_accounts_default_dep_profile_id', 'dep_profiles', ['default_dep_profile_id'], ['id'])
+
+    with op.batch_alter_table('dep_profiles', schema=None) as batch_op:
+        batch_op.add_column(sa.Column('dep_account_id', sa.Integer(), nullable=True))
+        batch_op.add_column(sa.Column('skip_setup_items', commandment.dbtypes.JSONEncodedDict(), nullable=True))
+        batch_op.create_foreign_key('fk_dep_profiles_dep_account_id', 'dep_accounts', ['dep_account_id'], ['id'])
 
 
 def schema_downgrades():
-    op.drop_constraint(None, 'dep_profiles', type_='foreignkey')
-    op.drop_column('dep_profiles', 'skip_setup_items')
-    op.drop_column('dep_profiles', 'dep_account_id')
-    op.drop_constraint(None, 'dep_accounts', type_='foreignkey')
-    op.drop_column('dep_accounts', 'default_dep_profile_id')
+    with op.batch_alter_table('dep_profiles', schema=None) as batch_op:
+        batch_op.drop_constraint('fk_dep_profiles_dep_account_id', 'dep_profiles', type_='foreignkey')
+        batch_op.drop_column('skip_setup_items')
+        batch_op.drop_column('dep_account_id')
+
+    with op.batch_alter_table('dep_accounts', schema=None) as batch_op:
+        batch_op.drop_constraint('fk_dep_accounts_default_dep_profile_id', 'dep_accounts', type_='foreignkey')
+        batch_op.drop_column('default_dep_profile_id')

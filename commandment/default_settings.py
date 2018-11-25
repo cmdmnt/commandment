@@ -7,7 +7,7 @@ ALEMBIC = {
 }
 
 ALEMBIC_CONTEXT = {
-
+    'render_as_batch': True,  # Necessary to support SQLite ALTER on constraints
 }
 
 # http://flask-sqlalchemy.pocoo.org/2.1/config/
