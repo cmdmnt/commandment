@@ -1,4 +1,4 @@
-import {CommandsActionResponse, DevicesActionTypes} from "../../actions/devices";
+import {CommandsActionResponse, DevicesActionTypes} from "./actions";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {Command} from "../../models";
 import {OtherAction} from "../../actions/constants";

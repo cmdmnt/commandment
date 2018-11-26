@@ -16,7 +16,7 @@ import {
     postRelated, PostRelatedActionRequest,
     push, PushActionRequest,
     test, TestActionRequest,
-} from "../actions/devices";
+} from "../store/device/actions";
 import {MacOSDeviceDetail} from "../components/MacOSDeviceDetail";
 import {DeviceState} from "../store/device/device";
 import {RootState} from "../reducers/index";

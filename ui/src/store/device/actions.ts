@@ -1,16 +1,16 @@
-/// <reference path="../typings/redux-api-middleware.d.ts" />
+/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import {RSAA, HTTPVerb, RSAAction} from 'redux-api-middleware';
-import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from './constants'
+import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from '../../actions/constants'
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIRelationship, JSONAPIRelationships,
     RSAAChildIndexActionRequest,
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAPatchActionRequest, RSAAReadActionRequest, RSAAReadActionResponse
-} from "../json-api";
-import {Command, Device, DeviceRelationship, Tag} from "../models";
-import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../json-api";
+} from "../../json-api";
+import {Command, Device, DeviceRelationship, Tag} from "../../models";
+import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../../json-api";
 import {ThunkAction} from "redux-thunk";
-import {RootState} from "../reducers/index";
+import {RootState} from "../../reducers/index";
 import {Dispatch} from "react-redux";
 import {Action} from "redux";
 

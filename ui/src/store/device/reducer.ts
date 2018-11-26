@@ -1,11 +1,11 @@
 import {InstalledApplicationsActionResponse} from "../../actions/device/applications";
 import {CertificatesActionResponse} from "../../actions/device/certificates";
-import * as actions from "../../actions/devices";
+import * as actions from "./actions";
 import {
     CommandsActionResponse, PatchRelationshipActionResponse, PostRelatedActionResponse,
     ReadActionResponse,
-} from "../../actions/devices";
-import {DevicesActionTypes} from "../../actions/devices";
+} from "./actions";
+import {DevicesActionTypes} from "./actions";
 import {isArray} from "../../guards";
 import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
 import {Device, Tag} from "../../models";

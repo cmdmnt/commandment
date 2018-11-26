@@ -1,7 +1,7 @@
 import {
     DevicesActionTypes,
     IndexActionResponse
-} from "../actions/devices";
+} from "../store/device/actions";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Device} from "../models";
 
