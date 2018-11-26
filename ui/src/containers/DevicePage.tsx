@@ -26,13 +26,13 @@ import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 import {
 index as fetchTags, IndexActionRequest,
 post as createTag, PostActionRequest as PostTagActionRequest,
-} from "../actions/tags";
+} from "../store/tags/actions";
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
 import {JSONAPIDataObject, JSONAPIRelationship} from "../json-api";
 import {Tag} from "../models";
-import {TagsState} from "../reducers/tags";
+import {TagsState} from "../store/tags/reducer";
 import {getPercentCapacityUsed} from "../selectors/device";
 import {DeviceApplications} from "./devices/DeviceApplications";
 import {DeviceCertificates} from "./devices/DeviceCertificates";

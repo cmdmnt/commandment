@@ -16,13 +16,13 @@ import {patchRelationship, PatchRelationshipActionRequest} from "../actions/prof
 import {
     index as fetchTags, IndexActionRequest,
     post as createTag, PostActionRequest as PostTagActionRequest,
-} from "../actions/tags";
+} from "../store/tags/actions";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
 import {JSONAPIDataObject, JSONAPIRelationship} from "../json-api";
 import {Profile, Tag} from "../models";
 import {ProfileState} from "../reducers/profile";
-import {TagsState} from "../reducers/tags";
+import {TagsState} from "../store/tags/reducer";
 
 interface RouteProps {
     id?: string;

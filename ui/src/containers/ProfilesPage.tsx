@@ -19,7 +19,7 @@ import {SimpleLayout as Layout} from "../components/griddle/SimpleLayout";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
 import {RootState} from "../reducers/index";
-import {ProfilesState} from "../reducers/profiles";
+import {ProfilesState} from "../store/profiles/reducer";
 
 interface ReduxStateProps {
     profiles: ProfilesState;

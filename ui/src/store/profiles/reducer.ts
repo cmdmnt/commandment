@@ -1,10 +1,10 @@
-import * as actions from "../actions/profiles";
-import {IndexActionResponse, UploadActionResponse} from "../actions/profiles";
-import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../json-api";
-import {Profile} from "../models";
+import * as actions from "../../actions/profiles";
+import {IndexActionResponse, UploadActionResponse} from "../../actions/profiles";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
+import {Profile} from "../../models";
 import {ApiError} from "redux-api-middleware";
-import {isApiError} from "../guards";
-import {IResults, ResultsDefaultState} from "./interfaces";
+import {isApiError} from "../../guards";
+import {IResults, ResultsDefaultState} from "../../reducers/interfaces";
 
 export interface ProfilesState extends IResults<Array<JSONAPIDataObject<Profile>>> {
     pageProperties: any;

@@ -3,8 +3,8 @@ import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
     RSAAIndexActionResponse,
 } from "../../json-api";
-import {AvailableOSUpdate} from "../../store/device/types";
-import {JSONAPI_HEADERS} from "../constants";
+import {AvailableOSUpdate} from "./types";
+import {JSONAPI_HEADERS} from "../../actions/constants";
 
 export const UPDATES_REQUEST = "devices/UPDATES_REQUEST";
 export type UPDATES_REQUEST = typeof UPDATES_REQUEST;

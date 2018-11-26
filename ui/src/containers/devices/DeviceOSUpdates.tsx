@@ -3,7 +3,7 @@ import * as React from "react";
 import {connect, Dispatch} from "react-redux";
 import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {AvailableOSUpdatesActionRequest, updates as fetchAvailableOSUpdates} from "../../actions/device/updates";
+import {AvailableOSUpdatesActionRequest, updates as fetchAvailableOSUpdates} from "../../store/device/updates";
 import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
 import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui";
 import {griddle, GriddleDecoratorState} from "../../hoc/griddle";

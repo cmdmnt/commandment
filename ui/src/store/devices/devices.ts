@@ -1,9 +1,9 @@
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
 import {
     DevicesActionTypes,
     IndexActionResponse,
-} from "../store/device/actions";
-import {Device} from "../store/device/types";
+} from "../device/actions";
+import {Device} from "../device/types";
 
 export interface DeviceIdMap {
     [deviceId: string]: JSONAPIDataObject<Device>;

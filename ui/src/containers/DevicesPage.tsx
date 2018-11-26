@@ -21,7 +21,7 @@ import {MultiAttrCellPlugin} from "../griddle-plugins/multiattr-cell/index";
 import {SelectionPlugin} from "../griddle-plugins/selection";
 import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
-import {DevicesState} from "../reducers/devices";
+import {DevicesState} from "../store/devices/devices";
 import {RootState} from "../reducers/index";
 
 const rowDataSelector = (state: Map<string, any>, { griddleKey }: { griddleKey?: string }) => {

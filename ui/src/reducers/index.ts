@@ -1,20 +1,20 @@
-import {combineReducers} from 'redux';
-import {routerReducer, RouterState} from 'react-router-redux';
-import { reducer as formReducer, FormStateMap } from 'redux-form';
+import {routerReducer, RouterState} from "react-router-redux";
+import {combineReducers} from "redux";
+import { FormStateMap, reducer as formReducer } from "redux-form";
 
-import {certificates, CertificatesState} from './certificates';
-import {assistant, AssistantState} from './assistant';
-import {configuration, ConfigurationState} from './configuration';
-import {organization, OrganizationState} from './organization';
-import {devices, DevicesState} from "./devices";
-import {device, DeviceState} from "../store/device/reducer";
-import {commands, CommandsState} from './commands';
-import {profiles, ProfilesState} from './profiles';
-import {device_groups, DeviceGroupsState} from "./device_groups";
-import {tags, TagsState} from "./tags";
-import {profile, ProfileState} from "./profile";
-import {applications, ApplicationsState} from "./applications";
 import {dep, IDEPState} from "../store/dep/reducer";
+import {device, DeviceState} from "../store/device/reducer";
+import {devices, DevicesState} from "../store/devices/devices";
+import {profiles, ProfilesState} from "../store/profiles/reducer";
+import {applications, ApplicationsState} from "./applications";
+import {assistant, AssistantState} from "./assistant";
+import {certificates, CertificatesState} from "./certificates";
+import {commands, CommandsState} from "./commands";
+import {configuration, ConfigurationState} from "./configuration";
+import {device_groups, DeviceGroupsState} from "./device_groups";
+import {organization, OrganizationState} from "./organization";
+import {profile, ProfileState} from "./profile";
+import {tags, TagsState} from "../store/tags/reducer";
 
 export interface RootState {
     router?: RouterState;
@@ -34,7 +34,6 @@ export interface RootState {
     dep?: IDEPState;
 }
 
-
 export const rootReducer = combineReducers<RootState>({
     router: routerReducer,
     form: formReducer,
@@ -50,7 +49,7 @@ export const rootReducer = combineReducers<RootState>({
     device_groups,
     tags,
     profile,
-    dep
+    dep,
 });
 
 export default rootReducer;

@@ -1,33 +1,33 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
-import {createStore, applyMiddleware, compose} from 'redux';
-import thunk from 'redux-thunk';
-import {apiMiddleware} from 'redux-api-middleware';
-import rootReducer from '../reducers';
 import {Store} from "react-redux";
+import {applyMiddleware, compose, createStore} from "redux";
 import {Middleware} from "redux";
+import {apiMiddleware} from "redux-api-middleware";
+import thunk from "redux-thunk";
+import rootReducer from "../reducers";
 import {RootState} from "../reducers/index";
 
-const composeEnhancers = (<any>window).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export const configureStore = (initialState: RootState, ...middlewares: Array<Middleware> ): Store<any> => {
+export const configureStore = (initialState: RootState, ...middlewares: Middleware[] ): Store<any> => {
 
     const enhancer = composeEnhancers(
         applyMiddleware(
             thunk,
             apiMiddleware,
-            ...middlewares
-        )
+            ...middlewares,
+        ),
     );
 
     const store = createStore(
         rootReducer,
         initialState,
-        enhancer
+        enhancer,
     );
 
     if (module.hot) {
-        module.hot.accept('../reducers', () => {
-            const nextRootReducer = require('../reducers').default;
+        module.hot.accept("../reducers", () => {
+            const nextRootReducer = require("../reducers").default;
             store.replaceReducer(nextRootReducer)
         });
     }

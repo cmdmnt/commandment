@@ -1,5 +1,5 @@
-import {InstalledApplicationsActionResponse} from "../../actions/device/applications";
-import {CertificatesActionResponse} from "../../actions/device/certificates";
+import {InstalledApplicationsActionResponse} from "./applications";
+import {CertificatesActionResponse} from "./certificates";
 import * as actions from "./actions";
 import {
     CommandsActionResponse, PatchRelationshipActionResponse, PostRelatedActionResponse,

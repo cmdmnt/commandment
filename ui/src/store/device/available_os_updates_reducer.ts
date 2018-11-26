@@ -1,7 +1,7 @@
 import {
     UPDATES_SUCCESS,
     AvailableOSUpdatesActionResponse
-} from "../../actions/device/updates";
+} from "./updates";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledProfile} from "./types";
 import {OtherAction} from "../../actions/constants";

@@ -1,7 +1,7 @@
 import {
     CERTIFICATES_SUCCESS,
     CertificatesActionResponse
-} from "../../actions/device/certificates";
+} from "./certificates";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledCertificate} from "./types";
 import {OtherAction} from "../../actions/constants";

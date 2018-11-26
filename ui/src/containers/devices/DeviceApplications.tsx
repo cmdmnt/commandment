@@ -5,7 +5,7 @@ import {SinceNowUTC} from "../../components/griddle/SinceNowUTC";
 import {RootState} from "../../reducers/index";
 import {InstalledApplicationsState} from "../../reducers/device/installed_applications";
 import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
-import {InstalledApplicationsActionRequest, applications as fetchInstalledApplications} from "../../actions/device/applications";
+import {InstalledApplicationsActionRequest, applications as fetchInstalledApplications} from "../../store/device/applications";
 import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators} from "redux";
 import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";

@@ -3,7 +3,7 @@ import * as React from "react";
 import {connect, Dispatch} from "react-redux";
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {certificates as fetchInstalledCertificates, CertificatesActionRequest} from "../../actions/device/certificates";
+import {certificates as fetchInstalledCertificates, CertificatesActionRequest} from "../../store/device/certificates";
 import {CertificateTypeIcon} from "../../components/CertificateTypeIcon";
 import {CertificateRow} from "../../components/griddle/CertificateRow";
 import {ListTableBody, ListTableContainer} from "../../components/griddle/ListTable";

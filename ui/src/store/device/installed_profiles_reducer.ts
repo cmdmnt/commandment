@@ -1,7 +1,7 @@
 import {
     PROFILES_SUCCESS,
     InstalledProfilesActionResponse
-} from "../../actions/device/profiles";
+} from "./profiles";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledProfile} from "./types";
 import {OtherAction} from "../../actions/constants";

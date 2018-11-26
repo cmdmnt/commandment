@@ -1,7 +1,7 @@
 import {
     APPLICATIONS_SUCCESS,
     InstalledApplicationsActionResponse
-} from "../../actions/device/applications";
+} from "./applications";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledApplication} from "./types";
 import {OtherAction} from "../../actions/constants";

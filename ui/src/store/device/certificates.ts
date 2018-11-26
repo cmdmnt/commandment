@@ -1,10 +1,10 @@
-import {JSONAPI_HEADERS} from "../constants";
+import {JSONAPI_HEADERS} from "../../actions/constants";
 import {RSAA, HTTPVerb, RSAAction} from "redux-api-middleware";
 import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
     RSAAIndexActionResponse
 } from "../../json-api";
-import {InstalledCertificate} from "../../store/device/types";
+import {InstalledCertificate} from "./types";
 
 
 export type CERTIFICATES_REQUEST = 'devices/CERTIFICATES_REQUEST';
