@@ -11,7 +11,7 @@ import {
 } from "../src/actions/device_groups";
 import {RouteComponentProps} from "react-router";
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import {DeviceGroup} from "../src/models";
+import {DeviceGroup} from "../src/store/device_groups/types";
 import {JSONAPIDetailResponse} from "../src/json-api";
 import {SemanticUIPlugin} from "../src/griddle-plugins/semantic-ui/index";
 import {SimpleLayout as Layout} from "../src/components/griddle/SimpleLayout";

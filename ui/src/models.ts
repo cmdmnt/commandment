@@ -11,11 +11,6 @@ export interface Application {
     version: string;
 }
 
-export interface DeviceGroup {
-    id?: string;
-    name: string;
-}
-
 export interface InstalledPayload {
     id?: number;
     description: string;

@@ -1,10 +1,10 @@
 import {
     INDEX_SUCCESS, IndexActionResponse,
     READ_SUCCESS, ReadActionResponse
-} from "../actions/device_groups";
-import {JSONAPIDataObject, isJSONAPIErrorResponsePayload, JSONAPIDetailResponse} from "../json-api";
-import {DeviceGroup} from "../models";
-import {Device} from "../store/device/types";
+} from "./actions";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload, JSONAPIDetailResponse} from "../../json-api";
+import {DeviceGroup} from "./types";
+import {Device} from "../device/types";
 
 export interface DeviceGroupsState {
     items?: Array<JSONAPIDataObject<DeviceGroup>>;

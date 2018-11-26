@@ -3,17 +3,17 @@ import {combineReducers} from "redux";
 import { FormStateMap, reducer as formReducer } from "redux-form";
 
 import {applications, ApplicationsState} from "../store/applications/applications";
+import {certificates, CertificatesState} from "../store/certificates/reducer";
 import {configuration, ConfigurationState} from "../store/configuration/reducer";
 import {dep, IDEPState} from "../store/dep/reducer";
 import {device, DeviceState} from "../store/device/reducer";
+import {device_groups, DeviceGroupsState} from "../store/device_groups/reducer";
 import {devices, DevicesState} from "../store/devices/devices";
 import {organization, OrganizationState} from "../store/organization/reducer";
 import {profiles, ProfilesState} from "../store/profiles/reducer";
 import {tags, TagsState} from "../store/tags/reducer";
 import {assistant, AssistantState} from "./assistant";
-import {certificates, CertificatesState} from "../store/certificates/reducer";
 import {commands, CommandsState} from "./commands";
-import {device_groups, DeviceGroupsState} from "./device_groups";
 import {profile, ProfileState} from "./profile";
 
 export interface RootState {

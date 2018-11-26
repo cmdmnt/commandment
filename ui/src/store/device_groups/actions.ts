@@ -5,10 +5,10 @@ import {
     JSONAPIListResponse,
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse,
-} from "../json-api";
-import {DeviceGroup} from "../models";
-import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../store/constants"
-import {Device} from "../store/device/types";
+} from "../../json-api";
+import {DeviceGroup} from "./types";
+import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants"
+import {Device} from "../device/types";
 
 export type INDEX_REQUEST = "device_groups/INDEX_REQUEST";
 export const INDEX_REQUEST: INDEX_REQUEST = "device_groups/INDEX_REQUEST";
@@ -94,7 +94,7 @@ export const post: PostActionRequest = (values: DeviceGroup) => {
             headers: JSONAPI_HEADERS,
             body: JSON.stringify({
                 data: {
-                    type: "device_groups",
+                    type: "reducer",
                     attributes: values,
                 },
             }),
