@@ -4,7 +4,7 @@ import {connect, Dispatch} from "react-redux";
 import {RouteComponentProps} from "react-router";
 import {Link} from "react-router-dom";
 import {bindActionCreators} from "redux";
-import {AccordionTitleProps, FormProps} from "semantic-ui-react";
+import {AccordionTitleProps} from "semantic-ui-react";
 import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";

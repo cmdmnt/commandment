@@ -7,7 +7,7 @@ import {assistant, AssistantState} from './assistant';
 import {configuration, ConfigurationState} from './configuration';
 import {organization, OrganizationState} from './organization';
 import {devices, DevicesState} from "./devices";
-import {device, DeviceState} from "./device";
+import {device, DeviceState} from "../store/device/reducer";
 import {commands, CommandsState} from './commands';
 import {profiles, ProfilesState} from './profiles';
 import {device_groups, DeviceGroupsState} from "./device_groups";

@@ -1,6 +1,6 @@
 import {distanceInWordsToNow} from "date-fns";
 import * as React from "react";
-import {DeviceState} from "../reducers/device";
+import {DeviceState} from "../store/device/device";
 import {ModelIcon} from "./ModelIcon";
 
 import Grid from "semantic-ui-react/src/collections/Grid";

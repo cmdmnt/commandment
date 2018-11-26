@@ -1,27 +1,27 @@
 import {
-    UPDATES_SUCCESS,
-    AvailableOSUpdatesActionResponse
-} from "../../actions/device/updates";
+    PROFILES_SUCCESS,
+    InstalledProfilesActionResponse
+} from "../../actions/device/profiles";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledProfile} from "../../models";
 import {OtherAction} from "../../actions/constants";
 
 
-export interface AvailableOSUpdatesState {
+export interface InstalledProfilesState {
     items?: Array<JSONAPIDataObject<InstalledProfile>>;
     recordCount: number;
 }
 
-const initialState: AvailableOSUpdatesState = {
+const initialState: InstalledProfilesState = {
     items: [],
     recordCount: 0
 };
 
-type AvailableOSUpdatesAction = AvailableOSUpdatesActionResponse | OtherAction;
+type InstalledProfilesAction = InstalledProfilesActionResponse | OtherAction;
 
-export function available_os_updates(state: AvailableOSUpdatesState = initialState, action: AvailableOSUpdatesAction): AvailableOSUpdatesState {
+export function installed_profiles_reducer(state: InstalledProfilesState = initialState, action: InstalledProfilesAction): InstalledProfilesState {
     switch (action.type) {
-        case UPDATES_SUCCESS:
+        case PROFILES_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return state;
             } else {

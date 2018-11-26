@@ -272,4 +272,7 @@ IGNORED_APPLICATION_BUNDLE_IDS = [
     'com.apple.IMServicePlugInAgent',
     'com.apple.itunes.connect.ApplicationLoader',
     'com.apple.DiskImageMounter',
+    'com.apple.NetworkDiagnostics',
+    'com.apple.installer',
+    'com.apple.VoiceOverQuickstart',
 ]

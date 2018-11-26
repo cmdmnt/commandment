@@ -1,27 +1,23 @@
-import {
-    PROFILES_SUCCESS,
-    InstalledProfilesActionResponse
-} from "../../actions/device/profiles";
+import {CommandsActionResponse, DevicesActionTypes} from "../../actions/devices";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
-import {InstalledProfile} from "../../models";
+import {Command} from "../../models";
 import {OtherAction} from "../../actions/constants";
 
-
-export interface InstalledProfilesState {
-    items?: Array<JSONAPIDataObject<InstalledProfile>>;
+export interface DeviceCommandsState {
+    items?: Array<JSONAPIDataObject<Command>>;
     recordCount: number;
 }
 
-const initialState: InstalledProfilesState = {
+const initialState: DeviceCommandsState = {
     items: [],
     recordCount: 0
 };
 
-type InstalledProfilesAction = InstalledProfilesActionResponse | OtherAction;
+type DeviceCommandsAction = CommandsActionResponse | OtherAction;
 
-export function installed_profiles(state: InstalledProfilesState = initialState, action: InstalledProfilesAction): InstalledProfilesState {
+export function commands_reducer(state: DeviceCommandsState = initialState, action: DeviceCommandsAction): DeviceCommandsState {
     switch (action.type) {
-        case PROFILES_SUCCESS:
+        case DevicesActionTypes.COMMANDS_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return state;
             } else {

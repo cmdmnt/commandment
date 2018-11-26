@@ -18,7 +18,7 @@ const initialState: InstalledCertificatesState = {
 
 type InstalledCertificatesAction = CertificatesActionResponse | OtherAction;
 
-export function installed_certificates(state: InstalledCertificatesState = initialState, action: InstalledCertificatesAction): InstalledCertificatesState {
+export function installed_certificates_reducer(state: InstalledCertificatesState = initialState, action: InstalledCertificatesAction): InstalledCertificatesState {
     switch (action.type) {
         case CERTIFICATES_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {

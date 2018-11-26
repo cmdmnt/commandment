@@ -18,7 +18,7 @@ import {
     test, TestActionRequest,
 } from "../actions/devices";
 import {MacOSDeviceDetail} from "../components/MacOSDeviceDetail";
-import {DeviceState} from "../reducers/device";
+import {DeviceState} from "../store/device/device";
 import {RootState} from "../reducers/index";
 
 import {SyntheticEvent} from "react";

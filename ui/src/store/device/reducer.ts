@@ -1,20 +1,19 @@
-import * as actions from '../actions/devices';
+import {InstalledApplicationsActionResponse} from "../../actions/device/applications";
+import {CertificatesActionResponse} from "../../actions/device/certificates";
+import * as actions from "../../actions/devices";
 import {
     CommandsActionResponse, PatchRelationshipActionResponse, PostRelatedActionResponse,
-    ReadActionResponse
-} from "../actions/devices";
-import {CertificatesActionResponse} from '../actions/device/certificates';
-import {commands, DeviceCommandsState} from "./device/commands";
-import {installed_certificates, InstalledCertificatesState} from "./device/installed_certificates";
-import {installed_applications, InstalledApplicationsState} from "./device/installed_applications";
-import {InstalledApplicationsActionResponse} from "../actions/device/applications";
-import {installed_profiles, InstalledProfilesState} from "./device/installed_profiles";
-import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../json-api";
-import {Device, Tag} from "../models";
-import {available_os_updates, AvailableOSUpdatesState} from "./device/available_os_updates";
-import {isArray} from "../guards";
-import {DevicesActionTypes} from "../actions/devices";
-
+    ReadActionResponse,
+} from "../../actions/devices";
+import {DevicesActionTypes} from "../../actions/devices";
+import {isArray} from "../../guards";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
+import {Device, Tag} from "../../models";
+import {available_os_updates_reducer, AvailableOSUpdatesState} from "./available_os_updates_reducer";
+import {commands_reducer, DeviceCommandsState} from "./commands_reducer";
+import {installed_applications_reducer, InstalledApplicationsState} from "./installed_applications_reducer";
+import {installed_certificates_reducer, InstalledCertificatesState} from "./installed_certificates_reducer";
+import {installed_profiles_reducer, InstalledProfilesState} from "./installed_profiles_reducer";
 
 export interface DeviceState {
     device?: JSONAPIDataObject<Device>;
@@ -35,14 +34,14 @@ export interface DeviceState {
 }
 
 const initialState: DeviceState = {
+    currentPage: 1,
     device: null,
-    loading: false,
-    tagsLoading: false,
     error: false,
     errorDetail: null,
     lastReceived: null,
-    currentPage: 1,
-    pageSize: 50
+    loading: false,
+    pageSize: 50,
+    tagsLoading: false,
 };
 
 type DevicesAction = ReadActionResponse | InstalledApplicationsActionResponse | CommandsActionResponse |
@@ -53,14 +52,14 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
         case DevicesActionTypes.READ_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
 
         case DevicesActionTypes.READ_FAILURE:
             return {
                 ...state,
                 error: true,
-                errorDetail: action.payload
+                errorDetail: action.payload,
             };
 
         case DevicesActionTypes.READ_SUCCESS:
@@ -68,13 +67,13 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                 return {
                     ...state,
                     error: true,
-                    errorDetail: action.payload
+                    errorDetail: action.payload,
                 }
             } else {
                 let tags: Array<JSONAPIDataObject<Tag>> = [];
 
                 if (action.payload.included) {
-                    tags = action.payload.included.filter((included: JSONAPIDataObject<any>) => (included.type === 'tags'));
+                    tags = action.payload.included.filter((included: JSONAPIDataObject<any>) => (included.type === "tags"));
                 }
 
                 return {
@@ -82,51 +81,51 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                     device: action.payload.data,
                     lastReceived: new Date,
                     loading: false,
-                    tags
+                    tags,
                 };
             }
         case actions.RPATCH_REQUEST:
             return {
                 ...state,
-                tagsLoading: true
+                tagsLoading: true,
             };
         case actions.RPATCH_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
                     error: true,
-                    errorDetail: action.payload
+                    errorDetail: action.payload,
                 }
             } else {
                 const device: JSONAPIDataObject<Device> = {
                     ...state.device,
                     relationships: {
                         ...state.device.relationships,
-                        tags: action.payload.data.relationships.tags
-                    }
+                        tags: action.payload.data.relationships.tags,
+                    },
                 };
 
                 return {
                     ...state,
                     device,
-                    tagsLoading: false
+                    tagsLoading: false,
                 };
             }
 
         case actions.RPATCH_FAILURE:
             return {
                 ...state,
-                tagsLoading: false
+                tagsLoading: false,
             };
 
         case actions.RCPOST_REQUEST:
             return {
                 ...state,
-                tagsLoading: true
+                tagsLoading: true,
             };
 
         case actions.RCPOST_SUCCESS:
-            const data: Array<any> = isArray(action.payload.data) ? action.payload.data : [action.payload.data];
+            const data: any[] = isArray(action.payload.data) ? action.payload.data : [action.payload.data];
             const mergedTags = data.concat(state.device.relationships.tags.data);
 
             return {
@@ -136,28 +135,28 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                     relationships: {
                         ...state.device.relationships,
                         tags: {
-                            data: mergedTags
-                        }
-                    }
-                }
+                            data: mergedTags,
+                        },
+                    },
+                },
             };
 
         case actions.RCPOST_FAILURE:
             return {
                 ...state,
-                tagsLoading: false,
                 error: true,
-                errorDetail: action.payload
+                errorDetail: action.payload,
+                tagsLoading: false,
             };
-            
+
         default:
             return {
                 ...state,
-                commands: commands(state.commands, action),
-                installed_certificates: installed_certificates(state.installed_certificates, action),
-                installed_applications: installed_applications(state.installed_applications, action),
-                installed_profiles: installed_profiles(state.installed_profiles, action),
-                available_os_updates: available_os_updates(state.available_os_updates, action)
+                available_os_updates: available_os_updates_reducer(state.available_os_updates, action),
+                commands: commands_reducer(state.commands, action),
+                installed_applications: installed_applications_reducer(state.installed_applications, action),
+                installed_certificates: installed_certificates_reducer(state.installed_certificates, action),
+                installed_profiles: installed_profiles_reducer(state.installed_profiles, action),
             };
     }
 }
