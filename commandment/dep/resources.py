@@ -1,3 +1,4 @@
+from flask import url_for
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
 from .schema import DEPProfileSchema, DEPAccountSchema
 from .models import db, DEPProfile, DEPAccount
@@ -9,6 +10,11 @@ class DEPProfileList(ResourceList):
         'session': db.session,
         'model': DEPProfile,
     }
+
+    def before_post(self, args, kwargs, data=None):
+        """Generate an MDM enrollment URL if none was given."""
+        if 'url' not in data or data['url'] is None:
+            data['url'] = url_for('dep_app.profile', _external=True)
 
 
 class DEPProfileDetail(ResourceDetail):

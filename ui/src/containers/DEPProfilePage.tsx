@@ -136,8 +136,6 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
             }
         }
 
-        profile.url = "http://test.something/dep/enroll"; // TODO: THIS IS A PLACEHOLDER
-
         if (this.props.match.params.id) {
             this.props.patchDEPProfile(this.props.match.params.id, profile);
         } else {

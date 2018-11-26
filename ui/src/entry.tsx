@@ -1,37 +1,34 @@
 import createHistory from "history/createBrowserHistory";
 import * as React from "react";
 import {render} from "react-dom";
-// import {hot} from "react-hot-loader";
 import {Provider} from "react-redux";
 import {Route} from "react-router";
 import {ConnectedRouter, routerMiddleware} from "react-router-redux";
+
 import {RootState} from "./reducers";
 import {configureStore} from "./store/configureStore";
 
-import {AppLayout} from "./containers/AppLayout";
-import {DeviceAuthPage} from "./containers/config/DeviceAuthPage";
+import {AppLayout} from "./components/AppLayout";
 
-// Settings
-import {SettingsPage} from "./containers/SettingsPage";
+import {ApplicationPage} from "./containers/ApplicationPage";
+import {ApplicationsPage} from "./containers/ApplicationsPage";
 import {CertificatesPage} from "./containers/CertificatesPage";
+import {DeviceAuthPage} from "./containers/config/DeviceAuthPage";
 import {OrganizationPage} from "./containers/config/OrganizationPage";
-import {VPPAccountsPage} from "./containers/settings/VPPAccountsPage";
-import {DEPAccountsPage} from "./containers/settings/DEPAccountsPage";
-import {APNSPage} from "./containers/settings/APNSPage";
-
+import {DashboardPage} from "./containers/DashboardPage";
+import {DEPAccountPage} from "./containers/DEPAccountPage";
+import {DEPProfilePage} from "./containers/DEPProfilePage";
 import {DevicePage} from "./containers/DevicePage";
 import {DevicesPage} from "./containers/DevicesPage";
 import {ProfilePage} from "./containers/ProfilePage";
 import {ProfilesPage} from "./containers/ProfilesPage";
-
+import {APNSPage} from "./containers/settings/APNSPage";
+import {DEPAccountSetupPage} from "./containers/settings/DEPAccountSetupPage";
+import {DEPAccountsPage} from "./containers/settings/DEPAccountsPage";
+import {VPPAccountsPage} from "./containers/settings/VPPAccountsPage";
+import {SettingsPage} from "./containers/SettingsPage";
 
 import "../sass/app.scss";
-import {ApplicationPage} from "./containers/ApplicationPage";
-import {ApplicationsPage} from "./containers/ApplicationsPage";
-import {DashboardPage} from "./containers/DashboardPage";
-import {DEPAccountSetupPage} from "./containers/settings/DEPAccountSetupPage";
-import {DEPAccountPage} from "./containers/DEPAccountPage";
-import {DEPProfilePage} from "./containers/DEPProfilePage";
 
 const initialState: RootState = {};
 

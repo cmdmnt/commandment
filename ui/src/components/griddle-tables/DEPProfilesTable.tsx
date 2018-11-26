@@ -21,7 +21,7 @@ const rowDataSelector = (state: Map<string, any>, { griddleKey }: { griddleKey?:
         .toJSON();
 };
 
-const enhancedWithRowData = connect((state, props: components.RowProps) => {
+const enhancedWithRowData = connect((state: Map<string, any>, props: components.RowProps) => {
     return {
         // rowData will be available into MyCustomComponent
         rowData: rowDataSelector(state, props),
