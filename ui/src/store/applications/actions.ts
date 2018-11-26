@@ -8,7 +8,7 @@ import {
     RSAAReadActionResponse,
 } from "../../json-api";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse, RSAAPatchActionRequest} from "../../json-api";
-import {Application} from "../../models";
+import {Application} from "./types";
 import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants";
 
 export type INDEX_REQUEST = "applications/INDEX_REQUEST";

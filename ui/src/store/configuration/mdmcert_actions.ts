@@ -3,7 +3,7 @@ import {ApiError, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
 import {JSON_HEADERS} from "../constants";
 import {JSONAPIDetailResponse, RSAAReadActionRequest, RSAAReadActionResponse} from "../../json-api";
-import {VPPAccount} from "../../models";
+import {VPPAccount} from "./types";
 import {RootState} from "../../reducers/index";
 import {UPLOAD_TOKEN} from "./vpp";
 

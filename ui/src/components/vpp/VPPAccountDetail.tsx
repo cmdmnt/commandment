@@ -6,7 +6,7 @@ import Icon from "semantic-ui-react/src/elements/Icon";
 import Segment from "semantic-ui-react/src/elements/Segment";
 
 import {format} from "date-fns";
-import {VPPAccount} from "../../models";
+import {VPPAccount} from "../../store/configuration/types";
 
 export interface IVPPAccountDetailProps extends VPPAccount {
 }

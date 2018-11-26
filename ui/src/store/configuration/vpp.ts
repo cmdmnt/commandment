@@ -8,7 +8,7 @@ import {
     RSAAReadActionRequest,
     RSAAReadActionResponse
 } from "../../json-api";
-import {VPPAccount} from "../../models";
+import {VPPAccount} from "./types";
 import {RootState} from "../../reducers/index";
 import {JSON_HEADERS, JSONAPI_HEADERS} from "../constants";
 

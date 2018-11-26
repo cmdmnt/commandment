@@ -1,5 +1,5 @@
 import {IVPPAction, TokenActionResponse, VPPActionTypes} from "./vpp";
-import {VPPAccount} from "../../models";
+import {VPPAccount} from "./types";
 
 export interface VPPState {
     data?: VPPAccount;

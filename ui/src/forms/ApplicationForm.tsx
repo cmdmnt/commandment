@@ -6,7 +6,7 @@ import Button from "semantic-ui-react/src/elements/Button";
 import Segment from "semantic-ui-react/src/elements/Segment";
 
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
-import {Application} from "../models";
+import {Application} from "../store/applications/types";
 import {SemanticCheckbox} from "./fields/SemanticCheckbox";
 import {SemanticInput} from "./fields/SemanticInput";
 import {SemanticTextArea} from "./fields/SemanticTextArea";
