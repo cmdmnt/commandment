@@ -2,7 +2,7 @@
 import { RSAA, RSAAction } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from './constants';
 import {JSONAPIListResponse, JSONAPIDataObject} from "../json-api";
-import {Command} from "../models";
+import {Command} from "../store/device/types";
 
 export type INDEX_REQUEST = 'commands/INDEX_REQUEST';
 export const INDEX_REQUEST: INDEX_REQUEST = 'commands/INDEX_REQUEST';

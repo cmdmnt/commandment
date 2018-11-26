@@ -3,7 +3,7 @@ import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
     RSAAIndexActionResponse,
 } from "../../json-api";
-import {AvailableOSUpdate} from "../../models";
+import {AvailableOSUpdate} from "../../store/device/types";
 import {JSONAPI_HEADERS} from "../constants";
 
 export const UPDATES_REQUEST = "devices/UPDATES_REQUEST";

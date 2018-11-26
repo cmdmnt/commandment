@@ -3,7 +3,7 @@ import {RSAA, HTTPVerb, RSAAction} from "redux-api-middleware";
 import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest, RSAAIndexActionResponse
 } from "../../json-api";
-import {InstalledApplication} from "../../models";
+import {InstalledApplication} from "../../store/device/types";
 
 
 export type APPLICATIONS_REQUEST = 'devices/APPLICATIONS_REQUEST';

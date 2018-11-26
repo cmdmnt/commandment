@@ -3,7 +3,7 @@ import {
     InstalledProfilesActionResponse
 } from "../../actions/device/profiles";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
-import {InstalledProfile} from "../../models";
+import {InstalledProfile} from "./types";
 import {OtherAction} from "../../actions/constants";
 
 

@@ -7,7 +7,8 @@ import {
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse
 } from "../json-api";
-import {Device, DeviceGroup} from "../models";
+import {DeviceGroup} from "../models";
+import {Device} from "../store/device/types";
 
 
 export type INDEX_REQUEST = 'device_groups/INDEX_REQUEST';

@@ -3,7 +3,8 @@ import {
     READ_SUCCESS, ReadActionResponse
 } from "../actions/device_groups";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload, JSONAPIDetailResponse} from "../json-api";
-import {Device, DeviceGroup} from "../models";
+import {DeviceGroup} from "../models";
+import {Device} from "../store/device/types";
 
 export interface DeviceGroupsState {
     items?: Array<JSONAPIDataObject<DeviceGroup>>;

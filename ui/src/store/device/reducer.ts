@@ -8,12 +8,13 @@ import {
 import {DevicesActionTypes} from "./actions";
 import {isArray} from "../../guards";
 import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
-import {Device, Tag} from "../../models";
+import {Tag} from "../../models";
 import {available_os_updates_reducer, AvailableOSUpdatesState} from "./available_os_updates_reducer";
 import {commands_reducer, DeviceCommandsState} from "./commands_reducer";
 import {installed_applications_reducer, InstalledApplicationsState} from "./installed_applications_reducer";
 import {installed_certificates_reducer, InstalledCertificatesState} from "./installed_certificates_reducer";
 import {installed_profiles_reducer, InstalledProfilesState} from "./installed_profiles_reducer";
+import {Device} from "./types";
 
 export interface DeviceState {
     device?: JSONAPIDataObject<Device>;

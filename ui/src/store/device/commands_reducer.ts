@@ -1,6 +1,6 @@
 import {CommandsActionResponse, DevicesActionTypes} from "./actions";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
-import {Command} from "../../models";
+import {Command} from "./types";
 import {OtherAction} from "../../actions/constants";
 
 export interface DeviceCommandsState {

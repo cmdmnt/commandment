@@ -9,6 +9,8 @@ import Container from "semantic-ui-react/src/elements/Container";
 import Segment from "semantic-ui-react/src/elements/Segment";
 import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
 import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
+import {MacOSDeviceDetail} from "../components/MacOSDeviceDetail";
+import {RootState} from "../reducers/index";
 import {
     CacheFetchActionRequest, fetchDeviceIfRequired,
     inventory, InventoryActionRequest,
@@ -17,11 +19,10 @@ import {
     push, PushActionRequest,
     test, TestActionRequest,
 } from "../store/device/actions";
-import {MacOSDeviceDetail} from "../components/MacOSDeviceDetail";
 import {DeviceState} from "../store/device/device";
-import {RootState} from "../reducers/index";
 
 import {SyntheticEvent} from "react";
+import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 import {
 index as fetchTags, IndexActionRequest,
 post as createTag, PostActionRequest as PostTagActionRequest,
@@ -39,7 +40,6 @@ import {DeviceCommands} from "./devices/DeviceCommands";
 import {DeviceDetail} from "./devices/DeviceDetail";
 import {DeviceOSUpdates} from "./devices/DeviceOSUpdates";
 import {DeviceProfiles} from "./devices/DeviceProfiles";
-import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 
 interface OwnProps {
 

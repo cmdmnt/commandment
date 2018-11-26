@@ -3,7 +3,7 @@ import {
     InstalledApplicationsActionResponse
 } from "../../actions/device/applications";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
-import {InstalledApplication} from "../../models";
+import {InstalledApplication} from "./types";
 import {OtherAction} from "../../actions/constants";
 
 export interface InstalledApplicationsState {

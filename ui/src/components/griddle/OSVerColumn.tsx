@@ -1,7 +1,7 @@
 import * as React from "react";
 import {Link} from "react-router-dom";
 import {JSONAPIDataObject} from "../../json-api";
-import {Device} from "../../models";
+import {Device} from "../../store/device/types";
 
 interface OSVerColumnProps {
     rowData: JSONAPIDataObject<Device>;

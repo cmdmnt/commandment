@@ -11,10 +11,11 @@ import {
 } from "../src/actions/device_groups";
 import {RouteComponentProps} from "react-router";
 import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import {Device, DeviceGroup} from "../src/models";
+import {DeviceGroup} from "../src/models";
 import {JSONAPIDetailResponse} from "../src/json-api";
 import {SemanticUIPlugin} from "../src/griddle-plugins/semantic-ui/index";
 import {SimpleLayout as Layout} from "../src/components/griddle/SimpleLayout";
+import {Device} from "../src/store/device/types";
 
 interface RouteProps {
     id?: string;

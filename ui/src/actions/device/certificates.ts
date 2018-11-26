@@ -4,7 +4,7 @@ import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
     RSAAIndexActionResponse
 } from "../../json-api";
-import {InstalledCertificate} from "../../models";
+import {InstalledCertificate} from "../../store/device/types";
 
 
 export type CERTIFICATES_REQUEST = 'devices/CERTIFICATES_REQUEST';

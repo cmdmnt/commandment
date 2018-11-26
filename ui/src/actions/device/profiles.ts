@@ -4,7 +4,7 @@ import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
     RSAAIndexActionResponse
 } from "../../json-api";
-import {InstalledApplication} from "../../models";
+import {InstalledApplication} from "../../store/device/types";
 
 
 export type PROFILES_REQUEST = 'devices/PROFILES_REQUEST';

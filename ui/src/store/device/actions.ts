@@ -7,12 +7,13 @@ import {
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAPatchActionRequest, RSAAReadActionRequest, RSAAReadActionResponse
 } from "../../json-api";
-import {Command, Device, DeviceRelationship, Tag} from "../../models";
+import {Tag} from "../../models";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../../json-api";
 import {ThunkAction} from "redux-thunk";
 import {RootState} from "../../reducers/index";
 import {Dispatch} from "react-redux";
 import {Action} from "redux";
+import {Command, Device, DeviceRelationship} from "./types";
 
 
 export enum DevicesActionTypes {
