@@ -1,8 +1,9 @@
 
-import * as actions from '../actions/profiles';
-import {Profile, Tag} from "../models";
 import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
-import {PatchRelationshipActionResponse, ReadActionResponse} from "../actions/profiles";
+import * as actions from "../store/profiles/actions";
+import {PatchRelationshipActionResponse, ReadActionResponse} from "../store/profiles/actions";
+import {Profile} from "../store/profiles/types";
+import {Tag} from "../store/tags/types";
 
 export interface ProfileState {
     profile?: JSONAPIDataObject<Profile>;
@@ -18,25 +19,24 @@ const initialState: ProfileState = {
     loading: false,
     tagsLoading: false,
     error: false,
-    errorDetail: null
+    errorDetail: null,
 };
 
 type ProfileAction = ReadActionResponse | PatchRelationshipActionResponse;
-
 
 export function profile(state: ProfileState = initialState, action: ProfileAction): ProfileState {
     switch (action.type) {
         case actions.READ_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
 
         case actions.READ_FAILURE:
             return {
                 ...state,
                 error: true,
-                errorDetail: action.payload
+                errorDetail: action.payload,
             };
 
         case actions.READ_SUCCESS:
@@ -44,54 +44,54 @@ export function profile(state: ProfileState = initialState, action: ProfileActio
                 return {
                     ...state,
                     error: true,
-                    errorDetail: action.payload
+                    errorDetail: action.payload,
                 }
             } else {
                 let tags: Array<JSONAPIDataObject<Tag>> = [];
 
                 if (action.payload.included) {
-                    tags = action.payload.included.filter((included: JSONAPIDataObject<any>) => (included.type === 'tags'));
+                    tags = action.payload.included.filter((included: JSONAPIDataObject<any>) => (included.type === "tags"));
                 }
 
                 return {
                     ...state,
                     profile: action.payload.data,
                     loading: false,
-                    tags
+                    tags,
                 };
             }
         case actions.RPATCH_REQUEST:
             return {
                 ...state,
-                tagsLoading: true
+                tagsLoading: true,
             };
         case actions.RPATCH_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
                     error: true,
-                    errorDetail: action.payload
+                    errorDetail: action.payload,
                 }
             } else {
                 const profile: JSONAPIDataObject<Profile> = {
                     ...state.profile,
                     relationships: {
                         ...state.profile.relationships,
-                        tags: action.payload.data.relationships.tags
-                    }
+                        tags: action.payload.data.relationships.tags,
+                    },
                 };
 
                 return {
                     ...state,
                     profile,
-                    tagsLoading: false
+                    tagsLoading: false,
                 };
             }
 
         case actions.RPATCH_FAILURE:
             return {
                 ...state,
-                tagsLoading: false
+                tagsLoading: false,
             };
         default:
             return state;

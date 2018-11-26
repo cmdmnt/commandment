@@ -8,7 +8,7 @@ import {
 import {DevicesActionTypes} from "./actions";
 import {isArray} from "../../guards";
 import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
-import {Tag} from "../../models";
+import {Tag} from "../tags/types";
 import {available_os_updates_reducer, AvailableOSUpdatesState} from "./available_os_updates_reducer";
 import {commands_reducer, DeviceCommandsState} from "./commands_reducer";
 import {installed_applications_reducer, InstalledApplicationsState} from "./installed_applications_reducer";

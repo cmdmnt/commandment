@@ -7,7 +7,7 @@ import Header from "semantic-ui-react/src/elements/Header";
 import {
     post, PostActionRequest,
   //  read, ReadActionRequest
-} from "../actions/applications";
+} from "../store/applications/actions";
 import {ApplicationForm, IFormData, IFormData as ApplicationFormData} from "../forms/ApplicationForm";
 import {RootState} from "../reducers";
 

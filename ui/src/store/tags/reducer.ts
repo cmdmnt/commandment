@@ -1,5 +1,5 @@
 import {isJSONAPIErrorResponsePayload, JSONAPIDataObject, JSONAPIErrorResponse} from "../../json-api";
-import {Tag} from "../../models";
+import {Tag} from "./types";
 import {INDEX_FAILURE, INDEX_REQUEST, INDEX_SUCCESS, IndexActionResponse} from "./actions";
 
 export interface TagsState {

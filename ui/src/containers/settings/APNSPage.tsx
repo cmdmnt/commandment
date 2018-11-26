@@ -1,22 +1,21 @@
-import * as React from 'react';
+import * as React from "react";
+import {connect, Dispatch} from "react-redux";
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {connect, Dispatch} from "react-redux";
 import {RootState} from "../../reducers";
 
 import Dropzone, {DropFilesEventHandler} from "react-dropzone";
+import Button from "semantic-ui-react/src/elements/Button/Button";
 import Container from "semantic-ui-react/src/elements/Container/Container";
 import Header from "semantic-ui-react/src/elements/Header/Header";
-import Segment from "semantic-ui-react/src/elements/Segment/Segment";
 import Icon from "semantic-ui-react/src/elements/Icon/Icon";
-import Button from "semantic-ui-react/src/elements/Button/Button";
 import Input from "semantic-ui-react/src/elements/Input/Input";
+import Segment from "semantic-ui-react/src/elements/Segment/Segment";
 
-import {csr, CsrActionRequest, uploadCrypted, UploadCryptedActionRequest} from "../../actions/settings/mdmcert";
 import {SyntheticEvent} from "react";
 import {RSAAApiErrorMessage} from "../../components/RSAAApiErrorMessage";
-import {APNSState} from "../../reducers/settings/apns";
-
+import {APNSState} from "../../store/configuration/apns";
+import {csr, CsrActionRequest, uploadCrypted, UploadCryptedActionRequest} from "../../store/configuration/mdmcert_actions";
 
 interface ReduxStateProps {
     apns: APNSState;
@@ -35,7 +34,6 @@ interface APNSPageState {
     email: string;
 }
 
-
 export class UnconnectedAPNSPage extends React.Component<OwnProps> {
 
     public state: APNSPageState = { email: "" };
@@ -52,7 +50,7 @@ export class UnconnectedAPNSPage extends React.Component<OwnProps> {
 
     onDropEncryptedCSR: DropFilesEventHandler = (accepted, rejected) => {
         console.dir(accepted);
-        for (let file of accepted) {
+        for (const file of accepted) {
             this.props.uploadCrypted(file);
         }
     };
@@ -60,7 +58,7 @@ export class UnconnectedAPNSPage extends React.Component<OwnProps> {
     render() {
         return (
             <Container className="APNSPage">
-                <Header as='h1'>Push Certificate</Header>
+                <Header as="h1">Push Certificate</Header>
                 <p>
                     A push certificate is required to tell devices to check in.
                 </p>
@@ -74,9 +72,9 @@ export class UnconnectedAPNSPage extends React.Component<OwnProps> {
                 <Segment vertical>
                     <Header>2. Send Request</Header>
 
-                    <Input iconPosition='left' placeholder='Step 1 Registered E-mail' fluid value={this.state.email}
+                    <Input iconPosition="left" placeholder="Step 1 Registered E-mail" fluid value={this.state.email}
                            onChange={this.handleEmailChange} error={!this.state.email} loading={this.props.apns.csrLoading}>
-                        <Icon name='mail' />
+                        <Icon name="mail" />
                         <input />
                     </Input>
                     <br />
@@ -97,13 +95,13 @@ export class UnconnectedAPNSPage extends React.Component<OwnProps> {
                     <Header>4. Download</Header>
 
                     <Button icon labelPosition="left">
-                        <Icon name='download' /> Download
+                        <Icon name="download" /> Download
                     </Button> the decrypted Certificate Signing Request
                 </Segment>
                 <Segment vertical>
                     <Header>5. Upload to Push Portal</Header>
 
-                    Upload the .csr to the <a href='https://identity.apple.com/pushcert/' target="_new">Apple Push Portal</a>
+                    Upload the .csr to the <a href="https://identity.apple.com/pushcert/" target="_new">Apple Push Portal</a>
                 </Segment>
                 <Segment vertical>
                     <Header>6. Download from Push Portal</Header>
@@ -118,13 +116,12 @@ export class UnconnectedAPNSPage extends React.Component<OwnProps> {
     }
 }
 
-
 export const APNSPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
     (state: RootState): ReduxStateProps => ({
-        apns: state.configuration.apns
+        apns: state.configuration.apns,
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({
         csr,
         uploadCrypted,
-    }, dispatch)
+    }, dispatch),
 )(UnconnectedAPNSPage);

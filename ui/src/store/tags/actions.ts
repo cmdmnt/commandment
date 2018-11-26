@@ -9,7 +9,7 @@ import {
     RSAAReadActionResponse,
 } from "../../json-api";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../../json-api";
-import {Tag} from "../../models";
+import {Tag} from "./types";
 import {RootState} from "../../reducers/index";
 import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../../actions/constants"
 

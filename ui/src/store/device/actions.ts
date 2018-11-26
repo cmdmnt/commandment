@@ -7,7 +7,7 @@ import {
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAPatchActionRequest, RSAAReadActionRequest, RSAAReadActionResponse
 } from "../../json-api";
-import {Tag} from "../../models";
+import {Tag} from "../tags/types";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../../json-api";
 import {ThunkAction} from "redux-thunk";
 import {RootState} from "../../reducers/index";

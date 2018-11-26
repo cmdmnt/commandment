@@ -1,4 +1,4 @@
-import {IVPPAction, TokenActionResponse, VPPActionTypes} from "../../actions/vpp";
+import {IVPPAction, TokenActionResponse, VPPActionTypes} from "./vpp";
 import {VPPAccount} from "../../models";
 
 export interface VPPState {
@@ -27,8 +27,8 @@ export function vpp(state: VPPState = initialState, action: VPPAction): VPPState
         case VPPActionTypes.TOKEN_SUCCESS:
             return {
                 ...state,
+                data: action.payload,
                 loading: false,
-                data: action.payload
             };
         case VPPActionTypes.TOKEN_FAILURE:
             return {

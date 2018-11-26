@@ -1,7 +1,7 @@
-import * as actions from "../../actions/settings/mdmcert";
-import {isJSONAPIErrorResponsePayload} from "../../json-api";
-import {CsrActionResponse, IMDMCertResponse} from "../../actions/settings/mdmcert";
+import * as actions from "./mdmcert_actions";
+import {CsrActionResponse, IMDMCertResponse} from "./mdmcert_actions";
 import {isApiError} from "../../guards";
+import {isJSONAPIErrorResponsePayload} from "../../json-api";
 
 export interface APNSState {
     data?: any;
@@ -12,8 +12,8 @@ export interface APNSState {
 }
 
 const initialState: APNSState = {
-    registeredEmail: "",
     csrLoading: false,
+    registeredEmail: "",
 };
 
 type APNSAction = CsrActionResponse;
@@ -24,21 +24,21 @@ export function apns(state: APNSState = initialState, action: APNSAction): APNSS
             return {
                 ...state,
                 csrLoading: true,
-                error: null,
                 csrResult: null,
+                error: null,
             };
         case actions.MDMCERT_CSR_SUCCESS:
             if (isApiError(action.payload)) {
                 return {
                     ...state,
                     csrLoading: false,
-                    error: action.payload
+                    error: action.payload,
                 }
             } else {
                 return {
                     ...state,
+                    csrLoading: false,
                     csrResult: action.payload,
-                    csrLoading: false
                 };
             }
 

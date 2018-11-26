@@ -1,6 +1,6 @@
 /// <reference path="../../typings/redux-api-middleware.d.ts" />
 import { RSAA, RSAAction } from 'redux-api-middleware';
-import {JSONAPI_HEADERS, JSON_HEADERS} from '../constants'
+import {JSONAPI_HEADERS, JSON_HEADERS} from '../../actions/constants'
 import {SCEPConfiguration} from "../../models";
 
 export type READ_REQUEST = 'scep/READ_REQUEST';

@@ -6,10 +6,10 @@ import {
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAPostActionRequest, RSAAPostActionResponse, RSAAReadActionRequest,
     RSAAReadActionResponse,
-} from "../json-api";
-import {JSONAPIDetailResponse, JSONAPIErrorResponse, RSAAPatchActionRequest} from "../json-api";
-import {Application} from "../models";
-import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "./constants";
+} from "../../json-api";
+import {JSONAPIDetailResponse, JSONAPIErrorResponse, RSAAPatchActionRequest} from "../../json-api";
+import {Application} from "../../models";
+import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../../actions/constants";
 
 export type INDEX_REQUEST = "applications/INDEX_REQUEST";
 export const INDEX_REQUEST: INDEX_REQUEST = "applications/INDEX_REQUEST";

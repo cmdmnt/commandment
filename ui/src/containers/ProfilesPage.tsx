@@ -11,8 +11,8 @@ import * as Dropzone from "react-dropzone";
 
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import * as actions from "../actions/profiles";
-import {IndexActionRequest, UploadActionRequest} from "../actions/profiles";
+import * as actions from "../store/profiles/actions";
+import {IndexActionRequest, UploadActionRequest} from "../store/profiles/actions";
 import {PayloadScopeIcon} from "../components/griddle/PayloadScopeIcon";
 import {RouteLinkColumn} from "../components/griddle/RouteLinkColumn";
 import {SimpleLayout as Layout} from "../components/griddle/SimpleLayout";

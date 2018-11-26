@@ -11,8 +11,8 @@ import { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
 
 import {SyntheticEvent} from "react";
 import {RouteComponentProps} from "react-router";
-import {read, ReadActionRequest} from "../actions/profiles";
-import {patchRelationship, PatchRelationshipActionRequest} from "../actions/profiles";
+import {read, ReadActionRequest} from "../store/profiles/actions";
+import {patchRelationship, PatchRelationshipActionRequest} from "../store/profiles/actions";
 import {
     index as fetchTags, IndexActionRequest,
     post as createTag, PostActionRequest as PostTagActionRequest,
@@ -20,9 +20,10 @@ import {
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
 import {JSONAPIDataObject, JSONAPIRelationship} from "../json-api";
-import {Profile, Tag} from "../models";
+import {Tag} from "../store/tags/types";
 import {ProfileState} from "../reducers/profile";
 import {TagsState} from "../store/tags/reducer";
+import {Profile} from "../store/profiles/types";
 
 interface RouteProps {
     id?: string;

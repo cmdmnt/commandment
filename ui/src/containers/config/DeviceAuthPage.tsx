@@ -1,15 +1,14 @@
-import * as React from 'react';
-import {connect, Dispatch, MapStateToProps} from 'react-redux';
-import {RouteComponentProps} from 'react-router';
-import {SCEPPayloadForm, FormData} from '../../forms/payloads/SCEPPayloadForm';
-import * as actions from '../../actions/configuration/scep';
-import {RootState} from "../../reducers/index";
+import * as React from "react";
+import {connect, Dispatch, MapStateToProps} from "react-redux";
+import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {SCEPState} from "../../reducers/configuration/scep";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
 import {DeviceAuthForm} from "../../forms/config/DeviceAuthForm";
-
+import {FormData, SCEPPayloadForm} from "../../forms/payloads/SCEPPayloadForm";
+import {RootState} from "../../reducers/index";
+import * as actions from "../../store/configuration/scep_actions";
+import {SCEPState} from "../../store/configuration/scep_reducer";
 
 interface ReduxStateProps {
     scep: SCEPState;
@@ -26,36 +25,36 @@ interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentPr
 
 export class UnconnectedDeviceAuthPage extends React.Component<OwnProps, undefined> {
 
-    componentWillMount?() {
+    public componentWillMount?() {
         this.props.read();
     }
 
-    handleSubmit = (values: FormData): void => {
+    private handleSubmit = (values: FormData): void => {
         this.props.post({
             ...values,
             key_usage: parseInt(values.key_usage, 0),
-            key_size: parseInt(values.key_size, 0)
+            key_size: parseInt(values.key_size, 0),
         });
     };
 
-    handleTest = () => {
+    private handleTest = () => {
 
     };
 
-    render() {
+    public render() {
         const {
-            scep
+            scep,
         } = this.props;
 
         const stringifiedData = {
             ...scep.data,
-            key_size: scep.data ? ''+scep.data.key_size : null,
-            key_usage: scep.data ? ''+scep.data.key_usage: null
+            key_size: scep.data ? "" + scep.data.key_size : null,
+            key_usage: scep.data ? "" + scep.data.key_usage : null,
         };
 
         return (
-            <Container className='SCEPPage'>
-                <Header as='h1'>Device Authentication</Header>
+            <Container className="SCEPPage">
+                <Header as="h1">Device Authentication</Header>
                 <p>
                     Use this section to configure how your device will securely contact the MDM server.
                 </p>
@@ -68,10 +67,10 @@ export class UnconnectedDeviceAuthPage extends React.Component<OwnProps, undefin
 
 export const DeviceAuthPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
     (state: RootState): ReduxStateProps => ({
-        scep: state.configuration.scep
+        scep: state.configuration.scep,
     }),
     (dispatch: Dispatch<any>) => bindActionCreators({
         post: actions.post,
-        read: actions.read
-    }, dispatch)
+        read: actions.read,
+    }, dispatch),
 )(UnconnectedDeviceAuthPage);

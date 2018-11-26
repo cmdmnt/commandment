@@ -31,7 +31,7 @@ import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
 import {JSONAPIDataObject, JSONAPIRelationship} from "../json-api";
-import {Tag} from "../models";
+import {Tag} from "../store/tags/types";
 import {TagsState} from "../store/tags/reducer";
 import {getPercentCapacityUsed} from "../selectors/device";
 import {DeviceApplications} from "./devices/DeviceApplications";

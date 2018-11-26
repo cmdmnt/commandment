@@ -1,11 +1,11 @@
-import {JSONAPIDetailResponse, RSAAReadActionRequest, RSAAReadActionResponse} from "../../json-api";
-import {ApiError, RSAA, RSAAction} from "redux-api-middleware";
-import {JSON_HEADERS} from "../constants";
-import {ThunkAction} from "redux-thunk";
-import {RootState} from "../../reducers";
-import {VPPAccount} from "../../models";
 import {Dispatch} from "react-redux";
-import {UPLOAD_TOKEN} from "../vpp";
+import {ApiError, RSAA, RSAAction} from "redux-api-middleware";
+import {ThunkAction} from "redux-thunk";
+import {JSON_HEADERS} from "../../actions/constants";
+import {JSONAPIDetailResponse, RSAAReadActionRequest, RSAAReadActionResponse} from "../../json-api";
+import {VPPAccount} from "../../models";
+import {RootState} from "../../reducers/index";
+import {UPLOAD_TOKEN} from "./vpp";
 
 export const MDMCERT_CSR_REQUEST = "mdmcert/CSR_REQUEST";
 export type MDMCERT_CSR_REQUEST = typeof MDMCERT_CSR_REQUEST;
@@ -15,11 +15,9 @@ export const MDMCERT_CSR_FAILURE = "mdmcert/CSR_FAILURE";
 export type MDMCERT_CSR_FAILURE = typeof MDMCERT_CSR_FAILURE;
 
 export interface IMDMCertResponse {
-    result: 'failure' | 'success';
+    result: "failure" | "success";
     reason?: string;
 }
-
-
 
 export type CsrActionRequest = (email: string) => RSAAction<MDMCERT_CSR_REQUEST, MDMCERT_CSR_SUCCESS, MDMCERT_CSR_FAILURE>;
 export interface CsrActionResponse {
@@ -37,11 +35,10 @@ export const csr: CsrActionRequest = (email: string) => {
                 MDMCERT_CSR_SUCCESS,
                 MDMCERT_CSR_FAILURE,
             ],
-            headers: JSON_HEADERS
+            headers: JSON_HEADERS,
         },
     };
 };
-
 
 export const UPLOAD_CRYPTED_REQUEST = "mdmcert/UPLOAD_CRYPTED_REQUEST";
 export type UPLOAD_CRYPTED_REQUEST = typeof UPLOAD_CRYPTED_REQUEST;

@@ -4,7 +4,7 @@ import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown"
 import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
 
 import {SyntheticEvent} from "react";
-import {Tag} from "../models";
+import {Tag} from "../store/tags/types";
 
 // Not exported by Dropdown
 interface DropdownOnSearchChangeData extends DropdownProps {

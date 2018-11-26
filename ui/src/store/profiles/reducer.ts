@@ -1,7 +1,7 @@
-import * as actions from "../../actions/profiles";
-import {IndexActionResponse, UploadActionResponse} from "../../actions/profiles";
+import * as actions from "./actions";
+import {IndexActionResponse, UploadActionResponse} from "./actions";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
-import {Profile} from "../../models";
+import {Profile} from "./types";
 import {ApiError} from "redux-api-middleware";
 import {isApiError} from "../../guards";
 import {IResults, ResultsDefaultState} from "../../reducers/interfaces";

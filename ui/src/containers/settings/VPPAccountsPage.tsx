@@ -7,7 +7,7 @@ import * as Dropzone from "react-dropzone";
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
 import {read as fetchTokenInfo, TokenActionRequest,
-    index, IndexActionRequest} from "../../actions/vpp";
+    index, IndexActionRequest} from "../../store/configuration/vpp";
 import {VPPState} from "../../reducers/configuration/vpp";
 import {RootState} from "../../reducers/index";
 
