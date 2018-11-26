@@ -11,7 +11,7 @@ import {
 import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../../json-api";
 import {Tag} from "./types";
 import {RootState} from "../../reducers/index";
-import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../../actions/constants"
+import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants"
 
 export type INDEX_REQUEST = "tags/INDEX_REQUEST";
 export const INDEX_REQUEST: INDEX_REQUEST = "tags/INDEX_REQUEST";

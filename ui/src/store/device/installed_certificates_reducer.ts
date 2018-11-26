@@ -4,7 +4,7 @@ import {
 } from "./certificates";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledCertificate} from "./types";
-import {OtherAction} from "../../actions/constants";
+import {OtherAction} from "../constants";
 
 export interface InstalledCertificatesState {
     items?: Array<JSONAPIDataObject<InstalledCertificate>>;

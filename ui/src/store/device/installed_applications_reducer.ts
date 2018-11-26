@@ -4,7 +4,7 @@ import {
 } from "./applications";
 import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
 import {InstalledApplication} from "./types";
-import {OtherAction} from "../../actions/constants";
+import {OtherAction} from "../constants";
 
 export interface InstalledApplicationsState {
     items?: Array<JSONAPIDataObject<InstalledApplication>>;

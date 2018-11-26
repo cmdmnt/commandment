@@ -1,6 +1,6 @@
-import * as actions from '../actions/organization';
-import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../json-api";
-import {Organization} from "../models";
+import * as actions from "./actions";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
+import {Organization} from "./types";
 
 export interface OrganizationState {
     organization?: Organization;
@@ -12,9 +12,9 @@ export interface OrganizationState {
 }
 
 const initialState: OrganizationState = {
-    loading: false,
     error: false,
-    submitted: false
+    loading: false,
+    submitted: false,
 };
 
 export type OrganizationAction = actions.ReadActionResponse | actions.PostActionResponse;
@@ -24,40 +24,40 @@ export function organization(state: OrganizationState = initialState, action: Or
         case actions.POST_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
         case actions.POST_FAILURE:
             return {
                 ...state,
-                loading: false,
                 error: true,
-                errorDetail: action.payload
+                errorDetail: action.payload,
+                loading: false,
             };
         case actions.POST_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 organization: action.payload,
-                submitted: true
+                submitted: true,
             };
         case actions.READ_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
         case actions.READ_FAILURE:
             return {
                 ...state,
-                loading: false,
                 error: true,
-                errorDetail: action.payload
+                errorDetail: action.payload,
+                loading: false,
             };
         case actions.READ_SUCCESS:
             return {
                 ...state,
+                lastReceived: new Date(),
                 loading: false,
                 organization: action.payload,
-                lastReceived: new Date()
             };
         default:
             return state;

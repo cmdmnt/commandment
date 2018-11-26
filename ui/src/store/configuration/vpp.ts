@@ -10,7 +10,7 @@ import {
 } from "../../json-api";
 import {VPPAccount} from "../../models";
 import {RootState} from "../../reducers/index";
-import {JSON_HEADERS, JSONAPI_HEADERS} from "../../actions/constants";
+import {JSON_HEADERS, JSONAPI_HEADERS} from "../constants";
 
 export enum VPPActionTypes {
     TOKEN_REQUEST = "vpp/TOKEN_REQUEST",

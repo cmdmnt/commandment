@@ -1,7 +1,7 @@
 import {Dispatch} from "react-redux";
 import {ApiError, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
-import {JSON_HEADERS} from "../../actions/constants";
+import {JSON_HEADERS} from "../constants";
 import {JSONAPIDetailResponse, RSAAReadActionRequest, RSAAReadActionResponse} from "../../json-api";
 import {VPPAccount} from "../../models";
 import {RootState} from "../../reducers/index";

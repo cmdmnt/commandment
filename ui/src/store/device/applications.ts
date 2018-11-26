@@ -1,4 +1,4 @@
-import {JSONAPI_HEADERS} from "../../actions/constants";
+import {JSONAPI_HEADERS} from "../constants";
 import {RSAA, HTTPVerb, RSAAction} from "redux-api-middleware";
 import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest, RSAAIndexActionResponse

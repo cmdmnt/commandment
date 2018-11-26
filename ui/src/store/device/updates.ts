@@ -4,7 +4,7 @@ import {
     RSAAIndexActionResponse,
 } from "../../json-api";
 import {AvailableOSUpdate} from "./types";
-import {JSONAPI_HEADERS} from "../../actions/constants";
+import {JSONAPI_HEADERS} from "../constants";
 
 export const UPDATES_REQUEST = "devices/UPDATES_REQUEST";
 export type UPDATES_REQUEST = typeof UPDATES_REQUEST;

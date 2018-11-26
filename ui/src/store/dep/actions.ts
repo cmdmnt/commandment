@@ -1,6 +1,6 @@
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {POST_FAILURE, POST_REQUEST, POST_SUCCESS} from "../../actions/commands";
-import {JSONAPI_HEADERS} from "../../actions/constants";
+import {JSONAPI_HEADERS} from "../constants";
 import {
     encodeJSONAPIChildIndexParameters,
     encodeJSONAPIIndexParameters,

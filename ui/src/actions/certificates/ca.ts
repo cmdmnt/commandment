@@ -1,6 +1,6 @@
 /// <reference path="../../typings/redux-api-middleware.d.ts" />
 import { RSAA, RSAAction } from 'redux-api-middleware';
-import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from '../constants'
+import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from '../../store/constants'
 import {JSONAPIListResponse, JSONAPIDataObject} from "../../json-api";
 import {Certificate} from "../../models";
 

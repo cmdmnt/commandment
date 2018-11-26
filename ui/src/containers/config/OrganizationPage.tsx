@@ -1,13 +1,13 @@
-import * as React from 'react';
-import { connect, Dispatch } from 'react-redux';
-import {RouteComponentProps} from 'react-router';
-import * as actions from '../../actions/organization';
+import * as React from "react";
+import { connect, Dispatch } from "react-redux";
+import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {OrganizationState} from "../../reducers/organization";
-import {OrganizationForm, FormData} from '../../forms/config/OrganizationForm';
-import {RootState} from "../../reducers/index";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
+import {FormData, OrganizationForm} from "../../forms/config/OrganizationForm";
+import {RootState} from "../../reducers/index";
+import * as actions from "../../store/organization/actions";
+import {OrganizationState} from "../../store/organization/reducer";
 
 interface OrganizationPageState {
     organization: OrganizationState;
@@ -15,7 +15,7 @@ interface OrganizationPageState {
 
 function mapStateToProps(state: RootState, ownProps?: any): OrganizationPageState {
     return {
-        organization: state.organization
+        organization: state.organization,
     }
 }
 
@@ -27,14 +27,13 @@ interface OrganizationPageDispatchProps {
 function mapDispatchToProps(dispatch: Dispatch<any>) {
     return bindActionCreators({
         post: actions.post,
-        read: actions.read
+        read: actions.read,
     }, dispatch);
 }
 
 interface OrganizationPageProps extends OrganizationPageState, OrganizationPageDispatchProps, RouteComponentProps<any> {
 
 }
-
 
 export class UnconnectedOrganizationPage extends React.Component<OrganizationPageProps, undefined> {
 
@@ -48,12 +47,12 @@ export class UnconnectedOrganizationPage extends React.Component<OrganizationPag
 
     render(): JSX.Element {
         const {
-            organization
+            organization,
         } = this.props;
 
         return (
-            <Container className='OrganizationPage'>
-                <Header as='h1'>Organization</Header>
+            <Container className="OrganizationPage">
+                <Header as="h1">Organization</Header>
                 <p>Many parts of the system rely on showing your organization name in certain user facing scenarios.
                     Configure these details here</p>
                 <OrganizationForm
@@ -71,5 +70,5 @@ export class UnconnectedOrganizationPage extends React.Component<OrganizationPag
 
 export const OrganizationPage = connect<OrganizationPageState, OrganizationPageDispatchProps, OrganizationPageProps>(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(UnconnectedOrganizationPage);

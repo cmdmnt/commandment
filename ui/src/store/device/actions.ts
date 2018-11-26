@@ -1,6 +1,6 @@
 /// <reference path="../../typings/redux-api-middleware.d.ts" />
 import {RSAA, HTTPVerb, RSAAction} from 'redux-api-middleware';
-import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from '../../actions/constants'
+import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter, JSON_HEADERS} from '../constants'
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIRelationship, JSONAPIRelationships,
     RSAAChildIndexActionRequest,

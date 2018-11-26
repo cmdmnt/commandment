@@ -10,7 +10,7 @@ import {JSONAPIDetailResponse} from "../../json-api";
 import {Profile, ProfileRelationship} from "./types";
 import {Tag} from "../tags/types";
 import {RootState} from "../../reducers/index";
-import {FlaskFilter, FlaskFilters, JSONAPI_HEADERS} from "../../actions/constants"
+import {FlaskFilter, FlaskFilters, JSONAPI_HEADERS} from "../constants"
 
 export type INDEX_REQUEST = "profiles/INDEX_REQUEST";
 export const INDEX_REQUEST: INDEX_REQUEST = "profiles/INDEX_REQUEST";

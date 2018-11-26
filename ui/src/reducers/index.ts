@@ -7,13 +7,13 @@ import {configuration, ConfigurationState} from "../store/configuration/reducer"
 import {dep, IDEPState} from "../store/dep/reducer";
 import {device, DeviceState} from "../store/device/reducer";
 import {devices, DevicesState} from "../store/devices/devices";
+import {organization, OrganizationState} from "../store/organization/reducer";
 import {profiles, ProfilesState} from "../store/profiles/reducer";
 import {tags, TagsState} from "../store/tags/reducer";
 import {assistant, AssistantState} from "./assistant";
 import {certificates, CertificatesState} from "./certificates";
 import {commands, CommandsState} from "./commands";
 import {device_groups, DeviceGroupsState} from "./device_groups";
-import {organization, OrganizationState} from "./organization";
 import {profile, ProfileState} from "./profile";
 
 export interface RootState {
