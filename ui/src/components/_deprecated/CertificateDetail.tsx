@@ -3,7 +3,7 @@ import * as React from "react";
 import {CERTIFICATE_PURPOSE} from "../../constants";
 
 import {JSONAPIDataObject} from "../../json-api";
-import {Certificate} from "../../models";
+import {Certificate} from "../../store/certificates/types";
 import "./CertificateDetail.scss";
 
 interface CertificateDetailProps {

@@ -16,14 +16,6 @@ export interface DeviceGroup {
     name: string;
 }
 
-export interface Certificate {
-    type: string;
-    x509_cn: string;
-    not_before: Date;
-    not_after: Date;
-    fingerprint?: string;
-}
-
 export interface InstalledPayload {
     id?: number;
     description: string;

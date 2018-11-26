@@ -1,6 +1,6 @@
-import * as actions from '../../actions/certificates/ca';
-import {JSONAPIListResponse, JSONAPIDataObject} from "../../json-api";
-import {Certificate} from "../../models";
+import {JSONAPIDataObject, JSONAPIListResponse} from "../../json-api";
+import * as actions from "./ca_actions";
+import {Certificate} from "./types";
 
 export interface CAState {
     items?: JSONAPIListResponse<JSONAPIDataObject<Certificate>>;
@@ -14,7 +14,7 @@ const initialState: CAState = {
     loading: false,
     error: false,
     errorDetail: null,
-    lastReceived: null
+    lastReceived: null,
 };
 
 export type PushAction = actions.FetchCACertificatesActionResponse;
@@ -24,14 +24,14 @@ export function ca(state: CAState = initialState, action: PushAction): CAState {
         case actions.CACERT_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
         case actions.CACERT_FAILURE:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                errorDetail: action.payload
+                errorDetail: action.payload,
             };
         case actions.CACERT_SUCCESS:
             return {
@@ -39,7 +39,7 @@ export function ca(state: CAState = initialState, action: PushAction): CAState {
                 items: action.payload,
                 lastReceived: new Date(),
                 error: false,
-                errorDetail: null
+                errorDetail: null,
             };
         default:
             return state;

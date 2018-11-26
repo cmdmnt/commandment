@@ -1,6 +1,6 @@
-import * as actions from '../../actions/certificates/ssl';
-import {JSONAPIListResponse, JSONAPIDataObject} from "../../json-api";
-import {Certificate} from "../../models";
+import {JSONAPIDataObject, JSONAPIListResponse} from "../../json-api";
+import * as actions from "./ssl_actions";
+import {Certificate} from "./types";
 
 export interface SSLState {
     items?: JSONAPIListResponse<JSONAPIDataObject<Certificate>>;
@@ -11,10 +11,10 @@ export interface SSLState {
 }
 
 const initialState: SSLState = {
-    loading: false,
     error: false,
     errorDetail: null,
-    lastReceived: null
+    lastReceived: null,
+    loading: false,
 };
 
 export type PushAction = actions.FetchSSLCertificatesActionResponse;
@@ -24,22 +24,22 @@ export function ssl(state: SSLState = initialState, action: PushAction): SSLStat
         case actions.SSLCERT_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
         case actions.SSLCERT_FAILURE:
             return {
                 ...state,
-                loading: false,
                 error: true,
-                errorDetail: action.payload
+                errorDetail: action.payload,
+                loading: false,
             };
         case actions.SSLCERT_SUCCESS:
             return {
                 ...state,
+                error: false,
+                errorDetail: null,
                 items: action.payload,
                 lastReceived: new Date(),
-                error: false,
-                errorDetail: null
             };
         default:
             return state;

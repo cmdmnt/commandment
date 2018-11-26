@@ -1,20 +1,18 @@
-import {combineReducers} from 'redux';
-import * as actions from '../actions/certificates';
+import {combineReducers} from "redux";
+import * as actions from "./actions";
 import {
     DeleteCertificateActionResponse,
-    IndexActionResponse
-} from "../actions/certificates";
-import {FetchPushCertificatesActionResponse} from '../actions/certificates/push';
+    IndexActionResponse,
+} from "./actions";
+import {FetchPushCertificatesActionResponse} from "./push_actions";
 
 // Sub reducers
-import {PushState, push} from "./certificates/push";
-import {SSLState, ssl} from './certificates/ssl';
-import {CAState, ca} from "./certificates/ca";
+import {JSONAPIDataObject, JSONAPIDetailResponse} from "../../json-api";
+import {Certificate} from "./types";
+import {ca, CAState} from "./ca_reducer";
+import {push, PushState} from "./push_reducer";
+import {ssl, SSLState} from "./ssl_reducer";
 import {installed_certificates_reducer, InstalledCertificatesState} from "./device/installed_certificates";
-import {JSONAPIDetailResponse, JSONAPIDataObject} from "../json-api";
-import {Certificate} from "../models";
-
-
 
 export interface CertificatesState {
     items: Array<JSONAPIDataObject<Certificate>>;
@@ -39,7 +37,7 @@ const initialState: CertificatesState = {
     lastReceived: null,
     currentPage: 1,
     pageSize: 50,
-    byType: {}
+    byType: {},
 };
 
 type CertificatesAction = IndexActionResponse | DeleteCertificateActionResponse;
@@ -49,14 +47,14 @@ export function certificates(state: CertificatesState = initialState, action: Ce
         case actions.INDEX_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
-            
+
         case actions.INDEX_FAILURE:
             return {
                 ...state,
                 error: true,
-                errorDetail: action.payload
+                errorDetail: action.payload,
             };
 
         case actions.INDEX_SUCCESS:
@@ -65,13 +63,13 @@ export function certificates(state: CertificatesState = initialState, action: Ce
                 items: action.payload.data,
                 lastReceived: new Date,
                 loading: false,
-                recordCount: action.payload.meta.count
+                recordCount: action.payload.meta.count,
             };
 
         case actions.DELETE_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
 
         case actions.DELETE_FAILURE:
@@ -79,12 +77,11 @@ export function certificates(state: CertificatesState = initialState, action: Ce
                 ...state,
                 loading: false,
                 error: true,
-                errorDetail: action.payload
+                errorDetail: action.payload,
             };
 
         case actions.DELETE_SUCCESS:
             return state;
-        
 
         default:
             return {

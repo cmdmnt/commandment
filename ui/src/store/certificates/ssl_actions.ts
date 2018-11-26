@@ -2,7 +2,7 @@
 import { RSAA, RSAAction } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from '../../store/constants'
 import {JSONAPIListResponse, JSONAPIDataObject} from "../../json-api";
-import {Certificate} from "../../models";
+import {Certificate} from "./types";
 
 
 export type SSLCERT_REQUEST = 'certificates/SSLCERT_REQUEST';

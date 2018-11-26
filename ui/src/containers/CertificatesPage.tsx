@@ -4,9 +4,9 @@ import {connect, Dispatch} from "react-redux";
 
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {IndexActionRequest} from "../actions/certificates";
-import * as apiActions from "../actions/certificates";
-import {CertificatesState} from "../reducers/certificates";
+import {IndexActionRequest} from "../store/certificates/actions";
+import * as apiActions from "../store/certificates/actions";
+import {CertificatesState} from "../store/certificates/reducer";
 import {RootState} from "../reducers/index";
 
 interface OwnProps {

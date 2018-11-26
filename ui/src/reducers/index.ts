@@ -11,7 +11,7 @@ import {organization, OrganizationState} from "../store/organization/reducer";
 import {profiles, ProfilesState} from "../store/profiles/reducer";
 import {tags, TagsState} from "../store/tags/reducer";
 import {assistant, AssistantState} from "./assistant";
-import {certificates, CertificatesState} from "./certificates";
+import {certificates, CertificatesState} from "../store/certificates/reducer";
 import {commands, CommandsState} from "./commands";
 import {device_groups, DeviceGroupsState} from "./device_groups";
 import {profile, ProfileState} from "./profile";

@@ -5,7 +5,7 @@ import { MDMConfigurationForm, FormData } from '../src/forms/_retired/MDMConfigu
 import {FetchCertificateTypeActionRequest, fetchCertificatesForType} from "../src/actions/certificates";
 import {bindActionCreators} from "redux";
 import {JSONAPIDetailResponse} from "../src/json-api";
-import {Certificate} from "../src/models";
+import {Certificate} from "../src/store/certificates/types";
 
 
 interface MDMPageState {

@@ -1,8 +1,8 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
 import { RSAA, RSAAction } from "redux-api-middleware";
-import {JSONAPIDataObject, JSONAPIDetailResponse, JSONAPIListResponse} from "../json-api";
-import {Certificate} from "../models";
-import {FlaskFilter, FlaskFilters, JSONAPI_HEADERS} from "../store/constants"
+import {JSONAPIDataObject, JSONAPIDetailResponse, JSONAPIListResponse} from "../../json-api";
+import {FlaskFilter, FlaskFilters, JSONAPI_HEADERS} from "../constants"
+import {Certificate} from "./types";
 
 export type INDEX_REQUEST = "certificates/INDEX_REQUEST";
 export const INDEX_REQUEST: INDEX_REQUEST = "certificates/INDEX_REQUEST";
