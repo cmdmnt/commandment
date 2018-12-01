@@ -43,7 +43,7 @@ export type AccountIndexActionResponse = RSAAIndexActionResponse<DEPActionTypes.
 export const accounts = encodeJSONAPIIndexParameters((queryParameters: string[]) => {
     return ({
         [RSAA]: {
-            endpoint: "/api/v1/dep/accounts?" + queryParameters.join("&"),
+            endpoint: "/api/v1/dep/accounts/?" + queryParameters.join("&"),
             headers: JSONAPI_HEADERS,
             method: ("GET" as HTTPVerb),
             types: [
