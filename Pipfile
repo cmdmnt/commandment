@@ -55,6 +55,7 @@ ukpostcodeparser = "*"
 sqlalchemy = "*"
 cryptography = "*"
 python-dateutil = "*"
+authlib = "*"
 
 [dev-packages]
 alembic-viz = "*"
