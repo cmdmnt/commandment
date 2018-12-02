@@ -23,6 +23,7 @@ import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
 import {DevicesState} from "../store/devices/devices";
 import {RootState} from "../reducers/index";
+import {DevicesTable} from "../components/react-tables/DevicesTable";
 
 const rowDataSelector = (state: Map<string, any>, { griddleKey }: { griddleKey?: string }) => {
     return state
@@ -94,37 +95,7 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
                     <Grid.Column>
                         <Header as="h1">Devices</Header>
                         {/*<DeviceTypeFilter onClick={this.handleDeviceTypeFilterChange} selected={'all'} />*/}
-                        <Griddle
-                            data={devices.items}
-                            pageProperties={{
-                                currentPage: griddleState.currentPage,
-                                pageSize: griddleState.pageSize,
-                                recordCount: devices.recordCount,
-                            }}
-                            styleConfig={{
-                                classNames: {
-                                    Table: "ui celled table",
-                                },
-                            }}
-                            events={this.props.events}
-                            plugins={[SemanticUIPlugin(), SelectionPlugin()]}
-                            components={{
-                                Layout: SimpleLayout,
-                            }}
-                        >
-                            <RowDefinition onClick={() => console.log("fmeh")}>
-                                <ColumnDefinition title="Type" id="attributes.model_name"
-                                                  customComponent={ModelIcon} width={60} style={{textAlign: "center"}} />
-                                <ColumnDefinition title="Name" id="id,attributes.model_name,attributes.device_name"
-                                                  customComponent={enhancedWithRowData(DeviceColumn)}/>
-                                <ColumnDefinition title="Serial" id="attributes.serial_number"
-                                                   width={140} />
-                                <ColumnDefinition title="OS" id="attributes.model_name,attributes.os_version"
-                                                  customComponent={enhancedWithRowData(OSVerColumn)}/>
-                                <ColumnDefinition title="Last Seen" id="attributes.last_seen"
-                                                  customComponent={SinceNowUTC}/>
-                            </RowDefinition>
-                        </Griddle>
+                        <DevicesTable data={devices.items} loading={devices.loading} />
                     </Grid.Column>
                 </Grid>
             </Container>
