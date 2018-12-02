@@ -7,6 +7,9 @@ import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui";
 import {DEPProfileColumn} from "../griddle/DEPProfileColumn";
 import {RouteLinkColumn} from "../griddle/RouteLinkColumn";
 import {SimpleLayout} from "../griddle/SimpleLayout";
+import {SelectionColumnDefinition} from "../../griddle-plugins/selection/components/SelectionColumnDefinition";
+import {SelectCell} from "../../griddle-plugins/selection/components/SelectCell";
+import {SelectCheckbox} from "../../griddle-plugins/selection/components/SelectCheckbox";
 
 export interface IDEPProfilesTableProps {
     data: any;
@@ -41,7 +44,8 @@ export const DEPProfilesTable: React.StatelessComponent<IDEPProfilesTableProps> 
         components={{ Layout: SimpleLayout }}
     >
         <RowDefinition>
-            <ColumnDefinition title="Name" id="id" customComponent={enhancedWithRowData(DEPProfileColumn)} />
+            <ColumnDefinition width="1.5em" id="id" title="Select" customComponent={SelectCheckbox} selectable />
+            <ColumnDefinition title="Name" id="name" customComponent={enhancedWithRowData(DEPProfileColumn)} />
         </RowDefinition>
     </Griddle>
 );
