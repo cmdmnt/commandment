@@ -1,10 +1,11 @@
 import * as React from "react";
-import ReactTable from "react-table";
+import ReactTable, {CellInfo} from "react-table";
 import {JSONAPIDataObject} from "../../json-api";
 // import "react-table/react-table.css";
 import {Device} from "../../store/device/types";
 import {ModelIcon} from "../ModelIcon";
 import {DeviceName} from "../react-table/DeviceName";
+import {distanceInWordsToNow} from "date-fns";
 
 export interface IDevicesTableProps {
     loading: boolean;
@@ -38,6 +39,7 @@ const columns = [
         maxWidth: 100,
     },
     {
+        Cell: (props: CellInfo) => props.value ? distanceInWordsToNow(props.value, {addSuffix: true}) : "",
         Header: "Last Seen",
         accessor: "attributes.last_seen",
         id: "last_seen",
