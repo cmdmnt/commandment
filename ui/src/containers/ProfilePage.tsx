@@ -22,7 +22,7 @@ import {isArray} from "../guards";
 import {JSONAPIDataObject, JSONAPIRelationship} from "../json-api";
 import {Tag} from "../store/tags/types";
 import {ProfileState} from "../reducers/profile";
-import {TagsState} from "../store/tags/reducer";
+import {ITagsState} from "../store/tags/reducer";
 import {Profile} from "../store/profiles/types";
 
 interface RouteProps {
@@ -31,7 +31,7 @@ interface RouteProps {
 
 interface ReduxStateProps {
     profile?: JSONAPIDataObject<Profile>;
-    tags: TagsState;
+    tags: ITagsState;
 }
 
 function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {

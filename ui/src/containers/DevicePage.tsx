@@ -17,23 +17,26 @@ import {
     patchRelationship, PatchRelationshipActionRequest,
     postRelated, PostRelatedActionRequest,
     push, PushActionRequest,
+    restart, RestartActionRequest, shutdown, ShutdownActionRequest,
     test, TestActionRequest,
 } from "../store/device/actions";
 import {DeviceState} from "../store/device/device";
 
 import {SyntheticEvent} from "react";
+import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
-import {
-index as fetchTags, IndexActionRequest,
-post as createTag, PostActionRequest as PostTagActionRequest,
-} from "../store/tags/actions";
+import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
 import {JSONAPIDataObject, JSONAPIRelationship} from "../json-api";
-import {Tag} from "../store/tags/types";
-import {TagsState} from "../store/tags/reducer";
 import {getPercentCapacityUsed} from "../selectors/device";
+import {
+index as fetchTags, IndexActionRequest,
+post as createTag, PostActionRequest as PostTagActionRequest,
+} from "../store/tags/actions";
+import {ITagsState} from "../store/tags/reducer";
+import {Tag} from "../store/tags/types";
 import {DeviceApplications} from "./devices/DeviceApplications";
 import {DeviceCertificates} from "./devices/DeviceCertificates";
 import {DeviceCommands} from "./devices/DeviceCommands";
@@ -47,7 +50,7 @@ interface OwnProps {
 
 interface ReduxStateProps {
     device: DeviceState;
-    tags: TagsState;
+    tags: ITagsState;
     percentCapacityUsed: number;
 }
 
@@ -62,6 +65,8 @@ function mapStateToProps(state: RootState, ownProps?: OwnProps): ReduxStateProps
 interface ReduxDispatchProps {
     push: PushActionRequest;
     inventory: InventoryActionRequest;
+    restart: RestartActionRequest;
+    shutdown: ShutdownActionRequest;
     test: TestActionRequest;
     fetchTags: IndexActionRequest;
     fetchDeviceIfRequired: CacheFetchActionRequest;
@@ -79,6 +84,8 @@ function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps):
         patchRelationship,
         postRelated,
         push,
+        restart,
+        shutdown,
         test,
     }, dispatch);
 }
@@ -96,21 +103,6 @@ interface DevicePageState {
 }
 
 class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
-
-    protected handleAction = (e: SyntheticEvent<any>, {value}: {value: string}) => {
-        e.preventDefault();
-        switch (value) {
-            case "push":
-                this.props.push("" + this.props.device.device.id);
-                break;
-            case "inventory":
-                this.props.inventory("" + this.props.device.device.id);
-                break;
-            case "test":
-                this.props.test("" + this.props.device.device.id);
-                break;
-        }
-    };
 
     protected handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value: string }) => {
         const tag: Tag = {
@@ -166,15 +158,34 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                 <Grid>
                     <Grid.Row>
                         <Grid.Column>
-                            <Segment>
+                            <Segment attached>
                                 {device && <MacOSDeviceDetail device={device}/>}
                             </Segment>
                             <Segment attached>
-                                <Dropdown inline button text="action" onChange={this.handleAction} options={[
-                                    {text: "Force Push", value: "push"},
-                                    {text: "Inventory", value: "inventory"},
-                                    {text: "Test", value: "test"},
-                                ]}></Dropdown>
+                                <Button icon labelPosition="left" onClick={() => this.props.restart("" + device.device.id)}>
+                                    <Icon name="refresh" />
+                                    Restart
+                                </Button>
+                                <Button icon labelPosition="left" onClick={() => this.props.shutdown("" + device.device.id)}>
+                                    <Icon name="arrow down" />
+                                    Shut down
+                                </Button>
+                                <Button icon labelPosition="left">
+                                    <Icon name="delete" />
+                                    Clear Passcode
+                                </Button>
+                                <Button icon labelPosition="left">
+                                    <Icon name="lock" />
+                                    Lock
+                                </Button>
+                                <Button icon labelPosition="left" onClick={() => this.props.inventory("" + device.device.id)}>
+                                    <Icon name="search" />
+                                    Full Inventory
+                                </Button>
+                                <Button icon labelPosition="left" onClick={() => this.props.push("" + device.device.id)}>
+                                    <Icon name="pushed" />
+                                    Blank Push
+                                </Button>
                                 <TagDropdown
                                     loading={device.tagsLoading}
                                     tags={tagChoices}

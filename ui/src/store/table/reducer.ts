@@ -2,10 +2,14 @@ import {Reducer} from "redux";
 import {TableActions, TableActionTypes} from "./actions";
 
 export interface ITableState {
+    pageSize: number;
+    pages: number;
     selection: string[];
 }
 
 const initialState: ITableState = {
+    pageSize: 20,
+    pages: 0,
     selection: [],
 };
 

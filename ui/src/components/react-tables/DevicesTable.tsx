@@ -22,10 +22,10 @@ const columns = [
         Cell: ModelIcon,
         Header: "",
         accessor: "attributes.model_name",
+        filterable: false,
         id: "model_name",
         maxWidth: 40,
         style: { textAlign: "center" },
-        filterable: false,
     },
     {
         Cell: DeviceName,
@@ -48,8 +48,8 @@ const columns = [
         Cell: (props: CellInfo) => props.value ? distanceInWordsToNow(props.value, {addSuffix: true}) : "never",
         Header: "Last Seen",
         accessor: "attributes.last_seen",
-        id: "last_seen",
         filterable: false,
+        id: "last_seen",
     },
 ];
 

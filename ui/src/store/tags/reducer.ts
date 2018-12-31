@@ -2,22 +2,22 @@ import {isJSONAPIErrorResponsePayload, JSONAPIDataObject, JSONAPIErrorResponse} 
 import {Tag} from "./types";
 import {INDEX_FAILURE, INDEX_REQUEST, INDEX_SUCCESS, IndexActionResponse} from "./actions";
 
-export interface TagsState {
+export interface ITagsState {
     loading: boolean;
     items: Array<JSONAPIDataObject<Tag>>;
     error: boolean;
     errorDetail?: JSONAPIErrorResponse;
 }
 
-const initialState: TagsState = {
-    loading: false,
-    items: [],
+const initialState: ITagsState = {
     error: false,
+    items: [],
+    loading: false,
 };
 
 type TagsAction = IndexActionResponse;
 
-export function tags(state: TagsState = initialState, action: TagsAction): TagsState {
+export function tags(state: ITagsState = initialState, action: TagsAction): ITagsState {
     switch (action.type) {
         case INDEX_REQUEST:
             return {
@@ -34,6 +34,7 @@ export function tags(state: TagsState = initialState, action: TagsAction): TagsS
             } else {
                 return {
                     ...state,
+                    error: false,
                     items: action.payload.data,
                     loading: false,
                 };

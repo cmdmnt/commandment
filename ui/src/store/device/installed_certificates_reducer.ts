@@ -8,12 +8,16 @@ import {OtherAction} from "../constants";
 
 export interface InstalledCertificatesState {
     items?: Array<JSONAPIDataObject<InstalledCertificate>>;
+    pageSize: number;
+    pages: number;
     recordCount: number;
 }
 
 const initialState: InstalledCertificatesState = {
     items: [],
-    recordCount: 0
+    pageSize: 20,
+    pages: 0,
+    recordCount: 0,
 };
 
 type InstalledCertificatesAction = CertificatesActionResponse | OtherAction;
@@ -27,7 +31,8 @@ export function installed_certificates_reducer(state: InstalledCertificatesState
                 return {
                     ...state,
                     items: action.payload.data,
-                    recordCount: action.payload.meta.count
+                    pages: Math.floor(action.payload.meta.count / state.pageSize),
+                    recordCount: action.payload.meta.count,
                 };
             }
         default:

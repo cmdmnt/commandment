@@ -98,9 +98,7 @@ def device_test(device_id: int):
 
 @flat_api.route('/v1/devices/inventory/<int:device_id>')
 def device_inventory(device_id: int):
-    """Tell a device to produce a full inventory immediately.
-    
-    This is mostly for testing right now.
+    """Enqueue ALL inventory commands to refresh the device's entire inventory.
     
     :statuscode 200: OK
     """
@@ -169,6 +167,31 @@ def clear_passcode(device_id: int):
     db.session.commit()
 
     return 'OK'
+
+
+@flat_api.route('/v1/devices/<int:device_id>/restart')
+def restart(device_id: int):
+    """Enqueues a RestartDevice command for the device id specified.
+
+    :reqheader Accept: application/json
+    :reqheader Content-Type: application/json
+    :resheader Content-Type: application/json
+    :statuscode 201: command created
+    :statuscode 400: not applicable to this device
+    :statuscode 404: device with this identifier was not found
+    :statuscode 500: system error
+    """
+    d = db.session.query(Device).filter(Device.id == device_id).one()
+
+    cmd = commands.RestartDevice()
+    orm_cmd = Command.from_model(cmd)
+    orm_cmd.device = d
+    db.session.add(orm_cmd)
+
+    db.session.commit()
+
+    return 'OK'
+
 
 
 @flat_api.route('/v1/upload/profiles', methods=['POST'])

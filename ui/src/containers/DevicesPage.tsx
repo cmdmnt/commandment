@@ -1,4 +1,3 @@
-import Griddle, {ColumnDefinition, RowDefinition} from "griddle-react";
 import * as React from "react";
 import {connect, Dispatch} from "react-redux";
 import Grid from "semantic-ui-react/src/collections/Grid";
@@ -7,68 +6,65 @@ import Header from "semantic-ui-react/src/elements/Header";
 
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators, Store} from "redux";
-import {IndexActionRequest} from "../store/device/actions";
-import * as actions from "../store/device/actions";
-import * as tableActions from "../store/table/actions";
-import {DeviceTypeFilter, DeviceTypeFilterValues} from "../components/griddle/DeviceTypeFilter";
-import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
-import {DevicesState} from "../store/devices/devices";
-import {RootState} from "../reducers/index";
+import {SUISelectionTools} from "../components/react-table/SUISelectionTools";
 import {DevicesTable} from "../components/react-tables/DevicesTable";
+import {RootState} from "../reducers/index";
+import {FlaskFilter, FlaskFilterOperation} from "../store/constants";
+import * as actions from "../store/device/actions";
+import {DevicesState} from "../store/devices/devices";
+import * as tableActions from "../store/table/actions";
 import {ToggleSelectionActionCreator} from "../store/table/actions";
 import {ITableState} from "../store/table/reducer";
 import {IReactTableState} from "../store/table/types";
-import {FlaskFilter, FlaskFilterOperation} from "../store/constants";
+import * as tagActions from "../store/tags/actions";
+import {ITagsState} from "../store/tags/reducer";
 
-interface ReduxStateProps {
+interface IReduxStateProps {
     devices: DevicesState;
     table: ITableState;
+    tags: ITagsState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: RootState, ownProps?: any): IReduxStateProps {
     return {
         devices: state.devices,
         table: state.table,
+        tags: state.tags,
     };
 }
 
-interface ReduxDispatchProps {
-    index: IndexActionRequest;
+interface IReduxDispatchProps {
     fetchDevicesIfRequired: any;
+    index: actions.IndexActionRequest;
+    tagIndex: tagActions.IndexActionRequest;
     toggleSelection: ToggleSelectionActionCreator;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: any): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: any): IReduxDispatchProps {
     return bindActionCreators({
         fetchDevicesIfRequired: actions.fetchDevicesIfRequired,
         index: actions.index,
+        tagIndex: tagActions.index,
         toggleSelection: tableActions.toggleSelection,
     }, dispatch);
 }
 
-interface DevicesPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
-}
+type DevicesPageProps = IReduxStateProps & IReduxDispatchProps & RouteComponentProps<any>;
 
-interface DevicesPageState {
-    filter: string;
-}
-
-class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPageState> {
+class UnconnectedDevicesPage extends React.Component<DevicesPageProps, any> {
 
     public componentWillMount?(): void {
         // this.props.index();
         this.props.fetchDevicesIfRequired();
+        this.props.tagIndex();
     }
-
-    handleDeviceTypeFilterChange = (selected: DeviceTypeFilterValues) => {
-        // console.log(selected);
-    };
 
     public render(): JSX.Element {
         const {
             devices,
             toggleSelection,
             table,
+            tags,
         } = this.props;
 
         return (
@@ -76,6 +72,9 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
                 <Grid>
                     <Grid.Column>
                         <Header as="h1">Devices</Header>
+
+                        <SUISelectionTools loading={devices.loading || tags.loading}
+                                           tags={tags.items} selectionCount={table.selection.length} />
                         <DevicesTable
                             data={devices.items}
                             loading={devices.loading}
@@ -103,7 +102,7 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
     }
 }
 
-export const DevicesPage = connect<ReduxStateProps, ReduxDispatchProps, DevicesPageProps>(
+export const DevicesPage = connect<IReduxStateProps, IReduxDispatchProps, DevicesPageProps>(
     mapStateToProps,
     mapDispatchToProps,
 )(UnconnectedDevicesPage);

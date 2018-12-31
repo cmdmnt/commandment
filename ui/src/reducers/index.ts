@@ -12,7 +12,7 @@ import {devices, DevicesState} from "../store/devices/devices";
 import {organization, OrganizationState} from "../store/organization/reducer";
 import {profiles, ProfilesState} from "../store/profiles/reducer";
 import {ITableState, table} from "../store/table/reducer";
-import {tags, TagsState} from "../store/tags/reducer";
+import {tags, ITagsState} from "../store/tags/reducer";
 import {assistant, AssistantState} from "./assistant";
 import {commands, CommandsState} from "./commands";
 import {profile, ProfileState} from "./profile";
@@ -29,7 +29,7 @@ export interface RootState {
     commands?: CommandsState;
     profiles?: ProfilesState;
     device_groups?: DeviceGroupsState;
-    tags?: TagsState;
+    tags?: ITagsState;
     profile?: ProfileState;
     applications?: ApplicationsState;
     dep?: IDEPState;
