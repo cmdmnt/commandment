@@ -104,7 +104,7 @@ export type UPLOAD_SUCCESS = typeof UPLOAD_SUCCESS;
 export const UPLOAD_FAILURE = "profiles/UPLOAD_FAILURE";
 export type UPLOAD_FAILURE = typeof UPLOAD_FAILURE;
 
-type UploadActionRequest = (file: File) => ThunkAction<void, RootState, void>;
+export type UploadActionRequest = (file: File) => ThunkAction<void, RootState, void>;
 export type UploadActionResponse = RSAAReadActionResponse<UPLOAD_REQUEST, UPLOAD_SUCCESS, UPLOAD_FAILURE, JSONAPIDetailResponse<Profile, undefined>>;
 
 export const upload = (file: File): ThunkAction<void, RootState, void> => (

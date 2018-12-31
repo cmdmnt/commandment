@@ -5,67 +5,48 @@ import Grid from "semantic-ui-react/src/collections/Grid";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
 
-import {components} from "griddle-react";
-import {List, Map} from "immutable";
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators, Store} from "redux";
 import {IndexActionRequest} from "../store/device/actions";
 import * as actions from "../store/device/actions";
-import {DeviceColumn} from "../components/griddle/DeviceColumn";
+import * as tableActions from "../store/table/actions";
 import {DeviceTypeFilter, DeviceTypeFilterValues} from "../components/griddle/DeviceTypeFilter";
-import {OSVerColumn} from "../components/griddle/OSVerColumn";
-import {SimpleLayout} from "../components/griddle/SimpleLayout";
-import {SinceNowUTC} from "../components/griddle/SinceNowUTC";
-import {ModelIcon} from "../components/ModelIcon";
-import {MultiAttrCellPlugin} from "../griddle-plugins/multiattr-cell/index";
-import {SelectionPlugin} from "../griddle-plugins/selection";
-import {SemanticUIPlugin} from "../griddle-plugins/semantic-ui/index";
 import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
 import {DevicesState} from "../store/devices/devices";
 import {RootState} from "../reducers/index";
 import {DevicesTable} from "../components/react-tables/DevicesTable";
-
-const rowDataSelector = (state: Map<string, any>, { griddleKey }: { griddleKey?: string }) => {
-    return state
-        .get("data")
-        .find((rowMap: any) => rowMap.get("griddleKey") === griddleKey)
-        .toJSON();
-};
-
-const enhancedWithRowData = connect((state, props: components.RowProps) => {
-    return {
-        // rowData will be available into MyCustomComponent
-        rowData: rowDataSelector(state, props),
-    };
-});
-
-interface OwnProps {
-
-}
+import {ToggleSelectionActionCreator} from "../store/table/actions";
+import {ITableState} from "../store/table/reducer";
+import {IReactTableState} from "../store/table/types";
+import {FlaskFilter, FlaskFilterOperation} from "../store/constants";
 
 interface ReduxStateProps {
     devices: DevicesState;
+    table: ITableState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: OwnProps): ReduxStateProps {
-    return {devices: state.devices};
+function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+    return {
+        devices: state.devices,
+        table: state.table,
+    };
 }
 
 interface ReduxDispatchProps {
     index: IndexActionRequest;
     fetchDevicesIfRequired: any;
+    toggleSelection: ToggleSelectionActionCreator;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: any): ReduxDispatchProps {
     return bindActionCreators({
-        index: actions.index,
         fetchDevicesIfRequired: actions.fetchDevicesIfRequired,
+        index: actions.index,
+        toggleSelection: tableActions.toggleSelection,
     }, dispatch);
 }
 
 interface DevicesPageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
-    griddleState: GriddleDecoratorState;
-    events: GriddleDecoratorHandlers;
 }
 
 interface DevicesPageState {
@@ -74,7 +55,7 @@ interface DevicesPageState {
 
 class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPageState> {
 
-    componentWillMount?(): void {
+    public componentWillMount?(): void {
         // this.props.index();
         this.props.fetchDevicesIfRequired();
     }
@@ -83,10 +64,11 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
         // console.log(selected);
     };
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const {
-            griddleState,
             devices,
+            toggleSelection,
+            table,
         } = this.props;
 
         return (
@@ -94,16 +76,34 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, DevicesPa
                 <Grid>
                     <Grid.Column>
                         <Header as="h1">Devices</Header>
-                        {/*<DeviceTypeFilter onClick={this.handleDeviceTypeFilterChange} selected={'all'} />*/}
-                        <DevicesTable data={devices.items} loading={devices.loading} />
+                        <DevicesTable
+                            data={devices.items}
+                            loading={devices.loading}
+                            toggleSelection={toggleSelection}
+                            isSelected={(key) => table.selection.indexOf(key) !== -1}
+                            onFetchData={this.fetchData}
+                        />
                     </Grid.Column>
                 </Grid>
             </Container>
         );
+    }
+
+    private fetchData = (state: IReactTableState) => {
+        const sorting = state.sorted.map((value) => (value.desc ? value.id : "-" + value.id));
+        const filtering: FlaskFilter[] = state.filtered.map((value) => {
+            return {
+                name: value.id,
+                op: "ilike" as FlaskFilterOperation,
+                val: `%25${value.value}%25`,
+            };
+        });
+
+        this.props.index(state.pageSize, state.page, sorting, filtering);
     }
 }
 
 export const DevicesPage = connect<ReduxStateProps, ReduxDispatchProps, DevicesPageProps>(
     mapStateToProps,
     mapDispatchToProps,
-)(griddle(UnconnectedDevicesPage));
+)(UnconnectedDevicesPage);

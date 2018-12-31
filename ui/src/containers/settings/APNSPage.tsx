@@ -85,11 +85,24 @@ export class UnconnectedAPNSPage extends React.Component<OwnProps> {
                 <Segment vertical>
                     <Header>3. Save the attachment (.p7) and upload here</Header>
 
-                    <Dropzone onDrop={this.onDropEncryptedCSR} />
-                    {/*<input type="file" name="file" />*/}
-                    {/*<Button icon labelPosition="left">*/}
-                        {/*<Icon name='upload' /> Upload*/}
-                    {/*</Button> the encrypted Signing Request*/}
+                    <Dropzone onDrop={this.onDropEncryptedCSR}>
+                        {({getRootProps, getInputProps, isDragActive}) => {
+                            return (
+                                <div
+                                    {...getRootProps()}
+                                    className={'dropzone'}
+                                >
+                                    <input {...getInputProps()} />
+                                    {
+                                        isDragActive ?
+                                            <p>Drop files here...</p> :
+                                            <p>Try dropping some files here, or click to select files to upload.</p>
+                                    }
+                                </div>
+                            )
+
+                        }}
+                    </Dropzone>
                 </Segment>
                 <Segment vertical>
                     <Header>4. Download</Header>
@@ -104,11 +117,7 @@ export class UnconnectedAPNSPage extends React.Component<OwnProps> {
                     Upload the .csr to the <a href="https://identity.apple.com/pushcert/" target="_new">Apple Push Portal</a>
                 </Segment>
                 <Segment vertical>
-                    <Header>6. Download from Push Portal</Header>
-
-                    {/*<Button icon labelPosition="left" as="input" htmlType="upload">*/}
-                        {/*<Icon name='upload' /> Upload*/}
-                    {/*</Button> the final certificate.*/}
+                    <Header>6. Download the push certificate from the Apple Push Portal</Header>
                 </Segment>
 
             </Container>

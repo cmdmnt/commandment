@@ -11,6 +11,7 @@ import {device_groups, DeviceGroupsState} from "../store/device_groups/reducer";
 import {devices, DevicesState} from "../store/devices/devices";
 import {organization, OrganizationState} from "../store/organization/reducer";
 import {profiles, ProfilesState} from "../store/profiles/reducer";
+import {ITableState, table} from "../store/table/reducer";
 import {tags, TagsState} from "../store/tags/reducer";
 import {assistant, AssistantState} from "./assistant";
 import {commands, CommandsState} from "./commands";
@@ -32,6 +33,7 @@ export interface RootState {
     profile?: ProfileState;
     applications?: ApplicationsState;
     dep?: IDEPState;
+    table?: ITableState;
 }
 
 export const rootReducer = combineReducers<RootState>({
@@ -49,6 +51,7 @@ export const rootReducer = combineReducers<RootState>({
     profile,
     profiles,
     router: routerReducer,
+    table,
     tags,
 });
 

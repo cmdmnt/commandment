@@ -29,6 +29,7 @@ import {VPPAccountsPage} from "./containers/settings/VPPAccountsPage";
 import {SettingsPage} from "./containers/SettingsPage";
 
 import "../sass/app.scss";
+import {ProfileUpload} from "./containers/ProfileUpload";
 
 const initialState: RootState = {};
 
@@ -47,7 +48,8 @@ render(
                 <Route path="/devices/:id" component={DevicePage} />
 
                 <Route exact path="/profiles" component={ProfilesPage} />
-                <Route path="/profiles/:id" component={ProfilePage} />
+                <Route path="/profiles/add/custom" component={ProfileUpload} />
+                <Route path="/profiles/id/:id" component={ProfilePage} />
 
                 <Route exact path="/settings" component={SettingsPage} />
                 <Route path="/settings/apns" component={APNSPage} />

@@ -1,15 +1,20 @@
+import {distanceInWordsToNow} from "date-fns";
 import * as React from "react";
-import ReactTable, {CellInfo} from "react-table";
+import ReactTable, {CellInfo, TableProps} from "react-table";
+import selectTableHoc from "react-table/lib/hoc/selectTable";
 import {JSONAPIDataObject} from "../../json-api";
 // import "react-table/react-table.css";
 import {Device} from "../../store/device/types";
 import {ModelIcon} from "../ModelIcon";
 import {DeviceName} from "../react-table/DeviceName";
-import {distanceInWordsToNow} from "date-fns";
 
 export interface IDevicesTableProps {
     loading: boolean;
     data: Device[];
+    toggleSelection: (key: string, shiftKeyPressed: boolean, row: any) => any;
+    toggleAll: () => any;
+    isSelected: (key: string) => boolean;
+    onFetchData: (state: any, instance: any) => void;
 }
 
 const columns = [
@@ -20,6 +25,7 @@ const columns = [
         id: "model_name",
         maxWidth: 40,
         style: { textAlign: "center" },
+        filterable: false,
     },
     {
         Cell: DeviceName,
@@ -39,16 +45,24 @@ const columns = [
         maxWidth: 100,
     },
     {
-        Cell: (props: CellInfo) => props.value ? distanceInWordsToNow(props.value, {addSuffix: true}) : "",
+        Cell: (props: CellInfo) => props.value ? distanceInWordsToNow(props.value, {addSuffix: true}) : "never",
         Header: "Last Seen",
         accessor: "attributes.last_seen",
         id: "last_seen",
+        filterable: false,
     },
 ];
 
-export const DevicesTable = (props: IDevicesTableProps) => (
-    <ReactTable
+const ReactSelectTable = selectTableHoc(ReactTable);
+
+export const DevicesTable = ({ data, ...props }: IDevicesTableProps & TableProps) => (
+    <ReactSelectTable
         manual
-        data={props.data}
-        columns={columns} />
+        filterable
+        keyField="id"
+        selectType="checkbox"
+        data={data}
+        columns={columns}
+        {...props}
+    />
 );

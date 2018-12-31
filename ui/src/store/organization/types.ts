@@ -1,4 +1,5 @@
 export interface Organization {
+    id?: string;
     name: string;
     payload_prefix: string;
     x509_ou: string;
@@ -6,4 +7,3 @@ export interface Organization {
     x509_st: string;
     x509_c: string;
 }
-
