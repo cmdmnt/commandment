@@ -29,18 +29,15 @@ function mapDispatchToProps(dispatch: Dispatch<any>): IReduxDispatchProps {
     }, dispatch);
 }
 
-interface DeviceCertificatesRouteProps {
+interface IDeviceCertificatesRouteProps {
     id: string; // device id
 }
 
-type DeviceCertificatesProps = IReduxStateProps & IReduxDispatchProps & RouteComponentProps<DeviceCertificatesRouteProps>;
+type DeviceCertificatesProps = IReduxStateProps &
+    IReduxDispatchProps &
+    RouteComponentProps<IDeviceCertificatesRouteProps>;
 
 export class UnconnectedDeviceCertificates extends React.Component<DeviceCertificatesProps, any> {
-
-    public componentWillMount?() {
-        //this.props.fetchInstalledCertificates(this.props.match.params.id);
-    }
-
     public render(): JSX.Element {
         const {
             installed_certificates,

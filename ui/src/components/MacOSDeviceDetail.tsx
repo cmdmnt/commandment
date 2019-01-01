@@ -30,7 +30,7 @@ export const MacOSDeviceDetail: React.StatelessComponent<MacOSDeviceDetailProps>
         const niceLastSeen = attributes.last_seen ? distanceInWordsToNow(attributes.last_seen) : "Never";
 
         return (
-            <Grid columns={3} className="MacOSDeviceDetail">
+            <Grid columns={2} className="MacOSDeviceDetail">
                 <Grid.Row>
                     <Grid.Column>
                         <Header as="h1">
@@ -99,9 +99,6 @@ export const MacOSDeviceDetail: React.StatelessComponent<MacOSDeviceDetailProps>
                                 </List.Content>
                             </List.Item>
                         </List>
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Button content="Rename" size="small" compact />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

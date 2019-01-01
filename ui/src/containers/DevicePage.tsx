@@ -3,17 +3,11 @@ import {connect, Dispatch} from "react-redux";
 
 import {Route, RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import Grid from "semantic-ui-react/src/collections/Grid";
-import Menu from "semantic-ui-react/src/collections/Menu";
-import Container from "semantic-ui-react/src/elements/Container";
-import Segment from "semantic-ui-react/src/elements/Segment";
-import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
-import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
 import {MacOSDeviceDetail} from "../components/MacOSDeviceDetail";
 import {RootState} from "../reducers/index";
 import {
     clearPasscode, ClearPasscodeActionRequest,
-    CacheFetchActionRequest, fetchDeviceIfRequired,
+    fetchDeviceIfRequired, CacheFetchActionRequest,
     inventory, InventoryActionRequest,
     lock, LockActionRequest,
     patchRelationship, PatchRelationshipActionRequest,
@@ -26,9 +20,6 @@ import {
 import {DeviceState} from "../store/device/device";
 
 import {SyntheticEvent} from "react";
-import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
-import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
-import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
@@ -46,6 +37,18 @@ import {DeviceCommands} from "./devices/DeviceCommands";
 import {DeviceDetail} from "./devices/DeviceDetail";
 import {DeviceOSUpdates} from "./devices/DeviceOSUpdates";
 import {DeviceProfiles} from "./devices/DeviceProfiles";
+
+import Grid from "semantic-ui-react/src/collections/Grid";
+import Menu from "semantic-ui-react/src/collections/Menu";
+import Container from "semantic-ui-react/src/elements/Container";
+import Segment from "semantic-ui-react/src/elements/Segment";
+import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
+import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
+import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
+import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
+import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
+import {ButtonLink} from "../components/semantic-ui/ButtonLink";
+import {DeviceRename} from "./DeviceRename";
 
 interface IReduxStateProps {
     device: DeviceState;
@@ -93,19 +96,19 @@ function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: any): IRed
     }, dispatch);
 }
 
-interface RouteParameters {
+interface IRouteParameters {
     id: number;
 }
 
-interface DevicePageProps extends IReduxStateProps, IReduxDispatchProps, RouteComponentProps<RouteParameters> {
+interface DevicePageProps extends IReduxStateProps, IReduxDispatchProps, RouteComponentProps<IRouteParameters> {
     componentDidMount: () => void;
 }
 
-interface DevicePageState {
+interface IDevicePageState {
     filter: string;
 }
 
-class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
+class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> {
 
     public componentDidMount(): void {
         this.props.fetchDeviceIfRequired("" + this.props.match.params.id, ["tags"]);
@@ -172,6 +175,9 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                                     <Icon name="pushed" />
                                     Blank Push
                                 </Button>
+                                <ButtonLink to={`/devices/${device_id}/rename`}>
+                                    Rename
+                                </ButtonLink>
                                 <TagDropdown
                                     loading={device.tagsLoading}
                                     tags={tagChoices}
@@ -199,6 +205,8 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                             <Route path="/devices/:id/installed_applications" component={DeviceApplications}/>
                             <Route path="/devices/:id/installed_profiles" component={DeviceProfiles}/>
                             <Route path="/devices/:id/available_os_updates" component={DeviceOSUpdates}/>
+
+                            <Route path="/devices/:id/rename" component={DeviceRename}/>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
