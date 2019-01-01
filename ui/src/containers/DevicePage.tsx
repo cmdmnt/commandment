@@ -12,12 +12,15 @@ import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/Dropdo
 import {MacOSDeviceDetail} from "../components/MacOSDeviceDetail";
 import {RootState} from "../reducers/index";
 import {
+    clearPasscode, ClearPasscodeActionRequest,
     CacheFetchActionRequest, fetchDeviceIfRequired,
     inventory, InventoryActionRequest,
+    lock, LockActionRequest,
     patchRelationship, PatchRelationshipActionRequest,
     postRelated, PostRelatedActionRequest,
     push, PushActionRequest,
-    restart, RestartActionRequest, shutdown, ShutdownActionRequest,
+    restart, RestartActionRequest,
+    shutdown, ShutdownActionRequest,
     test, TestActionRequest,
 } from "../store/device/actions";
 import {DeviceState} from "../store/device/device";
@@ -44,17 +47,13 @@ import {DeviceDetail} from "./devices/DeviceDetail";
 import {DeviceOSUpdates} from "./devices/DeviceOSUpdates";
 import {DeviceProfiles} from "./devices/DeviceProfiles";
 
-interface OwnProps {
-
-}
-
-interface ReduxStateProps {
+interface IReduxStateProps {
     device: DeviceState;
     tags: ITagsState;
     percentCapacityUsed: number;
 }
 
-function mapStateToProps(state: RootState, ownProps?: OwnProps): ReduxStateProps {
+function mapStateToProps(state: RootState, ownProps?: any): IReduxStateProps {
     return {
         device: state.device,
         percentCapacityUsed: getPercentCapacityUsed(state),
@@ -62,25 +61,29 @@ function mapStateToProps(state: RootState, ownProps?: OwnProps): ReduxStateProps
     };
 }
 
-interface ReduxDispatchProps {
-    push: PushActionRequest;
+interface IReduxDispatchProps {
+    clearPasscode: ClearPasscodeActionRequest;
+    createTag: PostTagActionRequest;
+    fetchDeviceIfRequired: CacheFetchActionRequest;
+    fetchTags: IndexActionRequest;
     inventory: InventoryActionRequest;
+    lock: LockActionRequest;
+    patchRelationship: PatchRelationshipActionRequest;
+    postRelated: PostRelatedActionRequest;
+    push: PushActionRequest;
     restart: RestartActionRequest;
     shutdown: ShutdownActionRequest;
     test: TestActionRequest;
-    fetchTags: IndexActionRequest;
-    fetchDeviceIfRequired: CacheFetchActionRequest;
-    createTag: PostTagActionRequest;
-    patchRelationship: PatchRelationshipActionRequest;
-    postRelated: PostRelatedActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: OwnProps): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: any): IReduxDispatchProps {
     return bindActionCreators({
+        clearPasscode,
         createTag,
         fetchDeviceIfRequired,
         fetchTags,
         inventory,
+        lock,
         patchRelationship,
         postRelated,
         push,
@@ -94,7 +97,7 @@ interface RouteParameters {
     id: number;
 }
 
-interface DevicePageProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteParameters> {
+interface DevicePageProps extends IReduxStateProps, IReduxDispatchProps, RouteComponentProps<RouteParameters> {
     componentDidMount: () => void;
 }
 
@@ -103,30 +106,6 @@ interface DevicePageState {
 }
 
 class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
-
-    protected handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value: string }) => {
-        const tag: Tag = {
-            color: "888888",
-            name: value,
-        };
-
-        this.props.postRelated<Tag>("" + this.props.device.device.id, "tags", tag);
-    };
-
-    protected handleSearchTag = (value: string) => {
-        this.props.fetchTags(10, 1, [], [{name: "name", op: "ilike", val: `%${value}%`}]);
-    };
-
-    protected handleChangeTag = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
-        const { value } = data;
-
-        const relationships = value.map((v: string) => {
-            return {id: v, type: "tags"};
-        });
-
-        this.props.patchRelationship(
-            "" + this.props.match.params.id, "tags", relationships);
-    };
 
     public componentDidMount(): void {
         this.props.fetchDeviceIfRequired("" + this.props.match.params.id, ["tags"]);
@@ -138,6 +117,13 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
             device,
             match: {params: {id: device_id}},
             tags,
+
+            clearPasscode,
+            inventory,
+            lock,
+            push,
+            restart,
+            shutdown,
         } = this.props;
 
         const tagChoices: DropdownItemProps[] = tags.items.map((item: JSONAPIDataObject<Tag>) => {
@@ -162,27 +148,27 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
                                 {device && <MacOSDeviceDetail device={device}/>}
                             </Segment>
                             <Segment attached>
-                                <Button icon labelPosition="left" onClick={() => this.props.restart("" + device.device.id)}>
+                                <Button icon labelPosition="left" onClick={() => restart(device.device.id)}>
                                     <Icon name="refresh" />
                                     Restart
                                 </Button>
-                                <Button icon labelPosition="left" onClick={() => this.props.shutdown("" + device.device.id)}>
+                                <Button icon labelPosition="left" onClick={() => shutdown(device.device.id)}>
                                     <Icon name="arrow down" />
                                     Shut down
                                 </Button>
-                                <Button icon labelPosition="left">
+                                <Button icon labelPosition="left" onClick={() => clearPasscode(device.device.id)}>
                                     <Icon name="delete" />
                                     Clear Passcode
                                 </Button>
-                                <Button icon labelPosition="left">
+                                <Button icon labelPosition="left" onClick={() => lock(device.device.id)}>
                                     <Icon name="lock" />
                                     Lock
                                 </Button>
-                                <Button icon labelPosition="left" onClick={() => this.props.inventory("" + device.device.id)}>
+                                <Button icon labelPosition="left" onClick={() => inventory(device.device.id)}>
                                     <Icon name="search" />
                                     Full Inventory
                                 </Button>
-                                <Button icon labelPosition="left" onClick={() => this.props.push("" + device.device.id)}>
+                                <Button icon labelPosition="left" onClick={() => push(device.device.id)}>
                                     <Icon name="pushed" />
                                     Blank Push
                                 </Button>
@@ -219,9 +205,33 @@ class BaseDevicePage extends React.Component<DevicePageProps, DevicePageState> {
             </Container>
         );
     }
+
+    protected handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value: string }) => {
+        const tag: Tag = {
+            color: "888888",
+            name: value,
+        };
+
+        this.props.postRelated<Tag>("" + this.props.device.device.id, "tags", tag);
+    };
+
+    protected handleSearchTag = (value: string) => {
+        this.props.fetchTags(10, 1, [], [{name: "name", op: "ilike", val: `%${value}%`}]);
+    };
+
+    protected handleChangeTag = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
+        const { value } = data;
+
+        const relationships = value.map((v: string) => {
+            return {id: v, type: "tags"};
+        });
+
+        this.props.patchRelationship(
+            "" + this.props.match.params.id, "tags", relationships);
+    };
 }
 
-export const DevicePage = connect<ReduxStateProps, ReduxDispatchProps, DevicePageProps>(
+export const DevicePage = connect<IReduxStateProps, IReduxDispatchProps, DevicePageProps>(
     mapStateToProps,
     mapDispatchToProps,
 )(BaseDevicePage);

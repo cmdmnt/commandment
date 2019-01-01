@@ -145,7 +145,7 @@ def device_inventory(device_id: int):
     return 'OK'
 
 
-@flat_api.route('/v1/devices/<int:device_id>/clear_passcode')
+@flat_api.route('/v1/devices/<int:device_id>/clear_passcode', methods=['POST'])
 def clear_passcode(device_id: int):
     """Enqueues a ClearPasscode command for the device id specified.
 
@@ -169,7 +169,7 @@ def clear_passcode(device_id: int):
     return 'OK'
 
 
-@flat_api.route('/v1/devices/<int:device_id>/restart')
+@flat_api.route('/v1/devices/<int:device_id>/restart', methods=['POST'])
 def restart(device_id: int):
     """Enqueues a RestartDevice command for the device id specified.
 
@@ -192,6 +192,29 @@ def restart(device_id: int):
 
     return 'OK'
 
+
+@flat_api.route('/v1/devices/<int:device_id>/shutdown', methods=['POST'])
+def shutdown(device_id: int):
+    """Enqueues a Shutdown command for the device id specified.
+
+    :reqheader Accept: application/json
+    :reqheader Content-Type: application/json
+    :resheader Content-Type: application/json
+    :statuscode 201: command created
+    :statuscode 400: not applicable to this device
+    :statuscode 404: device with this identifier was not found
+    :statuscode 500: system error
+    """
+    d = db.session.query(Device).filter(Device.id == device_id).one()
+
+    cmd = commands.ShutDownDevice()
+    orm_cmd = Command.from_model(cmd)
+    orm_cmd.device = d
+    db.session.add(orm_cmd)
+
+    db.session.commit()
+
+    return 'OK'
 
 
 @flat_api.route('/v1/upload/profiles', methods=['POST'])

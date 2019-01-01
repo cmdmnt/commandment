@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CommandUUID</key>
+    <string>bac6348e-3291-4523-a354-037ec379b738</string>
+    <key>ErrorChain</key>
+    <array>
+        <dict>
+            <key>ErrorCode</key>
+            <integer>12021</integer>
+            <key>ErrorDomain</key>
+            <string>MCMDMErrorDomain</string>
+            <key>LocalizedDescription</key>
+            <string>Unknown command: ShutdownDevice &lt;MDMClientError:91&gt;</string>
+        </dict>
+    </array>
+    <key>Status</key>
+    <string>Error</string>
+    <key>UDID</key>
+    <string>2F6DE437-7C14-5735-85B4-DC6B365BCAF1</string></dict>
+</plist>

@@ -506,12 +506,10 @@ class RestartDevice(Command):
     require_platforms = {Platform.iOS: '>=10.3'}
 
 
-class ShutdownDevice(Command):
-    request_type = 'ShutdownDevice'
+class ShutDownDevice(Command):
+    request_type = 'ShutDownDevice'
     require_access = {AccessRights.DeviceLockPasscodeRemoval}
-    require_platforms = {Platform.iOS: '>=10.3'}
-
-
+    require_platforms = {Platform.iOS: '>=10.3', Platform.macOS: '>=10.13'}
 
 
 class EraseDevice(Command):
