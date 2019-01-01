@@ -11,12 +11,21 @@ from base64 import urlsafe_b64encode
 from commandment.models import db, Organization, Device, Command
 from commandment.pki.models import Certificate, RSAPrivateKey
 from commandment.profiles.models import Profile
-from commandment.mdm import commands
+from commandment.mdm import commands, Platform
 from .schema import OrganizationFlatSchema
 from commandment.profiles.schema import ProfileSchema
 from commandment.profiles.plist_schema import ProfileSchema as ProfilePlistSchema
 
 flat_api = Blueprint('flat_api', __name__)
+
+# @flat_api.errorhandler(400)
+# def bad_request(e):
+#     return jsonify({'errors': [
+#         {
+#             'status': '400',
+#             'title': str(e),
+#         }
+#     ]}
 
 
 @flat_api.route('/v1/organization', methods=['GET'])
@@ -158,6 +167,11 @@ def clear_passcode(device_id: int):
     :statuscode 500: system error
     """
     d = db.session.query(Device).filter(Device.id == device_id).one()
+    if d.platform == Platform.macOS:
+        return abort(400, 'ClearPasscode is not supported on Mac computers')
+
+    if d.unlock_token is None:
+        return abort(400, 'No UnlockToken is available for this device')
 
     cp = commands.ClearPasscode(UnlockToken=urlsafe_b64encode(d.unlock_token).decode('utf-8'))
     cp_pl = Command.from_model(cp)
@@ -166,7 +180,7 @@ def clear_passcode(device_id: int):
 
     db.session.commit()
 
-    return 'OK'
+    return 'OK', 201, {}
 
 
 @flat_api.route('/v1/devices/<int:device_id>/restart', methods=['POST'])

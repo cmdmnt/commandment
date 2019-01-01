@@ -1,133 +1,79 @@
-import * as React from 'react';
+import * as React from "react";
 import {connect, Dispatch} from "react-redux";
-import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import {SinceNowUTC} from "../../components/griddle/SinceNowUTC";
-import {RootState} from "../../reducers/index";
-import {InstalledApplicationsState} from "../../reducers/device/installed_applications";
-import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
-import {InstalledApplicationsActionRequest, applications as fetchInstalledApplications} from "../../store/device/applications";
 import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
-import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
-import * as byteSize from 'byte-size';
+import {DeviceApplicationsTable} from "../../components/react-tables/DeviceApplicationsTable";
+import {RootState} from "../../reducers/index";
+import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
+import {
+    applications as fetchInstalledApplications, InstalledApplicationsActionRequest,
+} from "../../store/device/applications";
+import {InstalledApplicationsState} from "../../store/device/installed_applications_reducer";
+import {IReactTableState} from "../../store/table/types";
 
-
-const ByteColumn = ({ value }: { value: number | null; }) => {
-    if (value) {
-        const size = byteSize(value);
-        return <span>{size.value} {size.unit}</span>;
-    } else {
-        return <span>0</span>
-    }
-};
-
-interface ReduxStateProps {
-    applications?: InstalledApplicationsState;
+interface IReduxStateProps {
+    installed_applications?: InstalledApplicationsState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: RootState, ownProps?: any): IReduxStateProps {
     return {
-        applications: state.device.installed_applications
+        installed_applications: state.device.installed_applications,
     }
 }
 
-interface ReduxDispatchProps {
+interface IReduxDispatchProps {
     fetchInstalledApplications: InstalledApplicationsActionRequest
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<any>): IReduxDispatchProps {
    return bindActionCreators({
-       fetchInstalledApplications
+       fetchInstalledApplications,
    }, dispatch);
 }
 
-interface DeviceApplicationsRouteProps {
-    id: number;
+interface IDeviceApplicationsRouteProps {
+    id: string;
 }
 
-interface DeviceApplicationsProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<DeviceApplicationsRouteProps> {
-    griddleState: GriddleDecoratorState;
-    events: any;
-}
-
+type DeviceApplicationsProps = IReduxStateProps &
+    IReduxDispatchProps &
+    RouteComponentProps<IDeviceApplicationsRouteProps>;
 
 export class UnconnectedDeviceApplications extends React.Component<DeviceApplicationsProps, undefined> {
-
-    componentWillMount?() {
-        this.props.fetchInstalledApplications(''+this.props.match.params.id, this.props.griddleState.pageSize, 1);
-    }
-
-    componentWillUpdate?(nextProps: DeviceApplicationsProps, nextState: void | Readonly<{}>) {
-        const {griddleState} = this.props;
-        const {griddleState: nextGriddleState} = nextProps;
-
-        if (nextGriddleState.filter !== griddleState.filter
-            || nextGriddleState.currentPage !== griddleState.currentPage
-            || nextGriddleState.sortId !== griddleState.sortId
-            || nextGriddleState.sortAscending !== griddleState.sortAscending
-        ) {
-            let sortColumnId = '';
-            if (nextGriddleState.sortId) {
-                sortColumnId = nextGriddleState.sortId.substr('attributes.'.length);
-                if (!nextGriddleState.sortAscending) {
-                    sortColumnId = '-' + sortColumnId;
-                }
-            }
-
-            this.props.fetchInstalledApplications(
-                ''+this.props.match.params.id,
-                nextGriddleState.pageSize,
-                nextGriddleState.currentPage,
-                [sortColumnId],
-                [{ name: 'name', op: 'ilike', val: `%${nextGriddleState.filter}%` }]);
-        }
-    }
-
-    render() {
+    public render() {
         const {
-            applications,
-            griddleState
+            installed_applications,
         } = this.props;
 
         return (
-            <div className='DeviceApplications container'>
-
-                {applications && applications.items &&
-                <Griddle
-                    data={applications.items}
-                    plugins={[SemanticUIPlugin()]}
-                    styleConfig={{
-                        classNames: {
-                            Table: 'ui celled table',
-                            NoResults: 'ui message'
-                        }
-                    }}
-                    // sortProperties={{
-                    //     id: griddleState.sortId,
-                    //     sortAscending: griddleState.sortAscending
-                    // }}
-                    events={this.props.events}
-                    components={{Layout}}
-                    pageProperties={{
-                        recordCount: applications.recordCount,
-                        currentPage: griddleState.currentPage,
-                        pageSize: griddleState.pageSize
-                    }}
-                >
-                    <RowDefinition>
-                        <ColumnDefinition title='Name' id='attributes.name' />
-                        <ColumnDefinition title='Version' id="attributes.version" />
-                        <ColumnDefinition title='Size' id="attributes.bundle_size" customComponent={ByteColumn} />
-                    </RowDefinition>
-                </Griddle>}
+            <div className="DeviceApplications container">
+                {installed_applications.items &&
+                <DeviceApplicationsTable
+                  data={installed_applications.items}
+                  defaultPageSize={installed_applications.pageSize}
+                  loading={installed_applications.loading}
+                  onFetchData={this.fetchData}
+                  pages={installed_applications.pages}
+                />}
             </div>
         )
     }
+
+    private fetchData = (state: IReactTableState) => {
+        const sorting = state.sorted.map((value) => (value.desc ? value.id : "-" + value.id));
+        const filtering: FlaskFilter[] = state.filtered.map((value) => {
+            return {
+                name: value.id,
+                op: "ilike" as FlaskFilterOperation,
+                val: `%25${value.value}%25`,
+            };
+        });
+
+        this.props.fetchInstalledApplications(this.props.match.params.id, state.pageSize, state.page + 1, sorting, filtering);
+    }
 }
 
-export const DeviceApplications = connect<ReduxStateProps, ReduxDispatchProps, any>(
+export const DeviceApplications = connect<IReduxStateProps, IReduxDispatchProps, any>(
     mapStateToProps,
-    mapDispatchToProps
-)(griddle(UnconnectedDeviceApplications));
-
+    mapDispatchToProps,
+)(UnconnectedDeviceApplications);
