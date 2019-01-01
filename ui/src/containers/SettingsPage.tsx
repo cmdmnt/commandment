@@ -1,14 +1,15 @@
-import * as React from 'react';
-import {connect, Dispatch} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {RootState} from "../reducers/index";
+import * as React from "react";
+import {connect, Dispatch} from "react-redux";
+import {bindActionCreators} from "redux";
 import Container from "semantic-ui-react/src/elements/Container";
-import Card from "semantic-ui-react/src/views/Card";
 import Icon from "semantic-ui-react/src/elements/Icon";
+import Card from "semantic-ui-react/src/views/Card";
+import {RootState} from "../reducers/index";
 
-import {Link} from 'react-router-dom';
 import {RouteComponentProps} from "react-router";
+import {Link} from "react-router-dom";
 import Header from "semantic-ui-react/src/elements/Header/Header";
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
 interface RouteProps {
 
@@ -35,42 +36,43 @@ export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, 
 
         return (
             <Container>
+                <Divider hidden/>
                 <Header>General</Header>
                 <Card.Group>
-                    <Card as={Link} to='/settings/organization'>
+                    <Card as={Link} to="/settings/organization">
                         <Card.Content>
                             <Card.Header>
-                                <Icon name='building' /> Organization
+                                <Icon name="building" /> Organization
                             </Card.Header>
                             <Card.Description>
                                 Configure your organization
                             </Card.Description>
                         </Card.Content>
                     </Card>
-                    <Card as={Link} to='/settings/deviceauth'>
+                    <Card as={Link} to="/settings/deviceauth">
                         <Card.Content>
                             <Card.Header>
-                                <Icon name='protect' /> Device Authentication
+                                <Icon name="protect" /> Device Authentication
                             </Card.Header>
                             <Card.Description>
                                 Configure how communication is secured between your devices and this MDM
                             </Card.Description>
                         </Card.Content>
                     </Card>
-                    <Card as={Link} to='/settings/apns'>
+                    <Card as={Link} to="/settings/apns">
                         <Card.Content>
                             <Card.Header>
-                                <Icon name='cloud upload' /> Push Certificate
+                                <Icon name="cloud upload" /> Push Certificate
                             </Card.Header>
                             <Card.Description>
                                 Configure a Push Certificate
                             </Card.Description>
                         </Card.Content>
                     </Card>
-                    <Card as={Link} to='/settings/authentication'>
+                    <Card as={Link} to="/settings/authentication">
                         <Card.Content>
                             <Card.Header>
-                                <Icon name='users' /> Authentication
+                                <Icon name="users" /> Authentication
                             </Card.Header>
                             <Card.Description>
                                 Configure authentication sources
@@ -81,20 +83,20 @@ export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, 
                 </Card.Group>
                 <Header>Enrollment</Header>
                 <Card.Group>
-                    <Card as={Link} to='/settings/vpp'>
+                    <Card as={Link} to="/settings/vpp">
                         <Card.Content>
                             <Card.Header>
-                                <Icon name='credit card alternative' /> VPP Accounts
+                                <Icon name="credit card alternative" /> VPP Accounts
                             </Card.Header>
                             <Card.Description>
                                 Configure access to the Volume Purchasing Programme
                             </Card.Description>
                         </Card.Content>
                     </Card>
-                    <Card as={Link} to='/settings/dep/accounts'>
+                    <Card as={Link} to="/settings/dep/accounts">
                         <Card.Content>
                             <Card.Header>
-                                <Icon name='tablet' /> DEP Accounts
+                                <Icon name="tablet" /> DEP Accounts
                             </Card.Header>
                             <Card.Description>
                                 Configure the Device Enrollment Programme
@@ -109,5 +111,5 @@ export class UnconnectedSettingsPage extends React.Component<SettingsPageProps, 
 
 export const SettingsPage = connect<ReduxStateProps, ReduxDispatchProps, SettingsPageProps>(
     (state: RootState, ownProps?: any): ReduxStateProps => ({}),
-    (dispatch: Dispatch<RootState>): ReduxDispatchProps => bindActionCreators({}, dispatch)
+    (dispatch: Dispatch<RootState>): ReduxDispatchProps => bindActionCreators({}, dispatch),
 )(UnconnectedSettingsPage);

@@ -18,6 +18,7 @@ import {ITableState} from "../store/table/reducer";
 import {IReactTableState} from "../store/table/types";
 import * as tagActions from "../store/tags/actions";
 import {ITagsState} from "../store/tags/reducer";
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
 interface IReduxStateProps {
     devices: DevicesState;
@@ -69,21 +70,18 @@ class UnconnectedDevicesPage extends React.Component<DevicesPageProps, any> {
 
         return (
             <Container className="DevicesPage">
-                <Grid>
-                    <Grid.Column>
-                        <Header as="h1">Devices</Header>
+                <Divider hidden />
+                <Header as="h1">Devices</Header>
 
-                        <SUISelectionTools loading={devices.loading || tags.loading}
-                                           tags={tags.items} selectionCount={table.selection.length} />
-                        <DevicesTable
-                            data={devices.items}
-                            loading={devices.loading}
-                            toggleSelection={toggleSelection}
-                            isSelected={(key) => table.selection.indexOf(key) !== -1}
-                            onFetchData={this.fetchData}
-                        />
-                    </Grid.Column>
-                </Grid>
+                <SUISelectionTools loading={devices.loading || tags.loading}
+                                   tags={tags.items} selectionCount={table.selection.length} />
+                <DevicesTable
+                    data={devices.items}
+                    loading={devices.loading}
+                    toggleSelection={toggleSelection}
+                    isSelected={(key) => table.selection.indexOf(key) !== -1}
+                    onFetchData={this.fetchData}
+                />
             </Container>
         );
     }

@@ -12,6 +12,7 @@ import {OrganizationState} from "../../store/organization/reducer";
 import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
 interface OrganizationPageState {
     organization: OrganizationState;
@@ -56,6 +57,7 @@ export class UnconnectedOrganizationPage extends React.Component<OrganizationPag
 
         return (
             <Container className="OrganizationPage">
+                <Divider hidden />
                 <Breadcrumb>
                     <Breadcrumb.Section><Link to={`/`}>Home</Link></Breadcrumb.Section>
                     <Breadcrumb.Divider />

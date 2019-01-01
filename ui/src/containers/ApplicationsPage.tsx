@@ -10,6 +10,7 @@ import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 import {ButtonLink} from "../components/semantic-ui/ButtonLink";
 import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown";
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
 interface IReduxStateProps {
 
@@ -30,19 +31,22 @@ class UnconnectedApplicationsPage extends React.Component<IApplicationsPageProps
     public render() {
         return (
             <Container className="ApplicationsPage">
-                <Grid>
-                    <Grid.Column>
-                      <Header as="h1">Applications</Header>
-                        <Dropdown text="Add" icon="plus" labeled button className="icon">
-                            <Dropdown.Menu>
-                                <Dropdown.Item as={Link} to="/applications/add/macos">macOS Enterprise Package (.pkg)</Dropdown.Item>
-                                <Dropdown.Item as={Link} to="/applications/add/mas" disabled>macOS App Store Application</Dropdown.Item>
-                                <Dropdown.Item as={Link} to="/applications/add/ias" disabled>iOS App Store Application</Dropdown.Item>
-                                <Dropdown.Item as={Link} to="/applications/add/ios" disabled>iOS Enterprise Application (.ipa)</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </Grid.Column>
-                </Grid>
+                <Divider hidden />
+
+                <Header as="h1">Applications</Header>
+                <Dropdown text="Add" icon="plus" labeled button className="icon">
+                    <Dropdown.Menu>
+                        <Dropdown.Item as={Link} to="/applications/add/macos">macOS Enterprise Package
+                            (.pkg)</Dropdown.Item>
+                        <Dropdown.Item as={Link} to="/applications/add/mas" disabled>macOS App Store
+                            Application</Dropdown.Item>
+                        <Dropdown.Item as={Link} to="/applications/add/ias" disabled>iOS App Store
+                            Application</Dropdown.Item>
+                        <Dropdown.Item as={Link} to="/applications/add/ios" disabled>iOS Enterprise Application
+                            (.ipa)</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+
             </Container>
         );
     }

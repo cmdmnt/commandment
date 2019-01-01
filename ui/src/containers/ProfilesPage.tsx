@@ -51,21 +51,18 @@ export class UnconnectedProfilesPage extends React.Component<IProfilesPageProps,
 
         return (
             <Container className="ProfilesPage">
-                <Grid>
-                    <Grid.Column>
-                        <Header as="h1">Profiles</Header>
-                        <Dropdown text="Add" icon="plus" labeled button className="icon">
-                            <Dropdown.Menu>
-                                <Dropdown.Item as={Link} to="/profiles/add/custom">Custom Profile (.mobileconfig)</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
-                        <Divider hidden />
-                        <ProfilesTable
-                            data={profiles.items}
-                            loading={profiles.loading}
-                        />
-                    </Grid.Column>
-                </Grid>
+                <Divider hidden />
+                <Header as="h1">Profiles</Header>
+                <Dropdown text="Add" icon="plus" labeled button className="icon">
+                    <Dropdown.Menu>
+                        <Dropdown.Item as={Link} to="/profiles/add/custom">Custom Profile (.mobileconfig)</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+                <Divider hidden />
+                <ProfilesTable
+                    data={profiles.items}
+                    loading={profiles.loading}
+                />
             </Container>
         );
     }

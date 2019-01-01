@@ -2,6 +2,9 @@ import * as React from "react";
 import {hot} from "react-hot-loader";
 
 import {Navigation} from "./Navigation";
+import {NavigationVertical} from "./NavigationVertical";
+import Sidebar from "semantic-ui-react/dist/commonjs/modules/Sidebar/Sidebar";
+import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 
 /**
  * AppLayout is the top level root display component.
@@ -18,13 +21,16 @@ class AppLayoutCool extends React.Component<{}, {}> {
         const {children} = this.props;
 
         return (
-            <div>
-                <Navigation/>
+          <Grid>
+              <Grid.Column width={4}>
+                <NavigationVertical/>
+              </Grid.Column>
+              <Grid.Column width={12}>
                 {children}
-            </div>
+              </Grid.Column>
+          </Grid>
         );
     }
 }
 
 export const AppLayout = hot(module)(AppLayoutCool);
-
