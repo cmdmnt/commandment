@@ -2,7 +2,6 @@ import * as React from "react";
 import {connect, Dispatch} from "react-redux";
 import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {SinceNowUTC} from "../../components/griddle/SinceNowUTC";
 import {DeviceCommandsTable} from "../../components/react-tables/DeviceCommandsTable";
 import {DeviceCommandsState} from "../../store/device/commands_reducer";
 import {RootState} from "../../reducers/index";
@@ -10,39 +9,33 @@ import {commands as fetchCommands, CommandsActionRequest} from "../../store/devi
 import {IReactTableState} from "../../store/table/types";
 import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
 
-interface ReduxStateProps {
+interface IReduxStateProps {
     commands?: DeviceCommandsState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
+function mapStateToProps(state: RootState, ownProps?: any): IReduxStateProps {
     return {
         commands: state.device.commands,
     }
 }
 
-interface ReduxDispatchProps {
+interface IReduxDispatchProps {
     fetchCommands: CommandsActionRequest
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<any>): IReduxDispatchProps {
    return bindActionCreators({
        fetchCommands,
    }, dispatch);
 }
 
-interface DeviceCommandsRouteProps {
+interface IDeviceCommandsRouteProps {
     id: number;
 }
 
-interface DeviceCommandsProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<DeviceCommandsRouteProps> {
+type DeviceCommandsProps = IReduxStateProps & IReduxDispatchProps & RouteComponentProps<IDeviceCommandsRouteProps>;
 
-}
-
-interface DeviceCommandsComponentState {
-
-}
-
-export class UnconnectedDeviceCommands extends React.Component<DeviceCommandsProps, DeviceCommandsComponentState> {
+export class UnconnectedDeviceCommands extends React.Component<DeviceCommandsProps, any> {
 
     // componentWillMount?() {
     //     this.props.fetchCommands(''+this.props.match.params.id, 10, 1, ['-sent_at']);
@@ -61,6 +54,9 @@ export class UnconnectedDeviceCommands extends React.Component<DeviceCommandsPro
                     loading={commands.loading}
                     onFetchData={this.fetchData}
                     pages={commands.pages}
+                    defaultSorted={[
+                        { id: "sent_at", desc: false },
+                    ]}
                 />
             </div>
         )
@@ -80,7 +76,7 @@ export class UnconnectedDeviceCommands extends React.Component<DeviceCommandsPro
     }
 }
 
-export const DeviceCommands = connect<ReduxStateProps, ReduxDispatchProps, any>(
+export const DeviceCommands = connect<IReduxStateProps, IReduxDispatchProps, any>(
     mapStateToProps,
     mapDispatchToProps,
 )(UnconnectedDeviceCommands);

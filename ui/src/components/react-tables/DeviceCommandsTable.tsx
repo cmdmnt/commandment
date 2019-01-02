@@ -1,7 +1,8 @@
 import * as React from "react";
 import ReactTable, {TableProps} from "react-table";
-import {AvailableOSUpdate, Command} from "../../store/device/types";
-import {SinceNowUTC} from "../griddle/SinceNowUTC";
+import {Command} from "../../store/device/types";
+import {RelativeToNow} from "../react-table/RelativeToNow";
+import {CommandStatus} from "../react-table/CommandStatus";
 
 export interface IDeviceCommandsTableProps {
     loading: boolean;
@@ -11,19 +12,23 @@ export interface IDeviceCommandsTableProps {
 
 const columns = [
     {
+        Cell: CommandStatus,
+        Header: "Status",
+        accessor: "attributes.status",
+        id: "status",
+        maxWidth: 50,
+        style: { textAlign: "center" },
+    },
+    {
         Header: "Type",
         accessor: "attributes.request_type",
         id: "request_type",
     },
     {
-        Header: "Status",
-        accessor: "attributes.status",
-        id: "status",
-    },
-    {
+        Cell: RelativeToNow,
         Header: "Sent",
         accessor: "attributes.sent_at",
-        id: "sent",
+        id: "sent_at",
     },
 ];
 

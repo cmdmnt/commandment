@@ -15,6 +15,8 @@ import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 import List from "semantic-ui-react/dist/commonjs/elements/List/List";
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
+import {IReactTableState} from "../store/table/types";
+import {FlaskFilter, FlaskFilterOperation} from "../store/constants";
 
 interface IReduxStateProps {
     dep_account?: DEPAccountState;
@@ -101,7 +103,9 @@ class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, an
                   <Header as="h3">Profiles</Header>
                   <ButtonLink to={`/dep/accounts/${dep_account.id}/add/profile`}>New DEP Profile</ButtonLink>
 
-                  <DEPProfilesTable depAccountId={dep_account.id} data={dep_profiles} />
+                  <DEPProfilesTable
+                    data={dep_profiles}
+                  />
                 </div>
                 }
             </Container>

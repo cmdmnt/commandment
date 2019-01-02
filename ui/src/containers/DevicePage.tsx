@@ -6,8 +6,8 @@ import {bindActionCreators} from "redux";
 import {MacOSDeviceDetail} from "../components/MacOSDeviceDetail";
 import {RootState} from "../reducers/index";
 import {
-    clearPasscode, ClearPasscodeActionRequest,
-    fetchDeviceIfRequired, CacheFetchActionRequest,
+    CacheFetchActionRequest, clearPasscode,
+    ClearPasscodeActionRequest, fetchDeviceIfRequired,
     inventory, InventoryActionRequest,
     lock, LockActionRequest,
     patchRelationship, PatchRelationshipActionRequest,
@@ -31,6 +31,7 @@ post as createTag, PostActionRequest as PostTagActionRequest,
 } from "../store/tags/actions";
 import {ITagsState} from "../store/tags/reducer";
 import {Tag} from "../store/tags/types";
+import {DeviceRename} from "./DeviceRename";
 import {DeviceApplications} from "./devices/DeviceApplications";
 import {DeviceCertificates} from "./devices/DeviceCertificates";
 import {DeviceCommands} from "./devices/DeviceCommands";
@@ -38,17 +39,20 @@ import {DeviceDetail} from "./devices/DeviceDetail";
 import {DeviceOSUpdates} from "./devices/DeviceOSUpdates";
 import {DeviceProfiles} from "./devices/DeviceProfiles";
 
-import Grid from "semantic-ui-react/src/collections/Grid";
-import Menu from "semantic-ui-react/src/collections/Menu";
-import Container from "semantic-ui-react/src/elements/Container";
-import Segment from "semantic-ui-react/src/elements/Segment";
+import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
 import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
-import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
-import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
+import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
+import List from "semantic-ui-react/dist/commonjs/elements/List/List";
+import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
+import Grid from "semantic-ui-react/src/collections/Grid";
+import Menu from "semantic-ui-react/src/collections/Menu";
+import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
+import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
 import {ButtonLink} from "../components/semantic-ui/ButtonLink";
-import {DeviceRename} from "./DeviceRename";
+import {Link} from "react-router-dom";
 
 interface IReduxStateProps {
     device: DeviceState;
@@ -144,12 +148,21 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
 
         return (
             <Container className="DevicePage">
+                <Divider hidden />
+                <Breadcrumb>
+                    <Breadcrumb.Section><Link to={`/`}>Home</Link></Breadcrumb.Section>
+                    <Breadcrumb.Divider />
+                    <Breadcrumb.Section><Link to={`/devices`}>Devices</Link></Breadcrumb.Section>
+                    <Breadcrumb.Divider />
+                    <Breadcrumb.Section>Device</Breadcrumb.Section>
+                </Breadcrumb>
+
+                <Header as="h1">{device.device ? device.device.attributes.device_name : "Loading&hellip;"}</Header>
+
                 <Grid>
                     <Grid.Row>
                         <Grid.Column>
-                            <Segment attached>
-                                {device && <MacOSDeviceDetail device={device}/>}
-                            </Segment>
+                            {device && <MacOSDeviceDetail device={device}/>}
                             <Segment attached>
                                 <Button icon labelPosition="left" onClick={() => restart(device.device.id)}>
                                     <Icon name="refresh" />
@@ -214,9 +227,9 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
         );
     }
 
-    protected handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value: string }) => {
+    protected handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value:  string }) => {
         const tag: Tag = {
-            color: "888888",
+            color:  "888888",
             name: value,
         };
 
@@ -225,13 +238,13 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
 
     protected handleSearchTag = (value: string) => {
         this.props.fetchTags(10, 1, [], [{name: "name", op: "ilike", val: `%${value}%`}]);
-    };
+     };
 
     protected handleChangeTag = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
         const { value } = data;
 
         const relationships = value.map((v: string) => {
-            return {id: v, type: "tags"};
+            return {id:  v, type: "tags"};
         });
 
         this.props.patchRelationship(
@@ -239,7 +252,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
     };
 }
 
-export const DevicePage = connect<IReduxStateProps, IReduxDispatchProps, DevicePageProps>(
+export const DevicePage = connect<IReduxStateProps,  IReduxDispatchProps, DevicePageProps>(
     mapStateToProps,
     mapDispatchToProps,
 )(BaseDevicePage);

@@ -9,6 +9,7 @@ import Header from "semantic-ui-react/src/elements/Header";
 import List from "semantic-ui-react/src/elements/List";
 
 import "./MacOSDeviceDetail.scss";
+import {Segment} from "semantic-ui-react";
 
 interface MacOSDeviceDetailState {
 
@@ -27,26 +28,25 @@ export const MacOSDeviceDetail: React.StatelessComponent<MacOSDeviceDetailProps>
 
         const attributes = device.device.attributes;
 
-        const niceLastSeen = attributes.last_seen ? distanceInWordsToNow(attributes.last_seen) : "Never";
+        const niceLastSeen = attributes.last_seen ? distanceInWordsToNow(attributes.last_seen, { addSuffix: true }) : "Never";
 
         return (
             <Grid columns={2} className="MacOSDeviceDetail">
                 <Grid.Row>
                     <Grid.Column>
-                        <Header as="h1">
-                            {attributes.device_name ? attributes.device_name : "(Untitled)"}
-                        </Header>
+                        <Header as="h2" color="grey">{attributes.serial_number}</Header>
                         <p>{attributes.hostname}</p>
                     </Grid.Column>
-                    <Grid.Column floated="right">
-                        <Header as="h1" color="grey" textAlign="right">{attributes.serial_number}</Header>
+                    <Grid.Column>
+
                     </Grid.Column>
                 </Grid.Row>
+
                 <Grid.Row>
                     <Grid.Column>
                         <List>
                             <List.Item>
-                                <List.Icon name="heartbeat" size="large" verticalAlign="middle"/>
+                                <List.Icon name="heartbeat" size="large" verticalAlign="middle" />
                                 <List.Content>
                                     <List.Header>Last Seen</List.Header>
                                     <List.Description>{niceLastSeen}</List.Description>
@@ -74,6 +74,7 @@ export const MacOSDeviceDetail: React.StatelessComponent<MacOSDeviceDetailProps>
                                 </List.Content>
                             </List.Item>
                         </List>
+
                     </Grid.Column>
                     <Grid.Column>
                         <List>

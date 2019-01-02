@@ -30,7 +30,6 @@ const ReactSelectTable = selectTableHoc(ReactTable);
 
 export const DEPProfilesTable = ({ data, ...props }: IDEPProfilesTableProps & TableProps) => (
     <ReactSelectTable
-        manual
         keyField="id"
         selectType="checkbox"
         data={data}

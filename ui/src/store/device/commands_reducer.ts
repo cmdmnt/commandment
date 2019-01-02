@@ -5,12 +5,16 @@ import {OtherAction} from "../constants";
 
 export interface DeviceCommandsState {
     items?: Array<JSONAPIDataObject<Command>>;
+    pageSize: number;
+    pages: number;
     recordCount: number;
 }
 
 const initialState: DeviceCommandsState = {
     items: [],
-    recordCount: 0
+    pageSize: 20,
+    pages: 0,
+    recordCount: 0,
 };
 
 type DeviceCommandsAction = CommandsActionResponse | OtherAction;
@@ -24,7 +28,8 @@ export function commands_reducer(state: DeviceCommandsState = initialState, acti
                 return {
                     ...state,
                     items: action.payload.data,
-                    recordCount: action.payload.meta.count
+                    pages: Math.floor(action.payload.meta.count / state.pageSize),
+                    recordCount: action.payload.meta.count,
                 };
             }
         default:

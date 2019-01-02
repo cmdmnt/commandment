@@ -54,6 +54,9 @@ export class UnconnectedDeviceApplications extends React.Component<DeviceApplica
                   loading={installed_applications.loading}
                   onFetchData={this.fetchData}
                   pages={installed_applications.pages}
+                  defaultSorted={[
+                      { id: "name", desc: true },
+                  ]}
                 />}
             </div>
         )
