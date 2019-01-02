@@ -1,18 +1,19 @@
-import Griddle, {ColumnDefinition, RowDefinition} from "griddle-react";
 import * as React from "react";
 import {connect, Dispatch} from "react-redux";
 import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {AvailableOSUpdatesActionRequest, updates as fetchAvailableOSUpdates} from "../../store/device/updates";
-import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
-import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui";
-import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
-import {RootState} from "../../reducers";
-import {AvailableOSUpdatesState} from "../../reducers/device/available_os_updates";
-import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
-import Checkbox from "semantic-ui-react/dist/commonjs/modules/Checkbox/Checkbox";
 import {FlaskFilters} from "../../actions/constants";
+import {DeviceUpdatesTable} from "../../components/react-tables/DeviceUpdatesTable";
+import {RootState} from "../../reducers";
+import {AvailableOSUpdatesState} from "../../store/device/available_os_updates_reducer";
+import {AvailableOSUpdatesActionRequest, updates as fetchAvailableOSUpdates} from "../../store/device/updates";
+
+import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
+import Checkbox from "semantic-ui-react/dist/commonjs/modules/Checkbox/Checkbox";
+import {DeviceCertificatesTable} from "../../components/react-tables/DeviceCertificatesTable";
+import {IReactTableState} from "../../store/table/types";
+import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
 
 interface IReduxStateProps {
     is_supervised?: boolean;
@@ -42,8 +43,7 @@ interface IDeviceOSUpdatesRouteProps {
 
 interface IDeviceOSUpdatesProps extends IReduxStateProps, IReduxDispatchProps,
     RouteComponentProps<IDeviceOSUpdatesRouteProps> {
-    griddleState: GriddleDecoratorState;
-    events: any;
+
 }
 
 interface IBaseDeviceOSUpdatesState {
@@ -56,35 +56,14 @@ class BaseDeviceOSUpdates extends React.Component<IDeviceOSUpdatesProps, IBaseDe
       hide_config_updates: true,
     };
 
-    public componentWillMount?() {
-        const filters: FlaskFilters = [
-            { name: "is_config_data_update", op: "ne", val: "1" },
-        ];
-
-        this.props.fetchAvailableOSUpdates("" + this.props.match.params.id,
-            this.props.griddleState.pageSize, 1, [], filters);
-    }
-
-    public componentWillUpdate?(nextProps: IDeviceOSUpdatesProps, nextState: IBaseDeviceOSUpdatesState) {
-        const {griddleState} = this.props;
-        const {griddleState: nextGriddleState} = nextProps;
-
-        if (nextGriddleState.filter !== griddleState.filter ||
-            nextGriddleState.currentPage !== griddleState.currentPage ||
-            this.state !== nextState
-        ) {
-            const filters: FlaskFilters = [{ name: "human_readable_name", op: "ilike", val: `%${nextGriddleState.filter}%` }];
-            if (nextState.hide_config_updates) {
-                filters.push({ name: "is_config_data_update", op: "ne", val: "1" });
-            }
-
-            this.props.fetchAvailableOSUpdates(
-                "" + this.props.match.params.id,
-                nextGriddleState.pageSize,
-                nextGriddleState.currentPage, [],
-                filters);
-        }
-    }
+    // public componentWillMount?() {
+    //     const filters: FlaskFilters = [
+    //         { name: "is_config_data_update", op: "ne", val: "1" },
+    //     ];
+    //
+    //     this.props.fetchAvailableOSUpdates("" + this.props.match.params.id,
+    //         this.props.griddleState.pageSize, 1, [], filters);
+    // }
 
     public render() {
         const {
@@ -102,36 +81,32 @@ class BaseDeviceOSUpdates extends React.Component<IDeviceOSUpdatesProps, IBaseDe
                     <Button size="small" floated="right">Update All</Button> :
                     <Button size="small" title="Unsupervised" floated="right" disabled>Update All</Button> }
                 <Divider/>
-                {updates &&
-                <Griddle
+                <DeviceUpdatesTable
                     data={updates.items}
-                    plugins={[SemanticUIPlugin()]}
-                    styleConfig={{
-                        classNames: {
-                            NoResults: "ui message",
-                            Table: "ui celled table",
-                        },
-                    }}
-                    events={this.props.events}
-                    components={{Layout}}
-                    pageProperties={{
-                        currentPage: this.props.griddleState.currentPage,
-                        pageSize: this.props.griddleState.pageSize,
-                        recordCount: updates.recordCount,
-                    }}
-                >
-                    <RowDefinition>
-                        <ColumnDefinition title="Product ID" id="attributes.product_key" />
-                        <ColumnDefinition title="Name" id="attributes.human_readable_name" />
-                        <ColumnDefinition title="Version" id="attributes.version" />
-                    </RowDefinition>
-                </Griddle>}
+                    defaultPageSize={updates.pageSize}
+                    loading={updates.loading}
+                    onFetchData={this.fetchData}
+                    pages={updates.pages}
+                />
             </div>
         );
+    }
+
+    private fetchData = (state: IReactTableState) => {
+        const sorting = state.sorted.map((value) => (value.desc ? value.id : "-" + value.id));
+        const filtering: FlaskFilter[] = state.filtered.map((value) => {
+            return {
+                name: value.id,
+                op: "ilike" as FlaskFilterOperation,
+                val: `%25${value.value}%25`,
+            };
+        });
+
+        this.props.fetchAvailableOSUpdates(this.props.match.params.id, state.pageSize, state.page + 1, sorting, filtering);
     }
 }
 
 export const DeviceOSUpdates = connect<IReduxStateProps, IReduxDispatchProps, any>(
     mapStateToProps,
     mapDispatchToProps,
-)(griddle(BaseDeviceOSUpdates));
+)(BaseDeviceOSUpdates);

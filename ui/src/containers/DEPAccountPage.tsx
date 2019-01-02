@@ -3,19 +3,18 @@ import {connect, Dispatch} from "react-redux";
 import {RouteComponentProps} from "react-router";
 import {Link} from "react-router-dom";
 import {bindActionCreators} from "redux";
-import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
-import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
-import List from "semantic-ui-react/dist/commonjs/elements/List/List";
-import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
+import {DEPProfilesTable} from "../components/react-tables/DEPProfilesTable";
+import {ButtonLink} from "../components/semantic-ui/ButtonLink";
 import {RootState} from "../reducers";
 import {DEPAccountState} from "../store/dep/account_reducer";
 import {account, AccountReadActionRequest} from "../store/dep/actions";
-import {DEPProfilesTable} from "../components/griddle-tables/DEPProfilesTable";
-import {ButtonLink} from "../components/semantic-ui/ButtonLink";
 
-interface IOwnProps {
-
-}
+import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
+import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
+import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
+import List from "semantic-ui-react/dist/commonjs/elements/List/List";
+import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
 
 interface IReduxStateProps {
     dep_account?: DEPAccountState;
@@ -33,17 +32,13 @@ interface IDEPAccountPageProps extends IReduxStateProps, IReduxDispatchProps, Ro
 
 }
 
-interface IDEPAccountPageState {
+class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, any> {
 
-}
-
-class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, IDEPAccountPageState> {
-
-    componentWillMount() {
+    public componentWillMount() {
         this.props.getAccount(this.props.match.params.id, ["dep_profiles"]);
     }
 
-    render() {
+    public render() {
 
         const {
             dep_account: {
@@ -58,6 +53,16 @@ class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, ID
 
         return (
             <Container className="DEPAccountPage">
+                <Divider hidden />
+                <Breadcrumb>
+                    <Breadcrumb.Section><Link to={`/`}>Home</Link></Breadcrumb.Section>
+                    <Breadcrumb.Divider />
+                    <Breadcrumb.Section><Link to={`/settings`}>Settings</Link></Breadcrumb.Section>
+                    <Breadcrumb.Divider />
+                    <Breadcrumb.Section><Link to={`/settings/dep/accounts`}>DEP Accounts</Link></Breadcrumb.Section>
+                    <Breadcrumb.Divider />
+                    <Breadcrumb.Section active>{loading ? "DEP Account" : title}</Breadcrumb.Section>
+                </Breadcrumb>
 
                 <Header as="h1">{title}</Header>
 
@@ -93,8 +98,9 @@ class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, ID
                         </Segment>
                     </Segment.Group>
 
+                  <Header as="h3">Profiles</Header>
                   <ButtonLink to={`/dep/accounts/${dep_account.id}/add/profile`}>New DEP Profile</ButtonLink>
-                    
+
                   <DEPProfilesTable depAccountId={dep_account.id} data={dep_profiles} />
                 </div>
                 }
@@ -103,8 +109,8 @@ class UnconnectedDEPAccountPage extends React.Component<IDEPAccountPageProps, ID
     }
 }
 
-export const DEPAccountPage = connect<IReduxStateProps, IReduxDispatchProps, IOwnProps>(
-    (state: RootState, ownProps: IOwnProps): IReduxStateProps => {
+export const DEPAccountPage = connect<IReduxStateProps, IReduxDispatchProps, any>(
+    (state: RootState, ownProps: any): IReduxStateProps => {
         return {dep_account: state.dep.account};
     },
     (dispatch: Dispatch<RootState>, ownProps?: any): IReduxDispatchProps => bindActionCreators({

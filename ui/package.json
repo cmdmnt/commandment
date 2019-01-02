@@ -64,7 +64,6 @@
     "font-awesome": "^4.7.0",
     "formik": "^1.3.1",
     "formik-semantic-ui": "^0.8.2",
-    "griddle-react": "^1.13.1",
     "immutable": "^4.0.0-rc.12",
     "is-arrayish": "^0.3.1",
     "moment": "^2.19.1",

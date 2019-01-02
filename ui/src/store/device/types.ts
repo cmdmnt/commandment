@@ -116,9 +116,26 @@ export interface AvailableOSUpdate {
     version: string;
 }
 
+export enum MDMCommandType {
+    CertificateList = "CertificateList",
+    ClearPasscode = "ClearPasscode",
+    DeviceInformation = "DeviceInformation",
+    DeviceLock = "DeviceLock",
+    InstalledApplicationList = "InstalledApplicationList",
+    InstallProfile = "InstallProfile",
+    InstallProvisioningProfile = "InstallProvisioningProfile",
+    ProfileList = "ProfileList",
+    ProvisioningProfileList = "ProvisioningProfileList",
+    RemoveProfile = "RemoveProfile",
+    RemoveProvisioningProfile = "RemoveProvisioningProfile",
+    RestartDevice = "RestartDevice",
+    SecurityInfo = "SecurityInfo",
+    ShutDownDevice = "ShutDownDevice",
+}
+
 export interface Command {
     id?: number;
-    command_class?: string;
+    command_class?: MDMCommandType;
     uuid?: string;
     input_data?: string;
     queued_status: string;

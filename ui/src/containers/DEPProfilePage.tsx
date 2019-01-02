@@ -20,6 +20,7 @@ import {
 } from "../store/dep/actions";
 import {IDEPProfileState} from "../store/dep/profile_reducer";
 import {DEPProfile, SkipSetupSteps} from "../store/dep/types";
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider";
 
 interface IReduxStateProps {
     dep_profile?: IDEPProfileState;
@@ -102,6 +103,7 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
 
         return (
             <Container className="DEPProfilePage">
+                <Divider hidden />
                 <Breadcrumb>
                     <Breadcrumb.Section><Link to={`/`}>Home</Link></Breadcrumb.Section>
                     <Breadcrumb.Divider />

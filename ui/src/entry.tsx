@@ -12,7 +12,6 @@ import {AppLayout} from "./components/AppLayout";
 
 import {ApplicationPage} from "./containers/ApplicationPage";
 import {ApplicationsPage} from "./containers/ApplicationsPage";
-import {CertificatesPage} from "./containers/CertificatesPage";
 import {DeviceAuthPage} from "./containers/config/DeviceAuthPage";
 import {OrganizationPage} from "./containers/config/OrganizationPage";
 import {DashboardPage} from "./containers/DashboardPage";
@@ -43,7 +42,7 @@ render(
                 <Route exact path="/" component={DashboardPage} />
                 <Route exact path="/applications" component={ApplicationsPage} />
                 <Route path="/applications/add/:platform" component={ApplicationPage} />
-                <Route path="/certificates" component={CertificatesPage} />
+
                 <Route exact path="/devices" component={DevicesPage} />
                 <Route path="/devices/:id" component={DevicePage} />
 

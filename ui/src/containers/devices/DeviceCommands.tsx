@@ -1,17 +1,14 @@
-import * as React from 'react';
+import * as React from "react";
 import {connect, Dispatch} from "react-redux";
-import Griddle, {RowDefinition, ColumnDefinition} from 'griddle-react';
-import {SinceNowUTC} from "../../components/griddle/SinceNowUTC";
-import {RootState} from "../../reducers/index";
-import {DeviceCommandsState} from "../../reducers/device/commands";
-import {SimpleLayout as Layout} from "../../components/griddle/SimpleLayout";
-import {CommandsActionRequest, commands as fetchCommands} from "../../store/device/actions";
 import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {SemanticUIPlugin} from "../../griddle-plugins/semantic-ui/index";
-import {griddle, GriddleDecoratorState} from "../../hoc/griddle";
-
-
+import {SinceNowUTC} from "../../components/griddle/SinceNowUTC";
+import {DeviceCommandsTable} from "../../components/react-tables/DeviceCommandsTable";
+import {DeviceCommandsState} from "../../store/device/commands_reducer";
+import {RootState} from "../../reducers/index";
+import {commands as fetchCommands, CommandsActionRequest} from "../../store/device/actions";
+import {IReactTableState} from "../../store/table/types";
+import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
 
 interface ReduxStateProps {
     commands?: DeviceCommandsState;
@@ -19,7 +16,7 @@ interface ReduxStateProps {
 
 function mapStateToProps(state: RootState, ownProps?: any): ReduxStateProps {
     return {
-        commands: state.device.commands
+        commands: state.device.commands,
     }
 }
 
@@ -29,7 +26,7 @@ interface ReduxDispatchProps {
 
 function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
    return bindActionCreators({
-       fetchCommands
+       fetchCommands,
    }, dispatch);
 }
 
@@ -38,71 +35,52 @@ interface DeviceCommandsRouteProps {
 }
 
 interface DeviceCommandsProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<DeviceCommandsRouteProps> {
-    griddleState: GriddleDecoratorState;
-    events: any;
+
 }
 
 interface DeviceCommandsComponentState {
 
 }
 
-
 export class UnconnectedDeviceCommands extends React.Component<DeviceCommandsProps, DeviceCommandsComponentState> {
 
-    componentWillMount?() {
-        this.props.fetchCommands(''+this.props.match.params.id, 10, 1, ['-sent_at']);
-    }
+    // componentWillMount?() {
+    //     this.props.fetchCommands(''+this.props.match.params.id, 10, 1, ['-sent_at']);
+    // }
 
-    componentWillUpdate?(nextProps: DeviceCommandsProps, nextState: void | Readonly<DeviceCommandsComponentState>) {
-        const {griddleState} = this.props;
-        const {griddleState: nextGriddleState} = nextProps;
-
-        if (nextGriddleState.filter !== griddleState.filter || nextGriddleState.currentPage !== griddleState.currentPage) {
-            this.props.fetchCommands(
-                ''+this.props.match.params.id,
-                10, nextGriddleState.currentPage, [], []);
-        }
-    }
-
-    render() {
+    public render() {
         const {
-            commands
+            commands,
         } = this.props;
 
         return (
-            <div className='DeviceCommands container'>
-
-                {commands &&
-                <Griddle
+            <div className="DeviceCommands container">
+                <DeviceCommandsTable
                     data={commands.items}
-                    plugins={[SemanticUIPlugin()]}
-                    styleConfig={{
-                        classNames: {
-                            Table: 'ui celled table',
-                            NoResults: 'ui message'
-                        }
-                    }}
-                    events={this.props.events}
-                    components={{Layout}}
-                    pageProperties={{
-                        recordCount: commands.recordCount,
-                        currentPage: this.props.griddleState.currentPage,
-                        pageSize: this.props.griddleState.pageSize
-                    }}
-                >
-                    <RowDefinition>
-                        <ColumnDefinition id="id" />
-                        <ColumnDefinition title='Type' id='attributes.request_type' />
-                        <ColumnDefinition title='Status' id="attributes.status" />
-                        <ColumnDefinition title='Sent' id="attributes.sent_at" customComponent={SinceNowUTC} />
-                    </RowDefinition>
-                </Griddle>}
+                    defaultPageSize={commands.pageSize}
+                    loading={commands.loading}
+                    onFetchData={this.fetchData}
+                    pages={commands.pages}
+                />
             </div>
         )
+    }
+
+    private fetchData = (state: IReactTableState) => {
+        const sorting = state.sorted.map((value) => (value.desc ? value.id : "-" + value.id));
+        const filtering: FlaskFilter[] = state.filtered.map((value) => {
+            return {
+                name: value.id,
+                op: "ilike" as FlaskFilterOperation,
+                val: `%25${value.value}%25`,
+            };
+        });
+
+        this.props.fetchCommands(this.props.match.params.id, state.pageSize, state.page + 1, sorting, filtering);
     }
 }
 
 export const DeviceCommands = connect<ReduxStateProps, ReduxDispatchProps, any>(
     mapStateToProps,
-    mapDispatchToProps
-)(griddle(UnconnectedDeviceCommands));
+    mapDispatchToProps,
+)(UnconnectedDeviceCommands);
