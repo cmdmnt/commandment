@@ -3,7 +3,7 @@ import {connect, Dispatch} from "react-redux";
 
 import {Route, RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {MacOSDeviceDetail} from "../components/MacOSDeviceDetail";
+import {MacOSDeviceDetail} from "../components/devices/MacOSDeviceDetail";
 import {RootState} from "../reducers/index";
 import {
     CacheFetchActionRequest, clearPasscode,
@@ -20,6 +20,7 @@ import {
 import {DeviceState} from "../store/device/device";
 
 import {SyntheticEvent} from "react";
+import {Link} from "react-router-dom";
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
@@ -43,16 +44,11 @@ import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/B
 import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
-import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
-import List from "semantic-ui-react/dist/commonjs/elements/List/List";
-import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
-import Grid from "semantic-ui-react/src/collections/Grid";
-import Menu from "semantic-ui-react/src/collections/Menu";
+
 import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
 import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
+import {DEPDeviceDetail} from "../components/devices/DEPDeviceDetail";
 import {ButtonLink} from "../components/semantic-ui/ButtonLink";
-import {Link} from "react-router-dom";
 
 interface IReduxStateProps {
     device: DeviceState;
@@ -104,9 +100,7 @@ interface IRouteParameters {
     id: number;
 }
 
-interface DevicePageProps extends IReduxStateProps, IReduxDispatchProps, RouteComponentProps<IRouteParameters> {
-    componentDidMount: () => void;
-}
+type DevicePageProps = IReduxStateProps & IReduxDispatchProps & RouteComponentProps<IRouteParameters>;
 
 interface IDevicePageState {
     filter: string;
@@ -146,6 +140,18 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
             }
         }
 
+        let DetailComponent = <span>Loading</span>;
+        let showTools = true;
+
+        if (device.device && !device.loading) {
+            if (device.device.attributes.is_dep) {
+                DetailComponent = <DEPDeviceDetail device={device} />;
+                showTools = false;
+            } else {
+                DetailComponent = <MacOSDeviceDetail device={device} tagChoices={tagChoices} deviceTags={deviceTags} />;
+            }
+        }
+
         return (
             <Container className="DevicePage">
                 <Divider hidden />
@@ -157,77 +163,13 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
                     <Breadcrumb.Section>Device</Breadcrumb.Section>
                 </Breadcrumb>
 
-                <Header as="h1">{device.device ? device.device.attributes.device_name : "Loading&hellip;"}</Header>
+                {DetailComponent}
 
-                <Grid>
-                    <Grid.Row>
-                        <Grid.Column>
-                            {device && <MacOSDeviceDetail device={device}/>}
-                            <Segment attached>
-                                <Button icon labelPosition="left" onClick={() => restart(device.device.id)}>
-                                    <Icon name="refresh" />
-                                    Restart
-                                </Button>
-                                <Button icon labelPosition="left" onClick={() => shutdown(device.device.id)}>
-                                    <Icon name="arrow down" />
-                                    Shut down
-                                </Button>
-                                <Button icon labelPosition="left" onClick={() => clearPasscode(device.device.id)}>
-                                    <Icon name="delete" />
-                                    Clear Passcode
-                                </Button>
-                                <Button icon labelPosition="left" onClick={() => lock(device.device.id)}>
-                                    <Icon name="lock" />
-                                    Lock
-                                </Button>
-                                <Button icon labelPosition="left" onClick={() => inventory(device.device.id)}>
-                                    <Icon name="search" />
-                                    Full Inventory
-                                </Button>
-                                <Button icon labelPosition="left" onClick={() => push(device.device.id)}>
-                                    <Icon name="pushed" />
-                                    Blank Push
-                                </Button>
-                                <ButtonLink to={`/devices/${device_id}/rename`}>
-                                    Rename
-                                </ButtonLink>
-                                <TagDropdown
-                                    loading={device.tagsLoading}
-                                    tags={tagChoices}
-                                    value={deviceTags}
-                                    onAddItem={this.handleAddTag}
-                                    onSearch={this.handleSearchTag}
-                                    onChange={this.handleChangeTag}
-                                />
-                            </Segment>
-                            <Menu pointing secondary color="purple" inverted>
-                                <MenuItemLink to={`/devices/${device_id}/detail`}>Detail</MenuItemLink>
-                                <MenuItemLink to={`/devices/${device_id}/certificates`}>Certificates</MenuItemLink>
-                                <MenuItemLink to={`/devices/${device_id}/commands`}>Commands</MenuItemLink>
-                                <MenuItemLink to={`/devices/${device_id}/installed_applications`}>Applications</MenuItemLink>
-                                <MenuItemLink to={`/devices/${device_id}/installed_profiles`}>Profiles</MenuItemLink>
-                                <MenuItemLink to={`/devices/${device_id}/available_os_updates`}>Updates</MenuItemLink>
-                            </Menu>
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Route path="/devices/:id/detail" component={DeviceDetail}/>
-                            <Route path="/devices/:id/certificates" component={DeviceCertificates}/>
-                            <Route path="/devices/:id/commands" component={DeviceCommands}/>
-                            <Route path="/devices/:id/installed_applications" component={DeviceApplications}/>
-                            <Route path="/devices/:id/installed_profiles" component={DeviceProfiles}/>
-                            <Route path="/devices/:id/available_os_updates" component={DeviceOSUpdates}/>
-
-                            <Route path="/devices/:id/rename" component={DeviceRename}/>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
             </Container>
         );
     }
 
-    protected handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value:  string }) => {
+    protected handleAddTag = (event: SyntheticEvent<MouseEvent>, { value }: { value: string }) => {
         const tag: Tag = {
             color:  "888888",
             name: value,
@@ -252,7 +194,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
     };
 }
 
-export const DevicePage = connect<IReduxStateProps,  IReduxDispatchProps, DevicePageProps>(
+export const DevicePage = connect<IReduxStateProps,  IReduxDispatchProps, IDevicePageProps>(
     mapStateToProps,
     mapDispatchToProps,
 )(BaseDevicePage);

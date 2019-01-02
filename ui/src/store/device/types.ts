@@ -66,6 +66,21 @@ export interface Device {
     subscriber_mcc: string;
     subscriber_mnc: string;
     voice_roaming_enabled: boolean;
+
+    // DEP
+    dep_profile_id?: number;
+    description?: string;
+    asset_tag?: string;
+    color?: string;
+    device_assigned_by?: string;
+    device_assigned_date?: string;
+    device_family?: string;
+    is_dep: boolean;
+    os?: string;
+    profile_assign_time?: string;
+    profile_push_time?: string;
+    profile_status?: string;
+    profile_uuid?: string;
 }
 
 export interface InstalledCertificate {

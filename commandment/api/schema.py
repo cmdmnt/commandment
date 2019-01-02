@@ -71,7 +71,18 @@ class DeviceSchema(Schema):
     # )
 
     # DEP
-    description = fields.Str()
+    is_dep = fields.Bool()
+    description = fields.Str(dump_only=True)
+    color = fields.Str(dump_only=True)
+    asset_tag = fields.Str(dump_only=True)
+    profile_status = fields.Str(dump_only=True)
+    profile_uuid = fields.UUID(dump_only=True)
+    profile_assign_time = fields.DateTime(dump_only=True)
+    profile_push_time = fields.DateTime(dump_only=True)
+    device_assigned_date = fields.DateTime(dump_only=True)
+    device_assigned_by = fields.Str(dump_only=True)
+    os = fields.Str(dump_only=True)
+    device_family = fields.Str(dump_only=True)
 
     commands = Relationship(
         related_view='api_app.commands_list',
