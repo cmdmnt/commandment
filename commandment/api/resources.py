@@ -59,6 +59,25 @@ class DeviceRelationship(ResourceRelationship):
         'url_field': 'device_id'
     }
 
+    def before_post(self, args, kwargs, json_data=None):
+        """Custom logic for relationship management:
+
+        - If the dep_profile relationship is created, we need to check if the DEP Profile exists or has been uploaded yet.
+        """
+        pass
+
+    def before_patch(self, args, kwargs, json_data=None):
+        pass
+
+    def after_patch(self, result):
+        """Device relationship post-processing:
+
+        - If `dep_profiles` relationship was changed, update the DEP profile on the apple side.
+        """
+        pass
+        # dep = get_dep()
+
+
 
 class CertificatesList(ResourceList):
     schema = CertificateSchema

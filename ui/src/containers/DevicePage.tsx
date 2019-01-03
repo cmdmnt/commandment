@@ -21,8 +21,6 @@ import {DeviceState} from "../store/device/device";
 
 import {SyntheticEvent} from "react";
 import {Link} from "react-router-dom";
-import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
-import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
 import {JSONAPIDataObject, JSONAPIRelationship} from "../json-api";
 import {getPercentCapacityUsed} from "../selectors/device";
@@ -32,23 +30,15 @@ post as createTag, PostActionRequest as PostTagActionRequest,
 } from "../store/tags/actions";
 import {ITagsState} from "../store/tags/reducer";
 import {Tag} from "../store/tags/types";
-import {DeviceRename} from "./DeviceRename";
-import {DeviceApplications} from "./devices/DeviceApplications";
-import {DeviceCertificates} from "./devices/DeviceCertificates";
-import {DeviceCommands} from "./devices/DeviceCommands";
-import {DeviceDetail} from "./devices/DeviceDetail";
-import {DeviceOSUpdates} from "./devices/DeviceOSUpdates";
-import {DeviceProfiles} from "./devices/DeviceProfiles";
 
 import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
-import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
+
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
 import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
 import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
 import {DEPDeviceDetail} from "../components/devices/DEPDeviceDetail";
-import {ButtonLink} from "../components/semantic-ui/ButtonLink";
 
 interface IReduxStateProps {
     device: DeviceState;
@@ -160,7 +150,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
                     <Breadcrumb.Divider />
                     <Breadcrumb.Section><Link to={`/devices`}>Devices</Link></Breadcrumb.Section>
                     <Breadcrumb.Divider />
-                    <Breadcrumb.Section>Device</Breadcrumb.Section>
+                    <Breadcrumb.Section>{device.device ? device.device.attributes.device_name : "Device"}</Breadcrumb.Section>
                 </Breadcrumb>
 
                 {DetailComponent}

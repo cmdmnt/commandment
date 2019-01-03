@@ -9,12 +9,30 @@ from dateutil import parser as dateparser
 from locale import atof
 import json
 import logging
+from flask import g, current_app
 
 from commandment.dep import DEPProfileRemovals
 from .errors import DEPServiceError, DEPClientError
 from email.utils import parsedate  # Necessary for HTTP-Date
 
 logger = logging.getLogger(__name__)
+
+
+# def get_dep():  # type: () -> DEP
+#     dep = getattr(g, '_dep', None)
+#
+#     if dep is None:
+#         dep_account: DEPAccount = db.session.query(DEPAccount).one()
+#         dep = DEP(
+#             consumer_key=dep_account.consumer_key,
+#             consumer_secret=dep_account.consumer_secret,
+#             access_token=dep_account.access_token,
+#             access_secret=dep_account.access_secret,
+#         )
+#
+#         g._dep = dep
+#
+#     return dep
 
 
 class DEPAuth(AuthBase):

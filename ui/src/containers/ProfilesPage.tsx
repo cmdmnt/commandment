@@ -8,7 +8,6 @@ import Header from "semantic-ui-react/src/elements/Header";
 
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {griddle, GriddleDecoratorHandlers, GriddleDecoratorState} from "../hoc/griddle";
 import {RootState} from "../reducers/index";
 import * as actions from "../store/profiles/actions";
 import {IndexActionRequest, UploadActionRequest} from "../store/profiles/actions";
@@ -29,8 +28,6 @@ interface IReduxDispatchProps {
 
 interface IProfilesPageProps extends IReduxStateProps, IReduxDispatchProps, RouteComponentProps<any> {
     componentWillMount: () => void;
-    griddleState: GriddleDecoratorState;
-    events: GriddleDecoratorHandlers;
 }
 
 interface IProfilesPageState {
@@ -45,7 +42,6 @@ export class UnconnectedProfilesPage extends React.Component<IProfilesPageProps,
 
     public render(): JSX.Element {
         const {
-            griddleState,
             profiles,
         } = this.props;
 
@@ -76,4 +72,4 @@ export const ProfilesPage = connect<IReduxStateProps, IReduxDispatchProps, IProf
         index: actions.index,
         upload: actions.upload,
     }, dispatch),
-)(griddle(UnconnectedProfilesPage));
+)(UnconnectedProfilesPage);

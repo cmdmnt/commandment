@@ -125,7 +125,7 @@ class DEPProfile(db.Model):
     department = db.Column(db.String)
     # language = db.Column(db.String)
     # region = db.Column(db.String)
-    last_upload_at = db.Column(db.DateTime)
+    # last_upload_at = db.Column(db.DateTime)
 
     anchor_certs = db.relationship(
         'DEPAnchorCertificate',

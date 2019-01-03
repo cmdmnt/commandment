@@ -124,6 +124,14 @@ class DeviceSchema(Schema):
         type_='available_os_updates'
     )
 
+    dep_profile = Relationship(
+        related_view='dep_app.dep_profile_detail',
+        related_view_kwargs={'device_id': '<id>'},
+        many=False,
+        schema='DEPProfileSchema',
+        type_='dep_profiles',
+    )
+
 
 class PrivateKeySchema(Schema):
     class Meta:

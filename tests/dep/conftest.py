@@ -1,7 +1,12 @@
 import pytest
 import requests
 import os.path
+
+from commandment.dep import SetupAssistantStep
 from commandment.dep.dep import DEP
+from commandment.dep.models import DEPProfile
+from commandment.models import Device
+from sqlalchemy.orm.session import Session
 
 SIMULATOR_URL = 'http://localhost:8080'
 
@@ -65,11 +70,27 @@ def dep_profile() -> dict:
         'support_email_address': 'test@localhost',
         'org_magic': 'COMMANDMENT-TEST-FIXTURE',
         'skip_setup_items': [
-            'Biometric'
+            SetupAssistantStep.AppleID,
         ],
         'department': 'Commandment Dept',
         'devices': [],
-        'language': 'en',
-        'region': 'AU'
     }
     return p
+
+
+@pytest.fixture
+def dep_profile_committed(dep_profile: dict, session: Session):
+    dp = DEPProfile(**dep_profile)
+    session.add(dp)
+    session.commit()
+
+
+@pytest.fixture(scope='function')
+def device(session: Session):
+    """Create a fixture device which is referenced in all of the fake MDM responses by its UDID."""
+    d = Device(
+        udid='00000000-1111-2222-3333-444455556666',
+        device_name='commandment-mdmclient'
+    )
+    session.add(d)
+    session.commit()

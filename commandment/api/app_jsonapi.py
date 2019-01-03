@@ -34,7 +34,7 @@ api.route(DeviceList, 'devices_list', '/v1/devices', '/v1/device_groups/<int:dev
 api.route(DeviceDetail, 'device_detail', '/v1/devices/<int:device_id>')
 api.route(DeviceRelationship, 'device_commands', '/v1/devices/<int:device_id>/relationships/commands')
 api.route(DeviceRelationship, 'device_tags', '/v1/devices/<int:device_id>/relationships/tags')
-
+api.route(DeviceRelationship, 'device_dep_profile', '/v1/devices/<int:device_id>/relationships/dep_profile')
 
 # Organizations
 # api.route(OrganizationList, 'organizations_list', '/v1/organizations')
