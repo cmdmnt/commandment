@@ -112,6 +112,8 @@ class InstalledProfile(db.Model):
     """(bool): Does the installed profile have a removal password?"""
     is_encrypted = db.Column(db.Boolean)
     """(bool): Is the installed profile encrypted?"""
+    is_managed = db.Column(db.Boolean)
+    """(bool): Is the installed profile managed? which means it has been sourced from the MDM."""
 
     payload_description = db.Column(db.String)
     """(str): Payload description (value of PayloadDescription)"""

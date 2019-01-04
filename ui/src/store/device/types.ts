@@ -160,3 +160,31 @@ export interface Command {
     after?: Date;
     ttl: number;
 }
+
+export enum DeviceModelName {
+    iPadAir = "iPad Air",
+    iPhone = "iPhone",
+    MacMini = "Mac Mini",
+    MacPro = "Mac Pro",
+}
+
+export enum DeviceOperatingSystem {
+    iOS = "iOS",
+    macOS = "macOS",
+    tvOS = "tvOS",
+    watchOS = "watchOS",
+    Unknown = "Unknown",
+}
+
+export function operatingSystem(model: DeviceModelName): DeviceOperatingSystem {
+    switch (model) {
+        case DeviceModelName.iPadAir:
+        case DeviceModelName.iPhone:
+            return DeviceOperatingSystem.iOS;
+        case DeviceModelName.MacMini:
+        case DeviceModelName.MacPro:
+            return DeviceOperatingSystem.macOS;
+        default:
+            return DeviceOperatingSystem.Unknown;
+    }
+}

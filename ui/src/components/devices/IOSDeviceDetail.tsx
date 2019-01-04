@@ -34,11 +34,18 @@ import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import {DropdownItemProps} from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
 
 import "./MacOSDeviceDetail.scss";
+import {ITagsState} from "../../store/tags/reducer";
+import {SyntheticEvent} from "react";
+import {DropdownProps} from "semantic-ui-react/src/modules/Dropdown";
 
 interface IIOSDeviceDetailProps {
     device: DeviceState;
-    tagChoices: DropdownItemProps[];
+    tags: ITagsState;
     deviceTags: number[];
+
+    onAddTag: (event: SyntheticEvent<any>, data: object) => void;
+    onChangeTag: (event: SyntheticEvent<HTMLElement>, data: DropdownProps) => void;
+    onSearchTag: (value: string) => void;
 
     clearPasscode: ClearPasscodeActionRequest;
     inventory: InventoryActionRequest;
@@ -51,13 +58,14 @@ interface IIOSDeviceDetailProps {
 
 export const IOSDeviceDetail: FunctionComponent<IIOSDeviceDetailProps> = ({
                                                                                   device,
-                                                                                  tagChoices, deviceTags,
+                                                                                  tags, deviceTags,
                                                                                   clearPasscode,
                                                                                   inventory,
                                                                                   lock,
                                                                                   push,
                                                                                   restart,
                                                                                   shutdown,
+    onAddTag, onChangeTag, onSearchTag,
                                                                                   test}: IIOSDeviceDetailProps) => {
 
     if (!device.device) {
@@ -71,8 +79,20 @@ export const IOSDeviceDetail: FunctionComponent<IIOSDeviceDetailProps> = ({
     return (
         <div className="IOSDeviceDetail">
             <Divider hidden />
-            <Header as="h1">{device.device ? device.device.attributes.device_name : "Loading&hellip;"}</Header>
-            <Header as="h2" color="grey">{attributes.serial_number}</Header>
+            <Header as="h1">
+                {device.device.attributes.device_name}
+                <Header.Subheader>SN: {device.device.attributes.serial_number}</Header.Subheader>
+            </Header>
+
+            <TagDropdown
+                loading={tags.loading}
+                tags={tags.items}
+                value={deviceTags}
+                onAddItem={onAddTag}
+                onSearch={onSearchTag}
+                onChange={onChangeTag}
+            />
+            <Divider hidden />
             <Grid columns={2} className="MacOSDeviceDetail">
                 <Grid.Row>
                     <Grid.Column>
@@ -125,10 +145,17 @@ export const IOSDeviceDetail: FunctionComponent<IIOSDeviceDetailProps> = ({
                                 </List.Content>
                             </List.Item>
                             <List.Item>
-                                <List.Icon name="protect" size="large" verticalAlign="middle"/>
+                                <List.Icon name="eye" size="large" verticalAlign="middle"/>
                                 <List.Content>
-                                    <List.Header>SIP</List.Header>
-                                    <List.Description>{attributes.sip_enabled ? "Enabled" : "Disabled"}</List.Description>
+                                    <List.Header>Supervised</List.Header>
+                                    <List.Description>{attributes.is_supervised ? "Yes" : "No"}</List.Description>
+                                </List.Content>
+                            </List.Item>
+                            <List.Item>
+                                <List.Icon name="mobile" size="large" verticalAlign="middle"/>
+                                <List.Content>
+                                    <List.Header>IMEI</List.Header>
+                                    <List.Description>{attributes.imei}</List.Description>
                                 </List.Content>
                             </List.Item>
                         </List>
@@ -139,11 +166,15 @@ export const IOSDeviceDetail: FunctionComponent<IIOSDeviceDetailProps> = ({
                 <Grid.Row>
                     <Grid.Column>
                         <Divider />
-                        <Button icon labelPosition="left" onClick={() => restart(device.device.id)}>
+                        <Button icon labelPosition="left"
+                                disabled={!device.device.attributes.is_supervised}
+                                onClick={() => restart(device.device.id)}>
                             <Icon name="refresh"/>
                             Restart
                         </Button>
-                        <Button icon labelPosition="left" onClick={() => shutdown(device.device.id)}>
+                        <Button icon labelPosition="left"
+                                disabled={!device.device.attributes.is_supervised}
+                                onClick={() => shutdown(device.device.id)}>
                             <Icon name="arrow down"/>
                             Shut down
                         </Button>
@@ -166,14 +197,6 @@ export const IOSDeviceDetail: FunctionComponent<IIOSDeviceDetailProps> = ({
                         <ButtonLink to={`/devices/${device.device.id}/rename`}>
                             Rename
                         </ButtonLink>
-                        <TagDropdown
-                            loading={device.tagsLoading}
-                            tags={tagChoices}
-                            value={deviceTags}
-                            onAddItem={this.handleAddTag}
-                            onSearch={this.handleSearchTag}
-                            onChange={this.handleChangeTag}
-                        />
                         <Menu pointing secondary color="purple" inverted>
                             <MenuItemLink to={`/devices/${device.device.id}/detail`}>Detail</MenuItemLink>
                             <MenuItemLink to={`/devices/${device.device.id}/certificates`}>Certificates</MenuItemLink>

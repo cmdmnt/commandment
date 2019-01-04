@@ -1,32 +1,43 @@
 import * as React from "react";
+import {SyntheticEvent} from "react";
 import {connect, Dispatch} from "react-redux";
 
-import {Route, RouteComponentProps} from "react-router";
+import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
 import {MacOSDeviceDetail} from "../components/devices/MacOSDeviceDetail";
 import {RootState} from "../reducers/index";
 import {
-    CacheFetchActionRequest, clearPasscode,
-    ClearPasscodeActionRequest, fetchDeviceIfRequired,
-    inventory, InventoryActionRequest,
-    lock, LockActionRequest,
-    patchRelationship, PatchRelationshipActionRequest,
-    postRelated, PostRelatedActionRequest,
-    push, PushActionRequest,
-    restart, RestartActionRequest,
-    shutdown, ShutdownActionRequest,
-    test, TestActionRequest,
+    CacheFetchActionRequest,
+    clearPasscode,
+    ClearPasscodeActionRequest,
+    fetchDeviceIfRequired,
+    inventory,
+    InventoryActionRequest,
+    lock,
+    LockActionRequest,
+    patchRelationship,
+    PatchRelationshipActionRequest,
+    postRelated,
+    PostRelatedActionRequest,
+    push,
+    PushActionRequest,
+    restart,
+    RestartActionRequest,
+    shutdown,
+    ShutdownActionRequest,
+    test,
+    TestActionRequest,
 } from "../store/device/actions";
 import {DeviceState} from "../store/device/device";
-
-import {SyntheticEvent} from "react";
 import {Link} from "react-router-dom";
 import {isArray} from "../guards";
-import {JSONAPIDataObject, JSONAPIRelationship} from "../json-api";
+import {JSONAPIRelationship} from "../json-api";
 import {getPercentCapacityUsed} from "../selectors/device";
 import {
-index as fetchTags, IndexActionRequest,
-post as createTag, PostActionRequest as PostTagActionRequest,
+    index as fetchTags,
+    IndexActionRequest,
+    post as createTag,
+    PostActionRequest as PostTagActionRequest,
 } from "../store/tags/actions";
 import {ITagsState} from "../store/tags/reducer";
 import {Tag} from "../store/tags/types";
@@ -36,9 +47,10 @@ import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/B
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
-import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
-import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
+import {DropdownProps} from "semantic-ui-react/src/modules/Dropdown";
 import {DEPDeviceDetail} from "../components/devices/DEPDeviceDetail";
+import {DeviceOperatingSystem, operatingSystem} from "../store/device/types";
+import {IOSDeviceDetail} from "../components/devices/IOSDeviceDetail";
 
 interface IReduxStateProps {
     device: DeviceState;
@@ -139,9 +151,17 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
         };
 
         if (device.device && !device.loading) {
-            if (device.device.attributes.is_dep) {
-                DetailComponent = <DEPDeviceDetail device={device} />;
+            if (device.device.attributes.is_dep && device.device.attributes.is_enrolled === false) {
+                DetailComponent = <DEPDeviceDetail device={device}/>;
                 showTools = false;
+            } else if (operatingSystem(device.device.attributes.model_name) === DeviceOperatingSystem.iOS) {
+                DetailComponent = <IOSDeviceDetail device={device}
+                                                   tags={tags}
+                                                   deviceTags={deviceTags}
+                                                   onAddTag={this.handleAddTag}
+                                                   onChangeTag={this.handleChangeTag}
+                                                   onSearchTag={this.handleSearchTag}
+                                                   {...actions} />;
             } else {
                 DetailComponent = <MacOSDeviceDetail device={device}
                                                      tags={tags}

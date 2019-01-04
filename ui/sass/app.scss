@@ -71,3 +71,8 @@ dl.horizontal {
     clear: both;
   }
 }
+
+// Padding out icons in lists because they never line up in semantic-ui
+.ui.list > .item > i.icon {
+  min-width: 40px;
+}

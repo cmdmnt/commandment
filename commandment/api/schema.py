@@ -61,6 +61,14 @@ class DeviceSchema(Schema):
     stealth_mode_enabled = fields.Bool()
     sip_enabled = fields.Bool()
 
+    battery_level = fields.Float(dump_only=True)
+    imei = fields.Str(dump_only=True)
+
+    is_cloud_backup_enabled = fields.Bool(dump_only=True)
+    itunes_store_account_is_active = fields.Bool(dump_only=True)
+
+    last_cloud_backup_date = fields.DateTime(dump_only=True)
+
     # TODO: Relationship to dep_config
 
     # certificate = Relationship(

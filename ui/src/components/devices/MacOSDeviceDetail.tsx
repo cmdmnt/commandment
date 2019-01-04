@@ -40,9 +40,9 @@ interface IMacOSDeviceDetailProps {
     tags: ITagsState;
     deviceTags: number[];
 
-    onAddTag: (event: SyntheticEvent<any>, data: object) => void,
-    onChangeTag: (event: SyntheticEvent<HTMLElement>, data: DropdownProps) => void,
-    onSearchTag: (value: string) => void,
+    onAddTag: (event: SyntheticEvent<any>, data: object) => void;
+    onChangeTag: (event: SyntheticEvent<HTMLElement>, data: DropdownProps) => void;
+    onSearchTag: (value: string) => void;
 
     clearPasscode: ClearPasscodeActionRequest;
     inventory: InventoryActionRequest;

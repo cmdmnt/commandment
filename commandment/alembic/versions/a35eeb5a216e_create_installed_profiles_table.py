@@ -23,6 +23,7 @@ def upgrade():
                     sa.Column('device_id', sa.Integer(), nullable=True),
                     sa.Column('has_removal_password', sa.Boolean(), nullable=True),
                     sa.Column('is_encrypted', sa.Boolean(), nullable=True),
+                    sa.Column('is_managed', sa.Boolean(), nullable=True),
                     sa.Column('payload_description', sa.String(), nullable=True),
                     sa.Column('payload_display_name', sa.String(), nullable=True),
                     sa.Column('payload_identifier', sa.String(), nullable=True),

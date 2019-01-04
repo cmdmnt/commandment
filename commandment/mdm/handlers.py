@@ -9,7 +9,7 @@ from flask import current_app
 from commandment.mdm import commands
 from commandment.mdm.app import command_router
 from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList, \
-    InstallProfile, AvailableOSUpdates, InstallApplication
+    InstallProfile, AvailableOSUpdates, InstallApplication, RemoveProfile
 from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse, AvailableOSUpdateListResponse, \
     ProfileListResponse, SecurityInfoResponse
 from ..models import db, Device, Command as DBCommand
@@ -52,7 +52,22 @@ def ack_security_info(request: SecurityInfo, device: Device, response: dict):
 @command_router.route('ProfileList')
 def ack_profile_list(request: ProfileList, device: Device, response: dict):
     """Acknowledge a ``ProfileList`` response.
-    
+
+    This is used as the trigger to perform InstallProfile/RemoveProfiles as we have the most current data about
+    what exists on the device.
+
+    The set of profiles to install is a result of:
+
+        set(desired) - set(installed) = set(install)
+
+    The set of profiles to remove is a result of:
+
+        set(installed) - set(desired) = set(remove)
+
+    EXCEPT THAT:
+        - You never want to remove the enrollment profile unless you are "unmanaging" the device.
+        - You can't remove profiles not installed by this MDM.
+
     Args:
         request (ProfileList): The command instance that generated this response.
         device (Device): The device responding to the command.
@@ -71,9 +86,9 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
         db.session.delete(p)
 
     desired_profiles = {}
-    # for tag in device.tags:
-    #     for p in tag.profiles:
-    #         desired_profiles[p.uuid] = p
+    for tag in device.tags:
+        for p in tag.profiles:
+            desired_profiles[p.uuid] = p
 
     remove_profiles = []
 
@@ -93,7 +108,11 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
         if profile.payload_uuid in desired_profiles:
             del desired_profiles[profile.payload_uuid]
         else:
-            remove_profiles.append(profile)
+            if not profile.is_managed:
+                current_app.logger.debug("Skipping removal of unmanaged profile: %s", profile.payload_display_name)
+            else:
+                current_app.logger.debug("Going to remove: %s", profile.payload_display_name)
+                remove_profiles.append(profile)
 
     # Queue up some desired profiles
     for puuid, p in desired_profiles.items():
@@ -102,11 +121,11 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
         dbc.device = device
         db.session.add(dbc)
 
-    # for remove_profile in remove_profiles:
-    #     c = commands.RemoveProfile(None, Identifier=remove_profile.payload_identifier)
-    #     dbc = DBCommand.from_model(c)
-    #     dbc.device = device
-    #     db.session.add(dbc)
+    for remove_profile in remove_profiles:
+        c = commands.RemoveProfile(None, Identifier=remove_profile.payload_identifier)
+        dbc = DBCommand.from_model(c)
+        dbc.device = device
+        db.session.add(dbc)
 
     db.session.commit()
 
@@ -130,7 +149,7 @@ def ack_certificate_list(request: CertificateList, device: Device, response: dic
 
         der_data = cert['Data']
         certificate = x509.load_der_x509_certificate(der_data, default_backend())
-        ic.fingerprint_sha256 = hexlify(certificate.fingerprint(hashes.SHA256()))  # TODO: hexlify?
+        ic.fingerprint_sha256 = hexlify(certificate.fingerprint(hashes.SHA256()))
         ic.der_data = der_data
 
         db.session.add(ic)
@@ -188,6 +207,13 @@ def ack_installed_app_list(request: InstalledApplicationList, device: Device, re
 @command_router.route('InstallProfile')
 def ack_install_profile(request: InstallProfile, device: Device, response: dict):
     """Acknowledge a response to ``InstallProfile``."""
+    if response.get('Status', None) == 'Error':
+        pass
+
+
+@command_router.route('RemoveProfile')
+def ack_install_profile(request: RemoveProfile, device: Device, response: dict):
+    """Acknowledge a response to ``RemoveProfile``."""
     if response.get('Status', None) == 'Error':
         pass
 

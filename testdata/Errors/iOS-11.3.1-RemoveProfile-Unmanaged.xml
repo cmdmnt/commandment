@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CommandUUID</key>
+    <string>b2da2591-a2e5-45e5-8dd8-0ffb050d8407</string>
+    <key>ErrorChain</key>
+    <array>
+        <dict>
+            <key>ErrorCode</key>
+            <integer>12013</integer>
+            <key>ErrorDomain</key>
+            <string>MCMDMErrorDomain</string>
+            <key>LocalizedDescription</key>
+            <string>The profile \xe2\x80\x9corg.github.cmdmnt.commandment.trust\xe2\x80\x9d is not managed by MDM.</string>
+            <key>USEnglishDescription</key>
+            <string>The profile \xe2\x80\x9corg.github.cmdmnt.commandment.trust\xe2\x80\x9d is not managed by MDM.</string>
+        </dict>
+    </array>
+    <key>Status</key>
+    <string>Error</string>
+    <key>UDID</key>
+    <string>1c111c111c111c111c111c111c111c111c111c11</string>
+</dict>
+</plist>

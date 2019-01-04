@@ -75,6 +75,13 @@ class UnconnectedDeviceDetail extends React.Component<DeviceDetailProps, DeviceD
                         {device &&
                         <List>
                             <CheckListItem title="Store account active" value={device.attributes.itunes_store_account_is_active}/>
+                            <CheckListItem title="iCloud Backup Enabled" value={device.attributes.is_cloud_backup_enabled}>
+                                {device.attributes.is_cloud_backup_enabled &&
+                                <CheckListItem title={"Last backup date"}
+                                               value={device.attributes.last_cloud_backup_date}/>
+                                }
+                            </CheckListItem>
+                            <CheckListItem title="Find my iPhone enabled" value={device.attributes.is_device_locator_service_enabled} />
                         </List>
                         }
                     </Grid.Column>

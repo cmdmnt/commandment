@@ -25,6 +25,8 @@ def generate_enroll_profile(pkcs12_payload: Optional[PKCS12CertificatePayload] =
     You need to have an organization configured to generate organization information in the profile, and to establish
     the payload prefix.
 
+    The enrollment profile reserves the use of UUID: 1355300-1111-1111-1111-868EC47093C3
+
     Args:
         pkcs12_payload (Optional[PKCS12CertificatePayload): A PKCS#12 Payload if we are supplying device identity without
             using SCEP

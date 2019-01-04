@@ -259,6 +259,7 @@ class ProfileListPayloadItem(Schema):
 class ProfileListItem(Schema):
     HasRemovalPasscode = fields.Boolean(attribute='has_removal_password')
     IsEncrypted = fields.Boolean(attribute='is_encrypted')
+    IsManaged = fields.Boolean(attribute='is_managed')
     PayloadDescription = fields.String(attribute='payload_description')
     PayloadDisplayName = fields.String(attribute='payload_display_name')
     PayloadIdentifier = fields.String(attribute='payload_identifier')
