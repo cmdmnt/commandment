@@ -10,12 +10,12 @@ import {device, DeviceState} from "../store/device/reducer";
 import {device_groups, DeviceGroupsState} from "../store/device_groups/reducer";
 import {devices, DevicesState} from "../store/devices/devices";
 import {organization, OrganizationState} from "../store/organization/reducer";
+import {profile, ProfileState} from "../store/profile/reducer";
 import {profiles, ProfilesState} from "../store/profiles/reducer";
 import {ITableState, table} from "../store/table/reducer";
-import {tags, ITagsState} from "../store/tags/reducer";
+import {ITagsState, tags} from "../store/tags/reducer";
 import {assistant, AssistantState} from "./assistant";
 import {commands, CommandsState} from "./commands";
-import {profile, ProfileState} from "./profile";
 
 export interface RootState {
     router?: RouterState;

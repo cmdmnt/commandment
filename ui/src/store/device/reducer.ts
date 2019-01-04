@@ -102,7 +102,7 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
                     ...state.device,
                     relationships: {
                         ...state.device.relationships,
-                        tags: action.payload.data.relationships.tags,
+                        // tags: action.payload.data.relationships.tags,
                     },
                 };
 

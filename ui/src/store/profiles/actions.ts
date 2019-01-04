@@ -12,15 +12,20 @@ import {Tag} from "../tags/types";
 import {RootState} from "../../reducers/index";
 import {FlaskFilter, FlaskFilters, JSONAPI_HEADERS} from "../constants"
 
-export type INDEX_REQUEST = "profiles/INDEX_REQUEST";
-export const INDEX_REQUEST: INDEX_REQUEST = "profiles/INDEX_REQUEST";
-export type INDEX_SUCCESS = "profiles/INDEX_SUCCESS";
-export const INDEX_SUCCESS: INDEX_SUCCESS = "profiles/INDEX_SUCCESS";
-export type INDEX_FAILURE = "profiles/INDEX_FAILURE";
-export const INDEX_FAILURE: INDEX_FAILURE = "profiles/INDEX_FAILURE";
+export enum ProfilesActionTypes {
+    INDEX_REQUEST = "profiles/INDEX_REQUEST",
+    INDEX_SUCCESS = "profiles/INDEX_SUCCESS",
+    INDEX_FAILURE = "profiles/INDEX_FAILURE",
+    READ_REQUEST = "profiles/READ_REQUEST",
+    READ_SUCCESS = "profiles/READ_SUCCESS",
+    READ_FAILURE = "profiles/READ_FAILURE",
+    REL_PATCH_REQUEST = "profiles/relationships/PATCH_REQUEST",
+    REL_PATCH_SUCCESS = "profiles/relationships/PATCH_SUCCESS",
+    REL_PATCH_FAILURE = "profiles/relationships/PATCH_FAILURE",
+}
 
-export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>;
-export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, Profile>;
+export type IndexActionRequest = RSAAIndexActionRequest<ProfilesActionTypes.INDEX_REQUEST, ProfilesActionTypes.INDEX_SUCCESS, ProfilesActionTypes.INDEX_FAILURE>;
+export type IndexActionResponse = RSAAIndexActionResponse<ProfilesActionTypes.INDEX_REQUEST, ProfilesActionTypes.INDEX_SUCCESS, ProfilesActionTypes.INDEX_FAILURE, Profile>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: String[]) => {
     return ({
@@ -29,23 +34,16 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: String[]) =>
             headers: JSONAPI_HEADERS,
             method: ("GET" as HTTPVerb),
             types: [
-                INDEX_REQUEST,
-                INDEX_SUCCESS,
-                INDEX_FAILURE,
+                ProfilesActionTypes.INDEX_REQUEST,
+                ProfilesActionTypes.INDEX_SUCCESS,
+                ProfilesActionTypes.INDEX_FAILURE,
             ],
         },
-    } as RSAAction<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>);
+    } as RSAAction<ProfilesActionTypes.INDEX_REQUEST, ProfilesActionTypes.INDEX_SUCCESS, ProfilesActionTypes.INDEX_FAILURE>);
 });
 
-export type READ_REQUEST = "profiles/READ_REQUEST";
-export const READ_REQUEST: READ_REQUEST = "profiles/READ_REQUEST";
-export type READ_SUCCESS = "profiles/READ_SUCCESS";
-export const READ_SUCCESS: READ_SUCCESS = "profiles/READ_SUCCESS";
-export type READ_FAILURE = "profiles/READ_FAILURE";
-export const READ_FAILURE: READ_FAILURE = "profiles/READ_FAILURE";
-
-export type ReadActionRequest = RSAAReadActionRequest<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
-export type ReadActionResponse = RSAAReadActionResponse<READ_REQUEST, READ_SUCCESS, READ_FAILURE, JSONAPIDetailResponse<Profile, undefined>>;
+export type ReadActionRequest = RSAAReadActionRequest<ProfilesActionTypes.READ_REQUEST, ProfilesActionTypes.READ_SUCCESS, ProfilesActionTypes.READ_FAILURE>;
+export type ReadActionResponse = RSAAReadActionResponse<ProfilesActionTypes.READ_REQUEST, ProfilesActionTypes.READ_SUCCESS, ProfilesActionTypes.READ_FAILURE, JSONAPIDetailResponse<Profile, undefined>>;
 
 export const read: ReadActionRequest = (id: string, include?: string[]) => {
 
@@ -60,36 +58,34 @@ export const read: ReadActionRequest = (id: string, include?: string[]) => {
             headers: JSONAPI_HEADERS,
             method: "GET",
             types: [
-                READ_REQUEST,
-                READ_SUCCESS,
-                READ_FAILURE,
+                ProfilesActionTypes.READ_REQUEST,
+                ProfilesActionTypes.READ_SUCCESS,
+                ProfilesActionTypes.READ_FAILURE,
             ],
         },
     }
 };
 
-export const RPATCH_REQUEST = "profiles/RPATCH_REQUEST";
-export type RPATCH_REQUEST = typeof RPATCH_REQUEST;
-export const RPATCH_SUCCESS = "profiles/RPATCH_SUCCESS";
-export type RPATCH_SUCCESS = typeof RPATCH_SUCCESS;
-export const RPATCH_FAILURE = "profiles/RPATCH_FAILURE";
-export type RPATCH_FAILURE = typeof RPATCH_FAILURE;
-
-type PatchRelationshipActionRequest = (parent_id: string, relationship: ProfileRelationship, data: JSONAPIRelationship[]) => RSAAction<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE>;
-export type PatchRelationshipActionResponse = RSAAReadActionResponse<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE, JSONAPIDetailResponse<Profile, Tag>>;
+type PatchRelationshipActionRequest = (parent_id: string, relationship: ProfileRelationship, data: JSONAPIRelationship[]) => RSAAction<
+    ProfilesActionTypes.REL_PATCH_REQUEST, ProfilesActionTypes.REL_PATCH_SUCCESS, ProfilesActionTypes.REL_PATCH_FAILURE>;
+export type PatchRelationshipActionResponse = RSAAReadActionResponse<
+    ProfilesActionTypes.REL_PATCH_REQUEST,
+    ProfilesActionTypes.REL_PATCH_SUCCESS,
+    ProfilesActionTypes.REL_PATCH_FAILURE,
+    JSONAPIDetailResponse<Profile, Tag>>;
 
 export const patchRelationship: PatchRelationshipActionRequest = (id: string, relationship: ProfileRelationship, data: JSONAPIRelationship[]) => {
     return {
         [RSAA]: {
+            body: JSON.stringify({ data }),
             endpoint: `/api/v1/profiles/${id}/relationships/${relationship}`,
+            headers: JSONAPI_HEADERS,
             method: "PATCH",
             types: [
-                RPATCH_REQUEST,
-                RPATCH_SUCCESS,
-                RPATCH_FAILURE,
+                ProfilesActionTypes.REL_PATCH_REQUEST,
+                ProfilesActionTypes.REL_PATCH_SUCCESS,
+                ProfilesActionTypes.REL_PATCH_FAILURE,
             ],
-            headers: JSONAPI_HEADERS,
-            body: JSON.stringify({ data }),
         },
     }
 };

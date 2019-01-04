@@ -1,9 +1,10 @@
 
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
-import * as actions from "../store/profiles/actions";
-import {PatchRelationshipActionResponse, ReadActionResponse} from "../store/profiles/actions";
-import {Profile} from "../store/profiles/types";
-import {Tag} from "../store/tags/types";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
+import * as actions from "../profiles/actions";
+import {PatchRelationshipActionResponse, ReadActionResponse} from "../profiles/actions";
+import {Profile} from "../profiles/types";
+import {Tag} from "../tags/types";
+import {ProfilesActionTypes} from "../profiles/actions";
 
 export interface ProfileState {
     profile?: JSONAPIDataObject<Profile>;
@@ -15,31 +16,31 @@ export interface ProfileState {
 }
 
 const initialState: ProfileState = {
-    profile: null,
-    loading: false,
-    tagsLoading: false,
     error: false,
     errorDetail: null,
+    loading: false,
+    profile: null,
+    tagsLoading: false,
 };
 
 type ProfileAction = ReadActionResponse | PatchRelationshipActionResponse;
 
 export function profile(state: ProfileState = initialState, action: ProfileAction): ProfileState {
     switch (action.type) {
-        case actions.READ_REQUEST:
+        case ProfilesActionTypes.READ_REQUEST:
             return {
                 ...state,
                 loading: true,
             };
 
-        case actions.READ_FAILURE:
+        case ProfilesActionTypes.READ_FAILURE:
             return {
                 ...state,
                 error: true,
                 errorDetail: action.payload,
             };
 
-        case actions.READ_SUCCESS:
+        case ProfilesActionTypes.READ_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
@@ -60,12 +61,12 @@ export function profile(state: ProfileState = initialState, action: ProfileActio
                     tags,
                 };
             }
-        case actions.RPATCH_REQUEST:
+        case ProfilesActionTypes.REL_PATCH_REQUEST:
             return {
                 ...state,
                 tagsLoading: true,
             };
-        case actions.RPATCH_SUCCESS:
+        case ProfilesActionTypes.REL_PATCH_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
@@ -88,7 +89,7 @@ export function profile(state: ProfileState = initialState, action: ProfileActio
                 };
             }
 
-        case actions.RPATCH_FAILURE:
+        case ProfilesActionTypes.REL_PATCH_FAILURE:
             return {
                 ...state,
                 tagsLoading: false,

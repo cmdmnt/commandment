@@ -5,15 +5,16 @@ import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/Dropdo
 
 import {SyntheticEvent} from "react";
 import {Tag} from "../store/tags/types";
+import {JSONAPIDataObject} from "../json-api";
 
 // Not exported by Dropdown
-interface DropdownOnSearchChangeData extends DropdownProps {
+interface IDropdownOnSearchChangeData extends DropdownProps {
     searchQuery: string;
 }
 
-interface TagDropdownProps {
+interface ITagDropdownProps {
     loading: boolean;
-    tags: DropdownItemProps[];
+    tags: Array<JSONAPIDataObject<Tag>>;
     value?: any[];
     onAddItem: (event: SyntheticEvent<any>, data: object) => void;
     onSearch: (value: string) => void;
@@ -21,53 +22,62 @@ interface TagDropdownProps {
     searchTimeout: number;
 }
 
-interface TagDropdownState {
+interface ITagDropdownState {
     value?: string;
 }
 
-export class TagDropdown extends React.Component<TagDropdownProps, TagDropdownState> {
+export class TagDropdown extends React.Component<ITagDropdownProps, ITagDropdownState> {
 
-    _timeout: number;
+    private timeout: number;
 
-    constructor(props: TagDropdownProps) {
+    constructor(props: ITagDropdownProps) {
         super(props);
         this.state = {
             value: "",
         };
     }
 
-    performSearch = () => {
-        console.log("perform search");
-        this.props.onSearch(this.state.value);
-    }
+    public render() {
+        const { tags, loading, onAddItem, value, onChange } = this.props;
 
-    handleSearchChange = (event: React.SyntheticEvent<HTMLElement>, data: DropdownOnSearchChangeData): void => {
-        console.log("change");
-        if (this._timeout) { clearTimeout(this._timeout); }
-        this.setState({ value: data.searchQuery });
-
-        if (data.length > 0) {
-            this._timeout = window.setTimeout(this.performSearch, 400);
-        }
-    }
-
-    render() {
-        const { tags, loading, onAddItem, value } = this.props;
+        const options = tags.map((item: JSONAPIDataObject<Tag>) => {
+            return {
+                key: item.id,
+                label: { color: item.attributes.color, empty: true, circular: true, },
+                text: item.attributes.name,
+                value: item.id,
+            };
+        });
 
         return (
             <Dropdown placeholder="Add Tag(s)"
                       multiple
                       allowAdditions
-                      additionLabel="Add new tag "
+                      additionLabel="Create new tag "
                       search
                       selection
                       loading={loading}
-                      options={tags}
+                      options={options}
                       onAddItem={onAddItem}
                       onSearchChange={this.handleSearchChange}
-                      onChange={this.props.onChange}
+                      onChange={onChange}
                       value={value}
             />
         );
     }
+
+    private performSearch = () => {
+        console.log("perform search");
+        this.props.onSearch(this.state.value);
+    };
+
+    private handleSearchChange = (event: React.SyntheticEvent<HTMLElement>, data: IDropdownOnSearchChangeData): void => {
+        console.log("change");
+        if (this.timeout) { clearTimeout(this.timeout); }
+        this.setState({ value: data.searchQuery });
+
+        if (data.length > 0) {
+            this.timeout = window.setTimeout(this.performSearch, 400);
+        }
+    };
 }

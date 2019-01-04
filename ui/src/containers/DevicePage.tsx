@@ -117,10 +117,6 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
             shutdown,
         } = this.props;
 
-        const tagChoices: DropdownItemProps[] = tags.items.map((item: JSONAPIDataObject<Tag>) => {
-            return {name: item.attributes.name, text: item.attributes.name, value: item.id};
-        });
-
         let deviceTags: number[] = [];
         if (device.device && device.device.relationships && device.device.relationships.tags) {
             if (isArray(device.device.relationships.tags.data)) {
@@ -147,7 +143,13 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
                 DetailComponent = <DEPDeviceDetail device={device} />;
                 showTools = false;
             } else {
-                DetailComponent = <MacOSDeviceDetail device={device} tagChoices={tagChoices} deviceTags={deviceTags} {...actions} />;
+                DetailComponent = <MacOSDeviceDetail device={device}
+                                                     tags={tags}
+                                                     deviceTags={deviceTags}
+                                                     onAddTag={this.handleAddTag}
+                                                     onChangeTag={this.handleChangeTag}
+                                                     onSearchTag={this.handleSearchTag}
+                                                     {...actions} />;
             }
         }
 

@@ -75,10 +75,6 @@ export class UnconnectedProfilePage extends React.Component<RouteComponentProps<
             tags,
         } = this.props;
 
-        const tagChoices = tags.items.map((item: JSONAPIDataObject<Tag>) => {
-            return {name: item.attributes.name, text: item.attributes.name, value: item.id};
-        });
-
         let profileTags: number[] = [];
         if (profile && profile.relationships && profile.relationships.tags) {
             if (isArray(profile.relationships.tags.data)) {
@@ -104,8 +100,8 @@ export class UnconnectedProfilePage extends React.Component<RouteComponentProps<
                     <Header.Subheader>{profile && profile.attributes.identifier}</Header.Subheader>
                 </Header>
                 <TagDropdown
-                    loading={false}
-                    tags={tagChoices}
+                    loading={tags.loading}
+                    tags={tags.items}
                     value={profileTags}
                     onAddItem={this.handleAddTag}
                     onSearch={this.handleSearchTag}

@@ -1,20 +1,17 @@
 import {distanceInWordsToNow} from "date-fns";
 import * as React from "react";
-import {FunctionComponent} from "react";
+import {FunctionComponent, SyntheticEvent} from "react";
 import {DeviceState} from "../store/device/device";
 import {ModelIcon} from "./ModelIcon";
 
-import {ButtonLink} from "../semantic-ui/ButtonLink";
-import {TagDropdown} from "../TagDropdown";
-import {MenuItemLink} from "../semantic-ui/MenuItemLink";
 import {Route} from "react-router";
-import {DeviceDetail} from "../../containers/devices/DeviceDetail";
+import {DeviceRename} from "../../containers/DeviceRename";
+import {DeviceApplications} from "../../containers/devices/DeviceApplications";
 import {DeviceCertificates} from "../../containers/devices/DeviceCertificates";
 import {DeviceCommands} from "../../containers/devices/DeviceCommands";
-import {DeviceApplications} from "../../containers/devices/DeviceApplications";
-import {DeviceProfiles} from "../../containers/devices/DeviceProfiles";
+import {DeviceDetail} from "../../containers/devices/DeviceDetail";
 import {DeviceOSUpdates} from "../../containers/devices/DeviceOSUpdates";
-import {DeviceRename} from "../../containers/DeviceRename";
+import {DeviceProfiles} from "../../containers/devices/DeviceProfiles";
 import {
     ClearPasscodeActionRequest, InventoryActionRequest, LockActionRequest,
     PushActionRequest,
@@ -22,23 +19,30 @@ import {
     ShutdownActionRequest,
     TestActionRequest,
 } from "../../store/device/actions";
+import {ButtonLink} from "../semantic-ui/ButtonLink";
+import {MenuItemLink} from "../semantic-ui/MenuItemLink";
+import {TagDropdown} from "../TagDropdown";
 
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
-import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
 import Grid from "semantic-ui-react/src/collections/Grid";
 import Menu from "semantic-ui-react/src/collections/Menu";
 import Button from "semantic-ui-react/src/elements/Button";
 import Header from "semantic-ui-react/src/elements/Header";
 import List from "semantic-ui-react/src/elements/List";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import {DropdownItemProps} from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
 
+import {DropdownProps} from "semantic-ui-react/src/modules/Dropdown";
+import {ITagsState} from "../../store/tags/reducer";
 import "./MacOSDeviceDetail.scss";
 
 interface IMacOSDeviceDetailProps {
     device: DeviceState;
-    tagChoices: DropdownItemProps[];
+    tags: ITagsState;
     deviceTags: number[];
+
+    onAddTag: (event: SyntheticEvent<any>, data: object) => void,
+    onChangeTag: (event: SyntheticEvent<HTMLElement>, data: DropdownProps) => void,
+    onSearchTag: (value: string) => void,
 
     clearPasscode: ClearPasscodeActionRequest;
     inventory: InventoryActionRequest;
@@ -51,14 +55,18 @@ interface IMacOSDeviceDetailProps {
 
 export const MacOSDeviceDetail: FunctionComponent<IMacOSDeviceDetailProps> = ({
          device,
-         tagChoices, deviceTags,
+         tags, deviceTags,
          clearPasscode,
          inventory,
          lock,
          push,
          restart,
          shutdown,
-         test}: IMacOSDeviceDetailProps) => {
+
+         onAddTag,
+         onChangeTag,
+         onSearchTag,
+        }: IMacOSDeviceDetailProps) => {
 
         if (!device.device) {
             return (<div className="MacOSDeviceDetail">No device</div>);
@@ -75,6 +83,16 @@ export const MacOSDeviceDetail: FunctionComponent<IMacOSDeviceDetailProps> = ({
                     {device.device.attributes.device_name}
                     <Header.Subheader>SN: {device.device.attributes.serial_number}</Header.Subheader>
                 </Header>
+
+                <TagDropdown
+                    loading={tags.loading}
+                    tags={tags.items}
+                    value={deviceTags}
+                    onAddItem={onAddTag}
+                    onSearch={onSearchTag}
+                    onChange={onChangeTag}
+                />
+                <Divider hidden />
             <Grid columns={2} className="MacOSDeviceDetail">
                 <Grid.Row>
                     <Grid.Column>
@@ -168,14 +186,6 @@ export const MacOSDeviceDetail: FunctionComponent<IMacOSDeviceDetailProps> = ({
                               <ButtonLink to={`/devices/${device.device.id}/rename`}>
                                 Rename
                               </ButtonLink>
-                              <TagDropdown
-                                loading={device.tagsLoading}
-                                tags={tagChoices}
-                                value={deviceTags}
-                                onAddItem={this.handleAddTag}
-                                onSearch={this.handleSearchTag}
-                                onChange={this.handleChangeTag}
-                              />
                             <Menu pointing secondary color="purple" inverted>
                                 <MenuItemLink to={`/devices/${device.device.id}/detail`}>Detail</MenuItemLink>
                                 <MenuItemLink to={`/devices/${device.device.id}/certificates`}>Certificates</MenuItemLink>

@@ -5,6 +5,7 @@ import {Profile} from "./types";
 import {ApiError} from "redux-api-middleware";
 import {isApiError} from "../../guards";
 import {IResults, ResultsDefaultState} from "../../reducers/interfaces";
+import {ProfilesActionTypes} from "./actions";
 
 export interface ProfilesState extends IResults<Array<JSONAPIDataObject<Profile>>> {
     pageProperties: any;
@@ -29,19 +30,19 @@ type ProfilesAction = IndexActionResponse | UploadActionResponse;
 
 export function profiles(state: ProfilesState = initialState, action: ProfilesAction): ProfilesState {
     switch (action.type) {
-        case actions.INDEX_REQUEST:
+        case ProfilesActionTypes.INDEX_REQUEST:
             return {
                 ...state,
                 loading: true,
             };
 
-        case actions.INDEX_FAILURE:
+        case ProfilesActionTypes.INDEX_FAILURE:
             return {
                 ...state,
                 error: action.payload,
             };
 
-        case actions.INDEX_SUCCESS:
+        case ProfilesActionTypes.INDEX_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,

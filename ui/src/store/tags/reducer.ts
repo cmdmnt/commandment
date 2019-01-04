@@ -1,6 +1,6 @@
 import {isJSONAPIErrorResponsePayload, JSONAPIDataObject, JSONAPIErrorResponse} from "../../json-api";
 import {Tag} from "./types";
-import {INDEX_FAILURE, INDEX_REQUEST, INDEX_SUCCESS, IndexActionResponse} from "./actions";
+import {INDEX_FAILURE, INDEX_REQUEST, INDEX_SUCCESS, IndexActionResponse, TagsActionTypes} from "./actions";
 
 export interface ITagsState {
     loading: boolean;
@@ -19,12 +19,12 @@ type TagsAction = IndexActionResponse;
 
 export function tags(state: ITagsState = initialState, action: TagsAction): ITagsState {
     switch (action.type) {
-        case INDEX_REQUEST:
+        case TagsActionTypes.INDEX_REQUEST:
             return {
                 ...state,
                 loading: true,
             };
-        case INDEX_SUCCESS:
+        case TagsActionTypes.INDEX_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
@@ -39,7 +39,7 @@ export function tags(state: ITagsState = initialState, action: TagsAction): ITag
                     loading: false,
                 };
             }
-        case INDEX_FAILURE:
+        case TagsActionTypes.INDEX_FAILURE:
             return {
                 ...state,
                 error: true,
