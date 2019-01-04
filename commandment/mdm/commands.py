@@ -335,14 +335,20 @@ class DeviceLock(Command):
         self._attrs = kwargs
 
     def to_dict(self) -> dict:
+        command = {
+            'RequestType': type(self).request_type,
+            'Message': self._attrs.get('Message', 'Device is locked'),
+        }
+
+        if 'PIN' in self._attrs:
+            command['PIN'] = self._attrs['PIN']
+
+        if 'PhoneNumber' in self._attrs:
+            command['PhoneNumber'] = self._attrs['PhoneNumber']
+
         return {
             'CommandUUID': str(self._uuid),
-            'Command': {
-                'RequestType': type(self).request_type,
-                'PIN': self._attrs.get('PIN', None),
-                'Message': self._attrs.get('Message', None),
-                'PhoneNumber': self._attrs.get('PhoneNumber', None)
-            }
+            'Command': command,
         }
 
 

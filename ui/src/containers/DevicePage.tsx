@@ -133,12 +133,21 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
         let DetailComponent = <span>Loading</span>;
         let showTools = true;
 
+        const actions = {
+            clearPasscode,
+            inventory,
+            lock,
+            push,
+            restart,
+            shutdown,
+        };
+
         if (device.device && !device.loading) {
             if (device.device.attributes.is_dep) {
                 DetailComponent = <DEPDeviceDetail device={device} />;
                 showTools = false;
             } else {
-                DetailComponent = <MacOSDeviceDetail device={device} tagChoices={tagChoices} deviceTags={deviceTags} />;
+                DetailComponent = <MacOSDeviceDetail device={device} tagChoices={tagChoices} deviceTags={deviceTags} {...actions} />;
             }
         }
 
@@ -184,7 +193,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
     };
 }
 
-export const DevicePage = connect<IReduxStateProps,  IReduxDispatchProps, IDevicePageProps>(
+export const DevicePage = connect<IReduxStateProps, IReduxDispatchProps, DevicePageProps>(
     mapStateToProps,
     mapDispatchToProps,
 )(BaseDevicePage);

@@ -195,17 +195,20 @@ def ack_install_profile(request: InstallProfile, device: Device, response: dict)
 @command_router.route('AvailableOSUpdates')
 def ack_available_os_updates(request: AvailableOSUpdates, device: Device, response: dict):
     """Acknowledge a response to AvailableOSUpdates"""
-    for au in device.available_os_updates:
-        db.session.delete(au)
+    if response.get('Status', None) == 'Error':
+        pass
+    else:
+        for au in device.available_os_updates:
+            db.session.delete(au)
 
-    schema = AvailableOSUpdateListResponse()
-    result = schema.load(response)
+        schema = AvailableOSUpdateListResponse()
+        result = schema.load(response)
 
-    for upd in result.data['AvailableOSUpdates']:
-        upd.device = device
-        db.session.add(upd)
+        for upd in result.data['AvailableOSUpdates']:
+            upd.device = device
+            db.session.add(upd)
 
-    db.session.commit()
+        db.session.commit()
 
 
 @command_router.route('InstallApplication')

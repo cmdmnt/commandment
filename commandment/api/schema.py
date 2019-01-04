@@ -126,7 +126,7 @@ class DeviceSchema(Schema):
 
     dep_profile = Relationship(
         related_view='dep_app.dep_profile_detail',
-        related_view_kwargs={'device_id': '<id>'},
+        related_view_kwargs={'dep_profile_id': '<dep_profile_id>'},
         many=False,
         schema='DEPProfileSchema',
         type_='dep_profiles',

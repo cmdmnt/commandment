@@ -183,6 +183,35 @@ def clear_passcode(device_id: int):
     return 'OK', 201, {}
 
 
+@flat_api.route('/v1/devices/<int:device_id>/lock', methods=['POST'])
+def lock(device_id: int):
+    """Enqueues a DeviceLock command for the device id specified.
+
+    If the target device is a macOS device, a 6 digit Find My Mac PIN will be automatically generated and stored
+    with the device record (and also output in the response).
+
+    :reqheader Accept: application/vnd.api+json
+    :reqheader Content-Type: ?
+    :resheader Content-Type: application/vnd.api+json
+    :statuscode 201: command created
+    :statuscode 400: not applicable to this device
+    :statuscode 404: device with this identifier was not found
+    :statuscode 500: system error
+    """
+    d = db.session.query(Device).filter(Device.id == device_id).one()
+    if d.platform == Platform.macOS:
+        return abort(400, 'Not Implemented')
+
+    dl = commands.DeviceLock()
+    dl_pl = Command.from_model(dl)
+    dl_pl.device = d
+    db.session.add(dl_pl)
+
+    db.session.commit()
+
+    return 'OK', 201, {}
+
+
 @flat_api.route('/v1/devices/<int:device_id>/restart', methods=['POST'])
 def restart(device_id: int):
     """Enqueues a RestartDevice command for the device id specified.
@@ -191,11 +220,14 @@ def restart(device_id: int):
     :reqheader Content-Type: application/json
     :resheader Content-Type: application/json
     :statuscode 201: command created
-    :statuscode 400: not applicable to this device
+    :statuscode 400: not applicable to this device. returned if this device is not supervised or not capable of taking command.
     :statuscode 404: device with this identifier was not found
     :statuscode 500: system error
     """
-    d = db.session.query(Device).filter(Device.id == device_id).one()
+    d: Device = db.session.query(Device).filter(Device.id == device_id).one()
+
+    if d.model_name == 'iPhone' and not d.is_supervised:
+        return 'Cannot restart an unsupervised iOS device', 400, {}
 
     cmd = commands.RestartDevice()
     orm_cmd = Command.from_model(cmd)
@@ -220,6 +252,9 @@ def shutdown(device_id: int):
     :statuscode 500: system error
     """
     d = db.session.query(Device).filter(Device.id == device_id).one()
+
+    if d.model_name == 'iPhone' and not d.is_supervised:
+        return 'Cannot shut down an unsupervised iOS device', 400, {}
 
     cmd = commands.ShutDownDevice()
     orm_cmd = Command.from_model(cmd)

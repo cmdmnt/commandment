@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CommandUUID</key>
+    <string>93289d88-c8da-4732-9a7e-33dd51851b6e</string>
+    <key>ErrorChain</key>
+    <array>
+        <dict>
+            <key>ErrorCode</key>
+            <integer>2213</integer>
+            <key>ErrorDomain</key>
+            <string>DeviceManagement.error</string>
+            <key>LocalizedDescription</key>
+            <string>No update available.</string>
+        </dict>
+        <dict>
+            <key>ErrorCode</key>
+            <integer>3</integer>
+            <key>ErrorDomain</key>
+            <string>com.apple.softwareupdateservices.errors</string>
+            <key>LocalizedDescription</key>
+            <string>The operation couldn\xe2\x80\x99t be completed. (com.apple.softwareupdateservices.errors error 3.)</string>
+        </dict>
+    </array>
+    <key>Status</key>
+    <string>Error</string>
+    <key>UDID</key>
+    <string>1c111c111c111c111c111c111c111c111c111c11</string>
+</dict>
+</plist>

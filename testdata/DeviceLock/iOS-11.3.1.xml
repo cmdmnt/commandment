@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CommandUUID</key>
+    <string>b6c8627f-bf4a-4ef4-8f40-d8673cd568c9</string>
+    <key>MessageResult</key>
+    <string>NoPasscodeSet</string>
+    <key>Status</key>
+    <string>Acknowledged</string>
+    <key>UDID</key>
+    <string>1c111c111c111c111c111c111c111c111c111c11</string>
+</dict>
+</plist>
