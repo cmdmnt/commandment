@@ -1,6 +1,5 @@
 /// <reference path="../../typings/redux-api-middleware.d.ts" />
-import {Dispatch} from "react-redux";
-import {Action} from "redux";
+import {Action, Dispatch} from "redux";
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
 import {RootState} from "../../reducers/index";
@@ -83,7 +82,7 @@ export const fetchDevicesIfRequired = (
         pageNumber: number = 1,
         sort?: string[],
         filters?: FlaskFilters,
-    ) => (dispatch: Dispatch<RootState>, getState: () => RootState): ThunkAction<void, RootState, {}> => {
+    ) => (dispatch: Dispatch, getState: () => RootState): ThunkAction<void, RootState, {}> => {
 
     // const { devices } = getState();
     // if (devices.lastReceived) {

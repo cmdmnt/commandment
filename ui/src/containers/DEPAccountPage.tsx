@@ -1,8 +1,8 @@
 import * as React from "react";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
 import {Link} from "react-router-dom";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import {DEPProfilesTable} from "../components/react-tables/DEPProfilesTable";
 import {ButtonLink} from "../components/semantic-ui/ButtonLink";
 import {RootState} from "../reducers";
@@ -117,7 +117,7 @@ export const DEPAccountPage = connect<IReduxStateProps, IReduxDispatchProps, any
     (state: RootState, ownProps: any): IReduxStateProps => {
         return {dep_account: state.dep.account};
     },
-    (dispatch: Dispatch<RootState>, ownProps?: any): IReduxDispatchProps => bindActionCreators({
+    (dispatch: Dispatch, ownProps?: any): IReduxDispatchProps => bindActionCreators({
         getAccount: account,
     }, dispatch),
 )(UnconnectedDEPAccountPage);

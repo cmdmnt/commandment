@@ -67,7 +67,7 @@ export class UnconnectedProfilesPage extends React.Component<IProfilesPageProps,
                     data={profiles.items}
                     loading={profiles.loading}
                     toggleSelection={toggleSelection}
-                    isSelected={(key) => table.selection.indexOf(key) !== -1}
+                    isSelected={(key: string) => table.selection.indexOf(key) !== -1}
                     onFetchData={this.fetchData}
                 />
             </Container>

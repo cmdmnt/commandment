@@ -1,5 +1,5 @@
 /// <reference path="../../typings/redux-api-middleware.d.ts" />
-import {Dispatch} from "react-redux";
+import {Dispatch} from "redux";
 import {ApiError, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
 import {JSON_HEADERS} from "../constants";
@@ -54,7 +54,7 @@ export type UploadCryptedActionResponse = RSAAReadActionResponse<UPLOAD_CRYPTED_
     JSONAPIDetailResponse<any, undefined>>;
 
 export const uploadCrypted: UploadCryptedActionRequest = (file) => (
-    dispatch: Dispatch<RootState>,
+    dispatch: Dispatch,
     getState: () => RootState,
     extraArgument: void) => {
 
