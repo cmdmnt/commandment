@@ -1,12 +1,13 @@
 import {distanceInWordsToNow} from "date-fns";
 import * as React from "react";
 import ReactTable, {CellInfo, TableProps} from "react-table";
-import {JSONAPIDataObject} from "../../json-api";
+import {JSONAPIDataObject} from "../../store/json-api";
 import {InstalledCertificate} from "../../store/device/types";
+import {DEPAccount} from "../../store/dep/types";
 
 export interface IDeviceCertificateTableProps {
     loading: boolean;
-    data: InstalledCertificate[];
+    data: Array<JSONAPIDataObject<InstalledCertificate>>;
     onFetchData: (state: any, instance: any) => void;
 }
 

@@ -1,3 +1,4 @@
+/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIListResponse, JSONAPIDataObject,
@@ -6,8 +7,8 @@ import {
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAPostActionRequest, RSAAPostActionResponse, RSAAReadActionRequest,
     RSAAReadActionResponse,
-} from "../../json-api";
-import {JSONAPIDetailResponse, JSONAPIErrorResponse, RSAAPatchActionRequest} from "../../json-api";
+} from "../json-api";
+import {JSONAPIDetailResponse, JSONAPIErrorResponse, RSAAPatchActionRequest} from "../json-api";
 import {Application} from "./types";
 import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants";
 

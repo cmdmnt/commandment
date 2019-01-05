@@ -8,7 +8,7 @@ export const dep = combineReducers({
     account,
     accounts,
     profiles,
-    profile
+    profile,
 });
 
 export interface IDEPState {

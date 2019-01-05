@@ -1,8 +1,8 @@
 import * as React from "react";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps, RouteProps} from "react-router";
-import {bindActionCreators} from "redux";
-import {FlaskFilters} from "../../actions/constants";
+import {bindActionCreators, Dispatch} from "redux";
+import {FlaskFilters} from "../../store/constants";
 import {DeviceUpdatesTable} from "../../components/react-tables/DeviceUpdatesTable";
 import {RootState} from "../../reducers";
 import {AvailableOSUpdatesState} from "../../store/device/available_os_updates_reducer";
@@ -11,7 +11,6 @@ import {AvailableOSUpdatesActionRequest, updates as fetchAvailableOSUpdates} fro
 import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import Checkbox from "semantic-ui-react/dist/commonjs/modules/Checkbox/Checkbox";
-import {DeviceCertificatesTable} from "../../components/react-tables/DeviceCertificatesTable";
 import {IReactTableState} from "../../store/table/types";
 import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
 
@@ -31,14 +30,14 @@ interface IReduxDispatchProps {
     fetchAvailableOSUpdates: AvailableOSUpdatesActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>): IReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch): IReduxDispatchProps {
    return bindActionCreators({
        fetchAvailableOSUpdates,
    }, dispatch);
 }
 
 interface IDeviceOSUpdatesRouteProps {
-    id: number;
+    id?: string;
 }
 
 interface IDeviceOSUpdatesProps extends IReduxStateProps, IReduxDispatchProps,

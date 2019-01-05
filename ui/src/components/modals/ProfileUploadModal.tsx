@@ -1,13 +1,14 @@
 import * as React from "react";
 import Dropzone, {DropFilesEventHandler} from "react-dropzone";
-import Modal from "semantic-ui-react/dist/commonjs/modules/Modal/Modal";
 import {RouteComponentProps} from "react-router-dom";
+import Modal from "semantic-ui-react/dist/commonjs/modules/Modal/Modal";
+import {UploadActionRequest} from "../../store/profiles/actions";
 
-export interface IProfileUploadModal extends RouteComponentProps {
-
+export interface IProfileUploadModalProps extends RouteComponentProps<any> {
+    upload: UploadActionRequest;
 }
 
-export const ProfileUploadModal: React.StatelessComponent = ({ onDrop, history, upload }: IProfileUploadModal) => (
+export const ProfileUploadModal: React.FunctionComponent<IProfileUploadModalProps> = ({ history, upload }: IProfileUploadModalProps) => (
     <Modal defaultOpen onClose={() => {
         history.goBack();
     }}>

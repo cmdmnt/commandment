@@ -2,7 +2,7 @@ import {
     INDEX_SUCCESS, IndexActionResponse,
     READ_SUCCESS, ReadActionResponse
 } from "./actions";
-import {JSONAPIDataObject, isJSONAPIErrorResponsePayload, JSONAPIDetailResponse} from "../../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload, JSONAPIDetailResponse} from "../json-api";
 import {DeviceGroup} from "./types";
 import {Device} from "../device/types";
 

@@ -1,5 +1,5 @@
 import {Reducer} from "redux";
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 import {DEPActions, DEPActionTypes} from "./actions";
 import {DEPProfile} from "./types";
 

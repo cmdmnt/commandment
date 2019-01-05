@@ -2,12 +2,13 @@ import {
     APPLICATIONS_SUCCESS,
     InstalledApplicationsActionResponse
 } from "./applications";
-import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {InstalledApplication} from "./types";
 import {OtherAction} from "../constants";
 
 export interface InstalledApplicationsState {
     items?: Array<JSONAPIDataObject<InstalledApplication>>;
+    loading: boolean;
     pageSize: number;
     pages: number;
     recordCount: number;
@@ -15,6 +16,7 @@ export interface InstalledApplicationsState {
 
 const initialState: InstalledApplicationsState = {
     items: [],
+    loading: false,
     pageSize: 20,
     pages: 0,
     recordCount: 0,

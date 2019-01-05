@@ -1,10 +1,11 @@
 import {CommandsActionResponse, DevicesActionTypes} from "./actions";
-import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Command} from "./types";
 import {OtherAction} from "../constants";
 
 export interface DeviceCommandsState {
     items?: Array<JSONAPIDataObject<Command>>;
+    loading: boolean;
     pageSize: number;
     pages: number;
     recordCount: number;
@@ -12,6 +13,7 @@ export interface DeviceCommandsState {
 
 const initialState: DeviceCommandsState = {
     items: [],
+    loading: false,
     pageSize: 20,
     pages: 0,
     recordCount: 0,

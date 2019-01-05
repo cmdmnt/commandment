@@ -2,14 +2,14 @@ import {distanceInWordsToNow} from "date-fns";
 import * as React from "react";
 import ReactTable, {CellInfo, TableProps, Column} from "react-table";
 import selectTableHoc from "react-table/lib/hoc/selectTable";
-import {JSONAPIDataObject} from "../../json-api";
+import {JSONAPIDataObject} from "../../store/json-api";
 import {DEPAccount} from "../../store/dep/types";
 import {DEPAccountServerName} from "../react-table/DEPAccountServerName";
 // import "react-table/react-table.css";
 
 export interface IDEPAccountsTableProps {
     loading: boolean;
-    data: DEPAccount[];
+    data: Array<JSONAPIDataObject<DEPAccount>>;
     onToggleSelection: () => void;
     onToggleAll: () => void;
 }

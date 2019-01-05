@@ -1,6 +1,5 @@
 /// <reference path="../typings/redux-api-middleware.d.ts" />
-import {Store} from "react-redux";
-import {applyMiddleware, compose, createStore} from "redux";
+import {applyMiddleware, compose, createStore, Store} from "redux";
 import {Middleware} from "redux";
 import {apiMiddleware} from "redux-api-middleware";
 import thunk from "redux-thunk";

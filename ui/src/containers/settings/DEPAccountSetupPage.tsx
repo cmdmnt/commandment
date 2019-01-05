@@ -5,19 +5,15 @@ import * as React from "react";
 import Container from "semantic-ui-react/src/elements/Container/Container";
 import Header from "semantic-ui-react/src/elements/Header/Header";
 
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RootState} from "../../reducers";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
 import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
 import Step from "semantic-ui-react/dist/commonjs/elements/Step/Step";
 import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-
-interface RouteProps {
-
-}
 
 interface ReduxStateProps {
     accounts: IDEPAccountsState;
@@ -27,7 +23,7 @@ interface ReduxDispatchProps {
     getAccounts: AccountIndexActionRequest;
 }
 
-interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteProps> {
+interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {
 
 }
 
@@ -35,23 +31,22 @@ interface IDEPAccountSetupPageState {
     step: number;
 }
 
-
 export class UnconnectedDEPAccountSetupPage extends React.Component<OwnProps, IDEPAccountSetupPageState> {
 
     // static initialState: IDEPAccountPageState = {
     //     step: 0
     // };
 
-    constructor(props: any){
+    constructor(props: any) {
         super(props);
         this.state = { step: 0 };
     }
 
-    componentWillMount?() {
+    public componentWillMount?() {
         //this.props.index();
     }
 
-    render() {
+    public render() {
         const {
             accounts: {data, loading},
         } = this.props;
@@ -134,8 +129,7 @@ export const DEPAccountSetupPage = connect<ReduxStateProps, ReduxDispatchProps, 
     (state: RootState): ReduxStateProps => ({
         accounts: state.dep.accounts,
     }),
-    (dispatch: Dispatch<any>) => bindActionCreators({
-        getAccounts: accounts
+    (dispatch: Dispatch) => bindActionCreators({
+        getAccounts: accounts,
     }, dispatch),
 )(UnconnectedDEPAccountSetupPage);
-

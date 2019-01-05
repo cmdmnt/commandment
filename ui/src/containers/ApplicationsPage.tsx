@@ -1,9 +1,8 @@
-import Griddle, {ColumnDefinition, RowDefinition} from "griddle-react";
 import * as React from "react";
 import {Link, Route} from "react-router-dom";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import {RootState} from "../reducers";
 import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
@@ -12,22 +11,7 @@ import {ButtonLink} from "../components/semantic-ui/ButtonLink";
 import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
-interface IReduxStateProps {
-
-}
-
-interface IReduxDispatchProps {
-
-}
-
-interface IApplicationsPageProps extends IReduxStateProps, IReduxDispatchProps, RouteComponentProps<any> {
-
-}
-
-interface IApplicationsPageState {
-}
-
-class UnconnectedApplicationsPage extends React.Component<IApplicationsPageProps, IApplicationsPageState> {
+class UnconnectedApplicationsPage extends React.Component<RouteComponentProps<any>, any> {
     public render() {
         return (
             <Container className="ApplicationsPage">
@@ -52,7 +36,7 @@ class UnconnectedApplicationsPage extends React.Component<IApplicationsPageProps
     }
 }
 
-export const ApplicationsPage = connect<IReduxStateProps, IReduxDispatchProps, IApplicationsPageProps>(
+export const ApplicationsPage = connect(
     (state: RootState, ownProps?: any) => ({}),
-    (dispatch: Dispatch<RootState>, ownProps?: any) => bindActionCreators({}, dispatch),
+    (dispatch: Dispatch, ownProps?: any) => bindActionCreators({}, dispatch),
 )(UnconnectedApplicationsPage);

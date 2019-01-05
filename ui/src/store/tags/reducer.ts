@@ -1,6 +1,6 @@
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject, JSONAPIErrorResponse} from "../../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject, JSONAPIErrorResponse} from "../json-api";
 import {Tag} from "./types";
-import {INDEX_FAILURE, INDEX_REQUEST, INDEX_SUCCESS, IndexActionResponse, TagsActionTypes} from "./actions";
+import {IndexActionResponse, TagsActionTypes} from "./actions";
 
 export interface ITagsState {
     loading: boolean;

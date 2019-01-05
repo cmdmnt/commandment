@@ -1,7 +1,7 @@
 import {DEPActions, DEPActionTypes} from "./actions";
 import {DEPProfile} from "./types";
 
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 
 export interface IDEPProfilesState {
     data?: Array<JSONAPIDataObject<DEPProfile>>;

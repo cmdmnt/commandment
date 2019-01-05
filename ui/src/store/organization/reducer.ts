@@ -1,5 +1,5 @@
 import * as actions from "./actions";
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 import {Organization} from "./types";
 
 export interface OrganizationState {

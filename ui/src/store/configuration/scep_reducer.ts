@@ -1,4 +1,4 @@
-import {PostActionResponse, ReadActionResponse} from "./scep";
+import {PostActionResponse, ReadActionResponse} from "./scep_actions";
 import * as actions from "./scep_actions";
 import {SCEPConfiguration} from "./types";
 

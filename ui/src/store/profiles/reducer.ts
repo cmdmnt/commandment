@@ -1,6 +1,6 @@
 import * as actions from "./actions";
 import {IndexActionResponse, UploadActionResponse} from "./actions";
-import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {Profile} from "./types";
 import {ApiError} from "redux-api-middleware";
 import {isApiError} from "../../guards";

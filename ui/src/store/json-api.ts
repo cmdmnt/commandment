@@ -1,6 +1,7 @@
 // Redux API Middleware Type Guards
+/// <reference path="../typings/redux-api-middleware.d.ts" />
 import {ApiError, InvalidRSAA, RequestError, RSAAction} from "redux-api-middleware";
-import {FlaskFilters} from "./actions/constants";
+import {FlaskFilters} from "./constants";
 
 export const JSONAPI_HEADERS = {
     "Accept": "application/vnd.api+json",
@@ -52,11 +53,13 @@ export interface JSONAPILinks {
     next?: JSONAPILink;
 }
 
+export interface JSONAPIRelationship {
+    data: JSONAPIResourceIdentifier[] | JSONAPIResourceIdentifier | null,
+    links?: JSONAPILinks;
+}
+
 export interface JSONAPIRelationships {
-    [relationshipName: string]: {
-        data: JSONAPIResourceIdentifier[] | JSONAPIResourceIdentifier | null,
-        links?: JSONAPILinks;
-    };
+    [relationshipName: string]: JSONAPIRelationship;
 }
 
 export interface JSONAPIDataObject<TObject> {
@@ -114,7 +117,8 @@ type WrappedChildIndexActionCreator<R> = (id: string, queryParameters: string[])
 type WrappedIndexActionCreator<R> = (queryParameters: string[]) => R;
 
 // Standardised JSON-API Index ActionCreator
-type RSAAIndexActionRequest<TRequest, TSuccess, TFailure> = (size?: number, pageNumber?: number, sort?: string[], filters?: FlaskFilters) => RSAAction<TRequest, TSuccess, TFailure>;
+export type RSAAIndexActionRequest<TRequest, TSuccess, TFailure> =
+    (size?: number, pageNumber?: number, sort?: string[], filters?: FlaskFilters) => RSAAction<TRequest, TSuccess, TFailure>;
 
 // Standardised JSON-API Index ActionCreator Response (passed to reducer)
 
@@ -165,7 +169,7 @@ export type RSAAPostActionResponse<TRequest, TSuccess, TFailure, TResponse> = RS
 export type RSAAPatchActionRequest<TRequest, TSuccess, TFailure, TValues> = (id: string, values: TValues)
     => RSAAction<TRequest, TSuccess, TFailure>;
 
-type RSAADeleteActionRequest<TRequest, TSuccess, TFailure> = (id: string) => RSAAction<TRequest, TSuccess, TFailure>;
+export type RSAADeleteActionRequest<TRequest, TSuccess, TFailure> = (id: string) => RSAAction<TRequest, TSuccess, TFailure>;
 
 export interface RSAADeleteActionResponseSuccess<TSuccess> {
     type: TSuccess;

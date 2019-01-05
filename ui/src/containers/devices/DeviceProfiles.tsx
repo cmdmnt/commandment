@@ -1,9 +1,9 @@
 import * as React from "react";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps, RouteProps} from "react-router";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import {DeviceProfilesTable} from "../../components/react-tables/DeviceProfilesTable";
-import {InstalledProfilesState} from "../../reducers/device/installed_profiles";
+import {InstalledProfilesState} from "../../store/device/installed_profiles_reducer";
 import {RootState} from "../../reducers/index";
 import {InstalledProfilesActionRequest, profiles as fetchInstalledProfiles} from "../../store/device/profiles";
 import {IReactTableState} from "../../store/table/types";
@@ -23,14 +23,14 @@ interface ReduxDispatchProps {
     fetchInstalledProfiles: InstalledProfilesActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>): ReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch): ReduxDispatchProps {
    return bindActionCreators({
        fetchInstalledProfiles,
    }, dispatch);
 }
 
 interface DeviceProfilesRouteProps {
-    id: number;
+    id?: string;
 }
 
 interface DeviceProfilesProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<DeviceProfilesRouteProps> {

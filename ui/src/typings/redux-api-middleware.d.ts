@@ -1,4 +1,5 @@
 declare module "redux-api-middleware" {
+    import {Action, AnyAction} from "redux";
     import {Middleware} from "redux";
     
     /**
@@ -143,11 +144,17 @@ declare module "redux-api-middleware" {
         }
     }
 
-    module "redux" {
-        export interface Dispatch<S> {
-            <R, S, F>(rsaa: RSAAction<R, S, F>): void;
-        }
-    }
+//     declare module "redux" {
+//     import {RSAAAction} from "redux-api-middleware";
+//
+//         export interface Dispatch<S> {
+//             <R, S, F>(rsaa: RSAAction<R, S, F>): void;
+//         }
+//     }
 }
 
 
+
+//
+// at-loader] ./src/typings/redux-api-middleware.d.ts:148:12
+// TS2435: Ambient modules cannot be nested in other modules or namespaces.

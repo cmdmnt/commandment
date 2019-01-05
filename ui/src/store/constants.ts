@@ -8,7 +8,7 @@ export const JSON_HEADERS = {
     "Content-Type": "application/json",
 };
 
-export type CertificatePurpose = "apns" | "ssl";
+
 
 // Flask-REST-JSONAPI Filter and Sort definitions
 

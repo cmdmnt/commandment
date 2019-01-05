@@ -1,20 +1,25 @@
-import {
-    PROFILES_SUCCESS,
-    InstalledProfilesActionResponse
-} from "./profiles";
-import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
-import {InstalledProfile} from "./types";
 import {OtherAction} from "../constants";
-
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
+import {
+    InstalledProfilesActionResponse,
+    PROFILES_SUCCESS,
+} from "./profiles";
+import {InstalledProfile} from "./types";
 
 export interface InstalledProfilesState {
     items?: Array<JSONAPIDataObject<InstalledProfile>>;
+    loading: boolean;
+    pageSize: number;
+    pages: number;
     recordCount: number;
 }
 
 const initialState: InstalledProfilesState = {
     items: [],
-    recordCount: 0
+    loading: false,
+    pageSize: 20,
+    pages: 0,
+    recordCount: 0,
 };
 
 type InstalledProfilesAction = InstalledProfilesActionResponse | OtherAction;
@@ -28,7 +33,7 @@ export function installed_profiles_reducer(state: InstalledProfilesState = initi
                 return {
                     ...state,
                     items: action.payload.data,
-                    recordCount: action.payload.meta.count
+                    recordCount: action.payload.meta.count,
                 };
             }
         default:

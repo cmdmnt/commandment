@@ -1,11 +1,11 @@
-/// <reference path="../typings/redux-api-middleware.d.ts" />
+/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIDataObject, JSONAPIDetailResponse,
     JSONAPIListResponse,
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse,
-} from "../../json-api";
+} from "../json-api";
 import {DeviceGroup} from "./types";
 import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants"
 import {Device} from "../device/types";
@@ -24,13 +24,13 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: String[]) =>
     return ({
         [RSAA]: {
             endpoint: "/api/v1/device_groups?" + queryParameters.join("&"),
+            headers: JSONAPI_HEADERS,
             method: ("GET" as HTTPVerb),
             types: [
                 INDEX_REQUEST,
                 INDEX_SUCCESS,
                 INDEX_FAILURE,
             ],
-            headers: JSONAPI_HEADERS,
         },
     } as RSAAction<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>);
 });
@@ -84,20 +84,20 @@ export const post: PostActionRequest = (values: DeviceGroup) => {
 
     return {
         [RSAA]: {
+            body: JSON.stringify({
+                data: {
+                    attributes: values,
+                    type: "reducer",
+                },
+            }),
             endpoint: `/api/v1/device_groups`,
+            headers: JSONAPI_HEADERS,
             method: "POST",
             types: [
                 POST_REQUEST,
                 POST_SUCCESS,
                 POST_FAILURE,
             ],
-            headers: JSONAPI_HEADERS,
-            body: JSON.stringify({
-                data: {
-                    type: "reducer",
-                    attributes: values,
-                },
-            }),
         },
     }
 };

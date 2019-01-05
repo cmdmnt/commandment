@@ -2,15 +2,16 @@ import {distanceInWordsToNow} from "date-fns";
 import * as React from "react";
 import ReactTable, {CellInfo, TableProps} from "react-table";
 import selectTableHoc from "react-table/lib/hoc/selectTable";
-import {JSONAPIDataObject} from "../../json-api";
+import {JSONAPIDataObject} from "../../store/json-api";
 // import "react-table/react-table.css";
 import {Device} from "../../store/device/types";
-import {ModelIcon} from "../ModelIcon";
+import {ModelIcon} from "../devices/ModelIcon";
 import {DeviceName} from "../react-table/DeviceName";
+import {DEPAccount} from "../../store/dep/types";
 
 export interface IDevicesTableProps {
     loading: boolean;
-    data: Device[];
+    data: Array<JSONAPIDataObject<Device>>;
     toggleSelection: (key: string, shiftKeyPressed: boolean, row: any) => any;
     toggleAll: () => any;
     isSelected: (key: string) => boolean;

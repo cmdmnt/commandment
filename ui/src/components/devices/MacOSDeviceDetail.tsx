@@ -1,7 +1,7 @@
 import {distanceInWordsToNow} from "date-fns";
 import * as React from "react";
 import {FunctionComponent, SyntheticEvent} from "react";
-import {DeviceState} from "../store/device/device";
+import {DeviceState} from "../../store/device/reducer";
 import {ModelIcon} from "./ModelIcon";
 
 import {Route} from "react-router";
@@ -50,7 +50,6 @@ interface IMacOSDeviceDetailProps {
     push: PushActionRequest;
     restart: RestartActionRequest;
     shutdown: ShutdownActionRequest;
-    test: TestActionRequest;
 }
 
 export const MacOSDeviceDetail: FunctionComponent<IMacOSDeviceDetailProps> = ({

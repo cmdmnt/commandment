@@ -2,12 +2,13 @@ import {
     CERTIFICATES_SUCCESS,
     CertificatesActionResponse
 } from "./certificates";
-import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../../json-api";
+import {JSONAPIDataObject, isJSONAPIErrorResponsePayload} from "../json-api";
 import {InstalledCertificate} from "./types";
 import {OtherAction} from "../constants";
 
 export interface InstalledCertificatesState {
     items?: Array<JSONAPIDataObject<InstalledCertificate>>;
+    loading: boolean;
     pageSize: number;
     pages: number;
     recordCount: number;
@@ -15,6 +16,7 @@ export interface InstalledCertificatesState {
 
 const initialState: InstalledCertificatesState = {
     items: [],
+    loading: false,
     pageSize: 20,
     pages: 0,
     recordCount: 0,

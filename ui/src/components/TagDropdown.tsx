@@ -1,11 +1,9 @@
 import * as React from "react";
-import Input from "semantic-ui-react/src/elements/Input";
-import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
-import { DropdownItemProps } from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
-
 import {SyntheticEvent} from "react";
+import {JSONAPIDataObject} from "../store/json-api";
 import {Tag} from "../store/tags/types";
-import {JSONAPIDataObject} from "../json-api";
+
+import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
 
 // Not exported by Dropdown
 interface IDropdownOnSearchChangeData extends DropdownProps {
@@ -43,7 +41,7 @@ export class TagDropdown extends React.Component<ITagDropdownProps, ITagDropdown
         const options = tags.map((item: JSONAPIDataObject<Tag>) => {
             return {
                 key: item.id,
-                label: { color: item.attributes.color, empty: true, circular: true, },
+                label: { color: item.attributes.color, empty: true, circular: true },
                 text: item.attributes.name,
                 value: item.id,
             };

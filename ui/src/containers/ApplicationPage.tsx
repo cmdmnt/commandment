@@ -1,7 +1,7 @@
 import * as React from "react";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
 import {
@@ -21,13 +21,10 @@ interface IReduxDispatchProps {
 
 interface IRouteParameters {
     platform: string;
+    id?: string;
 }
 
-interface IOwnProps extends RouteComponentProps<IRouteParameters> {
-
-}
-
-class UnconnectedApplicationPage extends React.Component<IReduxStateProps & IReduxDispatchProps & IOwnProps, void> {
+class UnconnectedApplicationPage extends React.Component<IReduxStateProps & IReduxDispatchProps & RouteComponentProps<IRouteParameters>, void> {
 
     public componentWillMount?() {
         if (this.props.match.params.id) {
@@ -60,6 +57,6 @@ class UnconnectedApplicationPage extends React.Component<IReduxStateProps & IRed
 }
 
 export const ApplicationPage  = connect(
-    (state: RootState, ownProps?: IOwnProps) => ({}),
-    (dispatch: Dispatch<RootState>, ownProps?: IOwnProps) => bindActionCreators({ post }, dispatch),
+    (state: RootState, ownProps?: any) => ({}),
+    (dispatch: Dispatch<RootState>, ownProps?: any) => bindActionCreators({ post }, dispatch),
 )(UnconnectedApplicationPage);

@@ -2,7 +2,7 @@ import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {
     encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
     RSAAIndexActionResponse,
-} from "../../json-api";
+} from "../json-api";
 import {AvailableOSUpdate} from "./types";
 import {JSONAPI_HEADERS} from "../constants";
 

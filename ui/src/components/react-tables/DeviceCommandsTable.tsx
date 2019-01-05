@@ -3,10 +3,12 @@ import ReactTable, {TableProps} from "react-table";
 import {Command} from "../../store/device/types";
 import {RelativeToNow} from "../react-table/RelativeToNow";
 import {CommandStatus} from "../react-table/CommandStatus";
+import {JSONAPIDataObject} from "../../store/json-api";
+import {DEPAccount} from "../../store/dep/types";
 
 export interface IDeviceCommandsTableProps {
     loading: boolean;
-    data: Command[];
+    data: Array<JSONAPIDataObject<Command>>;
     onFetchData: (state: any, instance: any) => void;
 }
 

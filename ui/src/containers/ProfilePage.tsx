@@ -1,20 +1,17 @@
 import * as React from "react";
-import {connect, Dispatch} from "react-redux";
-import {bindActionCreators} from "redux";
+import {connect} from "react-redux";
+import {bindActionCreators, Dispatch} from "redux";
 import {RootState} from "../reducers/index";
 
-import Grid from "semantic-ui-react/src/collections/Grid";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
-import Segment from "semantic-ui-react/src/elements/Segment";
 import { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
 
 import {SyntheticEvent} from "react";
 import {RouteComponentProps} from "react-router";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
-import {JSONAPIDataObject, JSONAPIRelationship} from "../json-api";
-import {ProfileState} from "../reducers/profile";
+import {JSONAPIDataObject, JSONAPIRelationship} from "../store/json-api";
 import {patchRelationship, PatchRelationshipActionRequest} from "../store/profiles/actions";
 import {read, ReadActionRequest} from "../store/profiles/actions";
 import {Profile} from "../store/profiles/types";
@@ -52,7 +49,7 @@ interface IReduxDispatchProps {
     patchRelationship: PatchRelationshipActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>): IReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch): IReduxDispatchProps {
     return bindActionCreators({
         createTag,
         fetchTags,

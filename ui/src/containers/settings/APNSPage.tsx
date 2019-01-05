@@ -1,10 +1,19 @@
 import * as React from "react";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import {RootState} from "../../reducers";
 
 import Dropzone, {DropFilesEventHandler} from "react-dropzone";
+import {Link} from "react-router-dom";
+
+import {Component, SyntheticEvent} from "react";
+import {RSAAApiErrorMessage} from "../../components/RSAAApiErrorMessage";
+import {APNSState} from "../../store/configuration/apns_reducer";
+import {csr, CsrActionRequest, uploadCrypted, UploadCryptedActionRequest} from "../../store/configuration/mdmcert_actions";
+
+import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import Button from "semantic-ui-react/src/elements/Button/Button";
 import Container from "semantic-ui-react/src/elements/Container/Container";
 import Header from "semantic-ui-react/src/elements/Header/Header";
@@ -12,24 +21,16 @@ import Icon from "semantic-ui-react/src/elements/Icon/Icon";
 import Input from "semantic-ui-react/src/elements/Input/Input";
 import Segment from "semantic-ui-react/src/elements/Segment/Segment";
 
-import {SyntheticEvent} from "react";
-import {RSAAApiErrorMessage} from "../../components/RSAAApiErrorMessage";
-import {APNSState} from "../../store/configuration/apns";
-import {csr, CsrActionRequest, uploadCrypted, UploadCryptedActionRequest} from "../../store/configuration/mdmcert_actions";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
-import {Link} from "react-router-dom";
-
-interface ReduxStateProps {
+interface IReduxStateProps {
     apns: APNSState;
 }
 
-interface ReduxDispatchProps {
+interface IReduxDispatchProps {
     csr: CsrActionRequest;
     uploadCrypted: UploadCryptedActionRequest;
 }
 
-interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<{}> {
+interface OwnProps extends IReduxStateProps, IReduxDispatchProps, RouteComponentProps<any> {
 
 }
 
@@ -37,7 +38,7 @@ interface APNSPageState {
     email: string;
 }
 
-export class UnconnectedAPNSPage extends React.Component<OwnProps> {
+export class UnconnectedAPNSPage extends Component<OwnProps> {
 
     public state: APNSPageState = { email: "" };
 
@@ -102,7 +103,7 @@ export class UnconnectedAPNSPage extends React.Component<OwnProps> {
                             return (
                                 <div
                                     {...getRootProps()}
-                                    className={'dropzone'}
+                                    className={"dropzone"}
                                 >
                                     <input {...getInputProps()} />
                                     {
@@ -137,11 +138,11 @@ export class UnconnectedAPNSPage extends React.Component<OwnProps> {
     }
 }
 
-export const APNSPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
-    (state: RootState): ReduxStateProps => ({
+export const APNSPage = connect<IReduxStateProps, IReduxDispatchProps, OwnProps>(
+    (state: RootState): IReduxStateProps => ({
         apns: state.configuration.apns,
     }),
-    (dispatch: Dispatch<any>) => bindActionCreators({
+    (dispatch: Dispatch) => bindActionCreators({
         csr,
         uploadCrypted,
     }, dispatch),

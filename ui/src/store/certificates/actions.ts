@@ -1,6 +1,6 @@
-/// <reference path="../typings/redux-api-middleware.d.ts" />
+/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import { RSAA, RSAAction } from "redux-api-middleware";
-import {JSONAPIDataObject, JSONAPIDetailResponse, JSONAPIListResponse} from "../../json-api";
+import {JSONAPIDataObject, JSONAPIDetailResponse, JSONAPIListResponse} from "../json-api";
 import {FlaskFilter, FlaskFilters, JSONAPI_HEADERS} from "../constants"
 import {Certificate} from "./types";
 

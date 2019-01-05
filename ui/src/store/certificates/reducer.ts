@@ -7,12 +7,12 @@ import {
 import {FetchPushCertificatesActionResponse} from "./push_actions";
 
 // Sub reducers
-import {JSONAPIDataObject, JSONAPIDetailResponse} from "../../json-api";
-import {Certificate} from "./types";
+import {JSONAPIDataObject, JSONAPIDetailResponse} from "../json-api";
+import {installed_certificates_reducer, InstalledCertificatesState} from "../device/installed_certificates_reducer";
 import {ca, CAState} from "./ca_reducer";
 import {push, PushState} from "./push_reducer";
 import {ssl, SSLState} from "./ssl_reducer";
-import {installed_certificates_reducer, InstalledCertificatesState} from "./device/installed_certificates";
+import {Certificate} from "./types";
 
 export interface CertificatesState {
     items: Array<JSONAPIDataObject<Certificate>>;

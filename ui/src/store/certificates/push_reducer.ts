@@ -1,4 +1,4 @@
-import {JSONAPIDataObject, JSONAPIListResponse} from "../../json-api";
+import {JSONAPIDataObject, JSONAPIListResponse} from "../json-api";
 import * as actions from "./push_actions";
 import {Certificate} from "./types";
 

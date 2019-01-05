@@ -1,12 +1,12 @@
-/// <reference path="../typings/redux-api-middleware.d.ts" />
-import {Dispatch} from "react-redux";
+/// <reference path="../../typings/redux-api-middleware.d.ts" />
+import {Dispatch} from "redux";
 import {ApiError, HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
 import {
     encodeJSONAPIIndexParameters, JSONAPIRelationship, RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse,
-} from "../../json-api";
-import {JSONAPIDetailResponse} from "../../json-api";
+} from "../json-api";
+import {JSONAPIDetailResponse} from "../json-api";
 import {Profile, ProfileRelationship} from "./types";
 import {Tag} from "../tags/types";
 import {RootState} from "../../reducers/index";
@@ -27,7 +27,7 @@ export enum ProfilesActionTypes {
 export type IndexActionRequest = RSAAIndexActionRequest<ProfilesActionTypes.INDEX_REQUEST, ProfilesActionTypes.INDEX_SUCCESS, ProfilesActionTypes.INDEX_FAILURE>;
 export type IndexActionResponse = RSAAIndexActionResponse<ProfilesActionTypes.INDEX_REQUEST, ProfilesActionTypes.INDEX_SUCCESS, ProfilesActionTypes.INDEX_FAILURE, Profile>;
 
-export const index = encodeJSONAPIIndexParameters((queryParameters: String[]) => {
+export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) => {
     return ({
         [RSAA]: {
             endpoint: "/api/v1/profiles?" + queryParameters.join("&"),
@@ -66,7 +66,7 @@ export const read: ReadActionRequest = (id: string, include?: string[]) => {
     }
 };
 
-type PatchRelationshipActionRequest = (parent_id: string, relationship: ProfileRelationship, data: JSONAPIRelationship[]) => RSAAction<
+export type PatchRelationshipActionRequest = (parentId: string, relationship: ProfileRelationship, data: JSONAPIRelationship[]) => RSAAction<
     ProfilesActionTypes.REL_PATCH_REQUEST, ProfilesActionTypes.REL_PATCH_SUCCESS, ProfilesActionTypes.REL_PATCH_FAILURE>;
 export type PatchRelationshipActionResponse = RSAAReadActionResponse<
     ProfilesActionTypes.REL_PATCH_REQUEST,
@@ -74,11 +74,11 @@ export type PatchRelationshipActionResponse = RSAAReadActionResponse<
     ProfilesActionTypes.REL_PATCH_FAILURE,
     JSONAPIDetailResponse<Profile, Tag>>;
 
-export const patchRelationship: PatchRelationshipActionRequest = (id: string, relationship: ProfileRelationship, data: JSONAPIRelationship[]) => {
+export const patchRelationship: PatchRelationshipActionRequest = (parentId: string, relationship: ProfileRelationship, data: JSONAPIRelationship[]) => {
     return {
         [RSAA]: {
             body: JSON.stringify({ data }),
-            endpoint: `/api/v1/profiles/${id}/relationships/${relationship}`,
+            endpoint: `/api/v1/profiles/${parentId}/relationships/${relationship}`,
             headers: JSONAPI_HEADERS,
             method: "PATCH",
             types: [
@@ -104,7 +104,7 @@ export type UploadActionRequest = (file: File) => ThunkAction<void, RootState, v
 export type UploadActionResponse = RSAAReadActionResponse<UPLOAD_REQUEST, UPLOAD_SUCCESS, UPLOAD_FAILURE, JSONAPIDetailResponse<Profile, undefined>>;
 
 export const upload = (file: File): ThunkAction<void, RootState, void> => (
-    dispatch: Dispatch<RootState>,
+    dispatch: Dispatch,
     getState: () => RootState,
     extraArgument: void) => {
 

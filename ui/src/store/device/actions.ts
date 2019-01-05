@@ -3,15 +3,15 @@ import {Dispatch} from "react-redux";
 import {Action} from "redux";
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
+import {RootState} from "../../reducers/index";
+import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants"
 import {
     encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIRelationship, JSONAPIRelationships,
     RSAAChildIndexActionRequest,
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAPatchActionRequest, RSAAReadActionRequest, RSAAReadActionResponse,
-} from "../../json-api";
-import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../../json-api";
-import {RootState} from "../../reducers/index";
-import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants"
+} from "../json-api";
+import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../json-api";
 import {Tag} from "../tags/types";
 import {Command, Device, DeviceRelationship} from "./types";
 
@@ -161,7 +161,7 @@ export const fetchDeviceIfRequired = (
     dispatch(read(id, include));
 };
 
-export type PushActionRequest = (id: string) =>
+export type PushActionRequest = (id: string | number) =>
     RSAAction<DevicesActionTypes.PUSH_REQUEST, DevicesActionTypes.PUSH_SUCCESS, DevicesActionTypes.PUSH_FAILURE>;
 
 export interface PushActionResponse {
@@ -184,7 +184,7 @@ export const push: PushActionRequest = (id: string | number) => {
     }
 };
 
-export type RestartActionRequest = (id: string) => RSAAction<
+export type RestartActionRequest = (id: string | number) => RSAAction<
     DevicesActionTypes.RESTART_REQUEST, DevicesActionTypes.RESTART_SUCCESS, DevicesActionTypes.RESTART_FAILURE>;
 
 export interface RestartActionResponse {
@@ -207,7 +207,7 @@ export const restart: RestartActionRequest = (deviceId: string | number) => {
     }
 };
 
-export type ShutdownActionRequest = (id: string) =>
+export type ShutdownActionRequest = (id: string | number) =>
     RSAAction<
         DevicesActionTypes.SHUTDOWN_REQUEST,
         DevicesActionTypes.SHUTDOWN_SUCCESS,
@@ -296,7 +296,7 @@ export const lock: LockActionRequest = (deviceId: string | number, pin?: string,
     }
 };
 
-export type ClearPasscodeActionRequest = (id: string) =>
+export type ClearPasscodeActionRequest = (id: string | number) =>
     RSAAction<
         DevicesActionTypes.CLEARPASSCODE_REQUEST,
         DevicesActionTypes.CLEARPASSCODE_SUCCESS,
@@ -324,7 +324,7 @@ export const clearPasscode: ClearPasscodeActionRequest = (id: string | number) =
     }
 };
 
-export type InventoryActionRequest = (id: string) =>
+export type InventoryActionRequest = (id: string | number) =>
     RSAAction<DevicesActionTypes.INVENTORY_REQUEST,
         DevicesActionTypes.INVENTORY_SUCCESS,
         DevicesActionTypes.INVENTORY_FAILURE>;
@@ -358,7 +358,7 @@ export const TEST_SUCCESS: TEST_SUCCESS = "devices/TEST_SUCCESS";
 export type TEST_FAILURE = "devices/TEST_FAILURE";
 export const TEST_FAILURE: TEST_FAILURE = "devices/TEST_FAILURE";
 
-export type TestActionRequest = (id: string) => RSAAction<TEST_REQUEST, TEST_SUCCESS, TEST_FAILURE>;
+export type TestActionRequest = (id: string | number) => RSAAction<TEST_REQUEST, TEST_SUCCESS, TEST_FAILURE>;
 export interface TestActionResponse {
     type: TEST_REQUEST | TEST_SUCCESS | TEST_FAILURE;
     payload?: JSONAPIDetailResponse<any, undefined> | JSONAPIErrorResponse;

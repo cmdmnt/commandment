@@ -11,7 +11,7 @@ export interface IActionMenu {
     enabledActions: UIActionTypes[];
 }
 
-export const ActionMenu: React.FunctionComponent = (props: IActionMenu) => (
+export const ActionMenu: React.FunctionComponent<IActionMenu> = (props: IActionMenu) => (
     <Dropdown inline button text="action" onChange={this.handleAction} options={[
         {text: "Force Push", value: "push"},
         {text: "Inventory", value: "inventory"},

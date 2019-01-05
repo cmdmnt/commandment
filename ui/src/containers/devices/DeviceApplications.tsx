@@ -1,7 +1,7 @@
 import * as React from "react";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps, RouteProps} from "react-router";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import {DeviceApplicationsTable} from "../../components/react-tables/DeviceApplicationsTable";
 import {RootState} from "../../reducers/index";
 import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
@@ -25,14 +25,14 @@ interface IReduxDispatchProps {
     fetchInstalledApplications: InstalledApplicationsActionRequest
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>): IReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch): IReduxDispatchProps {
    return bindActionCreators({
        fetchInstalledApplications,
    }, dispatch);
 }
 
 interface IDeviceApplicationsRouteProps {
-    id: string;
+    id?: string;
 }
 
 type DeviceApplicationsProps = IReduxStateProps &

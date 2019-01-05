@@ -1,36 +1,32 @@
 import * as React from "react";
-import {connect, Dispatch, MapStateToProps} from "react-redux";
+import {connect, MapStateToProps} from "react-redux";
+import {Dispatch} from "redux";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
 
+import {Component} from "react";
 import * as Dropzone from "react-dropzone";
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
-import {read as fetchTokenInfo, TokenActionRequest,
-    index, IndexActionRequest} from "../../store/configuration/vpp";
-import {VPPState} from "../../reducers/configuration/vpp";
 import {RootState} from "../../reducers/index";
+import {index, IndexActionRequest,
+    read as fetchTokenInfo, TokenActionRequest} from "../../store/configuration/vpp";
+import {VPPState} from "../../store/configuration/vpp_reducer";
 
-interface RouteProps {
-
-}
-
-interface ReduxStateProps {
+interface IReduxStateProps {
     vpp: VPPState;
 }
 
-interface ReduxDispatchProps {
+interface IReduxDispatchProps {
     fetchTokenInfo: TokenActionRequest;
     index: IndexActionRequest;
 }
 
-interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteProps> {
+export type UnconnectedVPPAccountsPageProps = IReduxStateProps & IReduxDispatchProps & RouteComponentProps<any>
 
-}
+export class UnconnectedVPPAccountsPage extends Component<UnconnectedVPPAccountsPageProps, any> {
 
-export class UnconnectedVPPAccountsPage extends React.Component<OwnProps, any> {
-
-    componentWillMount?() {
+    public componentWillMount?() {
         this.props.index();
     }
 
@@ -38,7 +34,7 @@ export class UnconnectedVPPAccountsPage extends React.Component<OwnProps, any> {
     //     this.props.upload(files[0]);
     // };
 
-    render() {
+    public render() {
         const {
             vpp: {data, loading},
         } = this.props;
@@ -60,10 +56,10 @@ export class UnconnectedVPPAccountsPage extends React.Component<OwnProps, any> {
 }
 
 export const VPPAccountsPage = connect(
-    (state: RootState): ReduxStateProps => ({
+    (state: RootState): IReduxStateProps => ({
         vpp: state.configuration.vpp,
     }),
-    (dispatch: Dispatch<any>) => bindActionCreators({
+    (dispatch: Dispatch) => bindActionCreators({
         fetchTokenInfo,
         index,
     }, dispatch),

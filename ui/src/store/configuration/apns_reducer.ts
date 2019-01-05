@@ -1,7 +1,7 @@
 import * as actions from "./mdmcert_actions";
 import {CsrActionResponse, IMDMCertResponse} from "./mdmcert_actions";
 import {isApiError} from "../../guards";
-import {isJSONAPIErrorResponsePayload} from "../../json-api";
+import {isJSONAPIErrorResponsePayload} from "../json-api";
 
 export interface APNSState {
     data?: any;

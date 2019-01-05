@@ -1,11 +1,12 @@
+/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import {Dispatch} from "react-redux";
 import {ApiError, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
 import {JSON_HEADERS} from "../constants";
-import {JSONAPIDetailResponse, RSAAReadActionRequest, RSAAReadActionResponse} from "../../json-api";
+import {JSONAPIDetailResponse, RSAAReadActionRequest, RSAAReadActionResponse} from "../json-api";
 import {VPPAccount} from "./types";
 import {RootState} from "../../reducers/index";
-import {UPLOAD_TOKEN} from "./vpp";
+import {VPPActionTypes} from "./vpp";
 
 export const MDMCERT_CSR_REQUEST = "mdmcert/CSR_REQUEST";
 export type MDMCERT_CSR_REQUEST = typeof MDMCERT_CSR_REQUEST;
@@ -19,7 +20,8 @@ export interface IMDMCertResponse {
     reason?: string;
 }
 
-export type CsrActionRequest = (email: string) => RSAAction<MDMCERT_CSR_REQUEST, MDMCERT_CSR_SUCCESS, MDMCERT_CSR_FAILURE>;
+export type CsrActionRequest = (email: string) =>
+    RSAAction<MDMCERT_CSR_REQUEST, MDMCERT_CSR_SUCCESS, MDMCERT_CSR_FAILURE>;
 export interface CsrActionResponse {
     type: MDMCERT_CSR_REQUEST | MDMCERT_CSR_SUCCESS | MDMCERT_CSR_FAILURE;
     payload?: ApiError | IMDMCertResponse;
@@ -29,13 +31,13 @@ export const csr: CsrActionRequest = (email: string) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/mdmcert/request/${email}`,
+            headers: JSON_HEADERS,
             method: "GET",
             types: [
                 MDMCERT_CSR_REQUEST,
                 MDMCERT_CSR_SUCCESS,
                 MDMCERT_CSR_FAILURE,
             ],
-            headers: JSON_HEADERS,
         },
     };
 };

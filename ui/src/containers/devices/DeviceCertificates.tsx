@@ -1,9 +1,9 @@
 import * as React from "react";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import {certificates as fetchInstalledCertificates, CertificatesActionRequest} from "../../store/device/certificates";
-import {InstalledCertificatesState} from "../../reducers/device/installed_certificates";
+import {InstalledCertificatesState} from "../../store/device/installed_certificates_reducer";
 import {RootState} from "../../reducers/index";
 import {DeviceCertificatesTable} from "../../components/react-tables/DeviceCertificatesTable";
 import {IReactTableState} from "../../store/table/types";
@@ -23,14 +23,14 @@ interface IReduxDispatchProps {
     fetchInstalledCertificates: CertificatesActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>): IReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch): IReduxDispatchProps {
     return bindActionCreators({
         fetchInstalledCertificates,
     }, dispatch);
 }
 
 interface IDeviceCertificatesRouteProps {
-    id: string; // device id
+    id?: string;
 }
 
 type DeviceCertificatesProps = IReduxStateProps &

@@ -1,10 +1,12 @@
 import * as React from "react";
 import ReactTable, {TableProps} from "react-table";
 import {InstalledProfile} from "../../store/device/types";
+import {JSONAPIDataObject} from "../../store/json-api";
+import {DEPAccount} from "../../store/dep/types";
 
 export interface IDeviceProfilesTableProps {
     loading: boolean;
-    data: InstalledProfile[];
+    data: Array<JSONAPIDataObject<InstalledProfile>>;
     onFetchData: (state: any, instance: any) => void;
 }
 

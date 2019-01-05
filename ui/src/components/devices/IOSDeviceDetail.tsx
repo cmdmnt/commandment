@@ -1,7 +1,7 @@
 import {distanceInWordsToNow} from "date-fns";
 import * as React from "react";
 import {FunctionComponent} from "react";
-import {DeviceState} from "../store/device/device";
+import {DeviceState} from "../../store/device/reducer";
 import {ModelIcon} from "./ModelIcon";
 
 import {ButtonLink} from "../semantic-ui/ButtonLink";
@@ -53,7 +53,6 @@ interface IIOSDeviceDetailProps {
     push: PushActionRequest;
     restart: RestartActionRequest;
     shutdown: ShutdownActionRequest;
-    test: TestActionRequest;
 }
 
 export const IOSDeviceDetail: FunctionComponent<IIOSDeviceDetailProps> = ({

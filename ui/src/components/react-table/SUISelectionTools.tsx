@@ -1,7 +1,7 @@
 import * as React from "react";
 import Input from "semantic-ui-react/dist/commonjs/elements/Input/Input";
 import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown";
-import {JSONAPIDataObject} from "../../json-api";
+import {JSONAPIDataObject} from "../../store/json-api";
 import {Tag} from "../../store/tags/types";
 import {ActionMenu} from "../ActionMenu";
 

@@ -1,17 +1,17 @@
 import * as React from "react";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import Grid from "semantic-ui-react/src/collections/Grid";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
 
 import {RouteComponentProps} from "react-router";
-import {bindActionCreators, Store} from "redux";
+import {bindActionCreators, Store, Dispatch} from "redux";
 import {SUISelectionTools} from "../components/react-table/SUISelectionTools";
 import {DevicesTable} from "../components/react-tables/DevicesTable";
 import {RootState} from "../reducers/index";
 import {FlaskFilter, FlaskFilterOperation} from "../store/constants";
 import * as actions from "../store/device/actions";
-import {DevicesState} from "../store/devices/devices";
+import {IDevicesState} from "../store/devices/devices";
 import * as tableActions from "../store/table/actions";
 import {ToggleSelectionActionCreator} from "../store/table/actions";
 import {ITableState} from "../store/table/reducer";
@@ -21,7 +21,7 @@ import {ITagsState} from "../store/tags/reducer";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
 interface IReduxStateProps {
-    devices: DevicesState;
+    devices: IDevicesState;
     table: ITableState;
     tags: ITagsState;
 }
@@ -41,7 +41,7 @@ interface IReduxDispatchProps {
     toggleSelection: ToggleSelectionActionCreator;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: any): IReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch, ownProps?: any): IReduxDispatchProps {
     return bindActionCreators({
         fetchDevicesIfRequired: actions.fetchDevicesIfRequired,
         index: actions.index,

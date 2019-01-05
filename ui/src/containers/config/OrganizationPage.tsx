@@ -1,8 +1,8 @@
 import * as React from "react";
-import { connect, Dispatch } from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
 import {Link} from "react-router-dom";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import {IOrganizationFormValues, OrganizationForm} from "../../components/forms/OrganizationForm";
 import {RSAAApiErrorMessage} from "../../components/RSAAApiErrorMessage";
 import {RootState} from "../../reducers/index";
@@ -14,29 +14,29 @@ import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
-interface OrganizationPageState {
+interface IOrganizationPageState {
     organization: OrganizationState;
 }
 
-function mapStateToProps(state: RootState, ownProps?: any): OrganizationPageState {
+function mapStateToProps(state: RootState, ownProps?: any): IOrganizationPageState {
     return {
         organization: state.organization,
     }
 }
 
-interface OrganizationPageDispatchProps {
+interface IOrganizationPageDispatchProps {
     read: actions.ReadActionRequest;
     post: actions.PostActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>) {
+function mapDispatchToProps(dispatch: Dispatch) {
     return bindActionCreators({
         post: actions.post,
         read: actions.read,
     }, dispatch);
 }
 
-interface OrganizationPageProps extends OrganizationPageState, OrganizationPageDispatchProps, RouteComponentProps<any> {
+interface OrganizationPageProps extends IOrganizationPageState, IOrganizationPageDispatchProps, RouteComponentProps<any> {
 
 }
 
@@ -85,7 +85,7 @@ export class UnconnectedOrganizationPage extends React.Component<OrganizationPag
 
 }
 
-export const OrganizationPage = connect<OrganizationPageState, OrganizationPageDispatchProps, OrganizationPageProps>(
+export const OrganizationPage = connect<IOrganizationPageState, IOrganizationPageDispatchProps, OrganizationPageProps>(
     mapStateToProps,
     mapDispatchToProps,
 )(UnconnectedOrganizationPage);

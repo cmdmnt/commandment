@@ -1,13 +1,13 @@
 import * as React from "react";
+import {SemanticICONS} from "semantic-ui-react";
 import Icon from "semantic-ui-react/src/elements/Icon";
-import {SemanticICONS} from "semantic-ui-react/src";
 
-interface ModelIconProps {
+interface IModelIconProps {
     value: string;
     title: string;
 }
 
-export const ModelIcon = (props: ModelIconProps): JSX.Element => {
+export const ModelIcon = (props: IModelIconProps): JSX.Element => {
     const icons: { [propName: string]: SemanticICONS; } = {
        "Mac Pro": "computer",
        "MacBook Air": "laptop",

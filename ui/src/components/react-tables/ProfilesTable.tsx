@@ -2,16 +2,16 @@ import {distanceInWordsToNow} from "date-fns";
 import * as React from "react";
 import ReactTable, {CellInfo, TableProps, Column} from "react-table";
 import selectTableHoc from "react-table/lib/hoc/selectTable";
-import {JSONAPIDataObject} from "../../json-api";
+import {JSONAPIDataObject} from "../../store/json-api";
 // import "react-table/react-table.css";
-import {Device} from "../../store/device/types";
+import {AvailableOSUpdate, Device} from "../../store/device/types";
 import {Profile} from "../../store/profiles/types";
 import {DeviceName} from "../react-table/DeviceName";
 import {ProfileName} from "../react-table/ProfileName";
 
 export interface IProfilesTableProps {
     loading: boolean;
-    data: Profile[];
+    data: Array<JSONAPIDataObject<Profile>>;
     onToggleSelection: () => void;
     onToggleAll: () => void;
 }

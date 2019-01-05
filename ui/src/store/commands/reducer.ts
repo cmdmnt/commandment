@@ -1,5 +1,5 @@
-import * as actions from '../actions/commands';
-import {PostActionResponse} from "../actions/commands";
+import * as actions from './actions';
+import {PostActionResponse} from "./actions";
 
 export interface CommandsState {
     

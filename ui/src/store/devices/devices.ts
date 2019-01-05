@@ -1,17 +1,17 @@
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 import {
     DevicesActionTypes,
     IndexActionResponse,
 } from "../device/actions";
 import {Device} from "../device/types";
 
-export interface DeviceIdMap {
+export interface IDeviceIdMap {
     [deviceId: string]: JSONAPIDataObject<Device>;
 }
 
-export interface DevicesState {
+export interface IDevicesState {
     items: Array<JSONAPIDataObject<Device>>;
-    byId: DeviceIdMap;
+    byId: IDeviceIdMap;
     allIds: string[];
     loading: boolean;
     error: boolean;
@@ -22,7 +22,7 @@ export interface DevicesState {
     recordCount?: number;
 }
 
-const initialState: DevicesState = {
+const initialState: IDevicesState = {
     allIds: [],
     byId: {},
     currentPage: 1,
@@ -36,7 +36,7 @@ const initialState: DevicesState = {
 
 type DevicesAction = IndexActionResponse;
 
-export function devices(state: DevicesState = initialState, action: DevicesAction): DevicesState {
+export function devices(state: IDevicesState = initialState, action: DevicesAction): IDevicesState {
     switch (action.type) {
         case DevicesActionTypes.INDEX_REQUEST:
             return {
@@ -61,7 +61,7 @@ export function devices(state: DevicesState = initialState, action: DevicesActio
                 }
             } else {
                 const allIds: string[] = [];
-                const byId: DeviceIdMap = action.payload.data.reduce((memo: DeviceIdMap, device: JSONAPIDataObject<Device>) => {
+                const byId: IDeviceIdMap = action.payload.data.reduce((memo: IDeviceIdMap, device: JSONAPIDataObject<Device>) => {
                     memo[device.id] = device;
                     allIds.push("" + device.id);
                     return memo;

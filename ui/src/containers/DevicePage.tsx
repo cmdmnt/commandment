@@ -1,11 +1,14 @@
 import * as React from "react";
 import {SyntheticEvent} from "react";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 
 import {RouteComponentProps} from "react-router";
-import {bindActionCreators} from "redux";
+import {Link} from "react-router-dom";
+import {bindActionCreators, Dispatch} from "redux";
 import {MacOSDeviceDetail} from "../components/devices/MacOSDeviceDetail";
+import {isArray} from "../guards";
 import {RootState} from "../reducers/index";
+import {getPercentCapacityUsed} from "../selectors/device";
 import {
     CacheFetchActionRequest,
     clearPasscode,
@@ -25,14 +28,9 @@ import {
     RestartActionRequest,
     shutdown,
     ShutdownActionRequest,
-    test,
-    TestActionRequest,
 } from "../store/device/actions";
-import {DeviceState} from "../store/device/device";
-import {Link} from "react-router-dom";
-import {isArray} from "../guards";
-import {JSONAPIRelationship} from "../json-api";
-import {getPercentCapacityUsed} from "../selectors/device";
+import {DeviceState} from "../store/device/reducer";
+import {JSONAPIRelationship} from "../store/json-api";
 import {
     index as fetchTags,
     IndexActionRequest,
@@ -49,8 +47,8 @@ import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
 import {DropdownProps} from "semantic-ui-react/src/modules/Dropdown";
 import {DEPDeviceDetail} from "../components/devices/DEPDeviceDetail";
-import {DeviceOperatingSystem, operatingSystem} from "../store/device/types";
 import {IOSDeviceDetail} from "../components/devices/IOSDeviceDetail";
+import {DeviceOperatingSystem, operatingSystem} from "../store/device/types";
 
 interface IReduxStateProps {
     device: DeviceState;
@@ -78,10 +76,9 @@ interface IReduxDispatchProps {
     push: PushActionRequest;
     restart: RestartActionRequest;
     shutdown: ShutdownActionRequest;
-    test: TestActionRequest;
 }
 
-function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: any): IReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch, ownProps?: any): IReduxDispatchProps {
     return bindActionCreators({
         clearPasscode,
         createTag,
@@ -94,12 +91,11 @@ function mapDispatchToProps(dispatch: Dispatch<RootState>, ownProps?: any): IRed
         push,
         restart,
         shutdown,
-        test,
     }, dispatch);
 }
 
 interface IRouteParameters {
-    id: number;
+    id?: string;
 }
 
 type DevicePageProps = IReduxStateProps & IReduxDispatchProps & RouteComponentProps<IRouteParameters>;

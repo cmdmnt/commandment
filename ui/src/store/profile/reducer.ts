@@ -1,12 +1,10 @@
-
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
-import * as actions from "../profiles/actions";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 import {PatchRelationshipActionResponse, ReadActionResponse} from "../profiles/actions";
+import {ProfilesActionTypes} from "../profiles/actions";
 import {Profile} from "../profiles/types";
 import {Tag} from "../tags/types";
-import {ProfilesActionTypes} from "../profiles/actions";
 
-export interface ProfileState {
+export interface IProfileState {
     profile?: JSONAPIDataObject<Profile>;
     loading: boolean;
     error: boolean;
@@ -15,7 +13,7 @@ export interface ProfileState {
     tagsLoading: boolean;
 }
 
-const initialState: ProfileState = {
+const initialState: IProfileState = {
     error: false,
     errorDetail: null,
     loading: false,
@@ -25,7 +23,7 @@ const initialState: ProfileState = {
 
 type ProfileAction = ReadActionResponse | PatchRelationshipActionResponse;
 
-export function profile(state: ProfileState = initialState, action: ProfileAction): ProfileState {
+export function profile(state: IProfileState = initialState, action: ProfileAction): IProfileState {
     switch (action.type) {
         case ProfilesActionTypes.READ_REQUEST:
             return {

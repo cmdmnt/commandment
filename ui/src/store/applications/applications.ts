@@ -1,4 +1,4 @@
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 import {IResults, ResultsDefaultState} from "../../reducers/interfaces";
 import * as actions from "./actions";
 import {Application} from "./types";

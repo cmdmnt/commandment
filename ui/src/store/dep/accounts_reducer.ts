@@ -1,7 +1,7 @@
 import {DEPAccount} from "./types";
 import {DEPActions, DEPActionTypes} from "./actions";
 
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 
 export interface IDEPAccountsState {
     data?: Array<JSONAPIDataObject<DEPAccount>>;
@@ -12,9 +12,9 @@ export interface IDEPAccountsState {
 }
 
 const initialState: IDEPAccountsState = {
-    loading: false,
     error: false,
-    submitted: false
+    loading: false,
+    submitted: false,
 };
 
 // type VPPAction = TokenActionResponse;
@@ -24,29 +24,29 @@ export function accounts(state: IDEPAccountsState = initialState, action: DEPAct
         case DEPActionTypes.ACCT_INDEX_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             };
         case DEPActionTypes.ACCT_INDEX_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,
-                    loading: false,
                     error: true,
-                    errorDetail: action.payload
+                    errorDetail: action.payload,
+                    loading: false,
                 }
             } else {
                 return {
                     ...state,
+                    data: action.payload.data,
                     loading: false,
-                    data: action.payload.data
                 };
             }
         case DEPActionTypes.ACCT_INDEX_FAILURE:
             return {
                 ...state,
-                loading: false,
                 error: true,
-                errorDetail: action.payload
+                errorDetail: action.payload,
+                loading: false,
             };
 
         default:

@@ -1,4 +1,4 @@
-import {Dispatch} from "react-redux";
+import {Dispatch} from "redux";
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
 import {
@@ -6,11 +6,11 @@ import {
     JSONAPIDetailResponse, RSAAIndexActionRequest,
     RSAAIndexActionResponse,
     RSAAReadActionRequest,
-    RSAAReadActionResponse
-} from "../../json-api";
-import {VPPAccount} from "./types";
+    RSAAReadActionResponse,
+} from "../json-api";
 import {RootState} from "../../reducers/index";
 import {JSON_HEADERS, JSONAPI_HEADERS} from "../constants";
+import {VPPAccount} from "./types";
 
 export enum VPPActionTypes {
     TOKEN_REQUEST = "vpp/TOKEN_REQUEST",
@@ -52,7 +52,7 @@ export type UploadActionResponse = RSAAReadActionResponse<VPPActionTypes.UPLOAD_
     JSONAPIDetailResponse<VPPAccount, undefined>>;
 
 export const upload = (file: File): ThunkAction<void, RootState, void> => (
-    dispatch: Dispatch<RootState>,
+    dispatch: Dispatch,
     getState: () => RootState,
     extraArgument: void) => {
 
@@ -81,17 +81,16 @@ export type IndexActionRequest = RSAAIndexActionRequest<VPPActionTypes.INDEX_REQ
 export type IndexActionResponse = RSAAIndexActionResponse<VPPActionTypes.INDEX_REQUEST, VPPActionTypes.INDEX_SUCCESS, VPPActionTypes.INDEX_FAILURE, VPPAccount>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) => {
-    return (<RSAAction<VPPActionTypes.INDEX_REQUEST, VPPActionTypes.INDEX_SUCCESS, VPPActionTypes.INDEX_FAILURE>>{
+    return ({
         [RSAA]: {
-            endpoint: '/api/v1/vpp_accounts?' + queryParameters.join('&'),
-            method: (<HTTPVerb>'GET'),
+            endpoint: "/api/v1/vpp_accounts?" + queryParameters.join("&"),
+            headers: JSONAPI_HEADERS,
+            method: ("GET" as HTTPVerb),
             types: [
                 VPPActionTypes.INDEX_REQUEST,
                 VPPActionTypes.INDEX_SUCCESS,
-                VPPActionTypes.INDEX_FAILURE
+                VPPActionTypes.INDEX_FAILURE,
             ],
-            headers: JSONAPI_HEADERS
-        }
-    });
+        },
+    } as RSAAction<VPPActionTypes.INDEX_REQUEST, VPPActionTypes.INDEX_SUCCESS, VPPActionTypes.INDEX_FAILURE>);
 });
-

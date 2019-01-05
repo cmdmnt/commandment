@@ -1,13 +1,13 @@
 import * as React from "react";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps, RouteProps} from "react-router";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import {DeviceCommandsTable} from "../../components/react-tables/DeviceCommandsTable";
-import {DeviceCommandsState} from "../../store/device/commands_reducer";
 import {RootState} from "../../reducers/index";
-import {commands as fetchCommands, CommandsActionRequest} from "../../store/device/actions";
-import {IReactTableState} from "../../store/table/types";
 import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
+import {commands as fetchCommands, CommandsActionRequest} from "../../store/device/actions";
+import {DeviceCommandsState} from "../../store/device/commands_reducer";
+import {IReactTableState} from "../../store/table/types";
 
 interface IReduxStateProps {
     commands?: DeviceCommandsState;
@@ -23,14 +23,14 @@ interface IReduxDispatchProps {
     fetchCommands: CommandsActionRequest
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>): IReduxDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch): IReduxDispatchProps {
    return bindActionCreators({
        fetchCommands,
    }, dispatch);
 }
 
 interface IDeviceCommandsRouteProps {
-    id: number;
+    id?: string;
 }
 
 type DeviceCommandsProps = IReduxStateProps & IReduxDispatchProps & RouteComponentProps<IDeviceCommandsRouteProps>;
@@ -55,7 +55,7 @@ export class UnconnectedDeviceCommands extends React.Component<DeviceCommandsPro
                     onFetchData={this.fetchData}
                     pages={commands.pages}
                     defaultSorted={[
-                        { id: "sent_at", desc: false },
+                        { id: "sent_at", asc: true },
                     ]}
                 />
             </div>

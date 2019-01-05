@@ -1,8 +1,8 @@
 import * as React from "react";
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
-import {bindActionCreators} from "redux";
-import {DeviceState} from "../../store/device/device";
+import {bindActionCreators, Dispatch} from "redux";
+import {DeviceState} from "../../store/device/reducer";
 import {RootState} from "../../reducers/index";
 
 import Grid from "semantic-ui-react/src/collections/Grid";

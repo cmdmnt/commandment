@@ -2,6 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
 const {CheckerPlugin} = require('awesome-typescript-loader');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 
 module.exports = {
     entry: {
@@ -88,7 +90,8 @@ module.exports = {
     plugins: [
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // Reduces size by not including all locales
         new webpack.HotModuleReplacementPlugin(),
-        new CheckerPlugin()
+        new CheckerPlugin(),
+        // new BundleAnalyzerPlugin(),
     ],
 
     devServer: {

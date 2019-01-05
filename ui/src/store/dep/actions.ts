@@ -1,13 +1,14 @@
+/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
-import {POST_FAILURE, POST_REQUEST, POST_SUCCESS} from "../../actions/commands";
+import {POST_FAILURE, POST_REQUEST, POST_SUCCESS} from "../commands/actions";
 import {JSONAPI_HEADERS} from "../constants";
 import {
     encodeJSONAPIChildIndexParameters,
-    encodeJSONAPIIndexParameters,
+    encodeJSONAPIIndexParameters, JSONAPIRelationships,
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAPatchActionRequest, RSAAPostActionRequest, RSAAPostActionResponse,
     RSAAReadActionRequest, RSAAReadActionResponse,
-} from "../../json-api";
+} from "../json-api";
 import {DEPAccount, DEPProfile} from "./types";
 import {IDEPProfileFormValues} from "../../components/forms/DEPProfileForm";
 
@@ -138,7 +139,7 @@ export const postProfile: ProfilePostActionRequest = (values: IDEPProfileFormVal
     };
 
     if (relationships) {
-        const relationshipData = {};
+        const relationshipData: JSONAPIRelationships = {};
         for (const k in relationships) {
             if (relationships.hasOwnProperty(k)) {
                 relationshipData[k] = { data: relationships[k] };

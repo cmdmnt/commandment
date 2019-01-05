@@ -1,6 +1,5 @@
 import {routerReducer, RouterState} from "react-router-redux";
 import {combineReducers} from "redux";
-import { FormStateMap, reducer as formReducer } from "redux-form";
 
 import {applications, ApplicationsState} from "../store/applications/applications";
 import {certificates, CertificatesState} from "../store/certificates/reducer";
@@ -8,29 +7,29 @@ import {configuration, ConfigurationState} from "../store/configuration/reducer"
 import {dep, IDEPState} from "../store/dep/reducer";
 import {device, DeviceState} from "../store/device/reducer";
 import {device_groups, DeviceGroupsState} from "../store/device_groups/reducer";
-import {devices, DevicesState} from "../store/devices/devices";
+import {devices, IDevicesState} from "../store/devices/devices";
 import {organization, OrganizationState} from "../store/organization/reducer";
-import {profile, ProfileState} from "../store/profile/reducer";
+import {profile, IProfileState} from "../store/profile/reducer";
 import {profiles, ProfilesState} from "../store/profiles/reducer";
 import {ITableState, table} from "../store/table/reducer";
 import {ITagsState, tags} from "../store/tags/reducer";
-import {assistant, AssistantState} from "./assistant";
-import {commands, CommandsState} from "./commands";
+import {assistant, IAssistantState} from "../store/assistant/reducer";
+import {commands, CommandsState} from "../store/commands/reducer";
 
 export interface RootState {
     router?: RouterState;
-    form?: FormStateMap;
+
     certificates?: CertificatesState;
-    assistant?: AssistantState;
+    assistant?: IAssistantState;
     configuration?: ConfigurationState;
     organization?: OrganizationState;
-    devices?: DevicesState;
+    devices?: IDevicesState;
     device?: DeviceState;
     commands?: CommandsState;
     profiles?: ProfilesState;
     device_groups?: DeviceGroupsState;
     tags?: ITagsState;
-    profile?: ProfileState;
+    profile?: IProfileState;
     applications?: ApplicationsState;
     dep?: IDEPState;
     table?: ITableState;
@@ -46,7 +45,6 @@ export const rootReducer = combineReducers<RootState>({
     device,
     device_groups,
     devices,
-    form: formReducer,
     organization,
     profile,
     profiles,

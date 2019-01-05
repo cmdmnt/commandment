@@ -1,13 +1,14 @@
 import * as React from "react";
 import ReactTable, {TableProps, Column} from "react-table";
 import selectTableHoc from "react-table/lib/hoc/selectTable";
-import {DEPProfile} from "../../store/dep/types";
+import {DEPAccount, DEPProfile} from "../../store/dep/types";
 import {DEPProfileName} from "../react-table/DEPProfileName";
+import {JSONAPIDataObject} from "../../store/json-api";
 // import "react-table/react-table.css";
 
 export interface IDEPProfilesTableProps {
     loading: boolean;
-    data: DEPProfile[];
+    data: Array<JSONAPIDataObject<DEPProfile>>;
     onToggleSelection: () => void;
     onToggleAll: () => void;
 }

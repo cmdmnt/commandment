@@ -1,5 +1,6 @@
 import * as React from "react";
-import {connect, Dispatch, MapStateToProps} from "react-redux";
+import {connect, MapStateToProps} from "react-redux";
+import {Dispatch} from "redux";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
 import {RouteComponentProps} from "react-router";
@@ -36,14 +37,14 @@ interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentPr
 
 export class UnconnectedDEPAccountsPage extends React.Component<OwnProps, void> {
 
-    componentWillMount?() {
+    public componentWillMount?() {
         this.props.getAccounts();
     }
 
 
-    render() {
+    public render() {
         const {
-            accounts: {data, loading},
+            accounts,
         } = this.props;
 
         return (
@@ -68,7 +69,8 @@ export class UnconnectedDEPAccountsPage extends React.Component<OwnProps, void> 
                 </Grid>
                 <Grid>
                     <Grid.Column>
-                        <DEPAccountsTable data={data} />
+                        <DEPAccountsTable data={accounts.data}
+                                          loading={accounts.loading} />
                     </Grid.Column>
                 </Grid>
             </Container>
@@ -80,7 +82,7 @@ export const DEPAccountsPage = connect<ReduxStateProps, ReduxDispatchProps, OwnP
     (state: RootState): ReduxStateProps => ({
         accounts: state.dep.accounts,
     }),
-    (dispatch: Dispatch<any>) => bindActionCreators({
-        getAccounts: accounts
+    (dispatch: Dispatch) => bindActionCreators({
+        getAccounts: accounts,
     }, dispatch),
 )(UnconnectedDEPAccountsPage);

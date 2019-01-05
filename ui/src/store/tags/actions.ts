@@ -7,8 +7,8 @@ import {
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAPostActionRequest, RSAAPostActionResponse, RSAAReadActionRequest,
     RSAAReadActionResponse,
-} from "../../json-api";
-import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../../json-api";
+} from "../json-api";
+import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../json-api";
 import {RootState} from "../../reducers/index";
 import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants"
 import {Tag} from "./types";
@@ -68,7 +68,7 @@ export const post: PostActionRequest = (values: Tag) => {
 
 export type CreateAndApplyRequest = (values: Tag) => ThunkAction<void, RootState, void>;
 
-export const createAndApply: CreateAndApplyRequest = (values) => (dispatch, getState) => {
+export const createAndApply: CreateAndApplyRequest = (values) => (dispatch: Dispatch, getState) => {
     dispatch(post(values));
 
 };
