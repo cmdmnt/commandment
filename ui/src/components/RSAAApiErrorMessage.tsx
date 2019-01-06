@@ -7,7 +7,7 @@ export interface IRSAAApiErrorMessageProps {
     error: ApiError<JSONAPIErrorResponse>;
 }
 
-export const RSAAApiErrorMessage: React.FunctionalComponent<IRSAAApiErrorMessageProps> =
+export const RSAAApiErrorMessage: React.FunctionComponent<IRSAAApiErrorMessageProps> =
     (props: IRSAAApiErrorMessageProps) => (
     <Message
         error
