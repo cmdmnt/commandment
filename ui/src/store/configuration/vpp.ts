@@ -30,7 +30,7 @@ export interface IVPPAction {
 }
 
 export type TokenActionRequest = RSAAReadActionRequest<VPPActionTypes.TOKEN_REQUEST, VPPActionTypes.TOKEN_SUCCESS, VPPActionTypes.TOKEN_FAILURE>;
-export type TokenActionResponse = RSAAReadActionResponse<VPPActionTypes.TOKEN_REQUEST, VPPActionTypes.TOKEN_SUCCESS, VPPActionTypes.TOKEN_FAILURE, VPPAccount>;
+export type TokenActionResponse = RSAAReadActionResponse<VPPActionTypes.TOKEN_REQUEST, VPPActionTypes.TOKEN_SUCCESS, VPPActionTypes.TOKEN_FAILURE, JSONAPIDetailResponse<VPPAccount, undefined>>;
 
 export const read: TokenActionRequest = (id: string) => {
     return ({
@@ -47,11 +47,11 @@ export const read: TokenActionRequest = (id: string) => {
     } as RSAAction<VPPActionTypes.TOKEN_REQUEST, VPPActionTypes.TOKEN_SUCCESS, VPPActionTypes.TOKEN_FAILURE>);
 };
 
-export type UploadActionRequest = (file: File) => ThunkAction<void, RootState, void>;
+export type UploadActionRequest = (file: File) => ThunkAction<void, RootState, void, UploadActionResponse>;
 export type UploadActionResponse = RSAAReadActionResponse<VPPActionTypes.UPLOAD_REQUEST, VPPActionTypes.UPLOAD_SUCCESS, VPPActionTypes.UPLOAD_FAILURE,
     JSONAPIDetailResponse<VPPAccount, undefined>>;
 
-export const upload = (file: File): ThunkAction<void, RootState, void> => (
+export const upload = (file: File): ThunkAction<void, RootState, void, UploadActionResponse> => (
     dispatch: Dispatch,
     getState: () => RootState,
     extraArgument: void) => {

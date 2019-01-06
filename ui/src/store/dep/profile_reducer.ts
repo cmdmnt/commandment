@@ -1,5 +1,5 @@
 import {Reducer} from "redux";
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject, RSAAResponseSuccess} from "../json-api";
 import {DEPActions, DEPActionTypes} from "./actions";
 import {DEPProfile} from "./types";
 
@@ -61,17 +61,18 @@ export const profile: Reducer<IDEPProfileState, DEPActions> = (state = initialSt
         case DEPActionTypes.PROF_PATCH_REQUEST:
             return { ...state, loading: true };
         case DEPActionTypes.PROF_PATCH_SUCCESS:
-            if (isJSONAPIErrorResponsePayload(action.payload)) {
+            const payload = action.payload;
+            if (isJSONAPIErrorResponsePayload(payload)) {
                 return {
                     ...state,
                     error: true,
-                    errorDetail: action.payload,
+                    errorDetail: payload,
                     loading: false,
                 };
             } else {
                 return {
                     ...state,
-                    dep_account: action.payload.data,
+                    dep_account: payload.data,
                     loading: false,
                 };
             }

@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import {connect, Dispatch} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
 import {Link} from "react-router-dom";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import {AccordionTitleProps} from "semantic-ui-react";
 import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
@@ -21,6 +21,7 @@ import {
 import {IDEPProfileState} from "../store/dep/profile_reducer";
 import {DEPProfile, SkipSetupSteps} from "../store/dep/types";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider";
+import {JSONAPIDataObject} from "../store/json-api";
 
 interface IReduxStateProps {
     dep_profile?: IDEPProfileState;
@@ -81,21 +82,15 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
 
         let title = "loading";
         let breadcrumbTitle = "DEP Profile";
+        let formValues: IDEPProfileFormValues = {};
 
         if (id) {
             title = `Edit ${this.props.dep_profile.dep_profile ?
                 this.props.dep_profile.dep_profile.attributes.profile_name : "Loading..."}`;
 
             if (dep_profile.dep_profile) {
-                dep_profile.dep_profile.attributes.show = {};
                 breadcrumbTitle = dep_profile.dep_profile.attributes.profile_name;
-                for (const kskip in SkipSetupSteps) {
-                    if (dep_profile.dep_profile.attributes.skip_setup_items.indexOf(kskip) !== -1) {
-                        dep_profile.dep_profile.attributes.show[kskip] = false;
-                    } else {
-                        dep_profile.dep_profile.attributes.show[kskip] = true;
-                    }
-                }
+                formValues = this.profileToForm(dep_profile.dep_profile);
             }
         } else {
             title = "Create a new DEP Profile";
@@ -117,7 +112,7 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
                 <DEPProfileForm onSubmit={this.handleSubmit}
                                 loading={dep_profile.loading}
                                 isSubmitting={dep_profile.loading}
-                                data={dep_profile.dep_profile && dep_profile.dep_profile.attributes}
+                                data={formValues}
                                 id={dep_profile.dep_profile && dep_profile.dep_profile.id}
                                 activeIndex={this.state.activeIndex}
                                 onClickAccordionTitle={this.handleAccordionClick}
@@ -127,16 +122,7 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
     }
 
     private handleSubmit = (values: IDEPProfileFormValues) => {
-        const { show, ...profile } = values;
-        profile.skip_setup_items = [];
-
-        if (show) {
-            for (const kskip in SkipSetupSteps) {
-                if (!show[kskip]) {
-                    profile.skip_setup_items.unshift(kskip as SkipSetupSteps);
-                }
-            }
-        }
+        const profile = this.formToProfile(values);
 
         if (this.props.match.params.id) {
             this.props.patchDEPProfile(this.props.match.params.id, profile);
@@ -150,13 +136,47 @@ class UnconnectedDEPProfilePage extends React.Component<IDEPProfilePageProps, ID
     private handleAccordionClick = (event: React.MouseEvent<any>, data: AccordionTitleProps) => {
         this.setState({ activeIndex: data.index });
     };
+
+    private formToProfile = (formValues: IDEPProfileFormValues): DEPProfile => {
+        const skipSetupSteps: SkipSetupSteps[] = [];
+        const { show, ...attrs } = formValues;
+
+        for (const kskip in SkipSetupSteps) {
+            if (SkipSetupSteps.hasOwnProperty(kskip)) {
+                if (!show[kskip]) {
+                    skipSetupSteps.unshift(kskip as SkipSetupSteps);
+                }
+            }
+        }
+
+        return {
+            ...attrs,
+            skip_setup_items: skipSetupSteps,
+        };
+    };
+
+    private profileToForm = (profile: JSONAPIDataObject<DEPProfile>): IDEPProfileFormValues => {
+        const show: { [propName: string]: boolean } = {};
+        const { skip_setup_items, ...attrs } = profile.attributes;
+
+        for (const kskip in SkipSetupSteps) {
+            if (SkipSetupSteps.hasOwnProperty(kskip)) {
+                show[kskip] = skip_setup_items.indexOf(kskip as SkipSetupSteps) === -1;
+            }
+        }
+        return {
+            ...attrs,
+            show,
+        };
+    }
+
 }
 
 export const DEPProfilePage = connect(
     (state: RootState, ownProps: any): IReduxStateProps => {
         return {dep_profile: state.dep.profile};
     },
-    (dispatch: Dispatch<RootState>, ownProps?: any): IReduxDispatchProps => bindActionCreators({
+    (dispatch: Dispatch, ownProps?: any): IReduxDispatchProps => bindActionCreators({
         getDEPProfile: profile,
         patchDEPProfile: patchProfile,
         postDEPProfile: postProfile,

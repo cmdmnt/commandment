@@ -1,4 +1,4 @@
-declare namespace MDM {
+namespace MDM {
     export interface Command {
         RequestType: string;
     }
@@ -95,9 +95,4 @@ declare namespace MDM {
     export interface ValidateApplications extends Command {
         Identifiers?: Array<string>;
     }
-    
-
-    
 }
-
-

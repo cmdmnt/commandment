@@ -1,4 +1,3 @@
-/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import { RSAA, RSAAction } from "redux-api-middleware";
 import {RSAAReadActionRequest, RSAAReadActionResponse} from "../json-api";
 import {JSON_HEADERS, JSONAPI_HEADERS} from "../constants"

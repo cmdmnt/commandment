@@ -1,4 +1,3 @@
-/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import {Dispatch} from "redux";
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
@@ -66,9 +65,8 @@ export const post: PostActionRequest = (values: Tag) => {
     } as RSAAction<TagsActionTypes.POST_REQUEST, TagsActionTypes.POST_SUCCESS, TagsActionTypes.POST_FAILURE>);
 };
 
-export type CreateAndApplyRequest = (values: Tag) => ThunkAction<void, RootState, void>;
+export type CreateAndApplyRequest = (values: Tag) => ThunkAction<void, RootState, void, PostActionResponse>;
 
 export const createAndApply: CreateAndApplyRequest = (values) => (dispatch: Dispatch, getState) => {
     dispatch(post(values));
-
 };

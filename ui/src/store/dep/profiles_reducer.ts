@@ -5,15 +5,15 @@ import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 
 export interface IDEPProfilesState {
     data?: Array<JSONAPIDataObject<DEPProfile>>;
-    loading: boolean;
-    submitted: boolean;
     error: boolean;
     errorDetail?: any;
+    loading: boolean;
+    submitted: boolean;
 }
 
 const initialState: IDEPProfilesState = {
-    loading: false,
     error: false,
+    loading: false,
     submitted: false,
 };
 
@@ -27,26 +27,27 @@ export function profiles(state: IDEPProfilesState = initialState, action: DEPAct
                 loading: true,
             };
         case DEPActionTypes.PROF_INDEX_SUCCESS:
-            if (isJSONAPIErrorResponsePayload(action.payload)) {
+            const payload = action.payload;
+            if (isJSONAPIErrorResponsePayload(payload)) {
                 return {
                     ...state,
-                    loading: false,
                     error: true,
-                    errorDetail: action.payload,
+                    errorDetail: payload,
+                    loading: false,
                 };
             } else {
                 return {
                     ...state,
+                    data: payload.data,
                     loading: false,
-                    data: action.payload.data,
                 };
             }
         case DEPActionTypes.PROF_INDEX_FAILURE:
             return {
                 ...state,
-                loading: false,
                 error: true,
                 errorDetail: action.payload,
+                loading: false,
             };
 
         default:

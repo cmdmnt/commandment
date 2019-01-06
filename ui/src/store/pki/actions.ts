@@ -1,4 +1,3 @@
-/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import { RSAA, RSAAction } from "redux-api-middleware";
 import { JSONAPI_HEADERS } from "../constants"
 import {CertificatePurpose} from "./types";

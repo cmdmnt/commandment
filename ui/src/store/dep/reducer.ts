@@ -1,5 +1,5 @@
 import {combineReducers, Reducer} from 'redux';
-import {account, DEPAccountState} from "./account_reducer";
+import {account, IDEPAccountState} from "./account_reducer";
 import {accounts, IDEPAccountsState} from "./accounts_reducer";
 import {profiles, IDEPProfilesState} from "./profiles_reducer";
 import {IDEPProfileState, profile} from "./profile_reducer";
@@ -12,7 +12,7 @@ export const dep = combineReducers({
 });
 
 export interface IDEPState {
-    account?: DEPAccountState;
+    account?: IDEPAccountState;
     accounts?: IDEPAccountsState;
     profiles?: IDEPProfilesState;
     profile?: IDEPProfileState;

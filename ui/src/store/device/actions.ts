@@ -1,4 +1,3 @@
-/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import {Action, Dispatch} from "redux";
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
@@ -82,7 +81,7 @@ export const fetchDevicesIfRequired = (
         pageNumber: number = 1,
         sort?: string[],
         filters?: FlaskFilters,
-    ) => (dispatch: Dispatch, getState: () => RootState): ThunkAction<void, RootState, {}> => {
+    ): ThunkAction<void, RootState, void, IndexActionResponse> => (dispatch: Dispatch, getState: () => RootState) => {
 
     // const { devices } = getState();
     // if (devices.lastReceived) {
@@ -129,12 +128,12 @@ export const read: ReadActionRequest = (id: string, include?: string[]) => {
 export const READ_CACHE_HIT = "devices/READ_CACHE_HIT";
 export type READ_CACHE_HIT = typeof READ_CACHE_HIT;
 
-export type CacheFetchActionRequest = (id: string, include?: string[]) => ThunkAction<void, RootState, any>;
+export type CacheFetchActionRequest = (id: string, include?: string[]) => ThunkAction<void, RootState, any, ReadActionResponse>;
 
 export const fetchDeviceIfRequired = (
     id: string, include?: string[],
 ) => (
-    dispatch: Dispatch<RootState>,
+    dispatch: Dispatch,
     getState: () => RootState,
 ) => {
     const { devices } = getState();

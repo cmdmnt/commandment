@@ -6,11 +6,12 @@ import {Tag} from "../../store/tags/types";
 import {ActionMenu} from "../ActionMenu";
 
 export interface ISUISelectionTools {
+    loading: boolean;
     selectionCount: number;
     tags: Array<JSONAPIDataObject<Tag>>;
 }
 
-export const SUISelectionTools: React.FunctionComponent = (props: ISUISelectionTools) => (
+export const SUISelectionTools: React.FunctionComponent<ISUISelectionTools> = (props: ISUISelectionTools) => (
     <div>
         <Dropdown text="Tag device(s)" icon="filter" floating labeled button className="icon" disabled={props.selectionCount < 1}>
             <Dropdown.Menu>

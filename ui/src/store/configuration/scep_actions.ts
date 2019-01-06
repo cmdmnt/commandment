@@ -1,4 +1,3 @@
-/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import { RSAA, RSAAction } from 'redux-api-middleware';
 import {JSONAPI_HEADERS, JSON_HEADERS} from '../constants'
 import {SCEPConfiguration} from "./types";

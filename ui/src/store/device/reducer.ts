@@ -126,22 +126,31 @@ export function device(state: DeviceState = initialState, action: DevicesAction)
             };
 
         case actions.RCPOST_SUCCESS:
-            const data: any[] = isArray(action.payload.data) ? action.payload.data : [action.payload.data];
-            const mergedTags = data.concat(state.device.relationships.tags.data);
+            const payload = action.payload;
 
-            return {
-                ...state,
-                device: {
-                    ...state.device,
-                    relationships: {
-                        ...state.device.relationships,
-                        tags: {
-                            data: mergedTags,
+            if (isJSONAPIErrorResponsePayload(payload)) {
+                return {
+                    ...state,
+                    error: true,
+                }
+
+            } else {
+                const data: any[] = isArray(payload.data) ? payload.data : [payload.data];
+                const mergedTags = data.concat(state.device.relationships.tags.data);
+
+                return {
+                    ...state,
+                    device: {
+                        ...state.device,
+                        relationships: {
+                            ...state.device.relationships,
+                            tags: {
+                                data: mergedTags,
+                            },
                         },
                     },
-                },
-            };
-
+                };
+            }
         case actions.RCPOST_FAILURE:
             return {
                 ...state,

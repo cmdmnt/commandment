@@ -6,7 +6,7 @@ import {bindActionCreators, Dispatch} from "redux";
 import {DEPProfilesTable} from "../components/react-tables/DEPProfilesTable";
 import {ButtonLink} from "../components/semantic-ui/ButtonLink";
 import {RootState} from "../reducers";
-import {DEPAccountState} from "../store/dep/account_reducer";
+import {IDEPAccountState} from "../store/dep/account_reducer";
 import {account, AccountReadActionRequest} from "../store/dep/actions";
 
 import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
@@ -19,7 +19,7 @@ import {IReactTableState} from "../store/table/types";
 import {FlaskFilter, FlaskFilterOperation} from "../store/constants";
 
 interface IReduxStateProps {
-    dep_account?: DEPAccountState;
+    dep_account?: IDEPAccountState;
 }
 
 interface IReduxDispatchProps {

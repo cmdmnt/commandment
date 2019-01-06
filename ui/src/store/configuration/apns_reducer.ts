@@ -1,4 +1,4 @@
-import * as actions from "./mdmcert_actions";
+import {MDMCertActionTypes} from "./mdmcert_actions";
 import {CsrActionResponse, IMDMCertResponse} from "./mdmcert_actions";
 import {isApiError} from "../../guards";
 import {isJSONAPIErrorResponsePayload} from "../json-api";
@@ -20,14 +20,14 @@ type APNSAction = CsrActionResponse;
 
 export function apns(state: APNSState = initialState, action: APNSAction): APNSState {
     switch (action.type) {
-        case actions.MDMCERT_CSR_REQUEST:
+        case MDMCertActionTypes.MDMCERT_CSR_REQUEST:
             return {
                 ...state,
                 csrLoading: true,
                 csrResult: null,
                 error: null,
             };
-        case actions.MDMCERT_CSR_SUCCESS:
+        case MDMCertActionTypes.MDMCERT_CSR_SUCCESS:
             if (isApiError(action.payload)) {
                 return {
                     ...state,
@@ -42,7 +42,7 @@ export function apns(state: APNSState = initialState, action: APNSAction): APNSS
                 };
             }
 
-        case actions.MDMCERT_CSR_FAILURE:
+        case MDMCertActionTypes.MDMCERT_CSR_FAILURE:
             return {
                 ...state,
                 csrLoading: false,

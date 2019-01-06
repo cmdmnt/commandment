@@ -1,4 +1,3 @@
-/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import {Dispatch} from "redux";
 import {ApiError, HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
@@ -100,10 +99,10 @@ export type UPLOAD_SUCCESS = typeof UPLOAD_SUCCESS;
 export const UPLOAD_FAILURE = "profiles/UPLOAD_FAILURE";
 export type UPLOAD_FAILURE = typeof UPLOAD_FAILURE;
 
-export type UploadActionRequest = (file: File) => ThunkAction<void, RootState, void>;
+export type UploadActionRequest = (file: File) => ThunkAction<void, RootState, void, UploadActionResponse>;
 export type UploadActionResponse = RSAAReadActionResponse<UPLOAD_REQUEST, UPLOAD_SUCCESS, UPLOAD_FAILURE, JSONAPIDetailResponse<Profile, undefined>>;
 
-export const upload = (file: File): ThunkAction<void, RootState, void> => (
+export const upload = (file: File): ThunkAction<void, RootState, void, UploadActionResponse> => (
     dispatch: Dispatch,
     getState: () => RootState,
     extraArgument: void) => {

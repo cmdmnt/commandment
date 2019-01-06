@@ -1,20 +1,15 @@
 import {distanceInWordsToNow} from "date-fns";
 import * as React from "react";
-import {FunctionComponent} from "react";
 import {DeviceState} from "../../store/device/reducer";
-import {ModelIcon} from "./ModelIcon";
 
-import {ButtonLink} from "../semantic-ui/ButtonLink";
-import {TagDropdown} from "../TagDropdown";
-import {MenuItemLink} from "../semantic-ui/MenuItemLink";
 import {Route} from "react-router";
-import {DeviceDetail} from "../../containers/devices/DeviceDetail";
+import {DeviceRename} from "../../containers/DeviceRename";
+import {DeviceApplications} from "../../containers/devices/DeviceApplications";
 import {DeviceCertificates} from "../../containers/devices/DeviceCertificates";
 import {DeviceCommands} from "../../containers/devices/DeviceCommands";
-import {DeviceApplications} from "../../containers/devices/DeviceApplications";
-import {DeviceProfiles} from "../../containers/devices/DeviceProfiles";
+import {DeviceDetail} from "../../containers/devices/DeviceDetail";
 import {DeviceOSUpdates} from "../../containers/devices/DeviceOSUpdates";
-import {DeviceRename} from "../../containers/DeviceRename";
+import {DeviceProfiles} from "../../containers/devices/DeviceProfiles";
 import {
     ClearPasscodeActionRequest, InventoryActionRequest, LockActionRequest,
     PushActionRequest,
@@ -22,7 +17,11 @@ import {
     ShutdownActionRequest,
     TestActionRequest,
 } from "../../store/device/actions";
+import {ButtonLink} from "../semantic-ui/ButtonLink";
+import {MenuItemLink} from "../semantic-ui/MenuItemLink";
+import {TagDropdown} from "../TagDropdown";
 
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
 import Grid from "semantic-ui-react/src/collections/Grid";
@@ -30,13 +29,12 @@ import Menu from "semantic-ui-react/src/collections/Menu";
 import Button from "semantic-ui-react/src/elements/Button";
 import Header from "semantic-ui-react/src/elements/Header";
 import List from "semantic-ui-react/src/elements/List";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import {DropdownItemProps} from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
 
-import "./MacOSDeviceDetail.scss";
-import {ITagsState} from "../../store/tags/reducer";
 import {SyntheticEvent} from "react";
 import {DropdownProps} from "semantic-ui-react/src/modules/Dropdown";
+import {ITagsState} from "../../store/tags/reducer";
+import "./MacOSDeviceDetail.scss";
 
 interface IIOSDeviceDetailProps {
     device: DeviceState;
@@ -55,17 +53,17 @@ interface IIOSDeviceDetailProps {
     shutdown: ShutdownActionRequest;
 }
 
-export const IOSDeviceDetail: FunctionComponent<IIOSDeviceDetailProps> = ({
-                                                                                  device,
-                                                                                  tags, deviceTags,
-                                                                                  clearPasscode,
-                                                                                  inventory,
-                                                                                  lock,
-                                                                                  push,
-                                                                                  restart,
-                                                                                  shutdown,
-    onAddTag, onChangeTag, onSearchTag,
-                                                                                  test}: IIOSDeviceDetailProps) => {
+export const IOSDeviceDetail: React.FunctionComponent<IIOSDeviceDetailProps> = ({
+                                                                                    device,
+                                                                                    tags, deviceTags,
+                                                                                    clearPasscode,
+                                                                                    inventory,
+                                                                                    lock,
+                                                                                    push,
+                                                                                    restart,
+                                                                                    shutdown,
+                                                                                    onAddTag, onChangeTag, onSearchTag,
+                                                                                }: IIOSDeviceDetailProps) => {
 
     if (!device.device) {
         return (<div className="IOSDeviceDetail">No device</div>);
@@ -73,11 +71,11 @@ export const IOSDeviceDetail: FunctionComponent<IIOSDeviceDetailProps> = ({
 
     const attributes = device.device.attributes;
 
-    const niceLastSeen = attributes.last_seen ? distanceInWordsToNow(attributes.last_seen, { addSuffix: true }) : "Never";
+    const niceLastSeen = attributes.last_seen ? distanceInWordsToNow(attributes.last_seen, {addSuffix: true}) : "Never";
 
     return (
         <div className="IOSDeviceDetail">
-            <Divider hidden />
+            <Divider hidden/>
             <Header as="h1">
                 {device.device.attributes.device_name}
                 <Header.Subheader>SN: {device.device.attributes.serial_number}</Header.Subheader>
@@ -91,13 +89,13 @@ export const IOSDeviceDetail: FunctionComponent<IIOSDeviceDetailProps> = ({
                 onSearch={onSearchTag}
                 onChange={onChangeTag}
             />
-            <Divider hidden />
+            <Divider hidden/>
             <Grid columns={2} className="MacOSDeviceDetail">
                 <Grid.Row>
                     <Grid.Column>
                         <List>
                             <List.Item>
-                                <List.Icon name="heartbeat" size="large" verticalAlign="middle" />
+                                <List.Icon name="heartbeat" size="large" verticalAlign="middle"/>
                                 <List.Content>
                                     <List.Header>Last Seen</List.Header>
                                     <List.Description>{niceLastSeen}</List.Description>
@@ -164,7 +162,7 @@ export const IOSDeviceDetail: FunctionComponent<IIOSDeviceDetailProps> = ({
             <Grid>
                 <Grid.Row>
                     <Grid.Column>
-                        <Divider />
+                        <Divider/>
                         <Button icon labelPosition="left"
                                 disabled={!device.device.attributes.is_supervised}
                                 onClick={() => restart(device.device.id)}>
@@ -200,9 +198,11 @@ export const IOSDeviceDetail: FunctionComponent<IIOSDeviceDetailProps> = ({
                             <MenuItemLink to={`/devices/${device.device.id}/detail`}>Detail</MenuItemLink>
                             <MenuItemLink to={`/devices/${device.device.id}/certificates`}>Certificates</MenuItemLink>
                             <MenuItemLink to={`/devices/${device.device.id}/commands`}>Commands</MenuItemLink>
-                            <MenuItemLink to={`/devices/${device.device.id}/installed_applications`}>Applications</MenuItemLink>
+                            <MenuItemLink
+                                to={`/devices/${device.device.id}/installed_applications`}>Applications</MenuItemLink>
                             <MenuItemLink to={`/devices/${device.device.id}/installed_profiles`}>Profiles</MenuItemLink>
-                            <MenuItemLink to={`/devices/${device.device.id}/available_os_updates`}>Updates</MenuItemLink>
+                            <MenuItemLink
+                                to={`/devices/${device.device.id}/available_os_updates`}>Updates</MenuItemLink>
                         </Menu>
                     </Grid.Column>
                 </Grid.Row>

@@ -1,4 +1,3 @@
-/// <reference path="../typings/redux-api-middleware.d.ts" />
 import {applyMiddleware, compose, createStore, Store} from "redux";
 import {Middleware} from "redux";
 import {apiMiddleware} from "redux-api-middleware";

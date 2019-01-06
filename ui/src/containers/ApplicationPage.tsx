@@ -58,5 +58,5 @@ class UnconnectedApplicationPage extends React.Component<IReduxStateProps & IRed
 
 export const ApplicationPage  = connect(
     (state: RootState, ownProps?: any) => ({}),
-    (dispatch: Dispatch<RootState>, ownProps?: any) => bindActionCreators({ post }, dispatch),
+    (dispatch: Dispatch, ownProps?: any) => bindActionCreators({ post }, dispatch),
 )(UnconnectedApplicationPage);

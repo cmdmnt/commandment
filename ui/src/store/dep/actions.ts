@@ -1,13 +1,20 @@
-/// <reference path="../../typings/redux-api-middleware.d.ts" />
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {POST_FAILURE, POST_REQUEST, POST_SUCCESS} from "../commands/actions";
 import {JSONAPI_HEADERS} from "../constants";
 import {
     encodeJSONAPIChildIndexParameters,
-    encodeJSONAPIIndexParameters, JSONAPIRelationships,
+    encodeJSONAPIIndexParameters,
+    JSONAPIDataObject,
+    JSONAPIDetailResponse,
+    JSONAPIRelationships,
+    JSONAPIResourceIdentifier,
     RSAAIndexActionRequest,
-    RSAAIndexActionResponse, RSAAPatchActionRequest, RSAAPostActionRequest, RSAAPostActionResponse,
-    RSAAReadActionRequest, RSAAReadActionResponse,
+    RSAAIndexActionResponse,
+    RSAAPatchActionRequest,
+    RSAAPostActionRequest,
+    RSAAPostActionResponse,
+    RSAAReadActionRequest,
+    RSAAReadActionResponse,
 } from "../json-api";
 import {DEPAccount, DEPProfile} from "./types";
 import {IDEPProfileFormValues} from "../../components/forms/DEPProfileForm";
@@ -38,8 +45,15 @@ export enum DEPActionTypes {
     PROF_PATCH_FAILURE = "dep/profile/PATCH_FAILURE",
 }
 
-export type AccountIndexActionRequest = RSAAIndexActionRequest<DEPActionTypes.ACCT_INDEX_REQUEST, DEPActionTypes.ACCT_INDEX_SUCCESS, DEPActionTypes.ACCT_INDEX_FAILURE>;
-export type AccountIndexActionResponse = RSAAIndexActionResponse<DEPActionTypes.ACCT_INDEX_REQUEST, DEPActionTypes.ACCT_INDEX_SUCCESS, DEPActionTypes.ACCT_INDEX_FAILURE, DEPAccount>;
+export type AccountIndexActionRequest = RSAAIndexActionRequest<
+    DEPActionTypes.ACCT_INDEX_REQUEST,
+    DEPActionTypes.ACCT_INDEX_SUCCESS,
+    DEPActionTypes.ACCT_INDEX_FAILURE>;
+export type AccountIndexActionResponse = RSAAIndexActionResponse<
+    DEPActionTypes.ACCT_INDEX_REQUEST,
+    DEPActionTypes.ACCT_INDEX_SUCCESS,
+    DEPActionTypes.ACCT_INDEX_FAILURE,
+    DEPAccount>;
 
 export const accounts = encodeJSONAPIIndexParameters((queryParameters: string[]) => {
     return ({
@@ -129,9 +143,10 @@ export type ProfilePostActionRequest = RSAAPostActionRequest<
 export type ProfilePostActionResponse = RSAAPostActionResponse<
     DEPActionTypes.PROF_POST_REQUEST, DEPActionTypes.PROF_POST_SUCCESS, DEPActionTypes.PROF_POST_FAILURE, DEPProfile>;
 
-export const postProfile: ProfilePostActionRequest = (values: IDEPProfileFormValues, relationships) => {
+export const postProfile: ProfilePostActionRequest =
+    (values: DEPProfile, relationships: { [relName: string]: JSONAPIResourceIdentifier }) => {
 
-    const bodyData = {
+    const bodyData: JSONAPIDetailResponse<DEPProfile, void> = {
         data: {
             attributes: values,
             type: "dep_profiles",

@@ -5,10 +5,10 @@ interface ICheckListItemProps {
     title: string;
     description?: string;
     value: any; // will be interpreted as boolean
-    children?: JSX.Element[];
+    children?: JSX.Element[] | JSX.Element;
 }
 
-export const CheckListItem: React.StatelessComponent<ICheckListItemProps> = ({ title, value, description, children }: ICheckListItemProps) => (
+export const CheckListItem: React.FunctionComponent<ICheckListItemProps> = ({ title, value, description, children }: ICheckListItemProps) => (
     <List.Item>
         {value ? <List.Icon name="checkmark" size="large" /> : <List.Icon name="remove" size="large" />}
         <List.Content>

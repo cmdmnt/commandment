@@ -1,7 +1,6 @@
 declare module "redux-api-middleware" {
-    import {Action, AnyAction} from "redux";
-    import {Middleware} from "redux";
-    
+    import {Action, AnyAction, Middleware} from "redux";
+
     /**
      * Symbol key that carries API call info interpreted by this Redux middleware.
      *
@@ -12,7 +11,7 @@ declare module "redux-api-middleware" {
     export const RSAA: string;
 
     //// ERRORS
-    
+
     /**
      * Error class for an RSAA that does not conform to the RSAA definition
      *
@@ -21,11 +20,11 @@ declare module "redux-api-middleware" {
      * @param {array} validationErrors - an array of validation errors
      */
     export class InvalidRSAA {
-        constructor(validationErrors: Array<string>);
+        constructor(validationErrors: string[]);
 
         name: string;
         message: string;
-        validationErrors: Array<string>;
+        validationErrors: string[];
     }
 
     /**
@@ -66,14 +65,14 @@ declare module "redux-api-middleware" {
      * @param {object} response - the parsed JSON response of the API server if the
      *  'Content-Type' header signals a JSON response
      */
-    export class ApiError {
+    export class ApiError<R = any> {
         constructor(status: number, statusText: string, response: any);
 
         name: string;
         message: string;
         status: number;
         statusText: string;
-        response?: any;
+        response?: R;
     }
 
     //// VALIDATION
@@ -82,7 +81,6 @@ declare module "redux-api-middleware" {
      * Is the given action a plain JavaScript object with a [RSAA] property?
      */
     export function isRSAA(action: object): action is RSAAction<any, any, any>;
-
 
     export interface TypeDescriptor<TSymbol> {
         type: string | TSymbol;
@@ -99,7 +97,7 @@ declare module "redux-api-middleware" {
      * Checks an action against the RSAA definition, returning a (possibly empty)
      * array of validation errors.
      */
-    function validateRSAA(action: object): Array<string>;
+    function validateRSAA(action: object): string[];
 
     /**
      * Is the given action a valid RSAA?
@@ -118,9 +116,9 @@ declare module "redux-api-middleware" {
     /**
      * Extract JSON body from a server response
      */
-    export function getJSON(res: Response): PromiseLike<any>|undefined;
-    
-    export type RSAActionTypeTuple = [string|symbol, string|symbol, string|symbol];
+    export function getJSON(res: Response): PromiseLike<any> | undefined;
+
+    export type RSAActionTypeTuple = [string | symbol, string | symbol, string | symbol];
 
     /**
      * Blow up string or symbol types into full-fledged type descriptors,
@@ -128,9 +126,17 @@ declare module "redux-api-middleware" {
      */
     export function normalizeTypeDescriptors(types: RSAActionTypeTuple): RSAActionTypeTuple;
 
+    export type HTTPVerb = "GET" | "HEAD" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS";
 
-
-    export type HTTPVerb = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS';
+    export interface RSAActionBody<R, S, F> {
+        endpoint: string;  // or function
+        method: HTTPVerb;
+        body?: any;
+        headers?: { [propName: string]: string }; // or function
+        credentials?: "omit" | "same-origin" | "include";
+        bailout?: boolean; // or function
+        types: [R, S, F];
+    }
 
     export interface RSAAction<R, S, F> {
         [propName: string]: { // Symbol as object key seems impossible
@@ -138,23 +144,15 @@ declare module "redux-api-middleware" {
             method: HTTPVerb;
             body?: any;
             headers?: { [propName: string]: string }; // or function
-            credentials?: 'omit' | 'same-origin' | 'include';
+            credentials?: "omit" | "same-origin" | "include";
             bailout?: boolean; // or function
             types: [R, S, F];
         }
     }
 
-//     declare module "redux" {
-//     import {RSAAAction} from "redux-api-middleware";
-//
-//         export interface Dispatch<S> {
-//             <R, S, F>(rsaa: RSAAction<R, S, F>): void;
-//         }
-//     }
+    module "redux" {
+        export interface Dispatch {
+            [rsaa: string]: RSAActionBody<any, any, any>;
+        }
+    }
 }
-
-
-
-//
-// at-loader] ./src/typings/redux-api-middleware.d.ts:148:12
-// TS2435: Ambient modules cannot be nested in other modules or namespaces.

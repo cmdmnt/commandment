@@ -11,16 +11,39 @@ import * as Yup from "yup";
 import {DEPProfile, SkipSetupSteps} from "../../store/dep/types";
 import {FormikCheckbox} from "../formik/FormikCheckbox";
 
-export interface IDEPProfileFormValues extends DEPProfile {
+// The major difference between the form values and the server-side model is that the skip values are boolean inverted
+// so that we can use the language "show" instead of hidden / unhide.
+export interface IDEPProfileFormValues {
+    // show: not present on DEPProfile
     show: { [SkipSetupSteps: string]: boolean };
+    readonly id?: string;
+    readonly uuid?: string;
+    dep_account_id?: number;
+
+    profile_name: string;
+    url?: string;
+    allow_pairing: boolean;
+    is_supervised: boolean;
+    is_multi_user: boolean;
+    is_mandatory: boolean;
+    await_device_configured: boolean;
+    is_mdm_removable: boolean;
+    support_phone_number: string;
+    auto_advance_setup: boolean;
+    support_email_address?: string;
+    org_magic?: string;
+    // inverted by the form
+    // skip_setup_items: SkipSetupSteps[];
+    department?: string;
 }
 
 export interface IDEPProfileFormProps {
-    data?: DEPProfile;
+    data?: IDEPProfileFormValues;
     id?: string | number;
     loading: boolean;
     activeIndex: number;
     onSubmit: (values: IDEPProfileFormValues) => void;
+    onClickAccordionTitle: (event: React.MouseEvent<any>, data: AccordionTitleProps) => void;
 }
 
 export interface IDEPProfileFormState {

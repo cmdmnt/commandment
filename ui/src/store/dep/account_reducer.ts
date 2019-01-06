@@ -3,7 +3,7 @@ import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 import {DEPActions, DEPActionTypes} from "./actions";
 import {DEPAccount, DEPProfile} from "./types";
 
-export interface DEPAccountState {
+export interface IDEPAccountState {
     readonly dep_account?: JSONAPIDataObject<DEPAccount>;
     readonly dep_profiles?: Array<JSONAPIDataObject<DEPProfile>>;
     readonly loading: boolean;
@@ -11,29 +11,32 @@ export interface DEPAccountState {
     readonly errorDetail?: any;
 }
 
-const initialState: DEPAccountState = {
+const initialState: IDEPAccountState = {
     error: false,
     loading: false,
 };
 
-export const account: Reducer<DEPAccountState, DEPActions> = (state = initialState, action) => {
+export const account: Reducer<IDEPAccountState, DEPActions> = (state = initialState, action) => {
     switch (action.type) {
 
         case DEPActionTypes.ACCT_READ_REQUEST:
             return { ...state, loading: true };
         case DEPActionTypes.ACCT_READ_SUCCESS:
-            if (isJSONAPIErrorResponsePayload(action.payload)) {
+            const payload = action.payload;
+
+            if (isJSONAPIErrorResponsePayload(payload)) {
                 return {
                     ...state,
-                    loading: false,
                     error: true,
-                    errorDetail: action.payload,
+                    errorDetail: payload,
+                    loading: false,
                 };
             } else {
                 return {...state,
+                    dep_account: payload.data,
+                    dep_profiles: payload.included,
                     loading: false,
-                    dep_account: action.payload.data,
-                    dep_profiles: action.payload.included};
+                };
             }
         case DEPActionTypes.ACCT_READ_FAILURE:
             return { ...state, loading: false, error: true, errorDetail: action.payload };

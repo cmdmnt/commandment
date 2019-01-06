@@ -1,12 +1,11 @@
 import * as React from "react";
-import {connect, Dispatch, MapStateToProps} from "react-redux";
+import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
-import {bindActionCreators} from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import Container from "semantic-ui-react/src/elements/Container";
 import Header from "semantic-ui-react/src/elements/Header";
-import {DeviceAuthForm} from "../../forms/config/DeviceAuthForm";
-import {FormData, SCEPPayloadForm} from "../../forms/payloads/SCEPPayloadForm";
-import {RootState} from "../../reducers/index";
+import {DeviceAuthForm, IDeviceAuthFormValues} from "../../components/forms/DeviceAuthForm";
+import {RootState} from "../../reducers";
 import * as actions from "../../store/configuration/scep_actions";
 import {SCEPState} from "../../store/configuration/scep_reducer";
 
@@ -29,11 +28,11 @@ export class UnconnectedDeviceAuthPage extends React.Component<OwnProps, undefin
         this.props.read();
     }
 
-    private handleSubmit = (values: FormData): void => {
+    private handleSubmit = (values: IDeviceAuthFormValues): void => {
         this.props.post({
             ...values,
-            key_usage: parseInt(values.key_usage, 0),
             key_size: parseInt(values.key_size, 0),
+            key_usage: parseInt(values.key_usage, 0),
         });
     };
 
@@ -58,7 +57,7 @@ export class UnconnectedDeviceAuthPage extends React.Component<OwnProps, undefin
                 <p>
                     Use this section to configure how your device will securely contact the MDM server.
                 </p>
-                <DeviceAuthForm />
+                <DeviceAuthForm loading={scep.loading} data={scep.data} onSubmit={this.handleSubmit} />
             </Container>
         )
     }
@@ -69,7 +68,7 @@ export const DeviceAuthPage = connect<ReduxStateProps, ReduxDispatchProps, OwnPr
     (state: RootState): ReduxStateProps => ({
         scep: state.configuration.scep,
     }),
-    (dispatch: Dispatch<any>) => bindActionCreators({
+    (dispatch: Dispatch) => bindActionCreators({
         post: actions.post,
         read: actions.read,
     }, dispatch),

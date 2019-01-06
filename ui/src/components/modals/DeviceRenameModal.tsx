@@ -4,13 +4,15 @@ import {RouteComponentProps} from "react-router-dom";
 
 import Form, {FormProps} from "semantic-ui-react/dist/commonjs/collections/Form/Form";
 import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
-import {FunctionComponent} from "react";
+import {Device} from "../../store/device/types";
+import {JSONAPIDataObject} from "../../store/json-api";
 
 export interface IDeviceRenameModalProps extends RouteComponentProps<any> {
-
+    device: JSONAPIDataObject<Device>;
 }
 
-export const DeviceRenameModal: FunctionComponent<IDeviceRenameModalProps> = ({ history, device }: IDeviceRenameModalProps) => (
+export const DeviceRenameModal: React.FunctionComponent<IDeviceRenameModalProps> =
+    ({ history, device }: IDeviceRenameModalProps) => (
     <Modal defaultOpen closeIcon onClose={() => {
         history.goBack();
     }}>
