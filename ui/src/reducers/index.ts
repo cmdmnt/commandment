@@ -1,20 +1,20 @@
-import {routerReducer, RouterState} from "react-router-redux";
+import {connectRouter, RouterState} from "connected-react-router";
 import {combineReducers} from "redux";
 
-import {applications, ApplicationsState} from "../store/applications/applications";
+import {applications, IApplicationsState} from "../store/applications/reducer";
+import {assistant, IAssistantState} from "../store/assistant/reducer";
 import {certificates, CertificatesState} from "../store/certificates/reducer";
+import {commands, CommandsState} from "../store/commands/reducer";
 import {configuration, ConfigurationState} from "../store/configuration/reducer";
 import {dep, IDEPState} from "../store/dep/reducer";
 import {device, DeviceState} from "../store/device/reducer";
 import {device_groups, DeviceGroupsState} from "../store/device_groups/reducer";
 import {devices, IDevicesState} from "../store/devices/devices";
 import {organization, OrganizationState} from "../store/organization/reducer";
-import {profile, IProfileState} from "../store/profile/reducer";
+import {IProfileState, profile} from "../store/profile/reducer";
 import {profiles, ProfilesState} from "../store/profiles/reducer";
 import {ITableState, table} from "../store/table/reducer";
 import {ITagsState, tags} from "../store/tags/reducer";
-import {assistant, IAssistantState} from "../store/assistant/reducer";
-import {commands, CommandsState} from "../store/commands/reducer";
 
 export interface RootState {
     router?: RouterState;
@@ -30,12 +30,12 @@ export interface RootState {
     device_groups?: DeviceGroupsState;
     tags?: ITagsState;
     profile?: IProfileState;
-    applications?: ApplicationsState;
+    applications?: IApplicationsState;
     dep?: IDEPState;
     table?: ITableState;
 }
 
-export const rootReducer = combineReducers<RootState>({
+export const rootReducer = (history: any) => combineReducers<RootState>({
     applications,
     assistant,
     certificates,
@@ -48,7 +48,7 @@ export const rootReducer = combineReducers<RootState>({
     organization,
     profile,
     profiles,
-    router: routerReducer,
+    router: connectRouter(history),
     table,
     tags,
 });

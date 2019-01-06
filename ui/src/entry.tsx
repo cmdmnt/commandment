@@ -3,10 +3,9 @@ import * as React from "react";
 import {render} from "react-dom";
 import {Provider} from "react-redux";
 import {Route} from "react-router";
-import {ConnectedRouter, routerMiddleware} from "react-router-redux";
 
 import {RootState} from "./reducers";
-import {configureStore} from "./store/configureStore";
+import {configureStore, history} from "./store/configureStore";
 
 import {AppLayout} from "./components/AppLayout";
 
@@ -26,13 +25,15 @@ import {DEPAccountSetupPage} from "./containers/settings/DEPAccountSetupPage";
 import {DEPAccountsPage} from "./containers/settings/DEPAccountsPage";
 import {VPPAccountsPage} from "./containers/settings/VPPAccountsPage";
 import {SettingsPage} from "./containers/SettingsPage";
+import {AppStorePage} from "./containers/AppStorePage";
 
 import "../sass/app.scss";
 import {ProfileUpload} from "./containers/ProfileUpload";
 
 const initialState: RootState = {};
 
-const history = createHistory();
+import { ConnectedRouter, routerMiddleware } from "connected-react-router";
+
 const store = configureStore(initialState, routerMiddleware(history));
 
 render(
@@ -41,7 +42,8 @@ render(
             <AppLayout>
                 <Route exact path="/" component={DashboardPage} />
                 <Route exact path="/applications" component={ApplicationsPage} />
-                <Route path="/applications/add/:platform" component={ApplicationPage} />
+                <Route path="/applications/add/macos" component={ApplicationPage} />
+                <Route path="/applications/add/mas" component={AppStorePage} />
 
                 <Route exact path="/devices" component={DevicesPage} />
                 <Route path="/devices/:id" component={DevicePage} />

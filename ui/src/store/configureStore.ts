@@ -3,9 +3,12 @@ import {Middleware} from "redux";
 import {apiMiddleware} from "redux-api-middleware";
 import thunk from "redux-thunk";
 import rootReducer from "../reducers";
-import {RootState} from "../reducers/index";
+import {RootState} from "../reducers";
+import {createBrowserHistory} from "history";
 
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+export const history = createBrowserHistory();
 
 export const configureStore = (initialState: RootState, ...middlewares: Middleware[] ): Store<any> => {
 
@@ -18,7 +21,7 @@ export const configureStore = (initialState: RootState, ...middlewares: Middlewa
     );
 
     const store = createStore(
-        rootReducer,
+        rootReducer(history),
         initialState,
         enhancer,
     );

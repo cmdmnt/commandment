@@ -1,32 +1,31 @@
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 import {IResults, ResultsDefaultState} from "../../reducers/interfaces";
-import * as actions from "./actions";
+import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
+import {ApplicationsActions, ApplicationsActionTypes} from "./actions";
 import {Application} from "./types";
 
-export interface ApplicationsState extends IResults<Array<JSONAPIDataObject<Application>>> {
+export interface IApplicationsState extends IResults<Array<JSONAPIDataObject<Application>>> {
     allIds: string[];
 }
 
-const initialState: ApplicationsState = {
+const initialState: IApplicationsState = {
     ...ResultsDefaultState,
     allIds: [],
 };
 
-type ApplicationsAction = actions.IndexActionResponse | actions.PostActionResponse | actions.PatchActionResponse;
-
-export function applications(state: ApplicationsState = initialState, action: ApplicationsAction): ApplicationsState {
+export function applications(state: IApplicationsState = initialState,
+                             action: ApplicationsActions): IApplicationsState {
     switch (action.type) {
-        case actions.INDEX_REQUEST:
+        case ApplicationsActionTypes.INDEX_REQUEST:
             return {
                 ...state,
                 loading: true,
             };
-        case actions.INDEX_FAILURE:
+        case ApplicationsActionTypes.INDEX_FAILURE:
             return {
                 ...state,
                 error: action.payload,
             };
-        case actions.INDEX_SUCCESS:
+        case ApplicationsActionTypes.INDEX_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {
                 return {
                     ...state,

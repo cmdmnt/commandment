@@ -11,15 +11,21 @@ import {JSONAPIDetailResponse, JSONAPIErrorResponse, RSAAPatchActionRequest} fro
 import {Application} from "./types";
 import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants";
 
-export type INDEX_REQUEST = "applications/INDEX_REQUEST";
-export const INDEX_REQUEST: INDEX_REQUEST = "applications/INDEX_REQUEST";
-export type INDEX_SUCCESS = "applications/INDEX_SUCCESS";
-export const INDEX_SUCCESS: INDEX_SUCCESS = "applications/INDEX_SUCCESS";
-export type INDEX_FAILURE = "applications/INDEX_FAILURE";
-export const INDEX_FAILURE: INDEX_FAILURE = "applications/INDEX_FAILURE";
+export enum ApplicationsActionTypes {
+    INDEX_REQUEST = "applications/INDEX_REQUEST",
+    INDEX_SUCCESS = "applications/INDEX_SUCCESS",
+    INDEX_FAILURE = "applications/INDEX_FAILURE",
+    READ_REQUEST = "applications/READ_REQUEST",
+    READ_SUCCESS = "applications/READ_SUCCESS",
+    READ_FAILURE = "applications/READ_FAILURE",
+    PATCH_REQUEST = "applications/PATCH_REQUEST",
+    PATCH_SUCCESS = "applications/PATCH_SUCCESS",
+    PATCH_FAILURE = "applications/PATCH_FAILURE",
+}
 
-export type IndexActionRequest = RSAAIndexActionRequest<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>;
-export type IndexActionResponse = RSAAIndexActionResponse<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE, Application>;
+
+export type IndexActionRequest = RSAAIndexActionRequest<ApplicationsActionTypes.INDEX_REQUEST, ApplicationsActionTypes.INDEX_SUCCESS, ApplicationsActionTypes.INDEX_FAILURE>;
+export type IndexActionResponse = RSAAIndexActionResponse<ApplicationsActionTypes.INDEX_REQUEST, ApplicationsActionTypes.INDEX_SUCCESS, ApplicationsActionTypes.INDEX_FAILURE, Application>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) => {
     return ({
@@ -28,12 +34,12 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) =>
             headers: JSONAPI_HEADERS,
             method: ("GET" as HTTPVerb),
             types: [
-                INDEX_REQUEST,
-                INDEX_SUCCESS,
-                INDEX_FAILURE,
+                ApplicationsActionTypes.INDEX_REQUEST,
+                ApplicationsActionTypes.INDEX_SUCCESS,
+                ApplicationsActionTypes.INDEX_FAILURE,
             ],
         },
-    } as RSAAction<INDEX_REQUEST, INDEX_SUCCESS, INDEX_FAILURE>);
+    } as RSAAction<ApplicationsActionTypes.INDEX_REQUEST, ApplicationsActionTypes.INDEX_SUCCESS, ApplicationsActionTypes.INDEX_FAILURE>);
 });
 
 export const POST_REQUEST = "applications/POST_REQUEST";
@@ -49,33 +55,27 @@ export type PostActionResponse = RSAAPostActionResponse<POST_REQUEST, POST_SUCCE
 export const post: PostActionRequest = (values: Application) => {
     return ({
         [RSAA]: {
-            endpoint: `/api/v1/applications`,
-            method: "POST",
-            types: [
-                POST_REQUEST,
-                POST_SUCCESS,
-                POST_FAILURE,
-            ],
-            headers: JSONAPI_HEADERS,
             body: JSON.stringify({
                 data: {
                     attributes: values,
                     type: "applications",
                 },
             }),
+            endpoint: `/api/v1/applications`,
+            headers: JSONAPI_HEADERS,
+            method: "POST",
+            types: [
+                POST_REQUEST,
+                POST_SUCCESS,
+                POST_FAILURE,
+            ],
         },
     } as RSAAction<POST_REQUEST, POST_SUCCESS, POST_FAILURE>);
 };
 
-export type READ_REQUEST = "applications/READ_REQUEST";
-export const READ_REQUEST: READ_REQUEST = "applications/READ_REQUEST";
-export type READ_SUCCESS = "applications/READ_SUCCESS";
-export const READ_SUCCESS: READ_SUCCESS = "applications/READ_SUCCESS";
-export type READ_FAILURE = "applications/READ_FAILURE";
-export const READ_FAILURE: READ_FAILURE = "applications/READ_FAILURE";
 
-export type ReadActionRequest = RSAAReadActionRequest<READ_REQUEST, READ_SUCCESS, READ_FAILURE>;
-export type ReadActionResponse = RSAAReadActionResponse<READ_REQUEST, READ_SUCCESS, READ_FAILURE, JSONAPIDetailResponse<Application, undefined>>;
+export type ReadActionRequest = RSAAReadActionRequest<ApplicationsActionTypes.READ_REQUEST, ApplicationsActionTypes.READ_SUCCESS, ApplicationsActionTypes.READ_FAILURE>;
+export type ReadActionResponse = RSAAReadActionResponse<ApplicationsActionTypes.READ_REQUEST, ApplicationsActionTypes.READ_SUCCESS, ApplicationsActionTypes.READ_FAILURE, JSONAPIDetailResponse<Application, undefined>>;
 
 export const read: ReadActionRequest = (id: string, include?: string[]) => {
 
@@ -90,23 +90,16 @@ export const read: ReadActionRequest = (id: string, include?: string[]) => {
             headers: JSONAPI_HEADERS,
             method: "GET",
             types: [
-                READ_REQUEST,
-                READ_SUCCESS,
-                READ_FAILURE,
+                ApplicationsActionTypes.READ_REQUEST,
+                ApplicationsActionTypes.READ_SUCCESS,
+                ApplicationsActionTypes.READ_FAILURE,
             ],
         },
     };
 };
 
-export const PATCH_REQUEST = "applications/PATCH_REQUEST";
-export type PATCH_REQUEST = typeof PATCH_REQUEST;
-export const PATCH_SUCCESS = "applications/PATCH_SUCCESS";
-export type PATCH_SUCCESS = typeof PATCH_SUCCESS;
-export const PATCH_FAILURE = "applications/PATCH_FAILURE";
-export type PATCH_FAILURE = typeof PATCH_FAILURE;
-
-export type PatchActionRequest = RSAAPatchActionRequest<PATCH_REQUEST, PATCH_SUCCESS, PATCH_FAILURE, Application>;
-export type PatchActionResponse = RSAAReadActionResponse<PATCH_REQUEST, PATCH_SUCCESS, PATCH_FAILURE, JSONAPIDetailResponse<Application, undefined>>;
+export type PatchActionRequest = RSAAPatchActionRequest<ApplicationsActionTypes.PATCH_REQUEST, ApplicationsActionTypes.PATCH_SUCCESS, ApplicationsActionTypes.PATCH_FAILURE, Application>;
+export type PatchActionResponse = RSAAReadActionResponse<ApplicationsActionTypes.PATCH_REQUEST, ApplicationsActionTypes.PATCH_SUCCESS, ApplicationsActionTypes.PATCH_FAILURE, JSONAPIDetailResponse<Application, undefined>>;
 
 export const patch: PatchActionRequest = (applicationId: string, values: Application) => {
 
@@ -122,9 +115,9 @@ export const patch: PatchActionRequest = (applicationId: string, values: Applica
             headers: JSONAPI_HEADERS,
             method: "PATCH",
             types: [
-                PATCH_REQUEST,
-                PATCH_SUCCESS,
-                PATCH_FAILURE,
+                ApplicationsActionTypes.PATCH_REQUEST,
+                ApplicationsActionTypes.PATCH_SUCCESS,
+                ApplicationsActionTypes.PATCH_FAILURE,
             ],
         },
     };
@@ -151,3 +144,5 @@ export const destroy: RSAADeleteActionRequest<DELETE_REQUEST, DELETE_SUCCESS, DE
         },
     };
 };
+
+export type ApplicationsActions = IndexActionResponse | PostActionResponse | PatchActionResponse;
