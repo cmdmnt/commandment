@@ -38,7 +38,7 @@ class UnconnectedApplicationPage extends React.Component<IReduxStateProps & IRed
         } else {
             this.props.post(values);
         }
-    }
+    };
 
     public render() {
         const { } = this.props;

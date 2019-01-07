@@ -50,7 +50,7 @@ class Application(db.Model):
     management_flags = db.Column(db.Integer)
     """management_flags (ManagementFlag): Denotes whether app is removed with MDM profile, and whether the user may back
         up application data."""
-    change_management_state = db.Column(db.String)
+    change_management_state = db.Column(db.String, default="Managed")
     """change_management_state (db.String): Take ownership of an existing application that is unmanaged."""
     discriminator = db.Column(db.String(20))
     """discriminator (str): The type of application"""

@@ -200,10 +200,10 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
      };
 
     protected handleChangeTag = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
-        const { value } = data;
+        const value = (data.value as string[]);
 
         const relationships = value.map((v: string) => {
-            return {id:  v, type: "tags"};
+            return {id: v, type: "tags"};
         });
 
         this.props.patchRelationship(

@@ -23,7 +23,7 @@ from .vpp.app import vpp_app
 from .profiles.api import profiles_api_app
 from .inventory.api import api_app as inventory_api
 from .mdm.api import api_app as mdm_api
-from .apps.api import api_app as applications_api
+from .apps.app_jsonapi import api_app as applications_api
 from .auth.app import auth_app
 
 from .threads import startup_thread

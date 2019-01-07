@@ -7,11 +7,19 @@ class ApplicationSchema(Schema):
         type_ = 'applications'
         self_view = 'applications_api.application_detail'
         self_view_kwargs = {'application_id': '<id>'}
-        self_view_many = 'applications_api.application_list'
+        self_view_many = 'applications_api.applications_list'
         strict = True
 
     id = fields.Int(dump_only=True)
+    display_name = fields.Str()
+    description = fields.Str()
+    version = fields.Str()
+    itunes_store_id = fields.Int()
+    bundle_id = fields.Str()
+    purchase_method = fields.Int()
     manifest_url = fields.Url()
+    management_flags = fields.Int()
+    change_management_state = fields.Str()
 
 
 class ApplicationManifestSchema(Schema):

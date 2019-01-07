@@ -9,6 +9,9 @@ storiesOf("DEPProfileForm", module)
         <Container>
             <DEPProfileForm
                 loading={false}
-                onSubmit={action("onSubmit")}/>
+                onSubmit={action("onSubmit")}
+                activeIndex={1}
+                onClickAccordionTitle={action("onClickTitle")}
+            />
         </Container>
     ));

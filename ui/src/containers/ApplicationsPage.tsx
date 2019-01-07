@@ -10,9 +10,28 @@ import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
 import {ButtonLink} from "../components/semantic-ui/ButtonLink";
 import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
+import {ApplicationsTable} from "../components/react-tables/ApplicationsTable";
+import {IApplicationsState} from "../store/applications/reducer";
+import {IReactTableState} from "../store/table/types";
+import {FlaskFilter, FlaskFilterOperation} from "../store/constants";
+import {index, IndexActionRequest} from "../store/applications/actions";
 
-class UnconnectedApplicationsPage extends React.Component<RouteComponentProps<any>, any> {
+export interface IDispatchProps {
+    index: IndexActionRequest;
+}
+
+export interface IStateProps {
+    applications: IApplicationsState;
+}
+
+type ApplicationsPageProps = IDispatchProps & IStateProps & RouteComponentProps<any>;
+
+class UnconnectedApplicationsPage extends React.Component<ApplicationsPageProps, any> {
     public render() {
+        const {
+            applications,
+        } = this.props;
+
         return (
             <Container className="ApplicationsPage">
                 <Divider hidden />
@@ -31,12 +50,33 @@ class UnconnectedApplicationsPage extends React.Component<RouteComponentProps<an
                     </Dropdown.Menu>
                 </Dropdown>
 
+                <ApplicationsTable data={applications.items}
+                                   loading={applications.loading}
+                                   onFetchData={this.fetchData}
+                />
             </Container>
         );
+    }
+
+    private fetchData = (state: IReactTableState) => {
+        const sorting = state.sorted.map((value) => (value.desc ? value.id : "-" + value.id));
+        const filtering: FlaskFilter[] = state.filtered.map((value) => {
+            return {
+                name: value.id,
+                op: "ilike" as FlaskFilterOperation,
+                val: `%25${value.value}%25`,
+            };
+        });
+
+        this.props.index(state.pageSize, state.page, sorting, filtering);
     }
 }
 
 export const ApplicationsPage = connect(
-    (state: RootState, ownProps?: any) => ({}),
-    (dispatch: Dispatch, ownProps?: any) => bindActionCreators({}, dispatch),
+    (state: RootState, ownProps?: any) => ({
+        applications: state.applications,
+    }),
+    (dispatch: Dispatch, ownProps?: any) => bindActionCreators({
+        index,
+    }, dispatch),
 )(UnconnectedApplicationsPage);

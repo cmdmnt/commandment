@@ -9,6 +9,8 @@ import { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
 
 import {SyntheticEvent} from "react";
 import {RouteComponentProps} from "react-router";
+import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
+import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
 import {JSONAPIDataObject, JSONAPIRelationship} from "../store/json-api";
@@ -21,8 +23,6 @@ import {
 } from "../store/tags/actions";
 import {ITagsState} from "../store/tags/reducer";
 import {Tag} from "../store/tags/types";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
 
 import {Link} from "react-router-dom";
 
@@ -104,7 +104,7 @@ export class UnconnectedProfilePage extends React.Component<RouteComponentProps<
                     onSearch={this.handleSearchTag}
                     onChange={this.handleChangeTag}
                 />
-                
+
             </Container>
         );
     }

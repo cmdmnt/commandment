@@ -162,7 +162,7 @@ export interface Command {
 }
 
 export enum DeviceModelName {
-    iPadAir = "iPad Air",
+    iPad = "iPad",
     iPhone = "iPhone",
     MacMini = "Mac Mini",
     MacPro = "Mac Pro",
@@ -178,7 +178,7 @@ export enum DeviceOperatingSystem {
 
 export function operatingSystem(model: DeviceModelName): DeviceOperatingSystem {
     switch (model) {
-        case DeviceModelName.iPadAir:
+        case DeviceModelName.iPad:
         case DeviceModelName.iPhone:
             return DeviceOperatingSystem.iOS;
         case DeviceModelName.MacMini:

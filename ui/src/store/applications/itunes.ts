@@ -58,13 +58,19 @@ export const MediaTypeEntities: IMediaTypeEntityList = {
     ],
 };
 
+export enum ArtworkIconSize {
+    Sixty = "artworkUrl60",
+    Hundred = "artworkUrl100",
+    FiveTwelve = "artworkUrl512",
+}
+
 export interface IItunesSearchQuery {
     term: string;
     country: string;
     media?: MediaType;
-    entity?: string;
+    entity?: EntityType;
     attribute?: string;
-    callback: string;
+    callback?: string;
     limit?: number;
     lang?: string;
     version?: number;
