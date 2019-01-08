@@ -1,64 +1,44 @@
-import {IResults, ResultsDefaultState} from "../../reducers/interfaces";
-import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
+import {JSONAPIDetailResponse} from "../json-api";
 import {ApplicationsActions, ApplicationsActionTypes} from "./actions";
 import {Application} from "./types";
-import {IiTunesSearchResult} from "./itunes";
 
-export interface IApplicationsState extends IResults<Array<JSONAPIDataObject<Application>>> {
-    allIds: string[];
-    itunesSearchResult: IiTunesSearchResult;
-    itunesSearchResultLoading: boolean;
+export interface IApplicationState {
+    loading: boolean;
+    data: JSONAPIDetailResponse<Application, void>;
+    error: boolean;
+    errorDetail: any;
 }
 
-const initialState: IApplicationsState = {
-    ...ResultsDefaultState,
-    allIds: [],
-    itunesSearchResult: null,
-    itunesSearchResultLoading: false,
+const initialState: IApplicationState = {
+    data: null,
+    error: false,
+    errorDetail: null,
+    loading: false,
 };
 
-export function applications(state: IApplicationsState = initialState,
-                             action: ApplicationsActions): IApplicationsState {
+export function application(state: IApplicationState = initialState, action: ApplicationsActions) {
     switch (action.type) {
-        case ApplicationsActionTypes.INDEX_REQUEST:
+        case ApplicationsActionTypes.READ_REQUEST:
             return {
                 ...state,
+                data: null,
+                error: false,
+                errorDetail: null,
                 loading: true,
             };
-        case ApplicationsActionTypes.INDEX_FAILURE:
+        case ApplicationsActionTypes.READ_SUCCESS:
             return {
                 ...state,
-                error: action.payload,
+                data: action.payload,
+                loading: false,
             };
-        case ApplicationsActionTypes.INDEX_SUCCESS:
-            if (isJSONAPIErrorResponsePayload(action.payload)) {
-                return {
-                    ...state,
-                    error: action.payload,
-                    loading: false,
-                };
-            } else {
-                return {
-                    ...state,
-                    items: action.payload.data,
-                    lastReceived: new Date(),
-                    loading: false,
-                    recordCount: action.payload.meta.count,
-                };
-            }
-
-        case ApplicationsActionTypes.ITUNES_SEARCH_REQUEST:
+        case ApplicationsActionTypes.READ_FAILURE:
             return {
                 ...state,
-                itunesSearchResult: null,
-                itunesSearchResultLoading: true,
-            };
-
-        case ApplicationsActionTypes.ITUNES_SEARCH_SUCCESS:
-            return {
-                ...state,
-                itunesSearchResult: action.payload,
-                itunesSearchResultLoading: false,
+                data: null,
+                error: true,
+                errorDetail: action.payload,
+                loading: false,
             };
         default:
             return state;

@@ -40,9 +40,6 @@ export class UnconnectedAppStorePage extends React.Component<AppStorePageProps, 
     //     term: "",
     // };
 
-    public componentWillMount?() {
-        this.props.itunesSearch("Slack", "au", MediaType.software, EntityType.macSoftware);
-    }
 
     public render() {
         const { itunesSearchResult, loading } = this.props;
@@ -76,6 +73,19 @@ export class UnconnectedAppStorePage extends React.Component<AppStorePageProps, 
             display_name: result.trackName,
             itunes_store_id: result.trackId,
             version: result.version,
+
+            country: "AU",
+
+            artist_id: result.artistId,
+            artist_name: result.artistName,
+            artist_view_url: result.artistViewUrl,
+            artwork_url60: result.artworkUrl60,
+            artwork_url100: result.artworkUrl100,
+            artwork_url512: result.artworkUrl512,
+            release_notes: result.releaseNotes,
+            release_date: result.releaseDate,
+            minimum_os_version: result.minimumOsVersion,
+            file_size_bytes: result.fileSizeBytes,
         });
     };
 

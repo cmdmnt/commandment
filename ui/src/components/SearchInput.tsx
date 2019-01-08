@@ -1,5 +1,6 @@
 import * as React from "react";
 import {Input, InputOnChangeData, InputProps} from "semantic-ui-react";
+import Timeout = NodeJS.Timeout;
 
 export interface ISearchInputProps {
     duration: number;
@@ -9,7 +10,7 @@ export interface ISearchInputProps {
 
 export interface ISearchInputState {
     value: string;
-    timeout: number;
+    timeout: Timeout;
 }
 
 export class SearchInput extends React.Component<ISearchInputProps, ISearchInputState> {
@@ -28,8 +29,8 @@ export class SearchInput extends React.Component<ISearchInputProps, ISearchInput
 
         return (
             <Input loading={loading ? true : undefined}
-                   icon="user"
-                   placeholder="Search..."
+                   icon="search"
+                   placeholder="App Name..."
                    onChange={this.handleChange}
                    value={this.state.value}
             />

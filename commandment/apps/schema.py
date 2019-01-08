@@ -21,6 +21,27 @@ class ApplicationSchema(Schema):
     management_flags = fields.Int()
     change_management_state = fields.Str()
 
+    # iTunes Search API cache
+    country = fields.Str()
+    artist_id = fields.Int()
+    artist_name = fields.Str()
+    artist_view_url = fields.Url()
+    artwork_url60 = fields.Url()
+    artwork_url100 = fields.Url()
+    artwork_url512 = fields.Url()
+    release_notes = fields.Str()
+    release_date = fields.DateTime()
+    minimum_os_version = fields.Str()
+    file_size_bytes = fields.Number()
+
+    tags = Relationship(
+        related_view='api_app.tags_list',
+        related_view_kwargs={'application_id': '<id>'},
+        many=True,
+        schema='TagSchema',
+        type_='tags'
+    )
+
 
 class ApplicationManifestSchema(Schema):
     class Meta:

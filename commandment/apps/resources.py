@@ -28,3 +28,12 @@ class ApplicationList(ResourceList):
         'model': Application,
         'url_field': 'application_id'
     }
+
+
+class ApplicationRelationship(ResourceRelationship):
+    schema = ApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': Application,
+        'url_field': 'application_id'
+    }

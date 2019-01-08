@@ -44,6 +44,19 @@ def schema_upgrades():
                     sa.Column('management_flags', sa.Integer(), nullable=True),
                     sa.Column('change_management_state', sa.String(), nullable=True),
                     sa.Column('discriminator', sa.String(length=20), nullable=True),
+
+                    sa.Column('country', sa.String(length=2), nullable=True),
+                    sa.Column('artist_id', sa.Integer(), nullable=True),
+                    sa.Column('artist_name', sa.String(), nullable=True),
+                    sa.Column('artist_view_url', sa.String(), nullable=True),
+                    sa.Column('artwork_url60', sa.String(), nullable=True),
+                    sa.Column('artwork_url100', sa.String(), nullable=True),
+                    sa.Column('artwork_url512', sa.String(), nullable=True),
+                    sa.Column('release_notes', sa.Text(), nullable=True),
+                    sa.Column('release_date', sa.DateTime(), nullable=True),
+                    sa.Column('minimum_os_version', sa.String(), nullable=True),
+                    sa.Column('file_size_bytes', sa.BigInteger(), nullable=True),
+
                     sa.PrimaryKeyConstraint('id')
                     )
     op.create_index(op.f('ix_applications_bundle_id'), 'applications', ['bundle_id'], unique=False)

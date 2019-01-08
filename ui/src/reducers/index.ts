@@ -1,7 +1,8 @@
 import {connectRouter, RouterState} from "connected-react-router";
 import {combineReducers} from "redux";
 
-import {applications, IApplicationsState} from "../store/applications/reducer";
+import {applications, IApplicationsState} from "../store/applications/list_reducer";
+import {application, IApplicationState} from "../store/applications/reducer";
 import {assistant, IAssistantState} from "../store/assistant/reducer";
 import {certificates, CertificatesState} from "../store/certificates/reducer";
 import {commands, CommandsState} from "../store/commands/reducer";
@@ -31,11 +32,13 @@ export interface RootState {
     tags?: ITagsState;
     profile?: IProfileState;
     applications?: IApplicationsState;
+    application?: IApplicationState;
     dep?: IDEPState;
     table?: ITableState;
 }
 
 export const rootReducer = (history: any) => combineReducers<RootState>({
+    application,
     applications,
     assistant,
     certificates,

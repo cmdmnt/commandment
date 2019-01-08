@@ -24,8 +24,17 @@ class ApplicationType(Enum):
     APPSTORE_IOS = 'appstore_ios'
 
 
+application_tags = db.Table(
+    'application_tags',
+    db.metadata,
+    db.Column('application_id', db.Integer, db.ForeignKey('applications.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id')),
+)
+
+
 class Application(db.Model):
-    """This table holds details of each individual application (either app store or enterprise application).
+    """This table holds details of each individual application that may be
+     managed (either app store or enterprise application).
 
     :table: applications
     """
@@ -54,6 +63,33 @@ class Application(db.Model):
     """change_management_state (db.String): Take ownership of an existing application that is unmanaged."""
     discriminator = db.Column(db.String(20))
     """discriminator (str): The type of application"""
+
+    # iTunes Search API - Cached Result
+    country = db.Column(db.String(2))
+    """country (str): The two letter country code of the store country. We cache this to avoid assigning apps to devices
+        that cannot even install them due to the Apple ID residing in a different locale."""
+
+    artist_id = db.Column(db.Integer)
+    """artist_id (int): The iTunes Artist ID, which is commonly the developer in the app store."""
+    artist_name = db.Column(db.String)
+    """artist_id (str): The iTunes Artist Name, which is commonly the developer in the app store."""
+    artist_view_url = db.Column(db.String)
+    artwork_url60 = db.Column(db.String)
+    """artwork_url60 (str): A URL to the 60x60 icon for this result."""
+    artwork_url100 = db.Column(db.String)
+    """artwork_url100 (str): A URL to the 100x100 icon for this result."""
+    artwork_url512 = db.Column(db.String)
+    """artwork_url512 (str): A URL to the 512x512 icon for this result."""
+    release_notes = db.Column(db.String)
+    release_date = db.Column(db.DateTime)
+    minimum_os_version = db.Column(db.String)
+    file_size_bytes = db.Column(db.BigInteger)
+
+    tags = db.relationship(
+        'Tag',
+        secondary=application_tags,
+        backref='applications'
+    )
 
     __mapper_args__ = {
         'polymorphic_on': discriminator,

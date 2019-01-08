@@ -30,7 +30,7 @@ import {
     ShutdownActionRequest,
 } from "../store/device/actions";
 import {DeviceState} from "../store/device/reducer";
-import {JSONAPIRelationship} from "../store/json-api";
+import {JSONAPIRelationship, JSONAPIResourceIdentifier} from "../store/json-api";
 import {
     index as fetchTags,
     IndexActionRequest,
@@ -128,7 +128,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
         let deviceTags: number[] = [];
         if (device.device && device.device.relationships && device.device.relationships.tags) {
             if (isArray(device.device.relationships.tags.data)) {
-                deviceTags = device.device.relationships.tags.data.map((t: JSONAPIRelationship) => parseInt(t.id, 0));
+                deviceTags = device.device.relationships.tags.data.map((t: JSONAPIResourceIdentifier) => parseInt(t.id, 0));
             } else {
                 deviceTags = [parseInt(device.device.relationships.tags.data.id, 0)];
             }

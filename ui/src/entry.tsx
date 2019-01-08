@@ -10,7 +10,9 @@ import {configureStore, history} from "./store/configureStore";
 import {AppLayout} from "./components/AppLayout";
 
 import {ApplicationPage} from "./containers/ApplicationPage";
+import {MacOSEntApplicationPage} from "./containers/applications/MacOSEntApplicationPage";
 import {ApplicationsPage} from "./containers/ApplicationsPage";
+import {AppStorePage} from "./containers/AppStorePage";
 import {DeviceAuthPage} from "./containers/config/DeviceAuthPage";
 import {OrganizationPage} from "./containers/config/OrganizationPage";
 import {DashboardPage} from "./containers/DashboardPage";
@@ -25,7 +27,6 @@ import {DEPAccountSetupPage} from "./containers/settings/DEPAccountSetupPage";
 import {DEPAccountsPage} from "./containers/settings/DEPAccountsPage";
 import {VPPAccountsPage} from "./containers/settings/VPPAccountsPage";
 import {SettingsPage} from "./containers/SettingsPage";
-import {AppStorePage} from "./containers/AppStorePage";
 
 import "../sass/app.scss";
 import {ProfileUpload} from "./containers/ProfileUpload";
@@ -42,7 +43,8 @@ render(
             <AppLayout>
                 <Route exact path="/" component={DashboardPage} />
                 <Route exact path="/applications" component={ApplicationsPage} />
-                <Route path="/applications/add/macos" component={ApplicationPage} />
+                <Route path="/applications/id/:id" component={ApplicationPage} />
+                <Route path="/applications/add/macos" component={MacOSEntApplicationPage} />
                 <Route path="/applications/add/mas" component={AppStorePage} />
 
                 <Route exact path="/devices" component={DevicesPage} />

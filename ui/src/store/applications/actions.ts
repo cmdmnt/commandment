@@ -2,19 +2,28 @@ import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import * as fetchJsonp from "fetch-jsonp";
 import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants";
 import {
-    encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIDataObject, JSONAPIListResponse,
+    encodeJSONAPIChildIndexParameters,
+    encodeJSONAPIIndexParameters,
+    JSONAPIDataObject,
+    JSONAPIListResponse,
+    JSONAPIRelationship,
     RSAADeleteActionRequest,
     RSAADeleteActionResponse,
     RSAAIndexActionRequest,
-    RSAAIndexActionResponse, RSAAPostActionRequest, RSAAPostActionResponse, RSAAReadActionRequest,
+    RSAAIndexActionResponse,
+    RSAAPostActionRequest,
+    RSAAPostActionResponse,
+    RSAAReadActionRequest,
     RSAAReadActionResponse,
 } from "../json-api";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse, RSAAPatchActionRequest} from "../json-api";
-import {Application} from "./types";
+import {Application, ApplicationRelationship} from "./types";
 import {ThunkAction} from "redux-thunk";
 import {RootState} from "../../reducers";
 import {EntityType, IItunesSearchQuery, IiTunesSearchResult, MediaType} from "./itunes";
 import {Action} from "redux";
+import {Device, DeviceRelationship} from "../device/types";
+import {RPATCH_FAILURE, RPATCH_REQUEST, RPATCH_SUCCESS} from "../device/actions";
 
 export enum ApplicationsActionTypes {
     INDEX_REQUEST = "applications/INDEX_REQUEST",
@@ -32,6 +41,10 @@ export enum ApplicationsActionTypes {
     DELETE_REQUEST = "applications/DELETE_REQUEST",
     DELETE_SUCCESS = "applications/DELETE_SUCCESS",
     DELETE_FAILURE = "applications/DELETE_FAILURE",
+
+    REL_PATCH_REQUEST = "applications/relationships/PATCH_REQUEST",
+    REL_PATCH_SUCCESS = "applications/relationships/PATCH_SUCCESS",
+    REL_PATCH_FAILURE = "applications/relationships/PATCH_FAILURE",
 
     ITUNES_SEARCH_REQUEST = "applications/ITUNES_SEARCH_REQUEST",
     ITUNES_SEARCH_SUCCESS = "applications/ITUNES_SEARCH_SUCCESS",
@@ -95,7 +108,7 @@ export const read: ReadActionRequest = (id: string, include?: string[]) => {
 
     return {
         [RSAA]: {
-            endpoint: `/api/v1/profiles/${id}?${inclusions}`,
+            endpoint: `/api/v1/applications/${id}?${inclusions}`,
             headers: JSONAPI_HEADERS,
             method: "GET",
             types: [
@@ -147,6 +160,38 @@ export const destroy: RSAADeleteActionRequest<ApplicationsActionTypes.DELETE_REQ
     };
 };
 
+export type PatchRelationshipActionRequest = (
+    applicationId: string,
+    relationship: ApplicationRelationship,
+    data: JSONAPIRelationship[],
+) => RSAAction<
+    ApplicationsActionTypes.REL_PATCH_REQUEST,
+    ApplicationsActionTypes.REL_PATCH_SUCCESS,
+    ApplicationsActionTypes.REL_PATCH_FAILURE>;
+
+export type PatchRelationshipActionResponse = RSAAReadActionResponse<
+    ApplicationsActionTypes.REL_PATCH_REQUEST,
+    ApplicationsActionTypes.REL_PATCH_SUCCESS,
+    ApplicationsActionTypes.REL_PATCH_FAILURE,
+    JSONAPIDetailResponse<Application, undefined>>;
+
+export const patchRelationship: PatchRelationshipActionRequest = (
+    applicationId: string, relationship: ApplicationRelationship, data: JSONAPIRelationship[]) => {
+    return {
+        [RSAA]: {
+            body: JSON.stringify({ data }),
+            endpoint: `/api/v1/applications/${applicationId}/relationships/${relationship}`,
+            headers: JSONAPI_HEADERS,
+            method: "PATCH",
+            types: [
+                ApplicationsActionTypes.REL_PATCH_REQUEST,
+                ApplicationsActionTypes.REL_PATCH_SUCCESS,
+                ApplicationsActionTypes.REL_PATCH_FAILURE,
+            ],
+        },
+    }
+};
+
 export interface ITunesSearchRequestAction extends Action<ApplicationsActionTypes.ITUNES_SEARCH_REQUEST> {
     payload: IItunesSearchQuery;
 }
@@ -161,8 +206,6 @@ export interface ITunesSearchFailureAction extends Action<ApplicationsActionType
 }
 
 export type ItunesSearchActions = ITunesSearchRequestAction | ITunesSearchSuccessAction | ITunesSearchFailureAction;
-
-
 export type ItunesSearchAction = (
     term: string,
     country: string,
@@ -200,4 +243,5 @@ export const itunesSearch: ItunesSearchAction = (
     });
 };
 
-export type ApplicationsActions = IndexActionResponse | PostActionResponse | PatchActionResponse | ItunesSearchActions;
+export type ApplicationsActions = IndexActionResponse | PostActionResponse | PatchActionResponse |
+    ReadActionResponse | PatchRelationshipActionResponse | ItunesSearchActions;

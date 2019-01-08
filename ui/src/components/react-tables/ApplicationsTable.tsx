@@ -4,6 +4,7 @@ import selectTableHoc from "react-table/lib/hoc/selectTable";
 
 import {Application} from "../../store/applications/types";
 import {JSONAPIDataObject} from "../../store/json-api";
+import {AppName} from "../react-table/AppName";
 // import "react-table/react-table.css";
 
 export interface IApplicationsTableProps {
@@ -15,6 +16,7 @@ export interface IApplicationsTableProps {
 
 const columns: Column[] = [
     {
+        Cell: AppName,
         Header: "Name",
         accessor: "attributes.display_name",
         id: "display_name",

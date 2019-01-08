@@ -12,9 +12,9 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "@storybook/addon-actions": "^4.0.2",
-    "@storybook/addons": "^4.0.2",
-    "@storybook/react": "^4.0.2",
+    "@storybook/addon-actions": "^4.1.4",
+    "@storybook/addons": "^4.1.4",
+    "@storybook/react": "^4.1.4",
     "babel-runtime": "^6.26.0",
     "tslint": "^5.7.0",
     "webpack-bundle-analyzer": "^3.0.3",

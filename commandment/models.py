@@ -558,6 +558,12 @@ class Tag(db.Model):
     name = db.Column(db.String, nullable=False)
     color = db.Column(db.String(6), default='888888')
 
+    # applications = db.relationship(
+    #     "Application",
+    #     secondary=application_tags,
+    #     back_populates="tags",
+    # )
+
     devices = db.relationship(
         "Device",
         secondary=device_tags,
