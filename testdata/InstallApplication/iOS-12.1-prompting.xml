@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CommandUUID</key>
+  <string>7a9df3db-d661-4c1c-aa0e-56d69c8718a5</string>
+  <key>Identifier</key>
+  <string>com.tinyspeck.slackmacgap</string>
+  <key>State</key>
+  <string>Prompting</string>
+  <key>Status</key>
+  <string>Acknowledged</string>
+  <key>UDID</key>
+  <string>1c111c111c111c111c111c111c111c111c111c11</string>
+</dict>
+</plist>

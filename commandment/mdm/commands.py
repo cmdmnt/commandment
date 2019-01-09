@@ -486,7 +486,13 @@ class InstallApplication(Command):
     def __init__(self, uuid: Optional[UUID]=None, **kwargs) -> None:
         super(InstallApplication, self).__init__(uuid)
         self._attrs = {}
-        self._attrs.update(kwargs)
+        if 'application' in kwargs:
+            app = kwargs['application']
+            self._attrs['iTunesStoreID'] = app.itunes_store_id
+            self._attrs['ManagementFlags'] = 1
+            self._attrs['ChangeManagementState'] = 'Managed'
+        else:
+            self._attrs.update(kwargs)
 
     @property
     def itunes_store_id(self) -> Optional[int]:
@@ -503,7 +509,13 @@ class InstallApplication(Command):
     def to_dict(self) -> dict:
         cmd = super(InstallApplication, self).to_dict()
         cmd['Command'].update(self._attrs)
+        print(cmd)
         return cmd
+
+
+class ManagedApplicationList(Command):
+    request_type = 'ManagedApplicationList'
+    require_access = {AccessRights.ManageApps}
 
 
 class RestartDevice(Command):

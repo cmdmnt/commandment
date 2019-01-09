@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CommandUUID</key>
+  <string>2dce0324-3a9c-493d-bd7a-2d2a2985a67e</string>
+  <key>ManagedApplicationList</key>
+  <dict>
+    <key>com.apple.iWork.Keynote</key>
+    <dict>
+      <key>HasConfiguration</key>
+      <false/>
+      <key>HasFeedback</key>
+      <false/>
+      <key>IsValidated</key>
+      <false/>
+      <key>ManagementFlags</key>
+      <integer>0</integer>
+      <key>Status</key>
+      <string>UserRejected</string>
+    </dict>
+    <key>com.tinyspeck.slackmacgap</key>
+    <dict>
+      <key>HasConfiguration</key>
+      <false/>
+      <key>HasFeedback</key>
+      <false/>
+      <key>IsValidated</key>
+      <false/>
+      <key>ManagementFlags</key>
+      <integer>0</integer>
+      <key>Status</key>
+      <string>UserRejected</string>
+    </dict>
+  </dict>
+  <key>Status</key>
+  <string>Acknowledged</string>
+  <key>UDID</key>
+  <string>1c111c111c111c111c111c111c111c111c111c11</string>
+</dict>
+</plist>

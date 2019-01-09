@@ -203,6 +203,13 @@ def ack_installed_app_list(request: InstalledApplicationList, device: Device, re
 
     db.session.commit()
 
+    for tag in device.tags:
+        for app in tag.applications:
+            c = commands.InstallApplication(application=app)
+            dbc = DBCommand.from_model(c)
+            dbc.device = device
+            db.session.add(dbc)
+
 
 @command_router.route('InstallProfile')
 def ack_install_profile(request: InstallProfile, device: Device, response: dict):

@@ -149,6 +149,11 @@ def device_inventory(device_id: int):
     au_pl.device = d
     db.session.add(au_pl)
 
+    mal = commands.ManagedApplicationList()
+    mal_pl = Command.from_model(mal)
+    mal_pl.device = d
+    db.session.add(mal_pl)
+
     db.session.commit()
 
     return 'OK'
