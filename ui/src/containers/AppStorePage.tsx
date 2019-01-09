@@ -90,7 +90,7 @@ export class UnconnectedAppStorePage extends React.Component<AppStorePageProps, 
     };
 
     private handleSearch = (value: string) => {
-        this.props.itunesSearch(value, "au", MediaType.software, EntityType.macSoftware);
+        this.props.itunesSearch(value, "au", MediaType.software, EntityType.iPadSoftware);
     };
 }
 
