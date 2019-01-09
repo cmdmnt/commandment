@@ -1,4 +1,6 @@
 from enum import Enum, IntEnum, IntFlag
+
+from commandment.apps import ManagedAppStatus
 from ..models import db
 
 
@@ -223,3 +225,38 @@ class ApplicationSource(db.Model):
     bucket = db.Column(db.String)
     """bucket (db.String): The bucket name that holds installation packages."""
 
+
+class ManagedApplication(db.Model):
+    """This table holds rows for application installation statuses that are reported by the `ManagedApplicationList`
+    command."""
+    __tablename__ = 'managed_applications'
+
+    id = db.Column(db.Integer, primary_key=True)
+    """id (db.Integer): ID"""
+    device_id = db.Column(db.ForeignKey('devices.id'))
+    """(int): Device foreign key ID."""
+    device = db.relationship('Device', backref='managed_applications')
+    """(db.relationship): Device relationship"""
+    bundle_id = db.Column(db.String)
+    """(db.String): The bundle identifier of the application being installed."""
+    external_version_id = db.Column(db.Integer)
+    """(db.Integer): The external version identifier (which is also shown in the vpp contentMetadataUrl lookup)"""
+    has_configuration = db.Column(db.Boolean)
+    """(db.Boolean): Whether the app has managed app configuration or not."""
+    has_feedback = db.Column(db.Boolean)
+    """(db.Boolean): Whether the app has managed app feedback or not."""
+    is_validated = db.Column(db.Boolean)
+    """(db.Boolean): Whether the app has been validated."""
+    management_flags = db.Column(db.Integer)
+    """(db.Integer): Which management flags the application has been installed with."""
+    status = db.Column(db.Enum(ManagedAppStatus))
+    """(ManagedAppStatus): The status of the managed application."""
+    application_id = db.Column(db.ForeignKey('applications.id'), nullable=True)
+    """(db.ForeignKey): Foreign key reference to the application row which was assigned to the device"""
+    application = db.relationship('Application', backref='managed_applications')
+    """(db.relationship): relationship to the defined application object."""
+    ia_command_id = db.Column(db.ForeignKey('commands.id'), nullable=True)
+    """(db.ForeignKey): Foreign key reference to the last `InstallApplication` command that 
+        installed this app on the device."""
+    ia_command = db.relationship('Command', backref='managed_application')
+    """(db.relationship): Relationship to the last command that was sent in regards to this application entry"""

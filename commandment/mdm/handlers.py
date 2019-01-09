@@ -5,11 +5,14 @@ from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from flask import current_app
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
+from commandment.apps import ManagedAppStatus
+from commandment.apps.models import ManagedApplication
 from commandment.mdm import commands
 from commandment.mdm.app import command_router
 from .commands import ProfileList, DeviceInformation, SecurityInfo, InstalledApplicationList, CertificateList, \
-    InstallProfile, AvailableOSUpdates, InstallApplication, RemoveProfile
+    InstallProfile, AvailableOSUpdates, InstallApplication, RemoveProfile, ManagedApplicationList
 from .response_schema import InstalledApplicationListResponse, DeviceInformationResponse, AvailableOSUpdateListResponse, \
     ProfileListResponse, SecurityInfoResponse
 from ..models import db, Device, Command as DBCommand
@@ -246,5 +249,49 @@ def ack_available_os_updates(request: AvailableOSUpdates, device: Device, respon
 
 @command_router.route('InstallApplication')
 def ack_install_application(request: InstallApplication, device: Device, response: dict):
-    """Acknowledge a response to InstallApplication. Usually just contains Queued: True/False"""
-    pass
+    """Acknowledge a response to InstallApplication.
+
+    We will insert this into `managed_applications` to show that there is a pending application install.
+    `managed_applications` will be the source of truth for installation status.
+
+    TODO: Also create a pending status when the command is queued but not acked
+    """
+    try:
+        # It is possible to send `InstallApplication` and receive Acknowledged multiple times for the same app,
+        # so we want to avoid multiple rows in that scenario
+        ma = db.session.query(ManagedApplication).filter(
+            Device.id == device.id,
+            ManagedApplication.bundle_id == response['Identifier']
+        ).one()
+    except NoResultFound:
+        ma = ManagedApplication()
+        ma.device = device
+        ma.bundle_id = response['Identifier']
+        ma.status = ManagedAppStatus(response['State'])
+
+        db.session.add(ma)
+        db.session.commit()
+
+
+@command_router.route('ManagedApplicationList')
+def ack_managed_application_list(request: ManagedApplicationList, device: Device, response: dict):
+    """Acknowledge a response to `ManagedApplicationList`."""
+    for bundle_id, status in response['ManagedApplicationList'].items():
+        try:
+            ma = db.session.query(ManagedApplication).filter(
+                Device.id == device.id,
+                ManagedApplication.bundle_id == bundle_id
+            ).one()
+        except NoResultFound:
+            ma = ManagedApplication(bundle_id=bundle_id, device=device)
+
+        ma.status = ManagedAppStatus(status['Status'])
+        ma.external_version_id = status.get('ExternalVersionIdentifier', None)  # Does not exist in iOS 11.3.1
+        ma.has_configuration = status['HasConfiguration']
+        ma.has_feedback = status['HasFeedback']
+        ma.is_validated = status['IsValidated']
+        ma.management_flags = status['ManagementFlags']
+
+        db.session.add(ma)
+
+    db.session.commit()
