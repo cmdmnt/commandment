@@ -2,6 +2,7 @@ import {connectRouter, RouterState} from "connected-react-router";
 import {combineReducers} from "redux";
 
 import {applications, IApplicationsState} from "../store/applications/list_reducer";
+import {IManagedApplicationsState, managed_applications} from "../store/applications/managed_reducer";
 import {application, IApplicationState} from "../store/applications/reducer";
 import {assistant, IAssistantState} from "../store/assistant/reducer";
 import {certificates, CertificatesState} from "../store/certificates/reducer";
@@ -33,6 +34,7 @@ export interface RootState {
     profile?: IProfileState;
     applications?: IApplicationsState;
     application?: IApplicationState;
+    managed_applications?: IManagedApplicationsState;
     dep?: IDEPState;
     table?: ITableState;
 }
@@ -48,6 +50,7 @@ export const rootReducer = (history: any) => combineReducers<RootState>({
     device,
     device_groups,
     devices,
+    managed_applications,
     organization,
     profile,
     profiles,

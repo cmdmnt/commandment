@@ -61,7 +61,7 @@ class ManagedApplicationSchema(Schema):
 
     device = Relationship(
         related_view='api_app.device_detail',
-        related_view_kwargs={'managed_application_id': '<id>'},
+        related_view_kwargs={'device_id': '<device_id>'},
         many=False,
         schema='DeviceSchema',
         type_='devices',

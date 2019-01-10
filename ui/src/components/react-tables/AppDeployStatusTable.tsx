@@ -12,6 +12,9 @@ export interface IAppDeployStatusTableProps {
 
 const columns = [
     {
+
+    },
+    {
         Header: "Bundle ID",
         accessor: "attributes.bundle_id",
         id: "bundle_id",

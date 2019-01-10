@@ -36,3 +36,5 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) =>
         ManagedApplicationsActionTypes.INDEX_SUCCESS,
         ManagedApplicationsActionTypes.INDEX_FAILURE>);
 });
+
+export type ManagedApplicationsActions = IndexActionResponse;

@@ -193,6 +193,7 @@ export const encodeJSONAPIIndexParameters = <R>(wrappedActionCreator: WrappedInd
     pageNumber: number = 1,
     sort?: string[],
     filters?: FlaskFilters,
+    include?: string[],
 ) => {
     const queryParameters = [];
 
@@ -205,6 +206,10 @@ export const encodeJSONAPIIndexParameters = <R>(wrappedActionCreator: WrappedInd
 
     if (filters && filters.length > 0) {
         queryParameters.push("filter=" + JSON.stringify(filters));
+    }
+
+    if (include && include.length > 0) {
+        queryParameters.push("include=" + include.join(","));
     }
 
     return wrappedActionCreator(queryParameters);
