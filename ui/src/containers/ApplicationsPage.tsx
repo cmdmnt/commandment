@@ -41,9 +41,9 @@ class UnconnectedApplicationsPage extends React.Component<ApplicationsPageProps,
                     <Dropdown.Menu>
                         <Dropdown.Item as={Link} to="/applications/add/macos">macOS Enterprise Package
                             (.pkg)</Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/applications/add/mas">macOS App Store
+                        <Dropdown.Item as={Link} to="/applications/add/macSoftware">macOS App Store
                             Application</Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/applications/add/ias" disabled>iOS App Store
+                        <Dropdown.Item as={Link} to="/applications/add/software">iOS App Store
                             Application</Dropdown.Item>
                         <Dropdown.Item as={Link} to="/applications/add/ios" disabled>iOS Enterprise Application
                             (.ipa)</Dropdown.Item>

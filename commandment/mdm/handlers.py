@@ -22,7 +22,7 @@ Queries = DeviceInformation.Queries
 
 
 @command_router.route('DeviceInformation')
-def ack_device_information(request: DeviceInformation, device: Device, response: dict):
+def ack_device_information(command: DBCommand, device: Device, response: dict):
     """Acknowledge a ``DeviceInformation`` response.
 
     Args:
@@ -44,7 +44,7 @@ def ack_device_information(request: DeviceInformation, device: Device, response:
 
 
 @command_router.route('SecurityInfo')
-def ack_security_info(request: SecurityInfo, device: Device, response: dict):
+def ack_security_info(request: DBCommand, device: Device, response: dict):
     schema = SecurityInfoResponse()
     result = schema.load(response)
 
@@ -53,7 +53,7 @@ def ack_security_info(request: SecurityInfo, device: Device, response: dict):
 
 
 @command_router.route('ProfileList')
-def ack_profile_list(request: ProfileList, device: Device, response: dict):
+def ack_profile_list(request: DBCommand, device: Device, response: dict):
     """Acknowledge a ``ProfileList`` response.
 
     This is used as the trigger to perform InstallProfile/RemoveProfiles as we have the most current data about
@@ -134,7 +134,7 @@ def ack_profile_list(request: ProfileList, device: Device, response: dict):
 
 
 @command_router.route('CertificateList')
-def ack_certificate_list(request: CertificateList, device: Device, response: dict):
+def ack_certificate_list(request: DBCommand, device: Device, response: dict):
     for c in device.installed_certificates:
         db.session.delete(c)
 
@@ -161,7 +161,7 @@ def ack_certificate_list(request: CertificateList, device: Device, response: dic
 
 
 @command_router.route('InstalledApplicationList')
-def ack_installed_app_list(request: InstalledApplicationList, device: Device, response: dict):
+def ack_installed_app_list(request: DBCommand, device: Device, response: dict):
     """Acknowledge a response to ``InstalledApplicationList``.
     
     .. note:: There is no composite key which can uniquely identify an item in the installed applications list.
@@ -188,7 +188,7 @@ def ack_installed_app_list(request: InstalledApplicationList, device: Device, re
     schema = InstalledApplicationListResponse()
     result, errors = schema.load(response)
     current_app.logger.debug(errors)
-    current_app.logger.info(result)
+    # current_app.logger.info(result)
 
     ignored_app_bundle_ids = current_app.config['IGNORED_APPLICATION_BUNDLE_IDS']
 
@@ -206,30 +206,23 @@ def ack_installed_app_list(request: InstalledApplicationList, device: Device, re
 
     db.session.commit()
 
-    for tag in device.tags:
-        for app in tag.applications:
-            c = commands.InstallApplication(application=app)
-            dbc = DBCommand.from_model(c)
-            dbc.device = device
-            db.session.add(dbc)
-
 
 @command_router.route('InstallProfile')
-def ack_install_profile(request: InstallProfile, device: Device, response: dict):
+def ack_install_profile(request: DBCommand, device: Device, response: dict):
     """Acknowledge a response to ``InstallProfile``."""
     if response.get('Status', None) == 'Error':
         pass
 
 
 @command_router.route('RemoveProfile')
-def ack_install_profile(request: RemoveProfile, device: Device, response: dict):
+def ack_install_profile(request: DBCommand, device: Device, response: dict):
     """Acknowledge a response to ``RemoveProfile``."""
     if response.get('Status', None) == 'Error':
         pass
 
 
 @command_router.route('AvailableOSUpdates')
-def ack_available_os_updates(request: AvailableOSUpdates, device: Device, response: dict):
+def ack_available_os_updates(request: DBCommand, device: Device, response: dict):
     """Acknowledge a response to AvailableOSUpdates"""
     if response.get('Status', None) == 'Error':
         pass
@@ -248,33 +241,43 @@ def ack_available_os_updates(request: AvailableOSUpdates, device: Device, respon
 
 
 @command_router.route('InstallApplication')
-def ack_install_application(request: InstallApplication, device: Device, response: dict):
+def ack_install_application(request: DBCommand, device: Device, response: dict):
     """Acknowledge a response to InstallApplication.
 
     We will insert this into `managed_applications` to show that there is a pending application install.
     `managed_applications` will be the source of truth for installation status.
 
+    If the result of `InstallApplication` is a user prompt, we cannot send further IA commands until the prompt has
+    been resolved(?) as seen on iOS 11.3.1
+
     TODO: Also create a pending status when the command is queued but not acked
     """
-    try:
-        # It is possible to send `InstallApplication` and receive Acknowledged multiple times for the same app,
-        # so we want to avoid multiple rows in that scenario
-        ma = db.session.query(ManagedApplication).filter(
-            Device.id == device.id,
-            ManagedApplication.bundle_id == response['Identifier']
-        ).one()
-    except NoResultFound:
-        ma = ManagedApplication()
-        ma.device = device
-        ma.bundle_id = response['Identifier']
-        ma.status = ManagedAppStatus(response['State'])
+    if response.get('Status', None) == 'Error':
+        pass
+    else:
+        try:
+            # It is possible to send `InstallApplication` and receive Acknowledged multiple times for the same app,
+            # so we want to avoid multiple rows in that scenario
+            ma = db.session.query(ManagedApplication).filter(
+                Device.id == device.id,
+                ManagedApplication.bundle_id == response['Identifier']
+            ).one()
+            ma.ia_command = request
+            db.session.commit()
 
-        db.session.add(ma)
-        db.session.commit()
+        except NoResultFound:
+            ma = ManagedApplication()
+            ma.device = device
+            ma.bundle_id = response['Identifier']
+            ma.status = ManagedAppStatus(response['State'])
+            ma.ia_command = request
+
+            db.session.add(ma)
+            db.session.commit()
 
 
 @command_router.route('ManagedApplicationList')
-def ack_managed_application_list(request: ManagedApplicationList, device: Device, response: dict):
+def ack_managed_application_list(request: DBCommand, device: Device, response: dict):
     """Acknowledge a response to `ManagedApplicationList`."""
     for bundle_id, status in response['ManagedApplicationList'].items():
         try:
@@ -295,3 +298,14 @@ def ack_managed_application_list(request: ManagedApplicationList, device: Device
         db.session.add(ma)
 
     db.session.commit()
+
+    for tag in device.tags:
+        for app in tag.applications:
+            # TODO: need to check with new versions being available. This is very primitive.
+            if app.bundle_id in response['ManagedApplicationList'].keys():
+                continue
+
+            c = commands.InstallApplication(application=app)
+            dbc = DBCommand.from_model(c)
+            dbc.device = device
+            db.session.add(dbc)

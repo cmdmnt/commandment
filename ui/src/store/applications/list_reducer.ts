@@ -8,6 +8,7 @@ export interface IApplicationsState extends IResults<Array<JSONAPIDataObject<App
     allIds: string[];
     itunesSearchResult: IiTunesSearchResult;
     itunesSearchResultLoading: boolean;
+    storeCountry: string;
 }
 
 const initialState: IApplicationsState = {
@@ -15,6 +16,7 @@ const initialState: IApplicationsState = {
     allIds: [],
     itunesSearchResult: null,
     itunesSearchResultLoading: false,
+    storeCountry: "AU",
 };
 
 export function applications(state: IApplicationsState = initialState,

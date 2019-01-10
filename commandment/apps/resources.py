@@ -1,6 +1,6 @@
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
-from commandment.apps.schema import ApplicationManifestSchema, ApplicationSchema
-from commandment.apps.models import db, ApplicationManifest, Application
+from commandment.apps.schema import ApplicationManifestSchema, ApplicationSchema, ManagedApplicationSchema
+from commandment.apps.models import db, ApplicationManifest, Application, ManagedApplication
 
 
 class ApplicationManifestDetail(ResourceDetail):
@@ -36,4 +36,31 @@ class ApplicationRelationship(ResourceRelationship):
         'session': db.session,
         'model': Application,
         'url_field': 'application_id'
+    }
+
+
+class ManagedApplicationDetail(ResourceDetail):
+    schema = ManagedApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': ManagedApplication,
+        'url_field': 'managed_application_id',
+    }
+
+
+class ManagedApplicationList(ResourceList):
+    schema = ManagedApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': ManagedApplication,
+        'url_field': 'managed_application_id',
+    }
+
+
+class ManagedApplicationRelationship(ResourceRelationship):
+    schema = ManagedApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': ManagedApplication,
+        'url_field': 'managed_application_id',
     }

@@ -2,12 +2,13 @@ import * as React from "react";
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
+import {List} from "semantic-ui-react";
 
 import {connect} from "react-redux";
+import {RouteComponentProps} from "react-router";
 import {bindActionCreators, Dispatch} from "redux";
-import {List} from "semantic-ui-react";
-import Input from "semantic-ui-react/dist/commonjs/elements/Input";
 import {MASResult} from "../components/itunes/MASResult";
+import {SearchInput} from "../components/SearchInput";
 import {RootState} from "../reducers";
 import {
     itunesSearch, ItunesSearchAction,
@@ -20,7 +21,10 @@ import {
     IiTunesSoftwareSearchResult,
     MediaType,
 } from "../store/applications/itunes";
-import {SearchInput} from "../components/SearchInput";
+
+interface IRouteProps {
+    entity: EntityType;
+}
 
 export interface IDispatchProps {
     itunesSearch: ItunesSearchAction;
@@ -28,18 +32,18 @@ export interface IDispatchProps {
 }
 
 export interface IStateProps {
+    storeCountry: string;
     loading: boolean;
     itunesSearchResult: IiTunesSearchResult;
 }
 
-export type AppStorePageProps = IDispatchProps & IStateProps;
+export type AppStorePageProps = IDispatchProps & IStateProps & RouteComponentProps<IRouteProps>;
 
 export class UnconnectedAppStorePage extends React.Component<AppStorePageProps, any> {
 
     // public static initialState: IAppStorePageState = {
     //     term: "",
     // };
-
 
     public render() {
         const { itunesSearchResult, loading } = this.props;
@@ -66,7 +70,6 @@ export class UnconnectedAppStorePage extends React.Component<AppStorePageProps, 
     }
 
     private handleClickAdd = (result: IiTunesSoftwareSearchResult) => {
-        console.log(result);
         this.props.post({
             bundle_id: result.bundleId,
             description: result.description,
@@ -74,7 +77,7 @@ export class UnconnectedAppStorePage extends React.Component<AppStorePageProps, 
             itunes_store_id: result.trackId,
             version: result.version,
 
-            country: "AU",
+            country: this.props.storeCountry,
 
             artist_id: result.artistId,
             artist_name: result.artistName,
@@ -90,11 +93,19 @@ export class UnconnectedAppStorePage extends React.Component<AppStorePageProps, 
     };
 
     private handleSearch = (value: string) => {
-        this.props.itunesSearch(value, "au", MediaType.software, EntityType.iPadSoftware);
+        const { match: { params: { entity }}, storeCountry} = this.props;
+        this.props.itunesSearch(value, storeCountry, MediaType.software, entity);
     };
 }
 
 export const AppStorePage = connect(
-    (state: RootState, ownProps?: any) => ({ itunesSearchResult: state.applications.itunesSearchResult, loading: state.applications.itunesSearchResultLoading }),
-    (dispatch: Dispatch, ownProps?: any) => bindActionCreators({ itunesSearch, post }, dispatch),
+    (state: RootState, ownProps?: any) => ({
+        itunesSearchResult: state.applications.itunesSearchResult,
+        loading: state.applications.itunesSearchResultLoading,
+        storeCountry: state.applications.storeCountry,
+    }),
+    (dispatch: Dispatch, ownProps?: any) => bindActionCreators({
+        itunesSearch,
+        post,
+    }, dispatch),
 )(UnconnectedAppStorePage);

@@ -230,17 +230,17 @@ def mdm():
 
             # Re-hydrate the command class based on the persisted model containing the request type and the parameters
             # that were given to generate the command
-            cmd = Command.new_request_type(command.request_type, command.parameters, command.uuid)
+            # turns out this is less useful than passing the db model
+            # cmd = Command.new_request_type(command.request_type, command.parameters, command.uuid)
 
             # route the response by the handler type corresponding to that command
-            command_router.handle(cmd, device, g.plist_data)
+            command_router.handle(command, device, g.plist_data)
 
         except NoResultFound:
             current_app.logger.warning('no record of command uuid=%s', g.plist_data['CommandUUID'])
 
     if status == CommandStatus.NotNow:
-        current_app.logger.warn('NotNow status received, forgoing any further commands')
-        return ''
+        current_app.logger.warn('NotNow status received, command will backoff')  # TODO: exponential backoff
 
     command = DBCommand.next_command(device)
 

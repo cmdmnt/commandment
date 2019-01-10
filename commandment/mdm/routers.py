@@ -5,10 +5,10 @@ from typing import Union, Any, Type, Callable, Dict, List
 from flask import Flask, app, Blueprint, request, abort, current_app
 from functools import wraps
 import biplist
-from commandment.models import db, Device
+from commandment.models import db, Device, Command
 from commandment.mdm import commands
 
-CommandHandler = Callable[[commands.Command, Device, dict], None]
+CommandHandler = Callable[[Command, Device, dict], None]
 CommandHandlers = Dict[str, CommandHandler]
 
 
@@ -27,7 +27,7 @@ class CommandRouter(object):
         self._app = app
         self._handlers: CommandHandlers = {}
 
-    def handle(self, command: commands.Command, device: Device, response: dict):
+    def handle(self, command: Command, device: Device, response: dict):
         current_app.logger.debug('Looking for handler using command: {}'.format(command.request_type))
         if command.request_type in self._handlers:
             return self._handlers[command.request_type](command, device, response)

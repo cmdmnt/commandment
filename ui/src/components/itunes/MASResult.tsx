@@ -11,7 +11,7 @@ export interface IMASResultProps {
 
 export const MASResult: React.FunctionComponent = ({ data, onClickAdd, icon }: IMASResultProps) => (
     <List.Item>
-        <Image src={icon ? data[icon] : data.artworkUrl100} />
+        <Image src={icon ? data[icon] : data.artworkUrl100} rounded />
         <List.Content>
             <List.Header>{data.trackName}</List.Header>
             <List.Description>

@@ -25,3 +25,37 @@ export interface Application {
     minimum_os_version: string;
     file_size_bytes: number;
 }
+
+export enum ManagedApplicationStatus {
+    NeedsRedemption = "NeedsRedemption",
+    Redeeming = "Redeeming",
+    Prompting = "Prompting",
+    PromptingForLogin = "PromptingForLogin",
+    Installing = "Installing",
+    ValidatingPurchase = "ValidatingPurchase",
+    Managed = "Managed",
+    ManagedButUninstalled = "ManagedButUninstalled",
+    PromptingForUpdate = "PromptingForUpdate",
+    PromptingForUpdateLogin = "PromptingForUpdateLogin",
+    PromptingForManagement = "PromptingForManagement",
+    Updating = "Updating",
+    ValidatingUpdate = "ValidatingUpdate",
+    Unknown = "Unknown",
+    UserInstalledApp = "UserInstalledApp",
+    UserRejected = "UserRejected",
+    UpdateRejected = "UpdateRejected",
+    ManagementRejected = "ManagementRejected",
+    Failed = "Failed",
+    Queued = "Queued",
+}
+
+export interface ManagedApplication {
+    id: string;
+    bundle_id: string;
+    external_version_id?: number;
+    has_configuration: boolean;
+    has_feedback: boolean;
+    is_validated: boolean;
+    management_flags: number;
+    status: ManagedApplicationStatus;
+}

@@ -45,7 +45,7 @@ render(
                 <Route exact path="/applications" component={ApplicationsPage} />
                 <Route path="/applications/id/:id" component={ApplicationPage} />
                 <Route path="/applications/add/macos" component={MacOSEntApplicationPage} />
-                <Route path="/applications/add/mas" component={AppStorePage} />
+                <Route path="/applications/add/:entity" component={AppStorePage} />
 
                 <Route exact path="/devices" component={DevicesPage} />
                 <Route path="/devices/:id" component={DevicePage} />

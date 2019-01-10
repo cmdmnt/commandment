@@ -1,10 +1,10 @@
 import * as React from "react";
 import {SyntheticEvent} from "react";
 import {connect} from "react-redux";
-import {RouteComponentProps} from "react-router";
+import {Route, RouteComponentProps} from "react-router";
 import {Link} from "react-router-dom";
 import {bindActionCreators, Dispatch} from "redux";
-import {Breadcrumb, Container, Divider, Grid, Header, Image} from "semantic-ui-react";
+import {Breadcrumb, Container, Divider, Grid, Header, Image, Menu} from "semantic-ui-react";
 import {DropdownProps} from "semantic-ui-react/src/modules/Dropdown";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
@@ -23,6 +23,8 @@ import {
 } from "../store/tags/actions";
 import {ITagsState} from "../store/tags/reducer";
 import {Tag} from "../store/tags/types";
+import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
+import {ApplicationDeviceStatus} from "./applications/ApplicationDeviceStatus";
 
 interface IRouteProps {
     id: string;
@@ -79,7 +81,7 @@ class UnconnectedApplicationPage extends React.Component<IDispatchProps & IState
 
                 <Grid columns={2}>
                     <Grid.Column width={4}>
-                        <Image src={data ? data.data.attributes.artwork_url512 : null}/>
+                        <Image size="medium" rounded src={data ? data.data.attributes.artwork_url512 : null}/>
                     </Grid.Column>
                     <Grid.Column width={12}>
                         <Header as="h1">
@@ -105,6 +107,13 @@ class UnconnectedApplicationPage extends React.Component<IDispatchProps & IState
                     onSearch={this.handleSearchTag}
                     onChange={this.handleChangeTag}
                 />
+
+
+                <Menu pointing secondary color="purple" inverted>
+                    <MenuItemLink to={`/applications/id/${id}/devices`}>Device Status</MenuItemLink>
+                </Menu>
+
+                <Route path="/applications/id/:id/devices" component={ApplicationDeviceStatus}/>
             </Container>
         );
     }

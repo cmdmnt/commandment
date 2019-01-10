@@ -43,6 +43,31 @@ class ApplicationSchema(Schema):
     )
 
 
+class ManagedApplicationSchema(Schema):
+    class Meta:
+        type_ = 'managed_applications'
+        self_view = 'applications_api.managed_application_detail'
+        self_view_kwargs = {'managed_application_id': '<id>'}
+        self_view_many = 'applications_api.managed_applications_list'
+
+    id = fields.Int(dump_only=True)
+    bundle_id = fields.Str()
+    external_version_id = fields.Int()
+    has_configuration = fields.Bool()
+    has_feedback = fields.Bool()
+    is_validated = fields.Bool()
+    management_flags = fields.Int()
+    status = fields.Str()
+
+    device = Relationship(
+        related_view='api_app.device_detail',
+        related_view_kwargs={'managed_application_id': '<id>'},
+        many=False,
+        schema='DeviceSchema',
+        type_='devices',
+    )
+
+
 class ApplicationManifestSchema(Schema):
     class Meta:
         type_ = 'application_manifests'

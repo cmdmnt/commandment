@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CommandUUID</key>
+  <string>94ee37e2-3e03-4bdf-ad9c-a81ccc9d78e9</string>
+  <key>ErrorChain</key>
+  <array>
+    <dict>
+      <key>ErrorCode</key>
+      <integer>1407</integer>
+      <key>ErrorDomain</key>
+      <string>DeviceManagement.error</string>
+      <key>LocalizedDescription</key>
+      <string>The user is already being prompted.</string>
+    </dict>
+  </array>
+  <key>Status</key>
+  <string>Error</string>
+  <key>UDID</key>
+  <string>1c111c111c111c111c111c111c111c111c111c11</string>
+</dict>
+</plist>
