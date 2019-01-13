@@ -6,6 +6,7 @@ import {Link} from "react-router-dom";
 import {bindActionCreators, Dispatch} from "redux";
 import {Breadcrumb, Container, Divider, Grid, Header, Image, Menu} from "semantic-ui-react";
 import {DropdownProps} from "semantic-ui-react/src/modules/Dropdown";
+import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
 import {RootState} from "../reducers";
@@ -23,7 +24,6 @@ import {
 } from "../store/tags/actions";
 import {ITagsState} from "../store/tags/reducer";
 import {Tag} from "../store/tags/types";
-import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {ApplicationDeviceStatus} from "./applications/ApplicationDeviceStatus";
 
 interface IRouteProps {
@@ -92,7 +92,7 @@ class UnconnectedApplicationPage extends React.Component<IDispatchProps & IState
                         </Header>
 
                         <Header as="h4">Release notes</Header>
-                        <p>{data ? data.data.attributes.release_notes : ""}</p>
+                        <p>{data ? data.data.attributes.release_notes.split("\n").map((sentence: string) => (<span>{sentence}<br /></span>)) : ""}</p>
 
                         <Header as="h4">Minimum OS</Header>
                         <p>{data ? data.data.attributes.minimum_os_version : ""}</p>
@@ -107,7 +107,6 @@ class UnconnectedApplicationPage extends React.Component<IDispatchProps & IState
                     onSearch={this.handleSearchTag}
                     onChange={this.handleChangeTag}
                 />
-
 
                 <Menu pointing secondary color="purple" inverted>
                     <MenuItemLink to={`/applications/id/${id}/devices`}>Device Status</MenuItemLink>

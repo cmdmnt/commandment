@@ -1,8 +1,10 @@
 import * as React from "react";
+
+
+import {Breadcrumb, List} from "semantic-ui-react";
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
-import {List} from "semantic-ui-react";
 
 import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
@@ -22,6 +24,8 @@ import {
     MediaType,
 } from "../store/applications/itunes";
 
+import {Link} from "react-router-dom";
+
 interface IRouteProps {
     entity: EntityType;
 }
@@ -35,41 +39,54 @@ export interface IStateProps {
     storeCountry: string;
     loading: boolean;
     itunesSearchResult: IiTunesSearchResult;
+    itunesStoreIdsAdded: number[];
 }
 
 export type AppStorePageProps = IDispatchProps & IStateProps & RouteComponentProps<IRouteProps>;
 
 export class UnconnectedAppStorePage extends React.Component<AppStorePageProps, any> {
-
-    // public static initialState: IAppStorePageState = {
-    //     term: "",
-    // };
-
     public render() {
-        const { itunesSearchResult, loading } = this.props;
+        const { itunesSearchResult, itunesStoreIdsAdded, loading, match: { params: { entity }}} = this.props;
 
         return (
             <Container>
                 <Divider hidden/>
-                <Header as="h1">App Store</Header>
+                <Breadcrumb>
+                    <Breadcrumb.Section><Link to={`/`}>Home</Link></Breadcrumb.Section>
+                    <Breadcrumb.Divider />
+                    <Breadcrumb.Section><Link to={`/applications`}>Applications</Link></Breadcrumb.Section>
+                    <Breadcrumb.Divider />
+                    <Breadcrumb.Section>Find a {entity === "macSoftware" ? "macOS" : "iOS"} app</Breadcrumb.Section>
+                </Breadcrumb>
+                <Divider hidden/>
+                <Header as="h1">Find a new {entity === "macSoftware" ? "macOS" : "iOS"} App Store App
+                    <Header.Subheader>Add an App Store app as a managed application.</Header.Subheader>
+                </Header>
 
                 <SearchInput duration={400} loading={loading} onSearch={this.handleSearch}/>
 
                 {itunesSearchResult &&
+                    <div>
+                      <p>Your search returned <strong>{itunesSearchResult.resultCount}</strong> result(s)</p>
                     <List relaxed="very">
                         {itunesSearchResult.results.map((result: IiTunesSoftwareSearchResult) => (
                             <MASResult key={result.trackId}
                                        data={result}
                                        icon={ArtworkIconSize.Sixty}
-                                       onClickAdd={this.handleClickAdd} />
+                                       onClickAdd={this.handleClickAdd}
+                                       isAdded={itunesStoreIdsAdded.indexOf(result.trackId) !== -1}
+                            />
                         ))}
                     </List>
+                    </div>
                 }
             </Container>
         );
     }
 
     private handleClickAdd = (result: IiTunesSoftwareSearchResult) => {
+        const entity = this.props.match.params.entity;
+
         this.props.post({
             bundle_id: result.bundleId,
             description: result.description,
@@ -101,6 +118,7 @@ export class UnconnectedAppStorePage extends React.Component<AppStorePageProps, 
 export const AppStorePage = connect(
     (state: RootState, ownProps?: any) => ({
         itunesSearchResult: state.applications.itunesSearchResult,
+        itunesStoreIdsAdded: state.applications.itunesStoreIdsAdded,
         loading: state.applications.itunesSearchResultLoading,
         storeCountry: state.applications.storeCountry,
     }),

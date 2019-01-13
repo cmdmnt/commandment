@@ -186,7 +186,7 @@ export type ProfilePatchActionRequest = RSAAPatchActionRequest<
     DEPActionTypes.PROF_PATCH_FAILURE,
     DEPProfile>;
 
-export const patchProfile: ProfilePatchActionRequest = (id: string, values: IDEPProfileFormValues) => {
+export const patchProfile: ProfilePatchActionRequest = (id: string, values: DEPProfile) => {
     const bodyData = {
         data: {
             attributes: values,

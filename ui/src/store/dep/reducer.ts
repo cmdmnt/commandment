@@ -7,8 +7,8 @@ import {IDEPProfileState, profile} from "./profile_reducer";
 export const dep = combineReducers({
     account,
     accounts,
-    profiles,
     profile,
+    profiles,
 });
 
 export interface IDEPState {

@@ -1,12 +1,14 @@
-import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import * as fetchJsonp from "fetch-jsonp";
+import {Action} from "redux";
+import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
+import {ThunkAction} from "redux-thunk";
+import {RootState} from "../../reducers";
 import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants";
 import {
     encodeJSONAPIChildIndexParameters,
     encodeJSONAPIIndexParameters,
-    JSONAPIDataObject,
-    JSONAPIListResponse,
     JSONAPIRelationship,
+    JSONAPIRelationships,
     RSAADeleteActionRequest,
     RSAADeleteActionResponse,
     RSAAIndexActionRequest,
@@ -17,13 +19,8 @@ import {
     RSAAReadActionResponse,
 } from "../json-api";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse, RSAAPatchActionRequest} from "../json-api";
-import {Application, ApplicationRelationship} from "./types";
-import {ThunkAction} from "redux-thunk";
-import {RootState} from "../../reducers";
 import {EntityType, IItunesSearchQuery, IiTunesSearchResult, MediaType} from "./itunes";
-import {Action} from "redux";
-import {Device, DeviceRelationship} from "../device/types";
-import {RPATCH_FAILURE, RPATCH_REQUEST, RPATCH_SUCCESS} from "../device/actions";
+import {Application, ApplicationRelationship} from "./types";
 
 export enum ApplicationsActionTypes {
     INDEX_REQUEST = "applications/INDEX_REQUEST",
@@ -45,14 +42,24 @@ export enum ApplicationsActionTypes {
     REL_PATCH_REQUEST = "applications/relationships/PATCH_REQUEST",
     REL_PATCH_SUCCESS = "applications/relationships/PATCH_SUCCESS",
     REL_PATCH_FAILURE = "applications/relationships/PATCH_FAILURE",
+    REL_DELETE_REQUEST = "applications/relationships/DELETE_REQUEST",
+    REL_DELETE_SUCCESS = "applications/relationships/DELETE_SUCCESS",
+    REL_DELETE_FAILURE = "applications/relationships/DELETE_FAILURE",
 
     ITUNES_SEARCH_REQUEST = "applications/ITUNES_SEARCH_REQUEST",
     ITUNES_SEARCH_SUCCESS = "applications/ITUNES_SEARCH_SUCCESS",
     ITUNES_SEARCH_FAILURE = "applications/ITUNES_SEARCH_FAILURE",
 }
 
-export type IndexActionRequest = RSAAIndexActionRequest<ApplicationsActionTypes.INDEX_REQUEST, ApplicationsActionTypes.INDEX_SUCCESS, ApplicationsActionTypes.INDEX_FAILURE>;
-export type IndexActionResponse = RSAAIndexActionResponse<ApplicationsActionTypes.INDEX_REQUEST, ApplicationsActionTypes.INDEX_SUCCESS, ApplicationsActionTypes.INDEX_FAILURE, Application>;
+export type IndexActionRequest = RSAAIndexActionRequest<
+    ApplicationsActionTypes.INDEX_REQUEST,
+    ApplicationsActionTypes.INDEX_SUCCESS,
+    ApplicationsActionTypes.INDEX_FAILURE>;
+export type IndexActionResponse = RSAAIndexActionResponse<
+    ApplicationsActionTypes.INDEX_REQUEST,
+    ApplicationsActionTypes.INDEX_SUCCESS,
+    ApplicationsActionTypes.INDEX_FAILURE,
+    Application>;
 
 export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) => {
     return ({
@@ -66,13 +73,24 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) =>
                 ApplicationsActionTypes.INDEX_FAILURE,
             ],
         },
-    } as RSAAction<ApplicationsActionTypes.INDEX_REQUEST, ApplicationsActionTypes.INDEX_SUCCESS, ApplicationsActionTypes.INDEX_FAILURE>);
+    } as RSAAction<
+        ApplicationsActionTypes.INDEX_REQUEST,
+        ApplicationsActionTypes.INDEX_SUCCESS,
+        ApplicationsActionTypes.INDEX_FAILURE>);
 });
 
-export type PostActionRequest = RSAAPostActionRequest<ApplicationsActionTypes.POST_REQUEST, ApplicationsActionTypes.POST_SUCCESS, ApplicationsActionTypes.POST_FAILURE, Application>;
-export type PostActionResponse = RSAAPostActionResponse<ApplicationsActionTypes.POST_REQUEST, ApplicationsActionTypes.POST_SUCCESS, ApplicationsActionTypes.POST_FAILURE, JSONAPIDetailResponse<Application, undefined>>;
+export type PostActionRequest = RSAAPostActionRequest<
+    ApplicationsActionTypes.POST_REQUEST,
+    ApplicationsActionTypes.POST_SUCCESS,
+    ApplicationsActionTypes.POST_FAILURE,
+    Application>;
+export type PostActionResponse = RSAAPostActionResponse<
+    ApplicationsActionTypes.POST_REQUEST,
+    ApplicationsActionTypes.POST_SUCCESS,
+    ApplicationsActionTypes.POST_FAILURE,
+    JSONAPIDetailResponse<Application, undefined>>;
 
-export const post: PostActionRequest = (values: Application) => {
+export const post: PostActionRequest = (values: Application, relationships: JSONAPIRelationships) => {
     return ({
         [RSAA]: {
             body: JSON.stringify({
@@ -96,8 +114,15 @@ export const post: PostActionRequest = (values: Application) => {
         ApplicationsActionTypes.POST_FAILURE>);
 };
 
-export type ReadActionRequest = RSAAReadActionRequest<ApplicationsActionTypes.READ_REQUEST, ApplicationsActionTypes.READ_SUCCESS, ApplicationsActionTypes.READ_FAILURE>;
-export type ReadActionResponse = RSAAReadActionResponse<ApplicationsActionTypes.READ_REQUEST, ApplicationsActionTypes.READ_SUCCESS, ApplicationsActionTypes.READ_FAILURE, JSONAPIDetailResponse<Application, undefined>>;
+export type ReadActionRequest = RSAAReadActionRequest<
+    ApplicationsActionTypes.READ_REQUEST,
+    ApplicationsActionTypes.READ_SUCCESS,
+    ApplicationsActionTypes.READ_FAILURE>;
+export type ReadActionResponse = RSAAReadActionResponse<
+    ApplicationsActionTypes.READ_REQUEST,
+    ApplicationsActionTypes.READ_SUCCESS,
+    ApplicationsActionTypes.READ_FAILURE,
+    JSONAPIDetailResponse<Application, undefined>>;
 
 export const read: ReadActionRequest = (id: string, include?: string[]) => {
 
@@ -120,8 +145,16 @@ export const read: ReadActionRequest = (id: string, include?: string[]) => {
     };
 };
 
-export type PatchActionRequest = RSAAPatchActionRequest<ApplicationsActionTypes.PATCH_REQUEST, ApplicationsActionTypes.PATCH_SUCCESS, ApplicationsActionTypes.PATCH_FAILURE, Application>;
-export type PatchActionResponse = RSAAReadActionResponse<ApplicationsActionTypes.PATCH_REQUEST, ApplicationsActionTypes.PATCH_SUCCESS, ApplicationsActionTypes.PATCH_FAILURE, JSONAPIDetailResponse<Application, undefined>>;
+export type PatchActionRequest = RSAAPatchActionRequest<
+    ApplicationsActionTypes.PATCH_REQUEST,
+    ApplicationsActionTypes.PATCH_SUCCESS,
+    ApplicationsActionTypes.PATCH_FAILURE,
+    Application>;
+export type PatchActionResponse = RSAAReadActionResponse<
+    ApplicationsActionTypes.PATCH_REQUEST,
+    ApplicationsActionTypes.PATCH_SUCCESS,
+    ApplicationsActionTypes.PATCH_FAILURE,
+    JSONAPIDetailResponse<Application, undefined>>;
 
 export const patch: PatchActionRequest = (applicationId: string, values: Application) => {
 
@@ -145,7 +178,17 @@ export const patch: PatchActionRequest = (applicationId: string, values: Applica
     };
 };
 
-export const destroy: RSAADeleteActionRequest<ApplicationsActionTypes.DELETE_REQUEST, ApplicationsActionTypes.DELETE_SUCCESS, ApplicationsActionTypes.DELETE_FAILURE> = (id: string) => {
+export type DeleteActionRequest = RSAADeleteActionRequest<
+    ApplicationsActionTypes.DELETE_REQUEST,
+    ApplicationsActionTypes.DELETE_SUCCESS,
+    ApplicationsActionTypes.DELETE_FAILURE>;
+export type DeleteActionResponse = RSAADeleteActionResponse<
+    ApplicationsActionTypes.DELETE_REQUEST,
+    ApplicationsActionTypes.DELETE_SUCCESS,
+    ApplicationsActionTypes.DELETE_FAILURE,
+    Application>;
+
+export const destroy: DeleteActionRequest = (id: string) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/applications/${id}`,
@@ -187,6 +230,38 @@ export const patchRelationship: PatchRelationshipActionRequest = (
                 ApplicationsActionTypes.REL_PATCH_REQUEST,
                 ApplicationsActionTypes.REL_PATCH_SUCCESS,
                 ApplicationsActionTypes.REL_PATCH_FAILURE,
+            ],
+        },
+    }
+};
+
+export type DeleteRelationshipActionRequest = (
+    applicationId: string,
+    relationship: ApplicationRelationship,
+    data: JSONAPIRelationship[],
+) => RSAAction<
+    ApplicationsActionTypes.REL_DELETE_REQUEST,
+    ApplicationsActionTypes.REL_DELETE_SUCCESS,
+    ApplicationsActionTypes.REL_DELETE_FAILURE>;
+
+export type DeleteRelationshipActionResponse = RSAAReadActionResponse<
+    ApplicationsActionTypes.REL_DELETE_REQUEST,
+    ApplicationsActionTypes.REL_DELETE_SUCCESS,
+    ApplicationsActionTypes.REL_DELETE_FAILURE,
+    JSONAPIDetailResponse<Application, undefined>>;
+
+export const deleteRelationship: DeleteRelationshipActionRequest = (
+    applicationId: string, relationship: ApplicationRelationship, data: JSONAPIRelationship[]) => {
+    return {
+        [RSAA]: {
+            body: JSON.stringify({ data }),
+            endpoint: `/api/v1/applications/${applicationId}/relationships/${relationship}`,
+            headers: JSONAPI_HEADERS,
+            method: "DELETE",
+            types: [
+                ApplicationsActionTypes.REL_DELETE_REQUEST,
+                ApplicationsActionTypes.REL_DELETE_SUCCESS,
+                ApplicationsActionTypes.REL_DELETE_FAILURE,
             ],
         },
     }
@@ -244,4 +319,4 @@ export const itunesSearch: ItunesSearchAction = (
 };
 
 export type ApplicationsActions = IndexActionResponse | PostActionResponse | PatchActionResponse |
-    ReadActionResponse | PatchRelationshipActionResponse | ItunesSearchActions;
+    ReadActionResponse | PatchRelationshipActionResponse | DeleteRelationshipActionResponse | ItunesSearchActions;

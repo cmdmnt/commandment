@@ -11,6 +11,7 @@ export interface IResults<TResultArray> {
     lastReceived?: Date;
     currentPage: number;
     pageSize: number;
+    pages: number;
     recordCount?: number;
 }
 
@@ -21,5 +22,6 @@ export const ResultsDefaultState: IResults<any> = {
     lastReceived: null,
     loading: false,
     pageSize: 20,
+    pages: 0,
     recordCount: 0,
 };

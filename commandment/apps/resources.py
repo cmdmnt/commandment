@@ -1,6 +1,7 @@
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
 from commandment.apps.schema import ApplicationManifestSchema, ApplicationSchema, ManagedApplicationSchema
-from commandment.apps.models import db, ApplicationManifest, Application, ManagedApplication
+from commandment.apps.models import db, ApplicationManifest, Application, ManagedApplication, AppstoreMacApplication, \
+    AppstoreiOSApplication, EnterpriseMacApplication, EnterpriseiOSApplication
 
 
 class ApplicationManifestDetail(ResourceDetail):
@@ -35,6 +36,78 @@ class ApplicationRelationship(ResourceRelationship):
     data_layer = {
         'session': db.session,
         'model': Application,
+        'url_field': 'application_id'
+    }
+
+
+class MASApplicationDetail(ResourceDetail):
+    schema = ApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': AppstoreMacApplication,
+        'url_field': 'application_id'
+    }
+
+
+class MASApplicationList(ResourceList):
+    schema = ApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': AppstoreMacApplication,
+        'url_field': 'application_id'
+    }
+
+
+class IOSApplicationDetail(ResourceDetail):
+    schema = ApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': AppstoreiOSApplication,
+        'url_field': 'application_id'
+    }
+
+
+class IOSApplicationList(ResourceList):
+    schema = ApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': AppstoreiOSApplication,
+        'url_field': 'application_id'
+    }
+
+
+class EnterpriseMacApplicationList(ResourceList):
+    schema = ApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': EnterpriseMacApplication,
+        'url_field': 'application_id'
+    }
+
+
+class EnterpriseMacApplicationDetail(ResourceDetail):
+    schema = ApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': EnterpriseMacApplication,
+        'url_field': 'application_id'
+    }
+
+
+class EnterpriseIosApplicationList(ResourceList):
+    schema = ApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': EnterpriseiOSApplication,
+        'url_field': 'application_id'
+    }
+
+
+class EnterpriseIosApplicationDetail(ResourceDetail):
+    schema = ApplicationSchema
+    data_layer = {
+        'session': db.session,
+        'model': EnterpriseiOSApplication,
         'url_field': 'application_id'
     }
 

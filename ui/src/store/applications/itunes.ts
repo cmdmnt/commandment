@@ -1,3 +1,7 @@
+// iTunes Search API
+// Structures taken from Documentation, available at:
+// https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/
+
 export const ITUNES_SEARCH_URL: string = "https://itunes.apple.com/search";
 
 export enum MediaType {
@@ -47,7 +51,7 @@ export enum EntityType {
 }
 
 export interface IMediaTypeEntityList {
-    [propName: MediaType]: string[];
+    [propName: string]: string[];
 }
 
 export const MediaTypeEntities: IMediaTypeEntityList = {
@@ -57,6 +61,22 @@ export const MediaTypeEntities: IMediaTypeEntityList = {
         "macSoftware",
     ],
 };
+
+export enum MovieAttribute {
+    actorTerm = "actorTerm",
+    genreIndex = "genreIndex",
+    artistTerm = "artistTerm",
+    shortFilmTerm = "shortFilmTerm",
+    producerTerm = "producerTerm",
+    ratingTerm = "ratingTerm",
+    directorTerm = "directorTerm",
+    releaseYearTerm = "releaseYearTerm",
+    featureFilmTerm = "featureFilmTerm",
+    movieArtistTerm = "movieArtistTerm",
+    movieTerm = "movieTerm",
+    ratingIndex = "ratingIndex",
+    descriptionTerm = "descriptionTerm",
+}
 
 export enum ArtworkIconSize {
     Sixty = "artworkUrl60",

@@ -8,6 +8,7 @@ export interface IApplicationsState extends IResults<Array<JSONAPIDataObject<App
     allIds: string[];
     itunesSearchResult: IiTunesSearchResult;
     itunesSearchResultLoading: boolean;
+    itunesStoreIdsAdded: number[];
     storeCountry: string;
 }
 
@@ -16,6 +17,7 @@ const initialState: IApplicationsState = {
     allIds: [],
     itunesSearchResult: null,
     itunesSearchResultLoading: false,
+    itunesStoreIdsAdded: [],
     storeCountry: "AU",
 };
 
@@ -48,7 +50,23 @@ export function applications(state: IApplicationsState = initialState,
                     recordCount: action.payload.meta.count,
                 };
             }
-
+        case ApplicationsActionTypes.POST_REQUEST:
+            return state;
+        case ApplicationsActionTypes.POST_SUCCESS:
+            if (isJSONAPIErrorResponsePayload(action.payload)) {
+                return {
+                    ...state,
+                    error: action.payload,
+                    loading: false,
+                };
+            } else {
+                return {
+                    ...state,
+                    itunesStoreIdsAdded: [
+                        ...state.itunesStoreIdsAdded,
+                        action.payload.data.attributes.itunes_store_id],
+                };
+            }
         case ApplicationsActionTypes.ITUNES_SEARCH_REQUEST:
             return {
                 ...state,

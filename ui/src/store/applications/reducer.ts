@@ -40,6 +40,12 @@ export function application(state: IApplicationState = initialState, action: App
                 errorDetail: action.payload,
                 loading: false,
             };
+        case ApplicationsActionTypes.REL_PATCH_REQUEST:
+            return {
+                ...state,
+            };
+        case ApplicationsActionTypes.REL_PATCH_SUCCESS:
+            return state;
         default:
             return state;
     }
