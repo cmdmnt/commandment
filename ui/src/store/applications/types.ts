@@ -1,6 +1,11 @@
 // valid relationship types
 export type ApplicationRelationship = "tags";
 
+export enum ApplicationDiscriminator {
+    AppStoreMac = "appstore_mac",
+    AppStoreIOS = "appstore_ios",
+}
+
 export interface Application {
     id?: string;
     itunes_store_id?: number;
@@ -24,6 +29,14 @@ export interface Application {
     release_date: string;
     minimum_os_version: string;
     file_size_bytes: number;
+}
+
+export interface MacStoreApplication extends Application {
+    discriminator: ApplicationDiscriminator.AppStoreMac;
+}
+
+export interface IOSStoreApplication extends Application {
+    discriminator: ApplicationDiscriminator.AppStoreIOS;
 }
 
 export enum ManagedApplicationStatus {

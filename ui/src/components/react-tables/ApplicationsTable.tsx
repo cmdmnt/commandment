@@ -5,6 +5,7 @@ import selectTableHoc from "react-table/lib/hoc/selectTable";
 import {Application} from "../../store/applications/types";
 import {JSONAPIDataObject} from "../../store/json-api";
 import {AppName} from "../react-table/AppName";
+import {ApplicationType} from "../react-table/ApplicationType";
 // import "react-table/react-table.css";
 
 export interface IApplicationsTableProps {
@@ -15,6 +16,14 @@ export interface IApplicationsTableProps {
 }
 
 const columns: Column[] = [
+    {
+        Cell: ApplicationType,
+        Header: "Type",
+        accessor: "attributes.discriminator",
+        id: "discriminator",
+        style: { textAlign: "center" },
+        width: 50,
+    },
     {
         Cell: AppName,
         Header: "Name",

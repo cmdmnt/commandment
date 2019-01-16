@@ -34,6 +34,9 @@ class ApplicationSchema(Schema):
     minimum_os_version = fields.Str()
     file_size_bytes = fields.Number()
 
+    # expose the underlying polymorphic identity for lists that contain all types of apps
+    discriminator = fields.Str()
+
     tags = Relationship(
         related_view='api_app.tags_list',
         related_view_kwargs={'application_id': '<id>'},

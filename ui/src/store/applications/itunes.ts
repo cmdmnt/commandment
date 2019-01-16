@@ -102,6 +102,11 @@ export interface IiTunesSearchResult {
     results: IiTunesSoftwareSearchResult[];
 }
 
+export enum IiTunesSoftwareKind {
+    software = "software",
+    macSoftware = "mac-software",
+}
+
 export interface IiTunesSoftwareSearchResult {
     isGameCenterEnabled: boolean;
     ipadScreenshotUrls: string[];
@@ -113,7 +118,7 @@ export interface IiTunesSoftwareSearchResult {
     artistViewUrl: string;
     advisories: string[];
     supportedDevices: string[];
-    kind: string;
+    kind: IiTunesSoftwareKind;
     features: string[];
     trackCensoredName: string;
     languageCodesISO2A: string[];

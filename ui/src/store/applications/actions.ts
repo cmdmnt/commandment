@@ -20,7 +20,7 @@ import {
 } from "../json-api";
 import {JSONAPIDetailResponse, JSONAPIErrorResponse, RSAAPatchActionRequest} from "../json-api";
 import {EntityType, IItunesSearchQuery, IiTunesSearchResult, MediaType} from "./itunes";
-import {Application, ApplicationRelationship} from "./types";
+import {Application, ApplicationRelationship, MacStoreApplication, IOSStoreApplication} from "./types";
 
 export enum ApplicationsActionTypes {
     INDEX_REQUEST = "applications/INDEX_REQUEST",
@@ -100,6 +100,54 @@ export const post: PostActionRequest = (values: Application, relationships: JSON
                 },
             }),
             endpoint: `/api/v1/applications`,
+            headers: JSONAPI_HEADERS,
+            method: "POST",
+            types: [
+                ApplicationsActionTypes.POST_REQUEST,
+                ApplicationsActionTypes.POST_SUCCESS,
+                ApplicationsActionTypes.POST_FAILURE,
+            ],
+        },
+    } as RSAAction<
+        ApplicationsActionTypes.POST_REQUEST,
+        ApplicationsActionTypes.POST_SUCCESS,
+        ApplicationsActionTypes.POST_FAILURE>);
+};
+
+export const postAppStoreMac: PostActionRequest = (values: MacStoreApplication, relationships: JSONAPIRelationships) => {
+    return ({
+        [RSAA]: {
+            body: JSON.stringify({
+                data: {
+                    attributes: values,
+                    type: "applications",
+                },
+            }),
+            endpoint: `/api/v1/applications/store/mac`,
+            headers: JSONAPI_HEADERS,
+            method: "POST",
+            types: [
+                ApplicationsActionTypes.POST_REQUEST,
+                ApplicationsActionTypes.POST_SUCCESS,
+                ApplicationsActionTypes.POST_FAILURE,
+            ],
+        },
+    } as RSAAction<
+        ApplicationsActionTypes.POST_REQUEST,
+        ApplicationsActionTypes.POST_SUCCESS,
+        ApplicationsActionTypes.POST_FAILURE>);
+};
+
+export const postAppStoreIos: PostActionRequest = (values: IOSStoreApplication, relationships: JSONAPIRelationships) => {
+    return ({
+        [RSAA]: {
+            body: JSON.stringify({
+                data: {
+                    attributes: values,
+                    type: "applications",
+                },
+            }),
+            endpoint: `/api/v1/applications/store/ios`,
             headers: JSONAPI_HEADERS,
             method: "POST",
             types: [

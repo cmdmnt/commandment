@@ -15,6 +15,7 @@ import {IApplicationsState} from "../store/applications/reducer";
 import {IReactTableState} from "../store/table/types";
 import {FlaskFilter, FlaskFilterOperation} from "../store/constants";
 import {index, IndexActionRequest} from "../store/applications/actions";
+import {Breadcrumb} from "semantic-ui-react";
 
 export interface IDispatchProps {
     index: IndexActionRequest;
@@ -34,7 +35,13 @@ class UnconnectedApplicationsPage extends React.Component<ApplicationsPageProps,
 
         return (
             <Container className="ApplicationsPage">
-                <Divider hidden />
+                <Divider hidden/>
+                <Breadcrumb>
+                    <Breadcrumb.Section><Link to={`/`}>Home</Link></Breadcrumb.Section>
+                    <Breadcrumb.Divider />
+                    <Breadcrumb.Section>Applications</Breadcrumb.Section>
+                </Breadcrumb>
+                <Divider hidden/>
 
                 <Header as="h1">Applications</Header>
                 <Dropdown text="Add" icon="plus" labeled button className="icon">

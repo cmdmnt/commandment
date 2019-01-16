@@ -1,6 +1,5 @@
 import * as React from "react";
 
-
 import {Breadcrumb, List} from "semantic-ui-react";
 import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
@@ -13,8 +12,12 @@ import {MASResult} from "../components/itunes/MASResult";
 import {SearchInput} from "../components/SearchInput";
 import {RootState} from "../reducers";
 import {
-    itunesSearch, ItunesSearchAction,
-    post, PostActionRequest,
+    itunesSearch,
+    ItunesSearchAction,
+    post,
+    PostActionRequest,
+    postAppStoreIos,
+    postAppStoreMac,
 } from "../store/applications/actions";
 import {
     ArtworkIconSize,
@@ -25,6 +28,7 @@ import {
 } from "../store/applications/itunes";
 
 import {Link} from "react-router-dom";
+import {Application} from "../store/applications/types";
 
 interface IRouteProps {
     entity: EntityType;
@@ -33,6 +37,8 @@ interface IRouteProps {
 export interface IDispatchProps {
     itunesSearch: ItunesSearchAction;
     post: PostActionRequest;
+    postAppStoreMac: PostActionRequest;
+    postAppStoreIos: PostActionRequest;
 }
 
 export interface IStateProps {
@@ -86,8 +92,7 @@ export class UnconnectedAppStorePage extends React.Component<AppStorePageProps, 
 
     private handleClickAdd = (result: IiTunesSoftwareSearchResult) => {
         const entity = this.props.match.params.entity;
-
-        this.props.post({
+        const app: Application = {
             bundle_id: result.bundleId,
             description: result.description,
             display_name: result.trackName,
@@ -106,7 +111,16 @@ export class UnconnectedAppStorePage extends React.Component<AppStorePageProps, 
             release_date: result.releaseDate,
             minimum_os_version: result.minimumOsVersion,
             file_size_bytes: result.fileSizeBytes,
-        });
+        };
+
+        if (entity === EntityType.macSoftware) {
+            this.props.postAppStoreMac(app)
+        } else if (entity === EntityType.software) {
+            this.props.postAppStoreIos(app);
+        } else {
+            // cant really post this
+        }
+
     };
 
     private handleSearch = (value: string) => {
@@ -125,5 +139,7 @@ export const AppStorePage = connect(
     (dispatch: Dispatch, ownProps?: any) => bindActionCreators({
         itunesSearch,
         post,
+        postAppStoreIos,
+        postAppStoreMac,
     }, dispatch),
 )(UnconnectedAppStorePage);
