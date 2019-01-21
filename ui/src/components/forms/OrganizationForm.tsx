@@ -23,7 +23,12 @@ export interface IOrganizationFormValues extends Organization {
 }
 
 const initialValues: IOrganizationFormValues = {
-
+    name: "",
+    payload_prefix: "org.github.cmdmnt",
+    x509_c: "US",
+    x509_o: "",
+    x509_ou: "",
+    x509_st: "",
 };
 
 const InnerForm = ({

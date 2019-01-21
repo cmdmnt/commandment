@@ -1,7 +1,8 @@
 import { RSAA, RSAAction } from 'redux-api-middleware';
-import {JSONAPI_HEADERS, FlaskFilters, FlaskFilter} from '../../store/constants'
+import {JSONAPI_HEADERS} from '../../store/constants'
 import {JSONAPIListResponse, JSONAPIDataObject} from "../json-api";
 import {Certificate} from "../../store/certificates/types";
+import {FlaskFilter, FlaskFilters} from "../../flask-rest-jsonapi";
 
 
 export type PUSHCERT_REQUEST = 'certificates/PUSHCERT_REQUEST';

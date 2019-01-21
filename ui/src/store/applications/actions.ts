@@ -3,12 +3,11 @@ import {Action} from "redux";
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
 import {RootState} from "../../reducers";
-import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants";
+import {JSON_HEADERS, JSONAPI_HEADERS} from "../constants";
+import {JSONAPIDetailResponse, JSONAPIErrorResponse, RSAAPatchActionRequest} from "../json-api";
 import {
-    encodeJSONAPIChildIndexParameters,
-    encodeJSONAPIIndexParameters,
     JSONAPIRelationship,
-    JSONAPIRelationships,
+    JSONAPIRelationships, RSAAChildIndexActionRequest,
     RSAADeleteActionRequest,
     RSAADeleteActionResponse,
     RSAAIndexActionRequest,
@@ -18,9 +17,22 @@ import {
     RSAAReadActionRequest,
     RSAAReadActionResponse,
 } from "../json-api";
-import {JSONAPIDetailResponse, JSONAPIErrorResponse, RSAAPatchActionRequest} from "../json-api";
 import {EntityType, IItunesSearchQuery, IiTunesSearchResult, MediaType} from "./itunes";
-import {Application, ApplicationRelationship, MacStoreApplication, IOSStoreApplication} from "./types";
+import {ManagedApplicationsActionTypes} from "./managed";
+import {
+    Application,
+    ApplicationRelationship,
+    IOSStoreApplication,
+    MacStoreApplication,
+    ManagedApplication,
+} from "./types";
+import {
+    encodeJSONAPIChildIndexParameters,
+    encodeJSONAPIIndexParameters,
+    FlaskFilter,
+    FlaskFilters
+} from "../../flask-rest-jsonapi";
+import {RelationshipData} from "../../json-api-v1";
 
 export enum ApplicationsActionTypes {
     INDEX_REQUEST = "applications/INDEX_REQUEST",
@@ -46,10 +58,42 @@ export enum ApplicationsActionTypes {
     REL_DELETE_SUCCESS = "applications/relationships/DELETE_SUCCESS",
     REL_DELETE_FAILURE = "applications/relationships/DELETE_FAILURE",
 
+    MANAGED_REQUEST = "applications/MANAGED_REQUEST",
+    MANAGED_SUCCESS = "applications/MANAGED_SUCCESS",
+    MANAGED_FAILURE = "applications/MANAGED_FAILURE",
+
     ITUNES_SEARCH_REQUEST = "applications/ITUNES_SEARCH_REQUEST",
     ITUNES_SEARCH_SUCCESS = "applications/ITUNES_SEARCH_SUCCESS",
     ITUNES_SEARCH_FAILURE = "applications/ITUNES_SEARCH_FAILURE",
 }
+
+export type ManagedActionRequest = RSAAChildIndexActionRequest<
+    ApplicationsActionTypes.MANAGED_REQUEST,
+    ApplicationsActionTypes.MANAGED_SUCCESS,
+    ApplicationsActionTypes.MANAGED_FAILURE>;
+export type ManagedActionResponse = RSAAIndexActionResponse<
+    ApplicationsActionTypes.MANAGED_REQUEST,
+    ApplicationsActionTypes.MANAGED_SUCCESS,
+    ApplicationsActionTypes.MANAGED_FAILURE,
+    ManagedApplication>;
+
+export const managed = encodeJSONAPIChildIndexParameters((appId: string, queryParameters: string[])  => {
+    return ({
+        [RSAA]: {
+            endpoint: `/api/v1/applications/${appId}/managed_applications?${queryParameters.join("&")}`,
+            headers: JSONAPI_HEADERS,
+            method: "GET",
+            types: [
+                ApplicationsActionTypes.MANAGED_REQUEST,
+                ApplicationsActionTypes.MANAGED_SUCCESS,
+                ApplicationsActionTypes.MANAGED_FAILURE,
+            ],
+        },
+    } as RSAAction<
+        ApplicationsActionTypes.MANAGED_REQUEST,
+        ApplicationsActionTypes.MANAGED_SUCCESS,
+        ApplicationsActionTypes.MANAGED_FAILURE>);
+});
 
 export type IndexActionRequest = RSAAIndexActionRequest<
     ApplicationsActionTypes.INDEX_REQUEST,
@@ -90,7 +134,7 @@ export type PostActionResponse = RSAAPostActionResponse<
     ApplicationsActionTypes.POST_FAILURE,
     JSONAPIDetailResponse<Application, undefined>>;
 
-export const post: PostActionRequest = (values: Application, relationships: JSONAPIRelationships) => {
+export const post: PostActionRequest = (values: Application, relationships: RelationshipData) => {
     return ({
         [RSAA]: {
             body: JSON.stringify({

@@ -4,6 +4,7 @@ import {ThunkAction} from "redux-thunk";
 import {RootState} from "../../reducers";
 import {JSON_HEADERS} from "../constants";
 import {JSONAPIDetailResponse, RSAAReadActionRequest, RSAAReadActionResponse} from "../json-api";
+import {IMDMCertResponse} from "./types";
 
 export enum MDMCertActionTypes {
      MDMCERT_CSR_REQUEST = "mdmcert/CSR_REQUEST",
@@ -14,17 +15,12 @@ export enum MDMCertActionTypes {
      UPLOAD_CRYPTED_FAILURE = "mdmcert/UPLOAD_CRYPTED_FAILURE",
 }
 
-export interface IMDMCertResponse {
-    result: "failure" | "success";
-    reason?: string;
-}
-
 export type CsrActionRequest = (email: string) => RSAAction<
     MDMCertActionTypes.MDMCERT_CSR_REQUEST,
     MDMCertActionTypes.MDMCERT_CSR_SUCCESS,
     MDMCertActionTypes.MDMCERT_CSR_FAILURE>;
 
-export interface CsrActionResponse {
+export interface ICsrActionResponse {
     type: MDMCertActionTypes.MDMCERT_CSR_REQUEST |
           MDMCertActionTypes.MDMCERT_CSR_SUCCESS |
           MDMCertActionTypes.MDMCERT_CSR_FAILURE;

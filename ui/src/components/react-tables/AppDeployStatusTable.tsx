@@ -26,11 +26,10 @@ const columns = [
     },
 ];
 
-export const AppDeployStatusTable = ({ data, ...props }: IAppDeployStatusTableProps & TableProps) => (
+export const AppDeployStatusTable = ({ data, ...props }: IAppDeployStatusTableProps & Partial<TableProps>) => (
     <ReactTable
         manual
         filterable
-        keyField="id"
         data={data}
         columns={columns}
         {...props}

@@ -25,6 +25,7 @@ import {
 import {ITagsState} from "../store/tags/reducer";
 import {Tag} from "../store/tags/types";
 import {ApplicationDeviceStatus} from "./applications/ApplicationDeviceStatus";
+import {Relationship, RelationshipData, Relationships} from "../json-api-v1";
 
 interface IRouteProps {
     id: string;
@@ -99,6 +100,8 @@ class UnconnectedApplicationPage extends React.Component<IDispatchProps & IState
                     </Grid.Column>
                 </Grid>
 
+                <Divider hidden />
+                <Header as="h4">Install to tags</Header>
                 <TagDropdown
                     loading={tags.loading}
                     tags={tags.items}
@@ -133,7 +136,7 @@ class UnconnectedApplicationPage extends React.Component<IDispatchProps & IState
     protected handleChangeTag = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
         const value = (data.value as string[]);
 
-        const relationships = value.map((v: string) => {
+        const relationships: RelationshipData = value.map((v: string) => {
             return {id: v, type: "tags"};
         });
 

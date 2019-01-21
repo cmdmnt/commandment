@@ -2,6 +2,7 @@ import {Reducer} from "redux";
 import {isJSONAPIErrorResponsePayload, JSONAPIDataObject, RSAAResponseSuccess} from "../json-api";
 import {DEPActions, DEPActionTypes} from "./actions";
 import {DEPProfile} from "./types";
+import {isApiError} from "../../guards";
 
 export interface IDEPProfileState {
     readonly dep_profile?: JSONAPIDataObject<DEPProfile>;
@@ -19,9 +20,23 @@ export const profile: Reducer<IDEPProfileState, DEPActions> = (state = initialSt
     switch (action.type) {
 
         case DEPActionTypes.PROF_READ_REQUEST:
-            return { ...state, loading: true, error: false, errorDetail: null, dep_profile: null };
+            return {
+                ...state,
+                loading: true,
+                error: false,
+                errorDetail: null,
+                dep_profile: null,
+            };
         case DEPActionTypes.PROF_READ_SUCCESS:
-            if (isJSONAPIErrorResponsePayload(action.payload)) {
+            let payload = action.payload;
+            if (isApiError(payload)) {
+                return {
+                    ...state,
+                    error: true,
+                    errorDetail: payload,
+                    loading: false,
+                }
+            } else if (isJSONAPIErrorResponsePayload(payload)) {
                 return {
                     ...state,
                     error: true,
@@ -31,7 +46,7 @@ export const profile: Reducer<IDEPProfileState, DEPActions> = (state = initialSt
             } else {
                 return {
                     ...state,
-                    dep_profile: action.payload.data,
+                    dep_profile: payload.data,
                     loading: false,
                 };
             }

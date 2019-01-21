@@ -2,6 +2,7 @@ import {Reducer} from "redux";
 import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 import {DEPActions, DEPActionTypes} from "./actions";
 import {DEPAccount, DEPProfile} from "./types";
+import {isApiError} from "../../guards";
 
 export interface IDEPAccountState {
     readonly dep_account?: JSONAPIDataObject<DEPAccount>;
@@ -31,6 +32,13 @@ export const account: Reducer<IDEPAccountState, DEPActions> = (state = initialSt
                     errorDetail: payload,
                     loading: false,
                 };
+            } else if (isApiError(payload)) {
+                return {
+                    ...state,
+                    error: true,
+                    errorDetail: payload,
+                    loading: false,
+                }
             } else {
                 return {...state,
                     dep_account: payload.data,

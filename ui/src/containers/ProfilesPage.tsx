@@ -19,7 +19,8 @@ import {ToggleSelectionActionCreator} from "../store/table/actions";
 import * as tableActions from "../store/table/actions";
 import {ITableState} from "../store/table/reducer";
 import {IReactTableState} from "../store/table/types";
-import {FlaskFilter, FlaskFilterOperation} from "../store/constants";
+import {FlaskFilterOperation} from "../flask-rest-jsonapi";
+import {FlaskFilter} from "../flask-rest-jsonapi";
 
 interface IReduxStateProps {
     profiles: ProfilesState;

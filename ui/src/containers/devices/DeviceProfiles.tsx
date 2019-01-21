@@ -7,7 +7,8 @@ import {InstalledProfilesState} from "../../store/device/installed_profiles_redu
 import {RootState} from "../../reducers/index";
 import {InstalledProfilesActionRequest, profiles as fetchInstalledProfiles} from "../../store/device/profiles";
 import {IReactTableState} from "../../store/table/types";
-import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
+import {FlaskFilterOperation} from "../../flask-rest-jsonapi";
+import {FlaskFilter} from "../../flask-rest-jsonapi";
 
 interface ReduxStateProps {
     profiles?: InstalledProfilesState;

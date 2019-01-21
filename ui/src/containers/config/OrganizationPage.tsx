@@ -9,10 +9,12 @@ import {RootState} from "../../reducers/index";
 import * as actions from "../../store/organization/actions";
 import {OrganizationState} from "../../store/organization/reducer";
 
-import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
-import Container from "semantic-ui-react/src/elements/Container";
-import Header from "semantic-ui-react/src/elements/Header";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
+import {
+    Breadcrumb,
+    Container,
+    Divider,
+    Header,
+} from "semantic-ui-react";
 
 interface IOrganizationPageState {
     organization: OrganizationState;
@@ -73,7 +75,6 @@ export class UnconnectedOrganizationPage extends React.Component<OrganizationPag
                 {organization.organization &&
                     <OrganizationForm
                         loading={organization.loading}
-                        isSubmitting={organization.loading}
                         data={organization.organization}
                         id={organization.organization.id}
                         onSubmit={this.handleSubmit}

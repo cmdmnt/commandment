@@ -2,8 +2,6 @@ import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {POST_FAILURE, POST_REQUEST, POST_SUCCESS} from "../commands/actions";
 import {JSONAPI_HEADERS} from "../constants";
 import {
-    encodeJSONAPIChildIndexParameters,
-    encodeJSONAPIIndexParameters,
     JSONAPIDataObject,
     JSONAPIDetailResponse,
     JSONAPIRelationships,
@@ -18,6 +16,14 @@ import {
 } from "../json-api";
 import {DEPAccount, DEPProfile} from "./types";
 import {IDEPProfileFormValues} from "../../components/forms/DEPProfileForm";
+import {encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters} from "../../flask-rest-jsonapi";
+import {Relationships} from "../../json-api-v1";
+import {
+    RSAAActionResponse,
+    RSAAIndexActionCreator, RSAAPatchActionCreator,
+    RSAAPostActionCreator,
+    RSAAReadActionCreator
+} from "../redux-api-middleware";
 
 export enum DEPActionTypes {
     ACCT_INDEX_REQUEST = "dep/account/INDEX_REQUEST",
@@ -45,17 +51,29 @@ export enum DEPActionTypes {
     PROF_PATCH_FAILURE = "dep/profile/PATCH_FAILURE",
 }
 
-export type AccountIndexActionRequest = RSAAIndexActionRequest<
-    DEPActionTypes.ACCT_INDEX_REQUEST,
-    DEPActionTypes.ACCT_INDEX_SUCCESS,
-    DEPActionTypes.ACCT_INDEX_FAILURE>;
-export type AccountIndexActionResponse = RSAAIndexActionResponse<
+// export type AccountIndexActionRequest = RSAAIndexActionRequest<
+//     DEPActionTypes.ACCT_INDEX_REQUEST,
+//     DEPActionTypes.ACCT_INDEX_SUCCESS,
+//     DEPActionTypes.ACCT_INDEX_FAILURE>;
+// export type AccountIndexActionResponse = RSAAIndexActionResponse<
+//     DEPActionTypes.ACCT_INDEX_REQUEST,
+//     DEPActionTypes.ACCT_INDEX_SUCCESS,
+//     DEPActionTypes.ACCT_INDEX_FAILURE,
+//     DEPAccount>;
+
+export type AccountIndexActionResponse = RSAAActionResponse<
     DEPActionTypes.ACCT_INDEX_REQUEST,
     DEPActionTypes.ACCT_INDEX_SUCCESS,
     DEPActionTypes.ACCT_INDEX_FAILURE,
-    DEPAccount>;
+    DEPAccount,
+    void>;
 
-export const accounts = encodeJSONAPIIndexParameters((queryParameters: string[]) => {
+export type AccountIndexActionCreator = RSAAIndexActionCreator<
+    DEPActionTypes.ACCT_INDEX_REQUEST,
+    DEPActionTypes.ACCT_INDEX_SUCCESS,
+    DEPActionTypes.ACCT_INDEX_FAILURE>;
+
+export const accounts: AccountIndexActionCreator = encodeJSONAPIIndexParameters((queryParameters: string[]) => {
     return ({
         [RSAA]: {
             endpoint: "/api/v1/dep/accounts/?" + queryParameters.join("&"),
@@ -70,10 +88,19 @@ export const accounts = encodeJSONAPIIndexParameters((queryParameters: string[])
     } as RSAAction<DEPActionTypes.ACCT_INDEX_REQUEST, DEPActionTypes.ACCT_INDEX_SUCCESS, DEPActionTypes.ACCT_INDEX_FAILURE>);
 });
 
-export type AccountReadActionRequest = RSAAReadActionRequest<DEPActionTypes.ACCT_READ_REQUEST, DEPActionTypes.ACCT_READ_SUCCESS, DEPActionTypes.ACCT_READ_FAILURE>;
-export type AccountReadActionResponse = RSAAReadActionResponse<DEPActionTypes.ACCT_READ_REQUEST, DEPActionTypes.ACCT_READ_SUCCESS, DEPActionTypes.ACCT_READ_FAILURE, DEPAccount>;
+export type AccountReadActionCreator = RSAAReadActionCreator<
+    DEPActionTypes.ACCT_READ_REQUEST,
+    DEPActionTypes.ACCT_READ_SUCCESS,
+    DEPActionTypes.ACCT_READ_FAILURE>;
 
-export const account: AccountReadActionRequest = (id: string, include?: string[]) => {
+export type AccountReadActionResponse = RSAAActionResponse<
+    DEPActionTypes.ACCT_READ_REQUEST,
+    DEPActionTypes.ACCT_READ_SUCCESS,
+    DEPActionTypes.ACCT_READ_FAILURE,
+    DEPAccount,
+    void>;
+
+export const account: AccountReadActionCreator = (id: string, include?: string[]) => {
 
     let inclusions = "";
     if (include && include.length) {
@@ -94,8 +121,17 @@ export const account: AccountReadActionRequest = (id: string, include?: string[]
     };
 };
 
-export type ProfileIndexActionRequest = RSAAIndexActionRequest<DEPActionTypes.PROF_INDEX_REQUEST, DEPActionTypes.PROF_INDEX_SUCCESS, DEPActionTypes.PROF_INDEX_FAILURE>;
-export type ProfileIndexActionResponse = RSAAIndexActionResponse<DEPActionTypes.PROF_INDEX_REQUEST, DEPActionTypes.PROF_INDEX_SUCCESS, DEPActionTypes.PROF_INDEX_FAILURE, DEPProfile>;
+export type ProfileIndexActionCreator = RSAAIndexActionCreator<
+    DEPActionTypes.PROF_INDEX_REQUEST,
+    DEPActionTypes.PROF_INDEX_SUCCESS,
+    DEPActionTypes.PROF_INDEX_FAILURE>;
+
+export type ProfileIndexActionResponse = RSAAActionResponse<
+    DEPActionTypes.PROF_INDEX_REQUEST,
+    DEPActionTypes.PROF_INDEX_SUCCESS,
+    DEPActionTypes.PROF_INDEX_FAILURE,
+    DEPProfile,
+    void>;
 
 export const profiles = encodeJSONAPIChildIndexParameters((dep_account_id: string, queryParameters: string[]) => {
     return ({
@@ -112,12 +148,19 @@ export const profiles = encodeJSONAPIChildIndexParameters((dep_account_id: strin
     } as RSAAction<DEPActionTypes.PROF_INDEX_REQUEST, DEPActionTypes.PROF_INDEX_SUCCESS, DEPActionTypes.PROF_INDEX_FAILURE>);
 });
 
-export type ProfileReadActionRequest = RSAAReadActionRequest<
-    DEPActionTypes.PROF_READ_REQUEST, DEPActionTypes.PROF_READ_SUCCESS, DEPActionTypes.PROF_READ_FAILURE>;
-export type ProfileReadActionResponse = RSAAReadActionResponse<
-    DEPActionTypes.PROF_READ_REQUEST, DEPActionTypes.PROF_READ_SUCCESS, DEPActionTypes.PROF_READ_FAILURE, DEPProfile>;
+export type ProfileReadActionCreator = RSAAReadActionCreator<
+    DEPActionTypes.PROF_READ_REQUEST,
+    DEPActionTypes.PROF_READ_SUCCESS,
+    DEPActionTypes.PROF_READ_FAILURE>;
 
-export const profile: ProfileReadActionRequest = (id: string, include?: string[]) => {
+export type ProfileReadActionResponse = RSAAActionResponse<
+    DEPActionTypes.PROF_READ_REQUEST,
+    DEPActionTypes.PROF_READ_SUCCESS,
+    DEPActionTypes.PROF_READ_FAILURE,
+    DEPProfile,
+    void>;
+
+export const profile: ProfileReadActionCreator = (id: string, include?: string[]) => {
 
     let inclusions = "";
     if (include && include.length) {
@@ -138,13 +181,21 @@ export const profile: ProfileReadActionRequest = (id: string, include?: string[]
     };
 };
 
-export type ProfilePostActionRequest = RSAAPostActionRequest<
-    DEPActionTypes.PROF_POST_REQUEST, DEPActionTypes.PROF_POST_SUCCESS, DEPActionTypes.PROF_POST_FAILURE, DEPProfile>;
-export type ProfilePostActionResponse = RSAAPostActionResponse<
-    DEPActionTypes.PROF_POST_REQUEST, DEPActionTypes.PROF_POST_SUCCESS, DEPActionTypes.PROF_POST_FAILURE, DEPProfile>;
+export type ProfilePostActionCreator = RSAAPostActionCreator<
+    DEPActionTypes.PROF_POST_REQUEST,
+    DEPActionTypes.PROF_POST_SUCCESS,
+    DEPActionTypes.PROF_POST_FAILURE,
+    DEPProfile>;
 
-export const postProfile: ProfilePostActionRequest =
-    (values: DEPProfile, relationships: { [relName: string]: JSONAPIResourceIdentifier }) => {
+export type ProfilePostActionResponse = RSAAActionResponse<
+    DEPActionTypes.PROF_POST_REQUEST,
+    DEPActionTypes.PROF_POST_SUCCESS,
+    DEPActionTypes.PROF_POST_FAILURE,
+    DEPProfile,
+    void>;
+
+export const postProfile: ProfilePostActionCreator =
+    (values: DEPProfile, relationships: Relationships) => {
 
     const bodyData: JSONAPIDetailResponse<DEPProfile, void> = {
         data: {
@@ -180,7 +231,7 @@ export const postProfile: ProfilePostActionRequest =
 
 };
 
-export type ProfilePatchActionRequest = RSAAPatchActionRequest<
+export type ProfilePatchActionRequest = RSAAPatchActionCreator<
     DEPActionTypes.PROF_PATCH_REQUEST,
     DEPActionTypes.PROF_PATCH_SUCCESS,
     DEPActionTypes.PROF_PATCH_FAILURE,

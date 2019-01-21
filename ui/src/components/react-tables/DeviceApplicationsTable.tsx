@@ -33,7 +33,7 @@ const columns = [
     },
 ];
 
-export const DeviceApplicationsTable = ({ data, ...props }: IDeviceApplicationsTableProps & TableProps) => (
+export const DeviceApplicationsTable = ({ data, ...props }: IDeviceApplicationsTableProps & Partial<TableProps>) => (
     <ReactTable
         manual
         filterable

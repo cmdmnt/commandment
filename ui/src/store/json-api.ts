@@ -1,7 +1,9 @@
 // Redux API Middleware Type Guards
 import {ApiError, InvalidRSAA, RequestError, RSAAction} from "redux-api-middleware";
-import {FlaskFilters} from "./constants";
+import {FlaskFilters} from "../flask-rest-jsonapi";
 import {Action} from "redux";
+import {Relationships} from "../json-api-v1";
+
 
 export const JSONAPI_HEADERS = {
     "Accept": "application/vnd.api+json",
@@ -112,9 +114,7 @@ export function isJSONAPIErrorResponsePayload(
     return (payload as JSONAPIErrorResponse).errors !== undefined;
 }
 
-type WrappedChildIndexActionCreator<R> = (id: string, queryParameters: string[]) => R;
 
-type WrappedIndexActionCreator<R> = (queryParameters: string[]) => R;
 
 // Standardised JSON-API Index ActionCreator
 export type RSAAIndexActionRequest<TRequest, TSuccess, TFailure> =
@@ -164,7 +164,7 @@ export type RSAAReadActionResponse<TRequest, TSuccess, TFailure, TResponse> = RS
     RSAAReadActionResponseSuccess<TSuccess, JSONAPIErrorResponse>;
 
 export type RSAAPostActionRequest<TRequest, TSuccess, TFailure, TValues> = (
-    values: TValues, relationships?: { [index: string]: JSONAPIRelationship[]; })
+    values: TValues, relationships?: Relationships)
     => RSAAction<TRequest, TSuccess, TFailure>;
 
 export type RSAAPostActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |
@@ -181,66 +181,4 @@ export interface RSAADeleteActionResponseSuccess<TSuccess> {
 
 export type RSAADeleteActionResponse<TRequest, TSuccess, TFailure, TResponse> = RSAAResponseRequest<TRequest> |
     RSAAResponseFailure<TFailure> | RSAADeleteActionResponseSuccess<TSuccess>;
-
-/**
- * This higher order function processes the standard JSON-API index action creator and provides the already encoded
- * URL query to be appended to the JSON-API endpoint URL.
- *
- * @param wrappedActionCreator
- */
-export const encodeJSONAPIIndexParameters = <R>(wrappedActionCreator: WrappedIndexActionCreator<R>) => (
-    size: number = 10,
-    pageNumber: number = 1,
-    sort?: string[],
-    filters?: FlaskFilters,
-    include?: string[],
-) => {
-    const queryParameters = [];
-
-    queryParameters.push(`page[size]=${size}`);
-    queryParameters.push(`page[number]=${pageNumber}`);
-
-    if (sort && sort.length > 0) {
-        queryParameters.push("sort=" + sort.join(","));
-    }
-
-    if (filters && filters.length > 0) {
-        queryParameters.push("filter=" + JSON.stringify(filters));
-    }
-
-    if (include && include.length > 0) {
-        queryParameters.push("include=" + include.join(","));
-    }
-
-    return wrappedActionCreator(queryParameters);
-};
-
-/**
- * This higher order function processes the standard JSON-API index action creator and provides the already encoded
- * URL query to be appended to the JSON-API endpoint URL.
- *
- * @param wrappedActionCreator
- */
-export const encodeJSONAPIChildIndexParameters = <R>(wrappedActionCreator: WrappedChildIndexActionCreator<R>) => (
-    id: string,
-    size: number = 10,
-    pageNumber: number = 1,
-    sort?: string[],
-    filters?: FlaskFilters,
-) => {
-    const queryParameters = [];
-
-    queryParameters.push(`page[size]=${size}`);
-    queryParameters.push(`page[number]=${pageNumber}`);
-
-    if (sort && sort.length > 0) {
-        queryParameters.push("sort=" + sort.join(","));
-    }
-
-    if (filters && filters.length > 0) {
-        queryParameters.push("filter=" + JSON.stringify(filters));
-    }
-
-    return wrappedActionCreator(id, queryParameters);
-};
 

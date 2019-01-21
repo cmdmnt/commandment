@@ -238,6 +238,7 @@ class Certificate(db.Model):
     def from_crypto_type(cls, certificate: x509.Certificate, certtype: CertificateType):
         # type: (certtype, x509.Certificate, CertificateType) -> Certificate
         m = cls()
+        m.serial = certificate.serial_number
         m.pem_data = certificate.public_bytes(serialization.Encoding.PEM)
         m.not_after = certificate.not_valid_after
         m.not_before = certificate.not_valid_before
@@ -351,6 +352,7 @@ class DeviceIdentityCertificate(Certificate):
     @classmethod
     def from_crypto(cls, certificate: x509.Certificate):
         m = cls()
+        m.serial = certificate.serial_number
         m.pem_data = certificate.public_bytes(encoding=serialization.Encoding.PEM)
         m.not_after = certificate.not_valid_after
         m.not_before = certificate.not_valid_before
@@ -380,6 +382,7 @@ class EncryptionCertificate(Certificate):
     def from_crypto(cls, certificate: x509.Certificate):
         # TODO: sometimes serial numbers are too large even for SQLite BIGINT
         m = cls()
+        m.serial = certificate.serial_number
         m.pem_data = certificate.public_bytes(encoding=serialization.Encoding.PEM)
         m.not_after = certificate.not_valid_after
         m.not_before = certificate.not_valid_before

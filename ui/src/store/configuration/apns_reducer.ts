@@ -1,52 +1,76 @@
-import {MDMCertActionTypes} from "./mdmcert_actions";
-import {CsrActionResponse, IMDMCertResponse} from "./mdmcert_actions";
+import {ICsrActionResponse, MDMCertActionTypes, UploadCryptedActionResponse} from "./mdmcert_actions";
+import {IMDMCertResponse} from "./types";
 import {isApiError} from "../../guards";
-import {isJSONAPIErrorResponsePayload} from "../json-api";
+import {ApiError} from "redux-api-middleware";
 
 export interface APNSState {
-    data?: any;
-    registeredEmail: string;
+    csrError: ApiError<any>;
     csrLoading: boolean;
-    csrResult?: IMDMCertResponse;
-    error?: any;
+    csrResult: IMDMCertResponse;
+    data?: any;
+    decryptError: ApiError<any>;
+    decryptLoading: boolean;
+    registeredEmail: string;
 }
 
 const initialState: APNSState = {
+    csrError: null,
     csrLoading: false,
+    csrResult: null,
+    decryptError: null,
+    decryptLoading: false,
     registeredEmail: "",
 };
 
-type APNSAction = CsrActionResponse;
+type APNSAction = ICsrActionResponse | UploadCryptedActionResponse;
 
 export function apns(state: APNSState = initialState, action: APNSAction): APNSState {
     switch (action.type) {
         case MDMCertActionTypes.MDMCERT_CSR_REQUEST:
             return {
                 ...state,
+                csrError: null,
                 csrLoading: true,
                 csrResult: null,
-                error: null,
             };
         case MDMCertActionTypes.MDMCERT_CSR_SUCCESS:
             if (isApiError(action.payload)) {
                 return {
                     ...state,
+                    csrError: action.payload,
                     csrLoading: false,
-                    error: action.payload,
                 }
             } else {
                 return {
                     ...state,
+                    csrError: null,
                     csrLoading: false,
                     csrResult: action.payload,
                 };
             }
-
         case MDMCertActionTypes.MDMCERT_CSR_FAILURE:
             return {
                 ...state,
+                csrError: action.payload,
                 csrLoading: false,
-                error: action.payload,
+            };
+        case MDMCertActionTypes.UPLOAD_CRYPTED_REQUEST:
+            return {
+                ...state,
+                decryptError: null,
+                decryptLoading: true,
+            };
+        case MDMCertActionTypes.UPLOAD_CRYPTED_FAILURE:
+            return {
+                ...state,
+                decryptError: action.payload,
+                decryptLoading: false,
+            };
+        case MDMCertActionTypes.UPLOAD_CRYPTED_SUCCESS:
+            return {
+                ...state,
+                decryptError: null,
+                decryptLoading: false,
             };
         default:
             return state;

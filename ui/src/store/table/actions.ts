@@ -27,7 +27,7 @@ export interface IToggleAllAction {
     type: TableActionTypes;
 }
 
-export const toggleAll = (): ActionCreator<IToggleAllAction> => {
+export const toggleAll: ActionCreator<IToggleAllAction> = () => {
     return {
         type: TableActionTypes.TOGGLE_ALL,
     };

@@ -31,8 +31,8 @@ export class UnconnectedDeviceAuthPage extends React.Component<OwnProps, undefin
     private handleSubmit = (values: IDeviceAuthFormValues): void => {
         this.props.post({
             ...values,
-            key_size: parseInt(values.key_size, 0),
-            key_usage: parseInt(values.key_usage, 0),
+            key_size: values.key_size,
+            key_usage: values.key_usage,
         });
     };
 

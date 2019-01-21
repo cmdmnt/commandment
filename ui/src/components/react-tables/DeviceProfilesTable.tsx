@@ -23,11 +23,10 @@ const columns = [
     },
 ];
 
-export const DeviceProfilesTable = ({ data, ...props }: IDeviceProfilesTableProps & TableProps) => (
+export const DeviceProfilesTable = ({ data, ...props }: IDeviceProfilesTableProps & Partial<TableProps>) => (
     <ReactTable
         manual
         filterable
-        keyField="id"
         data={data}
         columns={columns}
         {...props}

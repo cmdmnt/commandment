@@ -56,7 +56,7 @@ const columns = [
 
 const ReactSelectTable = selectTableHoc(ReactTable);
 
-export const DevicesTable = ({ data, ...props }: IDevicesTableProps & TableProps) => (
+export const DevicesTable = ({ data, ...props }: IDevicesTableProps & Partial<TableProps>) => (
     <ReactSelectTable
         manual
         filterable

@@ -1,7 +1,8 @@
 import { RSAA, RSAAction } from "redux-api-middleware";
 import {JSONAPIDataObject, JSONAPIDetailResponse, JSONAPIListResponse} from "../json-api";
-import {FlaskFilter, FlaskFilters, JSONAPI_HEADERS} from "../constants"
+import {JSONAPI_HEADERS} from "../constants"
 import {Certificate} from "./types";
+import {FlaskFilter, FlaskFilters} from "../../flask-rest-jsonapi";
 
 export type INDEX_REQUEST = "certificates/INDEX_REQUEST";
 export const INDEX_REQUEST: INDEX_REQUEST = "certificates/INDEX_REQUEST";

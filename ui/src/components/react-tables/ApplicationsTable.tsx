@@ -25,6 +25,11 @@ const columns: Column[] = [
         width: 50,
     },
     {
+        Header: "Developer",
+        accessor: "attributes.artist_name",
+        id: "artist_name",
+    },
+    {
         Cell: AppName,
         Header: "Name",
         accessor: "attributes.display_name",
@@ -39,7 +44,7 @@ const columns: Column[] = [
 
 const ReactSelectTable = selectTableHoc(ReactTable);
 
-export const ApplicationsTable = ({ data, ...props }: IApplicationsTableProps & TableProps) => (
+export const ApplicationsTable = ({ data, ...props }: IApplicationsTableProps & Partial<TableProps>) => (
     <ReactSelectTable
         keyField="id"
         selectType="checkbox"

@@ -30,7 +30,7 @@ const columns: Column[] = [
 
 const ReactSelectTable = selectTableHoc(ReactTable);
 
-export const DEPAccountsTable = ({ data, ...props }: IDEPAccountsTableProps & TableProps) => (
+export const DEPAccountsTable = ({ data, ...props }: IDEPAccountsTableProps & Partial<TableProps>) => (
     <ReactSelectTable
         manual
         keyField="id"

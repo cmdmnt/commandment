@@ -11,11 +11,12 @@ import {ButtonLink} from "../components/semantic-ui/ButtonLink";
 import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import {ApplicationsTable} from "../components/react-tables/ApplicationsTable";
-import {IApplicationsState} from "../store/applications/reducer";
+import {IApplicationsState} from "../store/applications/list_reducer";
 import {IReactTableState} from "../store/table/types";
-import {FlaskFilter, FlaskFilterOperation} from "../store/constants";
+import {FlaskFilterOperation} from "../flask-rest-jsonapi";
 import {index, IndexActionRequest} from "../store/applications/actions";
 import {Breadcrumb} from "semantic-ui-react";
+import {FlaskFilter} from "../flask-rest-jsonapi";
 
 export interface IDispatchProps {
     index: IndexActionRequest;

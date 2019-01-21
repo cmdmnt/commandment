@@ -1,13 +1,19 @@
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {
-    encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIDataObject, JSONAPIDetailResponse,
+    JSONAPIDataObject, JSONAPIDetailResponse,
     JSONAPIListResponse,
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse,
 } from "../json-api";
 import {DeviceGroup} from "./types";
-import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants"
+import {JSON_HEADERS, JSONAPI_HEADERS} from "../constants"
 import {Device} from "../device/types";
+import {
+    encodeJSONAPIChildIndexParameters,
+    encodeJSONAPIIndexParameters,
+    FlaskFilter,
+    FlaskFilters
+} from "../../flask-rest-jsonapi";
 
 export type INDEX_REQUEST = "device_groups/INDEX_REQUEST";
 export const INDEX_REQUEST: INDEX_REQUEST = "device_groups/INDEX_REQUEST";

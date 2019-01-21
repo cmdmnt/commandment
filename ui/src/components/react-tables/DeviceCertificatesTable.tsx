@@ -19,11 +19,10 @@ const columns = [
     },
 ];
 
-export const DeviceCertificatesTable = ({ data, ...props }: IDeviceCertificateTableProps & TableProps) => (
+export const DeviceCertificatesTable = ({ data, ...props }: IDeviceCertificateTableProps & Partial<TableProps>) => (
     <ReactTable
         manual
         filterable
-        keyField="id"
         data={data}
         columns={columns}
         {...props}

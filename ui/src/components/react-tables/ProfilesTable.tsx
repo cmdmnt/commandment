@@ -32,7 +32,7 @@ const columns: Column[] = [
 
 const ReactSelectTable = selectTableHoc(ReactTable);
 
-export const ProfilesTable = ({ data, ...props }: IProfilesTableProps & TableProps) => (
+export const ProfilesTable = ({ data, ...props }: IProfilesTableProps & Partial<TableProps>) => (
     <ReactSelectTable
         manual
         keyField="id"

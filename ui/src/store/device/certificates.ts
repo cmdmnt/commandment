@@ -1,10 +1,11 @@
 import {JSONAPI_HEADERS} from "../constants";
 import {RSAA, HTTPVerb, RSAAction} from "redux-api-middleware";
 import {
-    encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
+    RSAAChildIndexActionRequest,
     RSAAIndexActionResponse
 } from "../json-api";
 import {InstalledCertificate} from "./types";
+import {encodeJSONAPIChildIndexParameters} from "../../flask-rest-jsonapi";
 
 
 export type CERTIFICATES_REQUEST = 'devices/CERTIFICATES_REQUEST';

@@ -1,4 +1,6 @@
+from sqlalchemy.orm.exc import NoResultFound
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
+from flask_rest_jsonapi.exceptions import ObjectNotFound
 from commandment.apps.schema import ApplicationManifestSchema, ApplicationSchema, ManagedApplicationSchema
 from commandment.apps.models import db, ApplicationManifest, Application, ManagedApplication, AppstoreMacApplication, \
     AppstoreiOSApplication, EnterpriseMacApplication, EnterpriseiOSApplication
@@ -122,11 +124,24 @@ class ManagedApplicationDetail(ResourceDetail):
 
 
 class ManagedApplicationList(ResourceList):
+    def query(self, view_kwargs):
+        query_ = self.session.query(ManagedApplication)
+        if view_kwargs.get('application_id') is not None:
+            try:
+                self.session.query(Application).filter_by(id=view_kwargs['application_id']).one()
+            except NoResultFound:
+                raise ObjectNotFound({'parameter': 'application_id'},
+                                     "Application: {} not found".format(view_kwargs['application_id']))
+            else:
+                query_ = query_.join(Application).filter(Application.id == view_kwargs['application_id'])
+        return query_
+
     schema = ManagedApplicationSchema
     data_layer = {
         'session': db.session,
         'model': ManagedApplication,
         'url_field': 'managed_application_id',
+        'methods': {'query': query},
     }
 
 

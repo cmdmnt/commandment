@@ -28,6 +28,6 @@ export const SUISelectionTools: React.FunctionComponent<ISUISelectionTools> = (p
             </Dropdown.Menu>
         </Dropdown>
 
-        <ActionMenu />
+        <ActionMenu enabledActions={["BLANK_PUSH"]}/>
     </div>
 );

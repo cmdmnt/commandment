@@ -2,14 +2,15 @@ import {Dispatch} from "redux";
 import {ApiError, HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
 import {
-    encodeJSONAPIIndexParameters, JSONAPIRelationship, RSAAIndexActionRequest,
+    JSONAPIRelationship, RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAReadActionRequest, RSAAReadActionResponse,
 } from "../json-api";
 import {JSONAPIDetailResponse} from "../json-api";
 import {Profile, ProfileRelationship} from "./types";
 import {Tag} from "../tags/types";
 import {RootState} from "../../reducers/index";
-import {FlaskFilter, FlaskFilters, JSONAPI_HEADERS} from "../constants"
+import {JSONAPI_HEADERS} from "../constants"
+import {encodeJSONAPIIndexParameters, FlaskFilter, FlaskFilters} from "../../flask-rest-jsonapi";
 
 export enum ProfilesActionTypes {
     INDEX_REQUEST = "profiles/INDEX_REQUEST",

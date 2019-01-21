@@ -3,7 +3,7 @@ import ReactTable, {TableProps} from "react-table";
 import {AvailableOSUpdate} from "../../store/device/types";
 import {JSONAPIDataObject} from "../../store/json-api";
 
-export interface IDeviceUpdatesTableProps extends TableProps {
+export interface IDeviceUpdatesTableProps extends Partial<TableProps> {
     loading: boolean;
     data: Array<JSONAPIDataObject<AvailableOSUpdate>>;
     onFetchData: (state: any, instance: any) => void;
@@ -33,7 +33,6 @@ export const DeviceUpdatesTable = ({ data, ...props }: IDeviceUpdatesTableProps)
     <ReactTable
         manual
         filterable
-        keyField="id"
         data={data}
         columns={columns}
         {...props}

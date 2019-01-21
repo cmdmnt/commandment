@@ -1,5 +1,5 @@
 import {IDEPAccountsState} from "../../store/dep/accounts_reducer";
-import {accounts, AccountIndexActionRequest} from "../../store/dep/actions";
+import {accounts, AccountIndexActionCreator} from "../../store/dep/actions";
 import {RouteComponentProps} from "react-router";
 import * as React from "react";
 import Container from "semantic-ui-react/src/elements/Container/Container";
@@ -20,7 +20,7 @@ interface ReduxStateProps {
 }
 
 interface ReduxDispatchProps {
-    getAccounts: AccountIndexActionRequest;
+    getAccounts: AccountIndexActionCreator;
 }
 
 interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<any> {

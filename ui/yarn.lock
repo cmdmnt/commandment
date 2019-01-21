@@ -3032,13 +3032,6 @@ babel-plugin-transform-remove-undefined@^0.5.0:
   dependencies:
     babel-helper-evaluate-path "^0.5.0"
 
-babel-plugin-transform-runtime@^6.23.0:
-  version "6.23.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-transform-runtime/-/babel-plugin-transform-runtime-6.23.0.tgz#88490d446502ea9b8e7efb0fe09ec4d99479b1ee"
-  integrity sha1-iEkNRGUC6puOfvsP4J7E2ZR5se4=
-  dependencies:
-    babel-runtime "^6.22.0"
-
 babel-plugin-transform-simplify-comparison-operators@^6.9.4:
   version "6.9.4"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-simplify-comparison-operators/-/babel-plugin-transform-simplify-comparison-operators-6.9.4.tgz#f62afe096cab0e1f68a2d753fdf283888471ceb9"
@@ -3147,7 +3140,7 @@ babel-preset-react-app@^6.1.0:
     babel-plugin-macros "2.4.2"
     babel-plugin-transform-react-remove-prop-types "0.4.18"
 
-babel-runtime@6.x.x, babel-runtime@^6.11.6, babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.23.0, babel-runtime@^6.25.0, babel-runtime@^6.26.0, babel-runtime@^6.5.0:
+babel-runtime@6.x.x, babel-runtime@^6.11.6, babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.23.0, babel-runtime@^6.26.0, babel-runtime@^6.5.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
   integrity sha1-llxwWGaOgrVde/4E/yM3vItWR/4=
@@ -8468,14 +8461,10 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-api-middleware@^2.0.0-beta.3:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/redux-api-middleware/-/redux-api-middleware-2.3.0.tgz#82b5cc1fcb87489ea61f9b8caa24aaf9fc8994f2"
-  integrity sha512-ZXg3O0vGIIrUkjOSxCB3zH+tfgSxs+xOYgZHYzb0Wo7uk478Mk6rl+XyddYneNnULj+ZjwxAHeRJaZavqIrhsA==
-  dependencies:
-    babel-plugin-transform-runtime "^6.23.0"
-    babel-runtime "^6.25.0"
-    lodash.isplainobject "^4.0.6"
+redux-api-middleware@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/redux-api-middleware/-/redux-api-middleware-3.0.1.tgz#fa28b22cf34abdf75fb32ac0c2fd1a50d84637a8"
+  integrity sha512-orktovWGaLoKZU88hWcQ+LswSyMmfxyrR4zEpAa/Ccc3BW2ugZoRqA9ZBFaa8+VbxfZGzz6DsTTxjxsShY9Zqg==
 
 redux-debounce@^1.0.1:
   version "1.0.1"

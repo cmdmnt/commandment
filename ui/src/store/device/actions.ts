@@ -2,9 +2,9 @@ import {Action, Dispatch} from "redux";
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
 import {RootState} from "../../reducers/index";
-import {FlaskFilter, FlaskFilters, JSON_HEADERS, JSONAPI_HEADERS} from "../constants"
+import {JSON_HEADERS, JSONAPI_HEADERS} from "../constants"
 import {
-    encodeJSONAPIChildIndexParameters, encodeJSONAPIIndexParameters, JSONAPIRelationship, JSONAPIRelationships,
+    JSONAPIRelationship, JSONAPIRelationships,
     RSAAChildIndexActionRequest,
     RSAAIndexActionRequest,
     RSAAIndexActionResponse, RSAAPatchActionRequest, RSAAReadActionRequest, RSAAReadActionResponse,
@@ -12,6 +12,12 @@ import {
 import {JSONAPIDetailResponse, JSONAPIErrorResponse} from "../json-api";
 import {Tag} from "../tags/types";
 import {Command, Device, DeviceRelationship} from "./types";
+import {
+    encodeJSONAPIChildIndexParameters,
+    encodeJSONAPIIndexParameters,
+    FlaskFilter,
+    FlaskFilters
+} from "../../flask-rest-jsonapi";
 
 export enum DevicesActionTypes {
     INDEX_REQUEST = "devices/INDEX_REQUEST",

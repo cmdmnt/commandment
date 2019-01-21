@@ -1,6 +1,7 @@
 import * as actions from "./actions";
 import {isJSONAPIErrorResponsePayload, JSONAPIDataObject} from "../json-api";
 import {Organization} from "./types";
+import {isApiError} from "../../guards";
 
 export interface OrganizationState {
     organization?: Organization;
@@ -53,12 +54,29 @@ export function organization(state: OrganizationState = initialState, action: Or
                 loading: false,
             };
         case actions.READ_SUCCESS:
-            return {
-                ...state,
-                lastReceived: new Date(),
-                loading: false,
-                organization: action.payload,
-            };
+            const payload = action.payload;
+            if (isJSONAPIErrorResponsePayload(payload)) {
+                return {
+                    ...state,
+                    error: true,
+                    errorDetail: payload,
+                    loading: false,
+                };
+            } else if (isApiError(payload)) {
+                return {
+                    ...state,
+                    error: true,
+                    errorDetail: payload,
+                    loading: false,
+                }
+            } else {
+                return {
+                    ...state,
+                    lastReceived: new Date(),
+                    loading: false,
+                    organization: payload,
+                };
+            }
         default:
             return state;
     }

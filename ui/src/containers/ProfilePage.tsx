@@ -25,6 +25,7 @@ import {ITagsState} from "../store/tags/reducer";
 import {Tag} from "../store/tags/types";
 
 import {Link} from "react-router-dom";
+import {ResourceIdentifier} from "../json-api-v1";
 
 interface IRouteProps {
     id?: string;
@@ -75,7 +76,7 @@ export class UnconnectedProfilePage extends React.Component<RouteComponentProps<
         let profileTags: number[] = [];
         if (profile && profile.relationships && profile.relationships.tags) {
             if (isArray(profile.relationships.tags.data)) {
-                profileTags = profile.relationships.tags.data.map((t: JSONAPIRelationship) => parseInt(t.id, 0));
+                profileTags = profile.relationships.tags.data.map((t: ResourceIdentifier) => parseInt(t.id, 0));
             }
 
         }
@@ -134,7 +135,7 @@ export class UnconnectedProfilePage extends React.Component<RouteComponentProps<
     };
 }
 
-export const ProfilePage = connect<IReduxStateProps, IReduxDispatchProps, {}>(
+export const ProfilePage = connect<IReduxStateProps, IReduxDispatchProps>(
     mapStateToProps,
     mapDispatchToProps,
 )(UnconnectedProfilePage);

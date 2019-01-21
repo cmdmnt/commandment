@@ -1,9 +1,10 @@
 import {JSONAPI_HEADERS} from "../constants";
 import {RSAA, HTTPVerb, RSAAction} from "redux-api-middleware";
 import {
-    encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest, RSAAIndexActionResponse
+    RSAAChildIndexActionRequest, RSAAIndexActionResponse
 } from "../json-api";
 import {InstalledApplication} from "./types";
+import {encodeJSONAPIChildIndexParameters} from "../../flask-rest-jsonapi";
 
 
 export type APPLICATIONS_REQUEST = 'devices/APPLICATIONS_REQUEST';

@@ -17,3 +17,9 @@ export interface VPPAccount {
     org_name: string;
     exp_date: string;
 }
+
+// Possible Responses from mdmcert.download
+export interface IMDMCertResponse {
+    result: "failure" | "success";
+    reason?: string;
+}

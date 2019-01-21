@@ -9,7 +9,7 @@ import {bindActionCreators, Store, Dispatch} from "redux";
 import {SUISelectionTools} from "../components/react-table/SUISelectionTools";
 import {DevicesTable} from "../components/react-tables/DevicesTable";
 import {RootState} from "../reducers/index";
-import {FlaskFilter, FlaskFilterOperation} from "../store/constants";
+import {FlaskFilterOperation} from "../flask-rest-jsonapi";
 import * as actions from "../store/device/actions";
 import {IDevicesState} from "../store/devices/devices";
 import * as tableActions from "../store/table/actions";
@@ -19,6 +19,7 @@ import {IReactTableState} from "../store/table/types";
 import * as tagActions from "../store/tags/actions";
 import {ITagsState} from "../store/tags/reducer";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
+import {FlaskFilter} from "../flask-rest-jsonapi";
 
 interface IReduxStateProps {
     devices: IDevicesState;

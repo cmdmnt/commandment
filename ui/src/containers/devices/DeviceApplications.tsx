@@ -4,12 +4,13 @@ import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators, Dispatch} from "redux";
 import {DeviceApplicationsTable} from "../../components/react-tables/DeviceApplicationsTable";
 import {RootState} from "../../reducers/index";
-import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
+import {FlaskFilterOperation} from "../../flask-rest-jsonapi";
 import {
     applications as fetchInstalledApplications, InstalledApplicationsActionRequest,
 } from "../../store/device/applications";
 import {InstalledApplicationsState} from "../../store/device/installed_applications_reducer";
 import {IReactTableState} from "../../store/table/types";
+import {FlaskFilter} from "../../flask-rest-jsonapi";
 
 interface IReduxStateProps {
     installed_applications?: InstalledApplicationsState;

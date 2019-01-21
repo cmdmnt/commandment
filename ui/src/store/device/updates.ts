@@ -1,10 +1,11 @@
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {
-    encodeJSONAPIChildIndexParameters, RSAAChildIndexActionRequest,
+    RSAAChildIndexActionRequest,
     RSAAIndexActionResponse,
 } from "../json-api";
 import {AvailableOSUpdate} from "./types";
 import {JSONAPI_HEADERS} from "../constants";
+import {encodeJSONAPIChildIndexParameters} from "../../flask-rest-jsonapi";
 
 export const UPDATES_REQUEST = "devices/UPDATES_REQUEST";
 export type UPDATES_REQUEST = typeof UPDATES_REQUEST;

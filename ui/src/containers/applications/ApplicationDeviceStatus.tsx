@@ -4,13 +4,17 @@ import {RouteComponentProps} from "react-router";
 import {bindActionCreators, Dispatch} from "redux";
 import {AppDeployStatusTable} from "../../components/react-tables/AppDeployStatusTable";
 import {RootState} from "../../reducers";
-import {index, IndexActionRequest} from "../../store/applications/managed";
+import {devices, DevicesActionRequest, index, IndexActionRequest} from "../../store/applications/managed";
 import {IManagedApplicationsState} from "../../store/applications/managed_reducer";
-import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
+import {FlaskFilterOperation} from "../../flask-rest-jsonapi";
 import {IReactTableState} from "../../store/table/types";
+import {managed, ManagedActionRequest} from "../../store/applications/actions";
+import {FlaskFilter} from "../../flask-rest-jsonapi";
 
 interface IDispatchProps {
     index: IndexActionRequest;
+    devices: DevicesActionRequest;
+    managed: ManagedActionRequest;
 }
 
 interface IStateProps {
@@ -43,6 +47,7 @@ class UnconnectedApplicationDeviceStatus extends React.Component<IApplicationDev
     }
 
     private fetchData = (state: IReactTableState) => {
+        const appId = this.props.match.params.id;
         const sorting = state.sorted.map((value) => (value.desc ? value.id : "-" + value.id));
         const filtering: FlaskFilter[] = state.filtered.map((value) => {
             return {
@@ -52,7 +57,7 @@ class UnconnectedApplicationDeviceStatus extends React.Component<IApplicationDev
             };
         });
 
-        this.props.index(state.pageSize, state.page + 1, sorting, filtering, ["device"]);
+        this.props.managed(appId, state.pageSize, state.page + 1, sorting, filtering);
     }
 }
 
@@ -61,5 +66,7 @@ export const ApplicationDeviceStatus = connect(
         store: state.managed_applications,
 }),
     (dispatch: Dispatch) => bindActionCreators({
-    index,
+        devices,
+        index,
+        managed,
 }, dispatch))(UnconnectedApplicationDeviceStatus);

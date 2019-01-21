@@ -99,7 +99,10 @@ def decrypt_mdmcert(response: bytes, decrypt_with: RSAPrivateKeyWithSerializatio
     """
     decoded_payload = unhexlify(response)
 
+    # try:
     result = decrypt_smime_content(decoded_payload, decrypt_with)
+    # except ValueError as e:
+    #     return abort(400, e)
     # result = decrypt_with.decrypt(
     #     decoded_payload,
     #     padding.PKCS7(block_size=8)

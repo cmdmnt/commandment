@@ -1,9 +1,9 @@
 import * as React from "react";
 import {CellInfo} from "react-table";
-import {Icon} from "semantic-ui-react";
+import {Icon, IconProps} from "semantic-ui-react";
 import {FunctionComponent, ReactElement} from "react";
 
-const icons: { [status: string]: ReactElement } = {
+const icons: { [status: string]: JSX.Element } = {
     "CommandStatus.Acknowledged": <Icon name="check" color="grey" />,
     "CommandStatus.Error": <Icon name="ban" color="red" />,
     "CommandStatus.NotNow": <Icon name="question circle outline" color="blue" />,

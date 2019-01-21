@@ -1,6 +1,5 @@
 declare module "redux-api-middleware" {
     import {Action, AnyAction, Middleware} from "redux";
-
     /**
      * Symbol key that carries API call info interpreted by this Redux middleware.
      *
@@ -9,8 +8,16 @@ declare module "redux-api-middleware" {
      * @default
      */
     export const RSAA: string;
+    export type RSAA = "@@redux-api-middleware/RSAA";
 
-    //// ERRORS
+//// ERRORS
+
+    export enum ErrorNames {
+        ApiError = "ApiError",
+        InternalError = "InternalError",
+        InvalidRSAA = "InvalidRSAA",
+        RequestError = "RequestError",
+    }
 
     /**
      * Error class for an RSAA that does not conform to the RSAA definition
@@ -19,12 +26,12 @@ declare module "redux-api-middleware" {
      * @access public
      * @param {array} validationErrors - an array of validation errors
      */
-    export class InvalidRSAA {
-        constructor(validationErrors: string[]);
+    export class InvalidRSAA extends Error {
+        public name: ErrorNames.InvalidRSAA;
+        public message: string;
+        public validationErrors: string[];
 
-        name: string;
-        message: string;
-        validationErrors: string[];
+        constructor(validationErrors: string[]);
     }
 
     /**
@@ -34,11 +41,11 @@ declare module "redux-api-middleware" {
      * @access public
      * @param {string} message - the error message
      */
-    export class InternalError {
-        constructor(message: string);
+    export class InternalError extends Error {
+        public name: ErrorNames.InternalError;
+        public message: string;
 
-        name: string;
-        message: string;
+        constructor(message: string);
     }
 
     /**
@@ -48,11 +55,11 @@ declare module "redux-api-middleware" {
      * @access public
      * @param {string} message - the error message
      */
-    export class RequestError {
-        constructor(message: string);
+    export class RequestError extends Error {
+        public name: ErrorNames.RequestError;
+        public message: string;
 
-        name: string;
-        message: string;
+        constructor(message: string);
     }
 
     /**
@@ -65,27 +72,34 @@ declare module "redux-api-middleware" {
      * @param {object} response - the parsed JSON response of the API server if the
      *  'Content-Type' header signals a JSON response
      */
-    export class ApiError<R = any> {
-        constructor(status: number, statusText: string, response: any);
+    export class ApiError<R = any> extends Error {
+        public name: ErrorNames.ApiError;
+        public message: string;
+        public status: number;
+        public statusText: string;
+        public response?: R;
 
-        name: string;
-        message: string;
-        status: number;
-        statusText: string;
-        response?: R;
+        constructor(status: number, statusText: string, response: R);
     }
 
-    //// VALIDATION
+//// VALIDATION
 
     /**
      * Is the given action a plain JavaScript object with a [RSAA] property?
      */
-    export function isRSAA(action: object): action is RSAAction<any, any, any>;
+    export function isRSAA(action: any): action is RSAAction<any, any, any>;
 
-    export interface TypeDescriptor<TSymbol> {
+    /**
+     * The README explains the following criteria for a TypeDescriptor:
+     *
+     * A type descriptor **MUST**:
+     * - be a plain JavaScript object
+     * - have a `type` property, which **MUST** be a string or a `Symbol`.
+     */
+    export interface TypeDescriptor<TSymbol, TPayload = any, TMeta = any> {
         type: string | TSymbol;
-        payload: any;
-        meta: any;
+        payload?: TPayload;
+        meta?: TMeta;
     }
 
     /**
@@ -97,21 +111,32 @@ declare module "redux-api-middleware" {
      * Checks an action against the RSAA definition, returning a (possibly empty)
      * array of validation errors.
      */
-    function validateRSAA(action: object): string[];
+    export function validateRSAA(action: any): string[];
 
     /**
      * Is the given action a valid RSAA?
      */
-    function isValidRSAA(action: object): boolean;
+    export function isValidRSAA(action: any): boolean;
 
-    //// MIDDLEWARE
+//// MIDDLEWARE
+
+    export interface MiddlewareOptions {
+        // Determines whether the response is an error
+        ok: (res: any) => boolean;
+        fetch: GlobalFetch;
+    }
+
+    /**
+     * Create middleware with custom options.
+     */
+    export function createMiddleware(options?: MiddlewareOptions): Middleware;
 
     /**
      * A Redux middleware that processes RSAA actions.
      */
     export const apiMiddleware: Middleware;
 
-    //// UTIL
+//// UTIL
 
     /**
      * Extract JSON body from a server response
@@ -138,21 +163,35 @@ declare module "redux-api-middleware" {
         types: [R, S, F];
     }
 
-    export interface RSAAction<R, S, F> {
+    export enum Credentials {
+        omit = "omit",
+        sameOrigin = "same-origjn",
+        include = "include",
+    }
+
+    export type RSAAActionType = string | TypeDescriptor<any>;
+    export type RSAAActionTypes = [RSAAActionType, RSAAActionType, RSAAActionType];
+
+    export interface RSAAction<TRequest, TSuccess, TFail> {
         [propName: string]: { // Symbol as object key seems impossible
             endpoint: string;  // or function
             method: HTTPVerb;
+            types: [TRequest, TSuccess, TFail];
             body?: any;
-            headers?: { [propName: string]: string }; // or function
-            credentials?: "omit" | "same-origin" | "include";
+            headers?: any; // or function
+            options?: any;
+            credentials?: Credentials;
             bailout?: boolean; // or function
-            types: [R, S, F];
+            fetch?: GlobalFetch;
+            ok?: any;
         }
     }
 
+    //// Augmentations
+
     module "redux" {
-        export interface Dispatch {
-            [rsaa: string]: RSAActionBody<any, any, any>;
+        export interface AnyAction {
+            "@@redux-api-middleware/RSAA"?: RSAActionBody<any, any, any>;
         }
     }
 }

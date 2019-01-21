@@ -15,8 +15,8 @@ import {
     patchProfile,
     postProfile,
     profile, ProfilePatchActionRequest,
-    ProfilePostActionRequest,
-    ProfileReadActionRequest,
+    ProfilePostActionCreator,
+    ProfileReadActionCreator,
 } from "../store/dep/actions";
 import {IDEPProfileState} from "../store/dep/profile_reducer";
 import {DEPProfile, SkipSetupSteps} from "../store/dep/types";
@@ -28,8 +28,8 @@ interface IReduxStateProps {
 }
 
 interface IReduxDispatchProps {
-    getDEPProfile: ProfileReadActionRequest;
-    postDEPProfile: ProfilePostActionRequest;
+    getDEPProfile: ProfileReadActionCreator;
+    postDEPProfile: ProfilePostActionCreator;
     patchDEPProfile: ProfilePatchActionRequest;
 }
 

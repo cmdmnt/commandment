@@ -4,10 +4,11 @@ import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators, Dispatch} from "redux";
 import {DeviceCommandsTable} from "../../components/react-tables/DeviceCommandsTable";
 import {RootState} from "../../reducers/index";
-import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
+import {FlaskFilterOperation} from "../../flask-rest-jsonapi";
 import {commands as fetchCommands, CommandsActionRequest} from "../../store/device/actions";
 import {DeviceCommandsState} from "../../store/device/commands_reducer";
 import {IReactTableState} from "../../store/table/types";
+import {FlaskFilter} from "../../flask-rest-jsonapi";
 
 interface IReduxStateProps {
     commands?: DeviceCommandsState;

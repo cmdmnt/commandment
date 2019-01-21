@@ -8,7 +8,7 @@ import {
     post, PostActionRequest,
   //  read, ReadActionRequest
 } from "../../store/applications/actions";
-import {ApplicationForm, IFormData, IFormData as ApplicationFormData} from "../../forms/ApplicationForm";
+// import {ApplicationForm, IFormData, IFormData as ApplicationFormData} from "../../forms/ApplicationForm";
 import {RootState} from "../../reducers";
 
 interface IReduxStateProps {
@@ -32,13 +32,13 @@ class UnconnectedApplicationPage extends React.Component<IReduxStateProps & IRed
         }
     }
 
-    public handleSubmit = (values: IFormData) => {
-        if (this.props.match.params.id) {
-            // this.props.patch()
-        } else {
-            this.props.post(values);
-        }
-    };
+    // public handleSubmit = (values: IFormData) => {
+    //     if (this.props.match.params.id) {
+    //         // this.props.patch()
+    //     } else {
+    //         this.props.post(values);
+    //     }
+    // };
 
     public render() {
         const { } = this.props;
@@ -46,7 +46,7 @@ class UnconnectedApplicationPage extends React.Component<IReduxStateProps & IRed
         return (
             <Container>
                 <Header as="h1">Application</Header>
-                <ApplicationForm onSubmit={this.handleSubmit} onClickFetch={this.fetchManifestURL} />
+                {/*<ApplicationForm onSubmit={this.handleSubmit} onClickFetch={this.fetchManifestURL} />*/}
             </Container>
         );
     }

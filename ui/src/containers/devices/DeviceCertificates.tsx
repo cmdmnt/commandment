@@ -7,7 +7,8 @@ import {InstalledCertificatesState} from "../../store/device/installed_certifica
 import {RootState} from "../../reducers/index";
 import {DeviceCertificatesTable} from "../../components/react-tables/DeviceCertificatesTable";
 import {IReactTableState} from "../../store/table/types";
-import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
+import {FlaskFilterOperation} from "../../flask-rest-jsonapi";
+import {FlaskFilter} from "../../flask-rest-jsonapi";
 
 interface IReduxStateProps {
     installed_certificates: InstalledCertificatesState;

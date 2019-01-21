@@ -29,7 +29,7 @@ const columns: Column[] = [
 
 const ReactSelectTable = selectTableHoc(ReactTable);
 
-export const DEPProfilesTable = ({ data, ...props }: IDEPProfilesTableProps & TableProps) => (
+export const DEPProfilesTable = ({ data, ...props }: IDEPProfilesTableProps & Partial<TableProps>) => (
     <ReactSelectTable
         keyField="id"
         selectType="checkbox"

@@ -13,8 +13,9 @@ api.route(ApplicationList, 'applications_list',
 api.route(ApplicationDetail, 'application_detail',
           '/v1/applications/<int:application_id>')
 api.route(ApplicationRelationship, 'application_tags', '/v1/applications/<int:application_id>/relationships/tags')
+
 api.route(ManagedApplicationList, 'managed_applications_list',
-          '/v1/managed_applications')
+          '/v1/managed_applications', '/v1/applications/<int:application_id>/managed_applications')
 api.route(ManagedApplicationDetail, 'managed_application_detail',
           '/v1/managed_applications/<int:managed_application_id>')
 api.route(ManagedApplicationRelationship, 'managed_application_device',
@@ -31,5 +32,4 @@ api.route(IOSApplicationList, 'ios_applications_list',
           '/v1/applications/store/ios')
 api.route(IOSApplicationDetail, 'ios_application_detail',
           '/v1/applications/store/ios/<int:application_id>')
-
 

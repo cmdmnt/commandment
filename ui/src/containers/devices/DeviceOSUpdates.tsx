@@ -2,7 +2,7 @@ import * as React from "react";
 import {connect} from "react-redux";
 import {RouteComponentProps, RouteProps} from "react-router";
 import {bindActionCreators, Dispatch} from "redux";
-import {FlaskFilters} from "../../store/constants";
+import {FlaskFilter, FlaskFilters} from "../../flask-rest-jsonapi";
 import {DeviceUpdatesTable} from "../../components/react-tables/DeviceUpdatesTable";
 import {RootState} from "../../reducers";
 import {AvailableOSUpdatesState} from "../../store/device/available_os_updates_reducer";
@@ -12,7 +12,7 @@ import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
 import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import Checkbox from "semantic-ui-react/dist/commonjs/modules/Checkbox/Checkbox";
 import {IReactTableState} from "../../store/table/types";
-import {FlaskFilter, FlaskFilterOperation} from "../../store/constants";
+import {FlaskFilterOperation} from "../../flask-rest-jsonapi";
 
 interface IReduxStateProps {
     is_supervised?: boolean;

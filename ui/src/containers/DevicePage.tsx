@@ -150,7 +150,7 @@ class BaseDevicePage extends React.Component<DevicePageProps, IDevicePageState> 
             if (device.device.attributes.is_dep && device.device.attributes.is_enrolled === false) {
                 DetailComponent = <DEPDeviceDetail device={device}/>;
                 showTools = false;
-            } else if (operatingSystem(device.device.attributes.model_name) === DeviceOperatingSystem.iOS as string) {
+            } else if (operatingSystem(device.device.attributes.model_name) === DeviceOperatingSystem.iOS) {
                 DetailComponent = <IOSDeviceDetail device={device}
                                                    tags={tags}
                                                    deviceTags={deviceTags}

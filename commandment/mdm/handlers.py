@@ -309,3 +309,9 @@ def ack_managed_application_list(request: DBCommand, device: Device, response: d
             dbc = DBCommand.from_model(c)
             dbc.device = device
             db.session.add(dbc)
+
+            ma = ManagedApplication(device=device, application=app, ia_command=dbc, status=ManagedAppStatus.Queued)
+            db.session.add(ma)
+
+    db.session.commit()
+

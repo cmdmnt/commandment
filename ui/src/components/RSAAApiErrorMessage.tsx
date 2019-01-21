@@ -4,7 +4,7 @@ import Message from "semantic-ui-react/src/collections/Message/Message";
 import {JSONAPIErrorObject, JSONAPIErrorResponse} from "../store/json-api";
 
 export interface IRSAAApiErrorMessageProps {
-    error: ApiError<JSONAPIErrorResponse>;
+    error: ApiError<any>;
 }
 
 export const RSAAApiErrorMessage: React.FunctionComponent<IRSAAApiErrorMessageProps> =
@@ -14,7 +14,7 @@ export const RSAAApiErrorMessage: React.FunctionComponent<IRSAAApiErrorMessagePr
         header="An error occurred communicating with the server"
         list={[
             `Status: ${props.error.status} - ${props.error.statusText}`,
-            ...props.error.response.errors.map((err: JSONAPIErrorObject) => `${err.detail}`),
+            // ...props.error.response.errors.map((err: JSONAPIErrorObject) => `${err.detail}`),
         ]}
     />
 );

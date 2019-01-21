@@ -12,7 +12,7 @@ import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown"
 import {Link} from "react-router-dom";
 import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 import {
-    AccountIndexActionRequest, accounts
+    AccountIndexActionCreator, accounts,
 } from "../../store/dep/actions";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
 import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
@@ -28,7 +28,7 @@ interface ReduxStateProps {
 }
 
 interface ReduxDispatchProps {
-    getAccounts: AccountIndexActionRequest;
+    getAccounts: AccountIndexActionCreator;
 }
 
 interface OwnProps extends ReduxStateProps, ReduxDispatchProps, RouteComponentProps<RouteProps> {
@@ -78,7 +78,7 @@ export class UnconnectedDEPAccountsPage extends React.Component<OwnProps, void> 
     }
 }
 
-export const DEPAccountsPage = connect<ReduxStateProps, ReduxDispatchProps, OwnProps>(
+export const DEPAccountsPage = connect<ReduxStateProps, ReduxDispatchProps>(
     (state: RootState): ReduxStateProps => ({
         accounts: state.dep.accounts,
     }),

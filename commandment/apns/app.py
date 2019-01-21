@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Blueprint, request, abort, current_app, jsonify
 from sqlalchemy.orm.exc import NoResultFound
 
-
+from commandment.errors import JSONAPIError
 from commandment.models import db, Device
 from commandment.pki.models import RSAPrivateKey, CertificateSigningRequest, CACertificate, \
     EncryptionCertificate
@@ -127,7 +127,15 @@ def mdmcert_decrypt():
         return abort(500, 'unable to decrypt, there was no decryption cert')
 
     pk = encrypt_cert.rsa_private_key.to_crypto()
-    result = decrypt_mdmcert(encrypted_payload, pk)
+
+    try:
+        result = decrypt_mdmcert(encrypted_payload, pk)
+    except ValueError as e:
+        raise JSONAPIError(
+            title="Unable to decrypt signed request",
+            status=415,
+            detail="Could not find a suitable private key to decrypt the given request",
+        )
 
     return result, 200, {
         'Content-Type': 'application/octet-stream',

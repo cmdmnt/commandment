@@ -2,7 +2,6 @@ import {Dispatch} from "redux";
 import {HTTPVerb, RSAA, RSAAction} from "redux-api-middleware";
 import {ThunkAction} from "redux-thunk";
 import {
-    encodeJSONAPIIndexParameters,
     JSONAPIDetailResponse, RSAAIndexActionRequest,
     RSAAIndexActionResponse,
     RSAAReadActionRequest,
@@ -11,6 +10,7 @@ import {
 import {RootState} from "../../reducers/index";
 import {JSON_HEADERS, JSONAPI_HEADERS} from "../constants";
 import {VPPAccount} from "./types";
+import {encodeJSONAPIIndexParameters} from "../../flask-rest-jsonapi";
 
 export enum VPPActionTypes {
     TOKEN_REQUEST = "vpp/TOKEN_REQUEST",
