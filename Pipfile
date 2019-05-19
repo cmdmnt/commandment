@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
 
 [packages]
 acme = "*"
@@ -24,7 +24,6 @@ flask-alembic = "*"
 flask-cors = "*"
 flask-jwt = "*"
 flask-marshmallow = "*"
-flask-oauthlib = "*"
 flask-rest-jsonapi = "*"
 flask-restful = "*"
 flask-sqlalchemy = "*"
@@ -46,7 +45,6 @@ pygments = "*"
 pyparsing = "*"
 "repoze.who" = "*"
 requests = "*"
-requests-oauthlib = "*"
 rsa = "*"
 SCEPy = {git = "https://github.com/cmdmnt/SCEPy.git", editable = true}
 semver = "*"
@@ -71,5 +69,4 @@ sphinxcontrib-plantuml = "*"
 sphinxcontrib-websupport = "*"
 guzzle-sphinx-theme = "*"
 typing = "*"
-"e1839a8" = {path = ".", editable = true}
 sphinx-rtd-theme = "*"

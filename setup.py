@@ -27,7 +27,6 @@ setup(
         'flask-cors==3.0.4',
         'flask-jwt==0.3.2',
         'flask-marshmallow==0.9.0',
-        'flask-oauthlib==0.9.5',
         'flask-rest-jsonapi==0.19.0',
         'flask-sqlalchemy==2.3.2',
         'marshmallow==2.13.1',
