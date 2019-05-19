@@ -53,6 +53,7 @@ ukpostcodeparser = "*"
 sqlalchemy = "*"
 cryptography = "*"
 python-dateutil = "*"
+requests-oauthlib = "*"
 
 [dev-packages]
 alembic-viz = "*"
