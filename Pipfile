@@ -54,6 +54,7 @@ sqlalchemy = "*"
 cryptography = "*"
 python-dateutil = "*"
 requests-oauthlib = "*"
+authlib = "*"
 
 [dev-packages]
 alembic-viz = "*"
