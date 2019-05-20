@@ -166,3 +166,6 @@ deptoken.json
 
 # mypy
 .mypy_cache
+
+# npm lock
+package-lock.json

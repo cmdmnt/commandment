@@ -25,3 +25,21 @@ management. The source is written in `TypeScript <https://www.typescriptlang.org
 The UI framework/CSS framework is `semantic-ui <https://semantic-ui.com/>`_. We use the React components for this as well.
 
 
+Services
+--------
+
+Python is notoriously bad for multi-threaded or concurrent i/o, so it would make sense to split responsibilities across
+microservices. The difficulty in installation can be resolved via the use of docker-compose as the primary "kick the tyres"
+method of deployment.
+
+Services can be broken down like this:
+
+- **DEPuty**: The DEPuty should be responsible for scanning and syncing DEP devices and automatically assigning default
+  profiles to those devices.
+
+- **Frontdesk**: The frontdesk should take connections from MDM devices and relay queued commands back to those devices.
+  It can report command errors back to the main application.
+
+- **Classifier**: This should arrange devices into groups based on inventory and attributes of those devices. It can be
+  notified of changes in inventory but should be a delayed evaluation. The groups it produces should just be marked as
+  non editable by the user.
