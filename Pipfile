@@ -15,7 +15,7 @@ apns = "*"
 "apns2-client" = "*"
 babel = "*"
 biplist = "*"
-bixar = {git = "https://github.com/cmdmnt/bixar.git", editable = true}
+bixar = {git = "https://github.com/cmdmnt/bixar.git",editable = true}
 blinker = "*"
 decorator = "*"
 docutils = "*"
@@ -46,7 +46,7 @@ pyparsing = "*"
 "repoze.who" = "*"
 requests = "*"
 rsa = "*"
-SCEPy = {git = "https://github.com/cmdmnt/SCEPy.git", editable = true}
+SCEPy = {git = "https://github.com/cmdmnt/SCEPy.git",editable = true}
 semver = "*"
 signxml = "*"
 ukpostcodeparser = "*"
@@ -55,6 +55,7 @@ cryptography = "*"
 python-dateutil = "*"
 requests-oauthlib = "*"
 authlib = "*"
+commandment = {editable = true,path = "."}
 
 [dev-packages]
 alembic-viz = "*"

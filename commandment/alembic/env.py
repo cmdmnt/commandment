@@ -15,9 +15,10 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 from commandment.models import db
 # import commandment.vpp.models
-import commandment.dep.models
+#import commandment.dep.models
 #import commandment.apps.models
-import commandment.pki.models
+#import commandment.pki.models
+import commandment.auth.models
 target_metadata = db.metadata
 
 

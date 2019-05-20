@@ -76,3 +76,17 @@ SCEPY_DUMP_DIR = '/tmp/scepy_dump'
 # If the GetCACert would return a single cert, force it to use a CMS degenerate case?
 # -----
 SCEPY_FORCE_DEGENERATE_FOR_SINGLE_CERT = False
+
+# ------------------------
+# Authlib (Authentication)
+# ------------------------
+
+# Token Expiry
+#
+# OAUTH2_TOKEN_EXPIRES_IN = {
+#     'authorization_code': 864000,
+#     'implicit': 3600,
+#     'password': 864000,
+#     'client_credentials': 864000
+# }
+
