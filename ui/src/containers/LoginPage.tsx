@@ -2,12 +2,17 @@ import * as React from "react";
 import {FunctionComponent} from "react";
 import {RouteProps} from "react-router";
 import {Button, Card, Checkbox, Form} from "semantic-ui-react";
+import {connect} from "react-redux";
+import {RootState} from "../reducers";
+import {bindActionCreators, Dispatch} from "redux";
+import * as actions from "../store/auth/actions";
+
 
 export interface ILoginPageProps {
-    onLogin: (evt: Event) => void;
+    login: (evt: Event) => void;
 }
 
-export const LoginPage: FunctionComponent<ILoginPageProps & RouteProps> = ({ onLogin }: ILoginPageProps) => {
+export const UnconnectedLoginPage: FunctionComponent<ILoginPageProps & RouteProps> = ({ login }: ILoginPageProps) => {
     return (
         <Card>
             <Card.Content>
@@ -22,10 +27,26 @@ export const LoginPage: FunctionComponent<ILoginPageProps & RouteProps> = ({ onL
                             <label>Password</label>
                             <input type="password" placeholder="Password" />
                         </Form.Field>
-                        <Button type="submit" onClick={onLogin}>Submit</Button>
+                        <Button type="submit" onClick={() => { login("mosen", "mosen"); }}>Submit</Button>
                     </Form>
                 </Card.Description>
             </Card.Content>
         </Card>
     );
 };
+
+function mapStateToProps(state: RootState, ownProps?: any): {} {
+    return {};
+}
+
+interface IReduxDispatchProps {
+    login: actions.TokenActionRequest;
+}
+
+function mapDispatchToProps(dispatch: Dispatch, ownProps?: any): IReduxDispatchProps {
+    return bindActionCreators({
+        login: actions.login,
+    }, dispatch);
+}
+
+export const LoginPage = connect(mapStateToProps, mapDispatchToProps)(UnconnectedLoginPage);

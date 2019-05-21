@@ -5,6 +5,7 @@ import {applications, IApplicationsState} from "../store/applications/list_reduc
 import {IManagedApplicationsState, managed_applications} from "../store/applications/managed_reducer";
 import {application, IApplicationState} from "../store/applications/reducer";
 import {assistant, IAssistantState} from "../store/assistant/reducer";
+import {IAuthenticationState, reducer as auth} from "../store/auth/reducer";
 import {certificates, CertificatesState} from "../store/certificates/reducer";
 import {commands, CommandsState} from "../store/commands/reducer";
 import {configuration, ConfigurationState} from "../store/configuration/reducer";
@@ -23,6 +24,7 @@ export interface RootState {
 
     certificates?: CertificatesState;
     assistant?: IAssistantState;
+    auth?: IAuthenticationState;
     configuration?: ConfigurationState;
     organization?: OrganizationState;
     devices?: IDevicesState;
@@ -43,6 +45,7 @@ export const rootReducer = (history: any) => combineReducers<RootState>({
     application,
     applications,
     assistant,
+    auth,
     certificates,
     commands,
     configuration,
