@@ -9,6 +9,7 @@ module.exports = function(api) {
       "@babel/plugin-transform-react-display-name",
       "@babel/plugin-proposal-class-properties",
       "@babel/plugin-proposal-export-namespace-from",
+      "react-hot-loader/babel"
     ],
     presets: [
 
