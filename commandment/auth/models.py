@@ -15,7 +15,7 @@ class User(db.Model):
         return self.id
 
 
-class Client(db.Model, OAuth2ClientMixin):
+class OAuth2Client(db.Model, OAuth2ClientMixin):
     """OAuth 2 Client"""
     __tablename__ = 'oauth2_clients'
 
@@ -26,7 +26,7 @@ class Client(db.Model, OAuth2ClientMixin):
     user = db.relationship('User')
 
 
-class Token(db.Model, OAuth2TokenMixin):
+class OAuth2Token(db.Model, OAuth2TokenMixin):
     """Bearer Token"""
     __tablename__ = 'oauth2_tokens'
 
