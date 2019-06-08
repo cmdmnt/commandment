@@ -42,7 +42,7 @@ def push(device_id: int):
     try:
         response = push_to_device(device)
     except ssl.SSLError:
-        return abort(jsonify(error=True, message="The push certificate has expired"))
+        return abort(400, jsonify(error=True, message="The push certificate has expired"))
 
     current_app.logger.info("[APNS2 Response] Status: %d, Reason: %s, APNS ID: %s, Timestamp",
                             response.status_code, response.reason, response.apns_id.decode('utf-8'))
