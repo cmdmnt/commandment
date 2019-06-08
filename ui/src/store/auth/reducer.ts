@@ -1,4 +1,6 @@
 import {AuthenticationActions, AuthenticationActionTypes} from "./actions";
+import {isApiError} from "../../guards";
+import {ApiError} from "redux-api-middleware";
 
 export interface IAuthenticationState {
     // In reality, nobody should store the secret client side, but we need to establish an authentication system before
@@ -11,10 +13,13 @@ export interface IAuthenticationState {
     token_type?: string;
 
     loading: boolean;
+
+    error?: ApiError;
 }
 
 const initialState: IAuthenticationState = {
     access_token: sessionStorage.getItem("cmdmnt-token"),
+    error: null,
     expires_in: 0,
     loading: false,
     oauth2_client_id: "F8955645-A21D-44AE-9387-42B0800ADF15",
@@ -38,8 +43,14 @@ export function reducer(state: IAuthenticationState = initialState, action: Auth
                 token_type: action.payload.token_type,
             };
         case AuthenticationActionTypes.TOKEN_FAILURE:
+            let err = null;
+
+            if (isApiError(action.payload)) {
+                err = action.payload;
+            }
             return {
                 ...state,
+                error: err,
                 loading: false,
             };
         case AuthenticationActionTypes.TOKEN_SAVE:
