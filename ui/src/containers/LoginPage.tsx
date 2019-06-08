@@ -1,12 +1,11 @@
 import * as React from "react";
 import {FunctionComponent} from "react";
-import {RouteProps} from "react-router";
-import {Button, Card, Checkbox, Form} from "semantic-ui-react";
 import {connect} from "react-redux";
-import {RootState} from "../reducers";
+import {RouteProps} from "react-router";
 import {bindActionCreators, Dispatch} from "redux";
+import {Button, Card, Checkbox, Form} from "semantic-ui-react";
+import {RootState} from "../reducers";
 import * as actions from "../store/auth/actions";
-
 
 export interface ILoginPageProps {
     login: (evt: Event) => void;
@@ -40,7 +39,7 @@ function mapStateToProps(state: RootState, ownProps?: any): {} {
 }
 
 interface IReduxDispatchProps {
-    login: actions.TokenActionRequest;
+    login: actions.TokenActionRequestCreator;
 }
 
 function mapDispatchToProps(dispatch: Dispatch, ownProps?: any): IReduxDispatchProps {

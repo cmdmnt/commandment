@@ -1,28 +1,35 @@
 import { RSAA, RSAAction } from "redux-api-middleware";
-import {JSONAPI_HEADERS} from "../constants";
+import {JSONAPI_HEADERS, OAUTH2_CLIENT_ID, OAUTH2_CLIENT_SECRET} from "../constants";
 import {IOAuth2TokenSuccessResponse} from "./types";
+import {ThunkAction} from "redux-thunk";
+import {RootState} from "../../reducers";
+import {Action, ActionCreator} from "redux";
 
 export enum AuthenticationActionTypes {
     TOKEN_REQUEST = "authentication/TOKEN_REQUEST",
     TOKEN_SUCCESS = "authentication/TOKEN_SUCCESS",
     TOKEN_FAILURE = "authentication/TOKEN_FAILURE",
+
+    TOKEN_SAVE = "authentication/TOKEN_SAVE",
 }
 
-export type TokenActionRequest = (email: string, password: string) => RSAAction<
+export type TokenActionRequest = RSAAction<
     AuthenticationActionTypes.TOKEN_REQUEST,
     AuthenticationActionTypes.TOKEN_SUCCESS,
     AuthenticationActionTypes.TOKEN_FAILURE>;
 
-export interface TokenActionResponse {
+export type TokenActionRequestCreator = (email: string, password: string) => TokenActionRequest;
+
+export interface ITokenActionResponse {
     type: AuthenticationActionTypes.TOKEN_REQUEST |
           AuthenticationActionTypes.TOKEN_SUCCESS |
           AuthenticationActionTypes.TOKEN_FAILURE;
     payload?: IOAuth2TokenSuccessResponse;
 }
 
-export const login: TokenActionRequest = (email: string, password: string) => {
-    const queryParameters: string[] = ["grant_type=password", "response_type=token",
-        "client_id=F8955645-A21D-44AE-9387-42B0800ADF15", "client_secret=A"];
+export const createToken: TokenActionRequestCreator = (email: string, password: string) => {
+    const queryParameters: string[] = ["grant_type=password", "response_type=token"];
+        // ,"client_id=F8955645-A21D-44AE-9387-42B0800ADF15", "client_secret=A"];
     const body: FormData = new FormData();
     body.append("username", email);
     body.append("password", password);
@@ -32,9 +39,8 @@ export const login: TokenActionRequest = (email: string, password: string) => {
             body,
             endpoint: "/oauth/token?" + queryParameters.join("&"),
             headers: {
-                "Accept": "application/json",
-                "Authorization": "Basic Rjg5NTU2NDUtQTIxRC00NEFFLTkzODctNDJCMDgwMEFERjE1OkE=",
-                // "Content-Type": "application/x-www-form-urlencoded",
+                Accept: "application/json",
+                Authorization: "Basic " + btoa(OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET),
             },
             method: "POST",
             types: [
@@ -46,4 +52,27 @@ export const login: TokenActionRequest = (email: string, password: string) => {
     }
 };
 
-export type AuthenticationActions = TokenActionResponse;
+export interface ITokenSaveRequest extends Action<AuthenticationActionTypes.TOKEN_SAVE> {
+    token: string;
+}
+
+export const saveToken: ActionCreator<ITokenSaveRequest> = (token: string) => {
+    sessionStorage.setItem("cmdmnt-token", token);
+
+    return {
+        token,
+        type: AuthenticationActionTypes.TOKEN_SAVE,
+    };
+};
+
+export const login = (email: string, password: string): ThunkAction<void, RootState, null, TokenActionRequest> =>
+    (dispatch, getState) => {
+
+    return dispatch(createToken(email, password)).then(() => {
+        // Redirect to home
+        console.log("redirect");
+
+    })
+};
+
+export type AuthenticationActions = ITokenActionResponse | Action<AuthenticationActionTypes.TOKEN_SAVE>;

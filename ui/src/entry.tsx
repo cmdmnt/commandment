@@ -37,6 +37,7 @@ const initialState: RootState = {};
 import { ConnectedRouter, routerMiddleware } from "connected-react-router";
 import {NavigationLayout} from "./components/NavigationLayout";
 import {BareLayout} from "./components/BareLayout";
+import {ProtectedRoute} from "./components/ProtectedRoute";
 
 const store = configureStore(initialState, routerMiddleware(history));
 
@@ -46,7 +47,7 @@ render(
             <App>
                 <BareLayout exact path="/login" component={LoginPage} />
 
-                <NavigationLayout exact path="/" component={DashboardPage} />
+                <ProtectedRoute exact path="/" component={DashboardPage} />
                 <NavigationLayout exact path="/applications" component={ApplicationsPage} />
                 <NavigationLayout path="/applications/id/:id" component={ApplicationPage} />
                 <NavigationLayout path="/applications/add/macos" component={MacOSEntApplicationPage} />

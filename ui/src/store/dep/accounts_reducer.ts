@@ -17,7 +17,7 @@ const initialState: IDEPAccountsState = {
     submitted: false,
 };
 
-// type VPPAction = TokenActionResponse;
+// type VPPAction = ITokenActionResponse;
 
 export function accounts(state: IDEPAccountsState = initialState, action: DEPActions): IDEPAccountsState {
     switch (action.type) {

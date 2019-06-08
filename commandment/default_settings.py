@@ -10,6 +10,17 @@ ALEMBIC_CONTEXT = {
     'render_as_batch': True,  # Necessary to support SQLite ALTER on constraints
 }
 
+# Describes a static OAuth 2 Client which is the Commandment UI
+OAUTH2_CLIENT_UI = {
+    'client_id': 'F8955645-A21D-44AE-9387-42B0800ADF15',
+    'client_secret': 'A',
+    'token_endpoint_auth_method': 'client_secret_basic',
+    'grant_type': 'password',
+    'response_type': 'token',
+    'scope': 'profile',
+    'client_name': 'Commandment UI'
+}
+
 # http://flask-sqlalchemy.pocoo.org/2.1/config/
 SQLALCHEMY_DATABASE_URI = 'sqlite:///commandment/commandment.db'
 # FSADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.
