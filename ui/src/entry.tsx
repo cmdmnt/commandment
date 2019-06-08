@@ -28,6 +28,7 @@ import {DEPAccountsPage} from "./containers/settings/DEPAccountsPage";
 import {VPPAccountsPage} from "./containers/settings/VPPAccountsPage";
 import {SettingsPage} from "./containers/SettingsPage";
 import {LoginPage} from "./containers/LoginPage";
+import {LogoutPage} from "./containers/LogoutPage";
 
 import "../sass/app.scss";
 import {ProfileUpload} from "./containers/ProfileUpload";
@@ -45,6 +46,7 @@ render(
     <Provider store={store}>
         <ConnectedRouter history={history}>
             <BareLayout exact path="/login" component={LoginPage} />
+            <BareLayout exact path="/logout" component={LogoutPage} />
             <App>
                 <NavigationLayout>
                     <ProtectedRoute exact path="/" component={DashboardPage} />

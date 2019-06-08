@@ -125,7 +125,10 @@ export const read: ReadActionRequest = (id: string, include?: string[]) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/devices/${id}?${inclusions}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "GET",
             types: [
                 DevicesActionTypes.READ_REQUEST,
@@ -182,7 +185,10 @@ export const push: PushActionRequest = (id: string | number) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/devices/${id}/push`,
-            headers: JSON_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 DevicesActionTypes.PUSH_REQUEST,
@@ -205,7 +211,10 @@ export const restart: RestartActionRequest = (deviceId: string | number) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/devices/${deviceId}/restart`,
-            headers: JSON_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 DevicesActionTypes.RESTART_REQUEST,
@@ -233,7 +242,10 @@ export const shutdown: ShutdownActionRequest = (id: string | number) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/devices/${id}/shutdown`,
-            headers: JSON_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 DevicesActionTypes.SHUTDOWN_REQUEST,
@@ -261,7 +273,10 @@ export const erase: EraseActionRequest = (id: string | number) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/devices/${id}/erase`,
-            headers: JSON_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 DevicesActionTypes.ERASE_REQUEST,
@@ -294,7 +309,10 @@ export const lock: LockActionRequest = (deviceId: string | number, pin?: string,
                 pin,
             }),
             endpoint: `/api/v1/devices/${deviceId}/lock`,
-            headers: JSON_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 DevicesActionTypes.LOCK_REQUEST,
@@ -322,7 +340,10 @@ export const clearPasscode: ClearPasscodeActionRequest = (id: string | number) =
     return {
         [RSAA]: {
             endpoint: `/api/v1/devices/${id}/clear_passcode`,
-            headers: JSON_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 DevicesActionTypes.CLEARPASSCODE_REQUEST,
@@ -349,7 +370,10 @@ export const inventory: InventoryActionRequest = (id: string | number) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/devices/inventory/${id}`,
-            headers: JSON_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "GET",
             types: [
                 DevicesActionTypes.INVENTORY_REQUEST,
@@ -377,7 +401,10 @@ export const test: TestActionRequest = (id: string | number) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/devices/test/${id}`,
-            headers: JSON_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 TEST_REQUEST,
@@ -400,7 +427,10 @@ export const commands = encodeJSONAPIChildIndexParameters((deviceId: string, que
     return ({
         [RSAA]: {
             endpoint: `/api/v1/devices/${deviceId}/commands?${queryParameters.join("&")}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "GET",
             types: [
                 DevicesActionTypes.COMMANDS_REQUEST,
@@ -433,7 +463,10 @@ export const patch: PatchActionRequest = (deviceId: string, values: Device) => {
                 },
             }),
             endpoint: `/api/v1/devices/${deviceId}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "PATCH",
             types: [
                 DevicesActionTypes.PATCH_REQUEST,
@@ -457,7 +490,10 @@ export const postRelationship: PostRelationshipActionRequest = (id: string, rela
         [RSAA]: {
             body: JSON.stringify({ data }),
             endpoint: `/api/v1/devices/${id}/relationships/${relationship}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 DevicesActionTypes.REL_POST_REQUEST,
@@ -478,7 +514,10 @@ export type RCPOST_FAILURE = typeof RCPOST_FAILURE;
 export type PostRelatedActionRequest = <TRelated>(parentId: string, relationship: DeviceRelationship, data: TRelated) => RSAAction<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE>;
 export type PostRelatedActionResponse = RSAAReadActionResponse<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE, JSONAPIDetailResponse<any, undefined>>;
 
-export const postRelated: PostRelatedActionRequest = <TRelated>(parentId: string, relationship: DeviceRelationship, data: TRelated): RSAAction<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE> => {
+export const postRelated: PostRelatedActionRequest = <TRelated>(
+    parentId: string,
+    relationship: DeviceRelationship,
+    data: TRelated): RSAAction<RCPOST_REQUEST, RCPOST_SUCCESS, RCPOST_FAILURE> => {
     return {
         [RSAA]: {
             body: JSON.stringify({ data: {
@@ -496,7 +535,10 @@ export const postRelated: PostRelatedActionRequest = <TRelated>(parentId: string
                     type: relationship,
                 } }),
             endpoint: `/api/v1/devices/${parentId}/${relationship}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 RCPOST_REQUEST,
@@ -514,15 +556,24 @@ export type RPATCH_SUCCESS = typeof RPATCH_SUCCESS;
 export const RPATCH_FAILURE = "devices/RPATCH_FAILURE";
 export type RPATCH_FAILURE = typeof RPATCH_FAILURE;
 
-export type PatchRelationshipActionRequest = (parentId: string, relationship: DeviceRelationship, data: JSONAPIRelationship[]) => RSAAction<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE>;
-export type PatchRelationshipActionResponse = RSAAReadActionResponse<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE, JSONAPIDetailResponse<Device, undefined>>;
+export type PatchRelationshipActionRequest = (
+    parentId: string,
+    relationship: DeviceRelationship,
+    data: JSONAPIRelationship[]) => RSAAction<RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE>;
 
-export const patchRelationship: PatchRelationshipActionRequest = (id: string, relationship: DeviceRelationship, data: JSONAPIRelationship[]) => {
+export type PatchRelationshipActionResponse = RSAAReadActionResponse<
+    RPATCH_REQUEST, RPATCH_SUCCESS, RPATCH_FAILURE, JSONAPIDetailResponse<Device, undefined>>;
+
+export const patchRelationship: PatchRelationshipActionRequest = (
+    id: string, relationship: DeviceRelationship, data: JSONAPIRelationship[]) => {
     return {
         [RSAA]: {
             body: JSON.stringify({ data }),
             endpoint: `/api/v1/devices/${id}/relationships/${relationship}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "PATCH",
             types: [
                 RPATCH_REQUEST,

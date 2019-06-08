@@ -6,6 +6,7 @@ import {
 } from "../json-api";
 import {InstalledCertificate} from "./types";
 import {encodeJSONAPIChildIndexParameters} from "../../flask-rest-jsonapi";
+import {RootState} from "../../reducers";
 
 
 export type CERTIFICATES_REQUEST = 'devices/CERTIFICATES_REQUEST';
@@ -28,7 +29,10 @@ export const certificates = encodeJSONAPIChildIndexParameters((device_id: string
                 CERTIFICATES_SUCCESS,
                 CERTIFICATES_FAILURE
             ],
-            headers: JSONAPI_HEADERS
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
         }
     });
 });

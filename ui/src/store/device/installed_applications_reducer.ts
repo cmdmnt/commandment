@@ -24,7 +24,9 @@ const initialState: InstalledApplicationsState = {
 
 type InstalledCertificatesAction = InstalledApplicationsActionResponse | OtherAction;
 
-export function installed_applications_reducer(state: InstalledApplicationsState = initialState, action: InstalledCertificatesAction): InstalledApplicationsState {
+export function installed_applications_reducer(
+    state: InstalledApplicationsState = initialState,
+    action: InstalledCertificatesAction): InstalledApplicationsState {
     switch (action.type) {
         case APPLICATIONS_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {

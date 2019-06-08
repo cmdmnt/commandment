@@ -25,7 +25,9 @@ const initialState: AvailableOSUpdatesState = {
 
 type AvailableOSUpdatesAction = AvailableOSUpdatesActionResponse | OtherAction;
 
-export function available_os_updates_reducer(state: AvailableOSUpdatesState = initialState, action: AvailableOSUpdatesAction): AvailableOSUpdatesState {
+export function available_os_updates_reducer(
+    state: AvailableOSUpdatesState = initialState,
+    action: AvailableOSUpdatesAction): AvailableOSUpdatesState {
     switch (action.type) {
         case UPDATES_SUCCESS:
             if (isJSONAPIErrorResponsePayload(action.payload)) {

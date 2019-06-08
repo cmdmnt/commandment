@@ -6,6 +6,7 @@ import {
 import {AvailableOSUpdate} from "./types";
 import {JSONAPI_HEADERS} from "../constants";
 import {encodeJSONAPIChildIndexParameters} from "../../flask-rest-jsonapi";
+import {RootState} from "../../reducers";
 
 export const UPDATES_REQUEST = "devices/UPDATES_REQUEST";
 export type UPDATES_REQUEST = typeof UPDATES_REQUEST;
@@ -21,7 +22,10 @@ export const updates = encodeJSONAPIChildIndexParameters((deviceId: string, quer
     return ({
         [RSAA]: {
             endpoint: `/api/v1/devices/${deviceId}/available_os_updates?${queryParameters.join("&")}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: ("GET" as HTTPVerb),
             types: [
                 UPDATES_REQUEST, UPDATES_SUCCESS, UPDATES_FAILURE,

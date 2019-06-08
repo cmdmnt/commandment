@@ -5,6 +5,7 @@ import {
 } from "../json-api";
 import {InstalledApplication} from "./types";
 import {encodeJSONAPIChildIndexParameters} from "../../flask-rest-jsonapi";
+import {RootState} from "../../reducers";
 
 
 export type APPLICATIONS_REQUEST = 'devices/APPLICATIONS_REQUEST';
@@ -31,7 +32,10 @@ export const applications = encodeJSONAPIChildIndexParameters((device_id: string
                 APPLICATIONS_SUCCESS,
                 APPLICATIONS_FAILURE
             ],
-            headers: JSONAPI_HEADERS
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
         }
     });
 });
