@@ -31,7 +31,10 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) =>
     return ({
         [RSAA]: {
             endpoint: "/api/v1/profiles?" + queryParameters.join("&"),
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: ("GET" as HTTPVerb),
             types: [
                 ProfilesActionTypes.INDEX_REQUEST,
@@ -55,7 +58,10 @@ export const read: ReadActionRequest = (id: string, include?: string[]) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/profiles/${id}?${inclusions}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "GET",
             types: [
                 ProfilesActionTypes.READ_REQUEST,
@@ -79,7 +85,10 @@ export const patchRelationship: PatchRelationshipActionRequest = (parentId: stri
         [RSAA]: {
             body: JSON.stringify({ data }),
             endpoint: `/api/v1/profiles/${parentId}/relationships/${relationship}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "PATCH",
             types: [
                 ProfilesActionTypes.REL_PATCH_REQUEST,

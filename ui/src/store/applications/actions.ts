@@ -81,7 +81,10 @@ export const managed = encodeJSONAPIChildIndexParameters((appId: string, queryPa
     return ({
         [RSAA]: {
             endpoint: `/api/v1/applications/${appId}/managed_applications?${queryParameters.join("&")}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "GET",
             types: [
                 ApplicationsActionTypes.MANAGED_REQUEST,
@@ -109,7 +112,10 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) =>
     return ({
         [RSAA]: {
             endpoint: "/api/v1/applications?" + queryParameters.join("&"),
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: ("GET" as HTTPVerb),
             types: [
                 ApplicationsActionTypes.INDEX_REQUEST,
@@ -144,7 +150,10 @@ export const post: PostActionRequest = (values: Application, relationships: Rela
                 },
             }),
             endpoint: `/api/v1/applications`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 ApplicationsActionTypes.POST_REQUEST,
@@ -168,7 +177,10 @@ export const postAppStoreMac: PostActionRequest = (values: MacStoreApplication, 
                 },
             }),
             endpoint: `/api/v1/applications/store/mac`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 ApplicationsActionTypes.POST_REQUEST,
@@ -192,7 +204,10 @@ export const postAppStoreIos: PostActionRequest = (values: IOSStoreApplication, 
                 },
             }),
             endpoint: `/api/v1/applications/store/ios`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 ApplicationsActionTypes.POST_REQUEST,
@@ -226,7 +241,10 @@ export const read: ReadActionRequest = (id: string, include?: string[]) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/applications/${id}?${inclusions}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "GET",
             types: [
                 ApplicationsActionTypes.READ_REQUEST,
@@ -259,7 +277,10 @@ export const patch: PatchActionRequest = (applicationId: string, values: Applica
                 },
             }),
             endpoint: `/api/v1/applications/${applicationId}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "PATCH",
             types: [
                 ApplicationsActionTypes.PATCH_REQUEST,
@@ -284,7 +305,10 @@ export const destroy: DeleteActionRequest = (id: string) => {
     return {
         [RSAA]: {
             endpoint: `/api/v1/applications/${id}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "DELETE",
             types: [
                 ApplicationsActionTypes.DELETE_REQUEST,
@@ -316,7 +340,10 @@ export const patchRelationship: PatchRelationshipActionRequest = (
         [RSAA]: {
             body: JSON.stringify({ data }),
             endpoint: `/api/v1/applications/${applicationId}/relationships/${relationship}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "PATCH",
             types: [
                 ApplicationsActionTypes.REL_PATCH_REQUEST,
@@ -348,7 +375,10 @@ export const deleteRelationship: DeleteRelationshipActionRequest = (
         [RSAA]: {
             body: JSON.stringify({ data }),
             endpoint: `/api/v1/applications/${applicationId}/relationships/${relationship}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "DELETE",
             types: [
                 ApplicationsActionTypes.REL_DELETE_REQUEST,

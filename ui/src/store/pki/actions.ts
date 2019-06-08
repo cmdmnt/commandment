@@ -1,6 +1,7 @@
 import { RSAA, RSAAction } from "redux-api-middleware";
 import { JSONAPI_HEADERS } from "../constants"
 import {CertificatePurpose} from "./types";
+import {RootState} from "../../reducers";
 
 export type NEW_REQUEST = "signing_requests/NEW_REQUEST";
 export const NEW_REQUEST: NEW_REQUEST = "signing_requests/NEW_REQUEST";
@@ -14,7 +15,10 @@ export const newCertificateSigningRequest = (purpose: CertificatePurpose): RSAAc
         [RSAA]: {
             body: JSON.stringify({ purpose }),
             endpoint: "/api/v1/certificate_signing_requests/new",
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "GET",
             types: [
                 NEW_REQUEST,

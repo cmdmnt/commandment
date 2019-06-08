@@ -35,7 +35,10 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) =>
     return ({
         [RSAA]: {
             endpoint: "/api/v1/tags?" + queryParameters.join("&"),
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: ("GET" as HTTPVerb),
             types: [
                 TagsActionTypes.INDEX_REQUEST,
@@ -60,7 +63,10 @@ export const post: PostActionRequest = (values: Tag) => {
                 },
             }),
             endpoint: `/api/v1/tags`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 TagsActionTypes.POST_REQUEST,

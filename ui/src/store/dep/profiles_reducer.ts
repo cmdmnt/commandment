@@ -17,7 +17,7 @@ const initialState: IDEPProfilesState = {
     submitted: false,
 };
 
-// type VPPAction = TokenActionResponse;
+// type VPPAction = ITokenActionResponse;
 
 export function profiles(state: IDEPProfilesState = initialState, action: DEPActions): IDEPProfilesState {
     switch (action.type) {

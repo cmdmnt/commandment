@@ -37,38 +37,37 @@ const initialState: RootState = {};
 import { ConnectedRouter, routerMiddleware } from "connected-react-router";
 import {NavigationLayout} from "./components/NavigationLayout";
 import {BareLayout} from "./components/BareLayout";
+import {ProtectedRoute} from "./components/ProtectedRoute";
 
 const store = configureStore(initialState, routerMiddleware(history));
 
 render(
     <Provider store={store}>
         <ConnectedRouter history={history}>
+            <BareLayout exact path="/login" component={LoginPage} />
             <App>
-                <BareLayout exact path="/login" component={LoginPage} />
-
-                <NavigationLayout exact path="/" component={DashboardPage} />
-                <NavigationLayout exact path="/applications" component={ApplicationsPage} />
-                <NavigationLayout path="/applications/id/:id" component={ApplicationPage} />
-                <NavigationLayout path="/applications/add/macos" component={MacOSEntApplicationPage} />
-                <NavigationLayout path="/applications/add/:entity" component={AppStorePage} />
-
-                <NavigationLayout exact path="/devices" component={DevicesPage} />
-                <NavigationLayout path="/devices/:id" component={DevicePage} />
-
-                <NavigationLayout exact path="/profiles" component={ProfilesPage} />
-                <NavigationLayout path="/profiles/add/custom" component={ProfileUpload} />
-                <NavigationLayout path="/profiles/id/:id" component={ProfilePage} />
-
-                <NavigationLayout exact path="/settings" component={SettingsPage} />
-                <NavigationLayout path="/settings/apns" component={APNSPage} />
-                <NavigationLayout path="/settings/deviceauth" component={DeviceAuthPage} />
-                <NavigationLayout path="/settings/organization" component={OrganizationPage} />
-                <NavigationLayout path="/settings/vpp" component={VPPAccountsPage} />
-                <NavigationLayout exact path="/settings/dep/accounts" component={DEPAccountsPage} />
-                <NavigationLayout path="/settings/dep/accounts/add" component={DEPAccountSetupPage} />
-                <NavigationLayout exact path="/dep/accounts/:id" component={DEPAccountPage} />
-                <NavigationLayout exact path="/dep/accounts/:account_id/add/profile" component={DEPProfilePage} />
-                <NavigationLayout exact path="/dep/accounts/:account_id/profiles/:id" component={DEPProfilePage} />
+                <NavigationLayout>
+                    <ProtectedRoute exact path="/" component={DashboardPage} />
+                    <ProtectedRoute exact path="/applications" component={ApplicationsPage} />
+                    <ProtectedRoute path="/applications/id/:id" component={ApplicationPage} />
+                    <ProtectedRoute path="/applications/add/macos" component={MacOSEntApplicationPage} />
+                    <ProtectedRoute path="/applications/add/:entity" component={AppStorePage} />
+                    <ProtectedRoute exact path="/devices" component={DevicesPage} />
+                    <ProtectedRoute path="/devices/:id" component={DevicePage} />
+                    <ProtectedRoute exact path="/profiles" component={ProfilesPage} />
+                    <ProtectedRoute path="/profiles/add/custom" component={ProfileUpload} />
+                    <ProtectedRoute path="/profiles/id/:id" component={ProfilePage} />
+                    <ProtectedRoute exact path="/settings" component={SettingsPage} />
+                    <ProtectedRoute path="/settings/apns" component={APNSPage} />
+                    <ProtectedRoute path="/settings/deviceauth" component={DeviceAuthPage} />
+                    <ProtectedRoute path="/settings/organization" component={OrganizationPage} />
+                    <ProtectedRoute path="/settings/vpp" component={VPPAccountsPage} />
+                    <ProtectedRoute exact path="/settings/dep/accounts" component={DEPAccountsPage} />
+                    <ProtectedRoute path="/settings/dep/accounts/add" component={DEPAccountSetupPage} />
+                    <ProtectedRoute exact path="/dep/accounts/:id" component={DEPAccountPage} />
+                    <ProtectedRoute exact path="/dep/accounts/:account_id/add/profile" component={DEPProfilePage} />
+                    <ProtectedRoute exact path="/dep/accounts/:account_id/profiles/:id" component={DEPProfilePage} />
+                </NavigationLayout>
             </App>
         </ConnectedRouter>
     </Provider>,

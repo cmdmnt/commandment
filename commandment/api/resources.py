@@ -11,11 +11,13 @@ from commandment.pki.models import Certificate, CertificateSigningRequest, SSLCe
     CACertificate
 
 from commandment.mdm import commands as mdmcommands, CommandType
+from commandment.auth import oauth2
 
 from flask_rest_jsonapi import ResourceDetail, ResourceList, ResourceRelationship
 
 
 class DeviceList(ResourceList):
+    # decorators = (oauth2.require_oauth(''),)
     schema = DeviceSchema
     data_layer = {'session': db.session, 'model': Device}
 

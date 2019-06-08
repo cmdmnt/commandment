@@ -1,6 +1,7 @@
 import { RSAA, RSAAction } from "redux-api-middleware";
 import {JSONAPI_HEADERS, JSONAPIDataObject, JSONAPIListResponse} from "../json-api";
 import {Command} from "../device/types";
+import {RootState} from "../../reducers";
 
 export type INDEX_REQUEST = "commands/INDEX_REQUEST";
 export const INDEX_REQUEST: INDEX_REQUEST = "commands/INDEX_REQUEST";
@@ -40,7 +41,10 @@ export const post: PostActionRequest = (values: Command, device_id?: number) => 
                 },
             }),
             endpoint,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 POST_REQUEST,

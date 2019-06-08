@@ -53,6 +53,8 @@ def create_app(config_file: Optional[Union[str, PurePath]] = None) -> Flask:
 
     db.init_app(app)
     oauth2.init_app(app)
+    api.init_app(app)
+    api.oauth_manager(oauth2.require_oauth)
 
     app.register_blueprint(oauth_app, url_prefix='/oauth')
     app.register_blueprint(enroll_app, url_prefix='/enroll')
