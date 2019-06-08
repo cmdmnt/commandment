@@ -1,3 +1,4 @@
+from flask import current_app
 from authlib.flask.oauth2 import (
     AuthorizationServer,
     ResourceProtector,
@@ -72,6 +73,7 @@ class ImplicitGrant(_ImplicitGrant):
 
 class PasswordGrant(_PasswordGrant):
     def authenticate_user(self, username, password):
+        current_app.logger.info('user: %s logging in using resource owner password grant', username)
         user = User.query.filter_by(name=username).first()
         return user
         # if user.check_password(password):

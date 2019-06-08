@@ -31,6 +31,7 @@ export const createToken: TokenActionRequestCreator = (email: string, password: 
     const queryParameters: string[] = ["grant_type=password", "response_type=token"];
         // ,"client_id=F8955645-A21D-44AE-9387-42B0800ADF15", "client_secret=A"];
     const body: FormData = new FormData();
+    // body.append("grant_type", "password");
     body.append("username", email);
     body.append("password", password);
 
@@ -56,11 +57,11 @@ export interface ITokenSaveRequest extends Action<AuthenticationActionTypes.TOKE
     token: string;
 }
 
-export const saveToken: ActionCreator<ITokenSaveRequest> = (token: string) => {
-    sessionStorage.setItem("cmdmnt-token", token);
+export const saveToken: ActionCreator<ITokenSaveRequest> = (payload) => {
+    sessionStorage.setItem("cmdmnt-token", payload.access_token);
 
     return {
-        token,
+        ...payload,
         type: AuthenticationActionTypes.TOKEN_SAVE,
     };
 };
@@ -68,10 +69,11 @@ export const saveToken: ActionCreator<ITokenSaveRequest> = (token: string) => {
 export const login = (email: string, password: string): ThunkAction<void, RootState, null, TokenActionRequest> =>
     (dispatch, getState) => {
 
-    return dispatch(createToken(email, password)).then(() => {
-        // Redirect to home
-        console.log("redirect");
-
+    return dispatch(createToken(email, password)).then((res) => {
+        console.log(res);
+        dispatch(saveToken(res.payload));
+    }).then(() => {
+        console.log("saved token");
     })
 };
 
