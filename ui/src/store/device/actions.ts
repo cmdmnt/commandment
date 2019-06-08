@@ -68,7 +68,10 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: string[]) =>
     return ({
         [RSAA]: {
             endpoint: "/api/v1/devices?" + queryParameters.join("&"),
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: ("GET" as HTTPVerb),
             types: [
                 DevicesActionTypes.INDEX_REQUEST,
@@ -88,6 +91,8 @@ export const fetchDevicesIfRequired = (
         sort?: string[],
         filters?: FlaskFilters,
     ): ThunkAction<void, RootState, void, IndexActionResponse> => (dispatch: Dispatch, getState: () => RootState) => {
+
+    const { auth: { access_token } } = getState();
 
     // const { devices } = getState();
     // if (devices.lastReceived) {

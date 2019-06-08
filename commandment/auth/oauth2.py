@@ -23,6 +23,13 @@ from .models import (
     # OAuth2AuthorizationCode,
     OAuth2Token,
 )
+from authlib.oauth2.rfc6750 import BearerTokenValidator
+from authlib.oauth2 import (
+    OAuth2Error,
+)
+from authlib.oauth2.rfc6749 import (
+    MissingAuthorizationError,
+)
 
 #
 # class AuthorizationCodeGrant(_AuthorizationCodeGrant):
@@ -156,9 +163,38 @@ scopes = {
     'connects': 'Access to your connected networks.'
 }
 
+
+class CommandmentBearerTokenValidator(BearerTokenValidator):
+    def authenticate_token(self, token_string):
+        return OAuth2Token.query.filter_by(access_token=token_string).first()
+
+    def request_invalid(self, request):
+        return False
+
+    def token_revoked(self, token):
+        return token.revoked
+
+
+class FlaskJSONAPIResourceProtector(ResourceProtector):
+    """This class pretends to be the Flask-OAuthlib manager for Flask-Rest-JSONAPI"""
+    _after_request_funcs = []
+
+    def verify_request(self, scopes):
+        current_app.logger.info('verifying token against scopes: %s', scopes)
+        try:
+            # self.acquire_token(scopes)
+            self.acquire_token('')  # We are currently not checking scopes.
+        except MissingAuthorizationError as error:
+            self.raise_error_response(error)
+        except OAuth2Error as error:
+            self.raise_error_response(error)
+        return True, []
+
+
 # protect resource
 query_token = create_query_token_func(db.session, OAuth2Token)
-require_oauth = ResourceProtector()
+require_oauth = FlaskJSONAPIResourceProtector()
+require_oauth.register_token_validator(CommandmentBearerTokenValidator())
 
 
 def init_app(app):

@@ -14,6 +14,7 @@ import {
     FlaskFilter,
     FlaskFilters
 } from "../../flask-rest-jsonapi";
+import {RootState} from "../../reducers";
 
 export type INDEX_REQUEST = "device_groups/INDEX_REQUEST";
 export const INDEX_REQUEST: INDEX_REQUEST = "device_groups/INDEX_REQUEST";
@@ -29,7 +30,10 @@ export const index = encodeJSONAPIIndexParameters((queryParameters: String[]) =>
     return ({
         [RSAA]: {
             endpoint: "/api/v1/device_groups?" + queryParameters.join("&"),
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: ("GET" as HTTPVerb),
             types: [
                 INDEX_REQUEST,
@@ -66,7 +70,10 @@ export const read: ReadActionRequest = (id: string, include?: string[]) => {
                 READ_SUCCESS,
                 READ_FAILURE,
             ],
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
         },
     } as RSAAction<READ_REQUEST, READ_SUCCESS, READ_FAILURE>);
 };
@@ -96,7 +103,10 @@ export const post: PostActionRequest = (values: DeviceGroup) => {
                 },
             }),
             endpoint: `/api/v1/device_groups`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 POST_REQUEST,

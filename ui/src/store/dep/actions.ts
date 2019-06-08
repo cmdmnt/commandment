@@ -24,6 +24,7 @@ import {
     RSAAPostActionCreator,
     RSAAReadActionCreator
 } from "../redux-api-middleware";
+import {RootState} from "../../reducers";
 
 export enum DEPActionTypes {
     ACCT_INDEX_REQUEST = "dep/account/INDEX_REQUEST",
@@ -77,7 +78,10 @@ export const accounts: AccountIndexActionCreator = encodeJSONAPIIndexParameters(
     return ({
         [RSAA]: {
             endpoint: "/api/v1/dep/accounts/?" + queryParameters.join("&"),
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: ("GET" as HTTPVerb),
             types: [
                 DEPActionTypes.ACCT_INDEX_REQUEST,
@@ -110,7 +114,10 @@ export const account: AccountReadActionCreator = (id: string, include?: string[]
     return {
         [RSAA]: {
             endpoint: `/api/v1/dep/accounts/${id}?${inclusions}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "GET",
             types: [
                 DEPActionTypes.ACCT_READ_REQUEST,
@@ -137,7 +144,10 @@ export const profiles = encodeJSONAPIChildIndexParameters((dep_account_id: strin
     return ({
         [RSAA]: {
             endpoint: `/api/v1/dep/accounts/${dep_account_id}/profiles?` + queryParameters.join("&"),
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: ("GET" as HTTPVerb),
             types: [
                 DEPActionTypes.PROF_INDEX_REQUEST,
@@ -170,7 +180,10 @@ export const profile: ProfileReadActionCreator = (id: string, include?: string[]
     return {
         [RSAA]: {
             endpoint: `/api/v1/dep/profiles/${id}?${inclusions}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "GET",
             types: [
                 DEPActionTypes.PROF_READ_REQUEST,
@@ -219,7 +232,10 @@ export const postProfile: ProfilePostActionCreator =
         [RSAA]: {
             body: JSON.stringify(bodyData),
             endpoint: `/api/v1/dep/profiles/`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "POST",
             types: [
                 DEPActionTypes.PROF_POST_REQUEST,
@@ -250,7 +266,10 @@ export const patchProfile: ProfilePatchActionRequest = (id: string, values: DEPP
         [RSAA]: {
             body: JSON.stringify(bodyData),
             endpoint: `/api/v1/dep/profiles/${id}`,
-            headers: JSONAPI_HEADERS,
+            headers: (state: RootState) => ({
+                ...JSONAPI_HEADERS,
+                Authorization: `Bearer ${state.auth.access_token}`,
+            }),
             method: "PATCH",
             types: [
                 DEPActionTypes.PROF_PATCH_REQUEST,
