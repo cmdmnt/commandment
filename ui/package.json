@@ -6,7 +6,9 @@
   "scripts": {
     "start": "./node_modules/.bin/webpack-dev-server",
     "storybook": "start-storybook -p 6006 -c .storybook",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint-fix": "eslint . --ext .ts,.tsx --fix"
   },
   "author": "mosen",
   "license": "MIT",
@@ -15,7 +17,11 @@
     "@storybook/addon-actions": "^5.0.11",
     "@storybook/addons": "^5.0.11",
     "@storybook/react": "^5.0.11",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
     "babel-runtime": "^6.26.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-react": "^7.13.0",
     "tslint": "^5.17.0",
     "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^3.1.2",
@@ -73,7 +79,7 @@
     "prop-types": "^15.5.10",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-dropzone": "^10.1.4",
+    "react-dropzone": "^10.1.5",
     "react-hot-loader": "^4.2.0",
     "react-redux": "^7.0.3",
     "react-router": "^5.0.0",
