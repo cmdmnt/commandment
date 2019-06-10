@@ -1,12 +1,17 @@
 import {Field, Form as FormikForm, Formik, FormikBag, FormikErrors, FormikProps, withFormik} from "formik";
 import * as React from "react";
-import {AccordionTitleProps, CheckboxProps} from "semantic-ui-react";
-import Form, {FormProps} from "semantic-ui-react/dist/commonjs/collections/Form/Form";
-import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
-import Label from "semantic-ui-react/dist/commonjs/elements/Label/Label";
-import Accordion from "semantic-ui-react/dist/commonjs/modules/Accordion/Accordion";
+import {
+    AccordionTitleProps,
+    CheckboxProps,
+    Form,
+    Button,
+    Divider,
+    Icon,
+    Label,
+    Accordion,
+    FormProps
+} from "semantic-ui-react";
+
 import * as Yup from "yup";
 import {DEPProfile, SkipSetupSteps} from "../../store/dep/types";
 import {FormikCheckbox} from "../formik/FormikCheckbox";

@@ -3,13 +3,15 @@ import * as React from "react";
 import * as Yup from "yup";
 import {Organization} from "../../store/organization/types";
 
-import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Label from "semantic-ui-react/dist/commonjs/elements/Label/Label";
-import Form from "semantic-ui-react/src/collections/Form";
-import Header from "semantic-ui-react/src/elements/Header/Header";
-import Icon from "semantic-ui-react/src/elements/Icon/Icon";
-import Grid from "semantic-ui-react/src/collections/Grid/Grid";
+import {
+    Button,
+    Divider,
+    Label,
+    Form,
+    Header,
+    Icon,
+    Grid
+} from "semantic-ui-react";
 
 export interface IOrganizationFormProps {
     data?: Organization;

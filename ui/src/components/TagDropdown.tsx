@@ -3,7 +3,7 @@ import {SyntheticEvent} from "react";
 import {JSONAPIDataObject} from "../store/json-api";
 import {Tag} from "../store/tags/types";
 
-import Dropdown, { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
+import { Dropdown, DropdownProps } from "semantic-ui-react";
 
 // Not exported by Dropdown
 interface IDropdownOnSearchChangeData extends DropdownProps {

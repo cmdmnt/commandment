@@ -1,6 +1,6 @@
 import * as React from "react";
 import {SemanticICONS} from "semantic-ui-react";
-import Icon from "semantic-ui-react/src/elements/Icon";
+import {Icon} from "semantic-ui-react";
 
 interface IModelIconProps {
     value: string;

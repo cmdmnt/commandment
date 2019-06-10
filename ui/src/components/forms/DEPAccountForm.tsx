@@ -1,7 +1,5 @@
 import * as React from "react";
-import Form from "semantic-ui-react/dist/commonjs/collections/Form/Form";
-
-
+import {Form} from "semantic-ui-react";
 
 export class DEPAccountForm extends React.Component {
     render() {

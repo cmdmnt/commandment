@@ -1,6 +1,6 @@
 import * as React from "react";
 import {ApiError} from "redux-api-middleware";
-import Message from "semantic-ui-react/src/collections/Message/Message";
+import {Message} from "semantic-ui-react";
 import {JSONAPIErrorObject, JSONAPIErrorResponse} from "../store/json-api";
 
 export interface IRSAAApiErrorMessageProps {

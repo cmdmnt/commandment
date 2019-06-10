@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Link, Route} from "react-router-dom";
-import Button, { ButtonProps } from "semantic-ui-react/src/elements/Button";
+import {Button, ButtonProps } from "semantic-ui-react";
 
 interface IButtonLinkProps extends ButtonProps {
     to: string;

@@ -2,8 +2,7 @@ import * as React from "react";
 import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators, Dispatch} from "redux";
-import Container from "semantic-ui-react/src/elements/Container";
-import Header from "semantic-ui-react/src/elements/Header";
+import {Container, Header} from "semantic-ui-react";
 import {
     post, PostActionRequest,
   //  read, ReadActionRequest

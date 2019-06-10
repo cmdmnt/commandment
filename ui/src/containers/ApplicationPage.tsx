@@ -5,7 +5,7 @@ import {Route, RouteComponentProps} from "react-router";
 import {Link} from "react-router-dom";
 import {bindActionCreators, Dispatch} from "redux";
 import {Breadcrumb, Container, Divider, Grid, Header, Image, Menu} from "semantic-ui-react";
-import {DropdownProps} from "semantic-ui-react/src/modules/Dropdown";
+import {DropdownProps} from "semantic-ui-react";
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";

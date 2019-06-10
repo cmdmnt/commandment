@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
+import {Grid} from "semantic-ui-react";
 import {NavigationVertical} from "./NavigationVertical";
 import {RouteComponentProps} from "react-router";
 import {ComponentProps, FunctionComponent} from "react";

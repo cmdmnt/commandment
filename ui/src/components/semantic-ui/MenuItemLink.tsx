@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Link, Route} from "react-router-dom";
-import Menu from "semantic-ui-react/src/collections/Menu";
+import {Menu} from "semantic-ui-react";
 
 interface IMenuItemLinkProps {
     to: string;

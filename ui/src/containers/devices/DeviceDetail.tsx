@@ -5,9 +5,7 @@ import {bindActionCreators, Dispatch} from "redux";
 import {DeviceState} from "../../store/device/reducer";
 import {RootState} from "../../reducers/index";
 
-import Grid from "semantic-ui-react/src/collections/Grid";
-import Header from "semantic-ui-react/src/elements/Header";
-import List from "semantic-ui-react/src/elements/List";
+import {Grid, Header, List} from "semantic-ui-react";
 
 import {CheckListItem} from "../../components/CheckListItem";
 

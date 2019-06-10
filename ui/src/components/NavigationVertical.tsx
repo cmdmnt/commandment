@@ -1,11 +1,9 @@
 import * as React from "react";
-import Menu from "semantic-ui-react/src/collections/Menu";
 
 import {MenuItemLink} from "../components/semantic-ui/MenuItemLink";
 import "./Navigation.scss";
-import Sidebar from "semantic-ui-react/dist/commonjs/modules/Sidebar/Sidebar";
 import {RouteComponentProps} from "react-router";
-import {Divider} from "semantic-ui-react";
+import {Divider, Sidebar, Menu} from "semantic-ui-react";
 
 interface IRouteProps {
 }

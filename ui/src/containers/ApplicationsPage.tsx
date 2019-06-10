@@ -3,19 +3,20 @@ import {Link, Route} from "react-router-dom";
 import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators, Dispatch} from "redux";
-import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
+import {
+    Container,
+    Header,
+    Dropdown,
+    Divider,
+    Breadcrumb,
+} from "semantic-ui-react";
+
 import {RootState} from "../reducers";
-import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
-import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
-import {ButtonLink} from "../components/semantic-ui/ButtonLink";
-import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import {ApplicationsTable} from "../components/react-tables/ApplicationsTable";
 import {IApplicationsState} from "../store/applications/list_reducer";
 import {IReactTableState} from "../store/table/types";
 import {FlaskFilterOperation} from "../flask-rest-jsonapi";
 import {index, IndexActionRequest} from "../store/applications/actions";
-import {Breadcrumb} from "semantic-ui-react";
 import {FlaskFilter} from "../flask-rest-jsonapi";
 
 export interface IDispatchProps {

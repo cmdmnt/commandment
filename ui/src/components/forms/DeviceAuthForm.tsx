@@ -3,18 +3,20 @@ import * as React from "react";
 import * as Yup from "yup";
 import {Organization} from "../../store/organization/types";
 
-import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Label from "semantic-ui-react/dist/commonjs/elements/Label/Label";
-import Radio from "semantic-ui-react/src/addons/Radio";
-import Form from "semantic-ui-react/src/collections/Form";
-import Grid from "semantic-ui-react/src/collections/Grid/Grid";
-import Message from "semantic-ui-react/src/collections/Message";
-import Header from "semantic-ui-react/src/elements/Header/Header";
-import Icon from "semantic-ui-react/src/elements/Icon/Icon";
-import Segment from "semantic-ui-react/src/elements/Segment";
-import Checkbox from "semantic-ui-react/src/modules/Checkbox/Checkbox";
-import Item from "semantic-ui-react/src/views/Item";
+import {
+    Button,
+    Divider,
+    Label,
+    Radio,
+    Form,
+    Grid,
+    Message,
+    Header,
+    Icon,
+    Segment,
+    Checkbox,
+    Item
+} from "semantic-ui-react";
 
 import {SCEPConfiguration} from "../../store/configuration/types";
 

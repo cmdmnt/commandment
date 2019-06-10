@@ -4,10 +4,14 @@ import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";
 import {Link} from "react-router-dom";
 import {bindActionCreators, Dispatch} from "redux";
-import {AccordionTitleProps} from "semantic-ui-react";
-import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
-import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
-import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
+import {
+    AccordionTitleProps,
+    Breadcrumb,
+    Container,
+    Header,
+    Divider,
+} from "semantic-ui-react";
+
 import {DEPProfileForm, IDEPProfileFormValues} from "../components/forms/DEPProfileForm";
 import {RSAAApiErrorMessage} from "../components/RSAAApiErrorMessage";
 import {RootState} from "../reducers";
@@ -20,7 +24,6 @@ import {
 } from "../store/dep/actions";
 import {IDEPProfileState} from "../store/dep/profile_reducer";
 import {DEPProfile, SkipSetupSteps} from "../store/dep/types";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider";
 import {JSONAPIDataObject} from "../store/json-api";
 
 interface IReduxStateProps {

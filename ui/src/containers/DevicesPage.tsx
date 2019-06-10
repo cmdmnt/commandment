@@ -1,8 +1,12 @@
 import * as React from "react";
 import {connect} from "react-redux";
-import Grid from "semantic-ui-react/src/collections/Grid";
-import Container from "semantic-ui-react/src/elements/Container";
-import Header from "semantic-ui-react/src/elements/Header";
+import {
+    Grid,
+    Container,
+    Header,
+    Divider
+} from "semantic-ui-react";
+
 
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators, Store, Dispatch} from "redux";
@@ -18,7 +22,6 @@ import {ITableState} from "../store/table/reducer";
 import {IReactTableState} from "../store/table/types";
 import * as tagActions from "../store/tags/actions";
 import {ITagsState} from "../store/tags/reducer";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import {FlaskFilter} from "../flask-rest-jsonapi";
 
 interface IReduxStateProps {

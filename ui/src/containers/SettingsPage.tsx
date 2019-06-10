@@ -1,11 +1,13 @@
 import * as React from "react";
 import {Link, RouteComponentProps} from "react-router-dom";
 
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Container from "semantic-ui-react/src/elements/Container";
-import Header from "semantic-ui-react/src/elements/Header/Header";
-import Icon from "semantic-ui-react/src/elements/Icon";
-import Card from "semantic-ui-react/src/views/Card";
+import {
+    Divider,
+    Container,
+    Header,
+    Icon,
+    Card,
+} from "semantic-ui-react";
 
 export const SettingsPage: React.FunctionComponent<any> = () => (
     <Container>

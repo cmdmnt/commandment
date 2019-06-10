@@ -3,14 +3,11 @@ import {connect} from "react-redux";
 import {bindActionCreators, Dispatch} from "redux";
 import {RootState} from "../reducers/index";
 
-import Container from "semantic-ui-react/src/elements/Container";
-import Header from "semantic-ui-react/src/elements/Header";
-import { DropdownProps } from "semantic-ui-react/src/modules/Dropdown";
+import {Container, Header, Breadcrumb, Divider} from "semantic-ui-react";
+import { DropdownProps } from "semantic-ui-react";
 
 import {SyntheticEvent} from "react";
 import {RouteComponentProps} from "react-router";
-import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import {TagDropdown} from "../components/TagDropdown";
 import {isArray} from "../guards";
 import {JSONAPIDataObject, JSONAPIRelationship} from "../store/json-api";

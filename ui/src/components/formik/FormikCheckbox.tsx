@@ -1,7 +1,6 @@
 import {Field, FieldConfig, FieldProps} from "formik";
 import * as React from "react";
-import Form, {FormProps} from "semantic-ui-react/dist/commonjs/collections/Form/Form";
-import Checkbox, {CheckboxProps} from "semantic-ui-react/dist/commonjs/modules/Checkbox/Checkbox";
+import {Form, FormProps, Checkbox, CheckboxProps} from "semantic-ui-react";
 
 export type IFormikCheckbox = FieldConfig & CheckboxProps;
 

@@ -2,18 +2,19 @@ import {IDEPAccountsState} from "../../store/dep/accounts_reducer";
 import {accounts, AccountIndexActionCreator} from "../../store/dep/actions";
 import {RouteComponentProps} from "react-router";
 import * as React from "react";
-import Container from "semantic-ui-react/src/elements/Container/Container";
-import Header from "semantic-ui-react/src/elements/Header/Header";
+import {
+    Container,
+    Header,
+    Icon,
+    Button,
+    Step,
+    Grid,
+    Divider,
+} from "semantic-ui-react";
 
 import {connect} from "react-redux";
 import {RootState} from "../../reducers";
 import {bindActionCreators, Dispatch} from "redux";
-import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
-import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
-import Step from "semantic-ui-react/dist/commonjs/elements/Step/Step";
-import Grid from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
-import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 
 interface ReduxStateProps {
     accounts: IDEPAccountsState;

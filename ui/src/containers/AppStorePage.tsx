@@ -1,9 +1,13 @@
 import * as React from "react";
 
-import {Breadcrumb, List} from "semantic-ui-react";
-import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
+import {
+    Breadcrumb,
+    List,
+    Container,
+    Divider,
+    Header,
+} from "semantic-ui-react";
+
 
 import {connect} from "react-redux";
 import {RouteComponentProps} from "react-router";

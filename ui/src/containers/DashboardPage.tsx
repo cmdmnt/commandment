@@ -1,5 +1,5 @@
 import * as React from "react";
-import Container from "semantic-ui-react/src/elements/Container/Container";
+import {Container} from "semantic-ui-react";
 import {RouteComponentProps} from "react-router";
 
 export const DashboardPage: React.FunctionComponent<RouteComponentProps<any>> = () => (

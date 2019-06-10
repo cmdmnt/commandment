@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Image, List, Grid } from "semantic-ui-react";
+import { Image, List, Grid, Button } from "semantic-ui-react";
 import {ArtworkIconSize, IiTunesSoftwareSearchResult} from "../../store/applications/itunes";
-import Button from "semantic-ui-react/dist/commonjs/elements/Button";
+
 
 export interface IMASResultProps {
     icon?: ArtworkIconSize;

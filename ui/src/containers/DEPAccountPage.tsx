@@ -9,12 +9,15 @@ import {RootState} from "../reducers";
 import {IDEPAccountState} from "../store/dep/account_reducer";
 import {account, AccountReadActionCreator} from "../store/dep/actions";
 
-import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
-import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Header from "semantic-ui-react/dist/commonjs/elements/Header/Header";
-import List from "semantic-ui-react/dist/commonjs/elements/List/List";
-import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
+import {
+    Breadcrumb,
+    Container,
+    Divider,
+    Header,
+    List,
+    Segment,
+} from "semantic-ui-react";
+
 import {IReactTableState} from "../store/table/types";
 import {FlaskFilterOperation} from "../flask-rest-jsonapi";
 import {FlaskFilter} from "../flask-rest-jsonapi";

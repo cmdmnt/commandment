@@ -1,8 +1,10 @@
 import * as React from "react";
 import {connect, MapStateToProps} from "react-redux";
 import {Dispatch} from "redux";
-import Container from "semantic-ui-react/src/elements/Container";
-import Header from "semantic-ui-react/src/elements/Header";
+import {
+    Container,
+    Header,
+} from "semantic-ui-react";
 
 import {Component} from "react";
 import * as Dropzone from "react-dropzone";

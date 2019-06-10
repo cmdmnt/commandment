@@ -8,9 +8,12 @@ import {RootState} from "../../reducers";
 import {AvailableOSUpdatesState} from "../../store/device/available_os_updates_reducer";
 import {AvailableOSUpdatesActionRequest, updates as fetchAvailableOSUpdates} from "../../store/device/updates";
 
-import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Checkbox from "semantic-ui-react/dist/commonjs/modules/Checkbox/Checkbox";
+import {
+    Button,
+    Divider,
+    Checkbox,
+} from "semantic-ui-react";
+
 import {IReactTableState} from "../../store/table/types";
 import {FlaskFilterOperation} from "../../flask-rest-jsonapi";
 

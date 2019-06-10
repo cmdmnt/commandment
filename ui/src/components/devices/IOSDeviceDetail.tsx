@@ -21,18 +21,20 @@ import {ButtonLink} from "../semantic-ui/ButtonLink";
 import {MenuItemLink} from "../semantic-ui/MenuItemLink";
 import {TagDropdown} from "../TagDropdown";
 
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
-import Segment from "semantic-ui-react/dist/commonjs/elements/Segment/Segment";
-import Grid from "semantic-ui-react/src/collections/Grid";
-import Menu from "semantic-ui-react/src/collections/Menu";
-import Button from "semantic-ui-react/src/elements/Button";
-import Header from "semantic-ui-react/src/elements/Header";
-import List from "semantic-ui-react/src/elements/List";
-import {DropdownItemProps} from "semantic-ui-react/src/modules/Dropdown/DropdownItem";
+import {
+    Divider,
+    Icon,
+    Segment,
+    Grid,
+    Menu,
+    Button,
+    Header,
+    List,
+    DropdownProps,
+    DropdownItemProps,
+} from "semantic-ui-react";
 
 import {SyntheticEvent} from "react";
-import {DropdownProps} from "semantic-ui-react/src/modules/Dropdown";
 import {ITagsState} from "../../store/tags/reducer";
 import "./MacOSDeviceDetail.scss";
 

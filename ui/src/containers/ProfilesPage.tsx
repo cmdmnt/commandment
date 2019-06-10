@@ -2,8 +2,7 @@ import * as React from "react";
 import {connect} from "react-redux";
 import {Dispatch} from "redux";
 
-import Container from "semantic-ui-react/src/elements/Container";
-import Header from "semantic-ui-react/src/elements/Header";
+import {Container, Header, Divider, Dropdown} from "semantic-ui-react";
 
 import {RouteComponentProps} from "react-router";
 import {bindActionCreators} from "redux";
@@ -12,9 +11,7 @@ import * as actions from "../store/profiles/actions";
 import {IndexActionRequest, UploadActionRequest} from "../store/profiles/actions";
 import {ProfilesState} from "../store/profiles/reducer";
 import {ProfilesTable} from "../components/react-tables/ProfilesTable";
-import Dropdown from "semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown";
 import {Link} from "react-router-dom";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
 import {ToggleSelectionActionCreator} from "../store/table/actions";
 import * as tableActions from "../store/table/actions";
 import {ITableState} from "../store/table/reducer";

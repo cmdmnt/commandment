@@ -1,5 +1,5 @@
 import * as React from "react";
-import List from "semantic-ui-react/src/elements/List";
+import {List} from "semantic-ui-react";
 
 interface ICheckListItemProps {
     title: string;

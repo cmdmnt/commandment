@@ -1,9 +1,7 @@
 import * as React from "react";
-import Modal from "semantic-ui-react/dist/commonjs/modules/Modal/Modal";
-import {RouteComponentProps} from "react-router-dom";
+import {Modal, Form, FormProps, Button} from "semantic-ui-react";
 
-import Form, {FormProps} from "semantic-ui-react/dist/commonjs/collections/Form/Form";
-import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
+import {RouteComponentProps} from "react-router-dom";
 import {Device} from "../../store/device/types";
 import {JSONAPIDataObject} from "../../store/json-api";
 

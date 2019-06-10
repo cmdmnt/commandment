@@ -2,13 +2,14 @@ import {FunctionComponent} from "react";
 import {DeviceState} from "../../store/device/reducer";
 import * as React from "react";
 import {format} from "date-fns";
-
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-import Grid from "semantic-ui-react/src/collections/Grid";
-import Button from "semantic-ui-react/src/elements/Button";
-import Header from "semantic-ui-react/src/elements/Header";
-import List from "semantic-ui-react/src/elements/List";
-import {Message} from "semantic-ui-react";
+import {
+    Divider,
+    Grid,
+    Button,
+    Header,
+    List,
+    Message
+} from "semantic-ui-react";
 
 export interface IDEPDeviceDetailProps {
     device: DeviceState;

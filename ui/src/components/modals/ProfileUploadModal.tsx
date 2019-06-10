@@ -1,7 +1,7 @@
 import * as React from "react";
 import Dropzone, {DropFilesEventHandler} from "react-dropzone";
 import {RouteComponentProps} from "react-router-dom";
-import Modal from "semantic-ui-react/dist/commonjs/modules/Modal/Modal";
+import {Modal} from "semantic-ui-react";
 import {UploadActionRequest} from "../../store/profiles/actions";
 
 export interface IProfileUploadModalProps extends RouteComponentProps<any> {

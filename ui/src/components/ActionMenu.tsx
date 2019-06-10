@@ -1,5 +1,5 @@
 import * as React from "react";
-import Dropdown from "semantic-ui-react/src/modules/Dropdown/Dropdown";
+import {Dropdown} from "semantic-ui-react";
 
 export enum UIActionTypes {
     BLANK_PUSH = "BLANK_PUSH",

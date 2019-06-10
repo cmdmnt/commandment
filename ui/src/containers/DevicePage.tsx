@@ -40,12 +40,8 @@ import {
 import {ITagsState} from "../store/tags/reducer";
 import {Tag} from "../store/tags/types";
 
-import Breadcrumb from "semantic-ui-react/dist/commonjs/collections/Breadcrumb/Breadcrumb";
+import {Breadcrumb, Container, Divider, DropdownProps} from "semantic-ui-react";
 
-import Container from "semantic-ui-react/dist/commonjs/elements/Container/Container";
-import Divider from "semantic-ui-react/dist/commonjs/elements/Divider/Divider";
-
-import {DropdownProps} from "semantic-ui-react/src/modules/Dropdown";
 import {DEPDeviceDetail} from "../components/devices/DEPDeviceDetail";
 import {IOSDeviceDetail} from "../components/devices/IOSDeviceDetail";
 import {DeviceOperatingSystem, operatingSystem} from "../store/device/types";
