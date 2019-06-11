@@ -19,6 +19,9 @@ class CommandRouter(object):
      that was registered for the RequestType associated with that command. The handler is then called with the specific
      instance of the command that generated the response, and an instance of the device that is making the request to
      the MDM endpoint.
+
+    Not handling the error status here allows handlers to freely interpret the error conditions of each response, which
+    is generally a better approach as some errors are command specific.
     
     Args:
           app (app): The flask application or blueprint instance

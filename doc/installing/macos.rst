@@ -31,8 +31,16 @@ at :file:`/usr/local/commandment/server.key` and a certificate, located at :file
 For a production instance, you will require an SSL certificate issued by a 3rd party for the chosen domain. However,
 as this is a macOS installation guide, You may also use a self-signed certificate.
 
-
 .. note:: Creating SSL certificates is outside of the scope of this document.
+
+Handy tip for extracting PEM/key pair out of a .p12 exported by Keychain Assistant::
+
+	openssl pkcs12 -in yourP12File.p12 -nocerts -out privatekey.pem
+	openssl pkcs12 -in yourP12File.p12 -clcerts -nokeys -out certificate.pem
+
+For converting DER to PEM::
+
+	openssl x509 -inform DER -outform PEM -text -in mykey.der -out mykey.pem
 
 
 Push Notification Certificate

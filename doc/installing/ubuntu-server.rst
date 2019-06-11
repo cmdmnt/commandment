@@ -151,14 +151,22 @@ Symlink to **sites-enabled**::
 
 	sudo ln -s /etc/nginx/sites-available/commandment.conf /etc/nginx/sites-enabled/commandment.conf
 
-2.3 SSL Certificate(s)
-^^^^^^^^^^^^^^^^^^^^^^
+3 SSL Certificate(s)
+--------------------
 
 NGiNX will fail to start until we actually create an SSL certificate for this site.
 
-If this is a non-public, development, sandbox environment you can use a self-signed certificate. If you ever intend to
-make it public (internet) facing, you need to sort out SSL certificates, maybe with LetsEncrypt.
+If this is a non-public, development, sandbox environment you can use a self-signed certificate.
+This means that you're either developing with commandment or you dont mind being restricted to a home (W)LAN network.
+I usually couple this with Bonjour for a hassle free testbed, hosting on something like computer.local.
 
+If you ever intend to make it public (internet) facing, you need to sort out an SSL certificate and DNS name that are
+externally verifiable and visible. This means having a DNS name or hosting on a service which gives you a static domain
+name for your site AND getting a 3rd party certificate issued. The cheapest recommended option for that is to use
+LetsEncrypt.
+
+3.1 Self-Signed Certificate(s)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To use self-signed certificates, first check that your hostname will be the fqdn that devices can access your machine with::
 

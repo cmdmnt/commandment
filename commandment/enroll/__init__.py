@@ -27,7 +27,7 @@ AllDeviceAttributes = {
     DeviceAttributes.DEVICE_NAME.value,
     DeviceAttributes.SERIAL.value,
     DeviceAttributes.MODEL.value,
-    DeviceAttributes.MAC_ADDRESS_EN0.value,
+    # DeviceAttributes.MAC_ADDRESS_EN0.value,
     DeviceAttributes.MEID.value,
     DeviceAttributes.IMEI.value,
     DeviceAttributes.ICCID.value,

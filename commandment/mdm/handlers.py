@@ -1,5 +1,4 @@
 from binascii import hexlify
-import uuid
 
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
@@ -22,11 +21,11 @@ Queries = DeviceInformation.Queries
 
 
 @command_router.route('DeviceInformation')
-def ack_device_information(command: DBCommand, device: Device, response: dict):
-    """Acknowledge a ``DeviceInformation`` response.
+def ack_device_information(request: DBCommand, device: Device, response: dict):
+    """Acknowledge a response to the ``DeviceInformation`` command.
 
     Args:
-        request (DeviceInformation): The command instance that generated this response.
+        request (Command): An instance of the command that prompted the device to come back with this request.
         device (Device): The device responding to the command.
         response (dict): The raw response dictionary, de-serialized from plist.
     Returns:
@@ -135,6 +134,16 @@ def ack_profile_list(request: DBCommand, device: Device, response: dict):
 
 @command_router.route('CertificateList')
 def ack_certificate_list(request: DBCommand, device: Device, response: dict):
+    """Acknowledge a response to the ``CertificateList`` command.
+
+    Args:
+        request (Command): An instance of the command that prompted the device to come back with this request.
+        device (Device): The database model of the device responding.
+        response (dict): The response plist data, as a dictionary.
+
+    Returns:
+        void: Nothing is returned but this behaviour is subject to change.
+    """
     for c in device.installed_certificates:
         db.session.delete(c)
 
@@ -162,7 +171,7 @@ def ack_certificate_list(request: DBCommand, device: Device, response: dict):
 
 @command_router.route('InstalledApplicationList')
 def ack_installed_app_list(request: DBCommand, device: Device, response: dict):
-    """Acknowledge a response to ``InstalledApplicationList``.
+    """Acknowledge a response to the ``InstalledApplicationList`` command.
     
     .. note:: There is no composite key which can uniquely identify an item in the installed applications list.
         Some applications may not contain any version information at all. For this reason, the entire list of installed
@@ -279,39 +288,63 @@ def ack_install_application(request: DBCommand, device: Device, response: dict):
 @command_router.route('ManagedApplicationList')
 def ack_managed_application_list(request: DBCommand, device: Device, response: dict):
     """Acknowledge a response to `ManagedApplicationList`."""
-    for bundle_id, status in response['ManagedApplicationList'].items():
-        try:
-            ma = db.session.query(ManagedApplication).filter(
-                Device.id == device.id,
-                ManagedApplication.bundle_id == bundle_id
-            ).one()
-        except NoResultFound:
-            ma = ManagedApplication(bundle_id=bundle_id, device=device)
+    if response.get('Status', None) == 'Error':
+        pass
+    else:
+        for bundle_id, status in response['ManagedApplicationList'].items():
+            try:
+                ma = db.session.query(ManagedApplication).filter(
+                    Device.id == device.id,
+                    ManagedApplication.bundle_id == bundle_id
+                ).one()
+            except NoResultFound:
+                ma = ManagedApplication(bundle_id=bundle_id, device=device)
 
-        ma.status = ManagedAppStatus(status['Status'])
-        ma.external_version_id = status.get('ExternalVersionIdentifier', None)  # Does not exist in iOS 11.3.1
-        ma.has_configuration = status['HasConfiguration']
-        ma.has_feedback = status['HasFeedback']
-        ma.is_validated = status['IsValidated']
-        ma.management_flags = status['ManagementFlags']
+            ma.status = ManagedAppStatus(status['Status'])
+            ma.external_version_id = status.get('ExternalVersionIdentifier', None)  # Does not exist in iOS 11.3.1
+            ma.has_configuration = status['HasConfiguration']
+            ma.has_feedback = status['HasFeedback']
+            ma.is_validated = status['IsValidated']
+            ma.management_flags = status['ManagementFlags']
 
-        db.session.add(ma)
-
-    db.session.commit()
-
-    for tag in device.tags:
-        for app in tag.applications:
-            # TODO: need to check with new versions being available. This is very primitive.
-            if app.bundle_id in response['ManagedApplicationList'].keys():
-                continue
-
-            c = commands.InstallApplication(application=app)
-            dbc = DBCommand.from_model(c)
-            dbc.device = device
-            db.session.add(dbc)
-
-            ma = ManagedApplication(device=device, application=app, ia_command=dbc, status=ManagedAppStatus.Queued)
             db.session.add(ma)
 
-    db.session.commit()
+        db.session.commit()
 
+        for tag in device.tags:
+            for app in tag.applications:
+                # TODO: need to check with new versions being available. This is very primitive.
+                if app.bundle_id in response['ManagedApplicationList'].keys():
+                    continue
+
+                c = commands.InstallApplication(application=app)
+                dbc = DBCommand.from_model(c)
+                dbc.device = device
+                db.session.add(dbc)
+
+                ma = ManagedApplication(device=device, application=app, ia_command=dbc, status=ManagedAppStatus.Queued)
+                db.session.add(ma)
+
+        db.session.commit()
+
+
+@command_router.route('RestartDevice')
+def ack_restart_device(request: DBCommand, device: Device, response: dict):
+    """Acknowledge a response to `RestartDevice`.
+
+    On macOS 10.13.6, the MDM client comes back with an `Idle` check in upon restart as part of launchd starting up.
+    This happens BEFORE the loginwindow (at about 40% of the progress bar at startup). This is the same Power-on
+    behaviour.
+    """
+    pass
+
+
+@command_router.route('ShutDownDevice')
+def ack_restart_device(request: DBCommand, device: Device, response: dict):
+    """Acknowledge a response to `ShutDownDevice`.
+
+    On macOS 10.13.6, the MDM client comes back with an `Idle` check in upon restart as part of launchd starting up.
+    This happens BEFORE the loginwindow (at about 40% of the progress bar at startup). This is the same Power-on
+    behaviour.
+    """
+    pass
