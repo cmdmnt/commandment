@@ -1,15 +1,13 @@
 from typing import List, Tuple
 
-from asn1crypto.cms import CMSAttribute
 from cryptography.exceptions import InvalidSignature
 from flask import request, g, current_app, abort
 from functools import wraps
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
 from asn1crypto import cms
-from base64 import b64decode, b64encode
-from . import _certificate_by_signer_identifier, _cryptography_hash_function, _cryptography_pad_function
+from base64 import b64decode
+from . import _certificate_by_signer_identifier, _cryptography_hash_function, _cryptography_pad_function, _verify_signature_digest, _verify_signature_time
 
 
 def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> Tuple[List[x509.Certificate], bytes]:
@@ -44,15 +42,11 @@ def _verify_cms_signers(signed_data: bytes, detached: bool = False) -> Tuple[Lis
             data = signed['encap_content_info']['content'].native
 
         if 'signed_attrs' in signer and len(signer['signed_attrs']) > 0:
-            for i in range(0, len(signer['signed_attrs'])):
-                signed_attr: CMSAttribute = signer['signed_attrs'][i]
-
-                if signed_attr['type'].native == "message_digest":
-                    current_app.logger.debug("SignerInfo digest: %s", b64encode(signed_attr['values'][0].native))
-
+            _verify_signature_digest(signer["signed_attrs"], data, hash_function())
+            _verify_signature_time(signer["signed_attrs"], asn_certificate)
             certificate.public_key().verify(
                 signer['signature'].native,
-                signer['signed_attrs'].dump(),
+                clean_cms_signed_attributes(signer['signed_attrs'].dump()),
                 pad_function(),
                 hash_function()
             )
